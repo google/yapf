@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Entry points for Yet Another Python Formatter.
+"""Entry points for YAPF.
 
 The main APIs that YAPF exposes to drive the reformatting.
 

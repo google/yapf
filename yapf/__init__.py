@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Yet Another Python Formatter.
+"""YAPF.
 
 YAPF uses the algorithm in clang-format to figure out the "best" formatting for
 Python code. It looks at the program as a series of "unwrappable lines" ---
