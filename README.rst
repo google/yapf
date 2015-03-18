@@ -31,22 +31,22 @@ From source directory::
 Usage
 =====
 
-<verbatim>
-usage: __main__.py [-h] [-d | -i] [-l START-END | -r] ...
+Options::
 
-Formatter for Python code.
+    usage: __main__.py [-h] [-d | -i] [-l START-END | -r] ...
 
-positional arguments:
-  files
+    Formatter for Python code.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --diff            print the diff for the fixed source
-  -i, --in-place        make changes to files in place
-  -l START-END, --lines START-END
-                        range of lines to reformat, one-based
-  -r, --recursive       run recursively over directories
-</verbatim>
+    positional arguments:
+      files
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d, --diff            print the diff for the fixed source
+      -i, --in-place        make changes to files in place
+      -l START-END, --lines START-END
+                            range of lines to reformat, one-based
+      -r, --recursive       run recursively over directories
 
 
 Why Not Improve Existing Tools?
@@ -80,7 +80,7 @@ formatter works on one UnwrappedLine object at a time.
 An UnwrappedLine typically won't affect the formatting of lines before or after
 it. There is a part of the algorithm that may join two or more UnwrappedLines
 into one line. For instance, an if-then statement with a short body can be
-placed on a single line:
+placed on a single line::
 
     if a == 42: continue
 
@@ -95,9 +95,10 @@ For example, take the following Python code snippet. For the sake of this
 example, assume that line (1) violates the column limit restriction and needs to
 be reformatted.
 
+.. code-block:: python
 
-    1: def xxxxxxxxxxx(aaaaaaaaaaaa, bbbbbbbbb, cccccccc, dddddddd, eeeeee):
-    2:   pass
+    def xxxxxxxxxxx(aaaaaaaaaaaa, bbbbbbbbb, cccccccc, dddddddd, eeeeee):  # 1
+        pass                                                               # 2
 
 For line (1), the algorithm will build a tree where each node (a
 FormattingDecisionState object) is the state of the line at that token given the
@@ -105,35 +106,9 @@ decision to split before the token or not. Note: the FormatDecisionState objects
 are copied by value so each node in the graph is unique and a change in one
 doesn't affect other nodes.
 
-Here is a hypothetical subtree of the first five tokens. The value in
-parentheses is the hypothetical cost of splitting before the token. (The left
-hand branch is a decision to split and the right hand branch is a decision not
-to split.)
-
-                               'def'
-                                 |
-                                 |  (0)
-                                 |
-                           'xxxxxxxxxxx'
-                                 |
-                                 |  (0)
-                                 |
-                                '('
-                                 |
-              (3)  +---------------------------+  (1)
-                   |                           |
-                   |                           |
-            'aaaaaaaaaaaa'               'aaaaaaaaaaaa'
-                   |                           |
-                   |                           |
-           +--------------+             +-------------+
-           |              |             |             |
-     (50)  |         (0)  |       (50)  |        (0)  |
-          ','            ','           ','           ','
-
-And so on. Heuristics are used to determine the costs of splitting or not
-splitting. Because a node holds the state of the tree up to a token's insertion,
-it can easily determine if a splitting decision will violate one of the style
+Heuristics are used to determine the costs of splitting or not splitting.
+Because a node holds the state of the tree up to a token's insertion, it can
+easily determine if a splitting decision will violate one of the style
 requirements. For instance, the heuristic is able to apply an extra penalty to
 the edge when not splitting between the previous token and the one being added.
 
