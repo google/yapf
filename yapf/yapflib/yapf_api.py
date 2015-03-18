@@ -142,8 +142,8 @@ def ReadFile(filename, logger=None):
       raise
 
 
-DISABLE_PATTERN = r'^#+ +(?:yapf|pyformat): *disable$'
-ENABLE_PATTERN = r'^#+ +(?:yapf|pyformat): *enable$'
+DISABLE_PATTERN = r'^#+ +yapf: *disable$'
+ENABLE_PATTERN = r'^#+ +yapf: *enable$'
 
 
 def _LinesToSkip(uwlines):
