@@ -35,7 +35,7 @@ class RunTests(Command):
     runner.run(tests)
 
 
-with open('README', 'r') as fd:
+with open('README.rst', 'r') as fd:
   setup(
       name='yapf',
       version=yapf.__version__,
