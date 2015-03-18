@@ -1,0 +1,211 @@
+# Copyright 2015 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Pytree nodes with extra formatting information.
+
+This is a thin wrapper around a pytree.Leaf node.
+"""
+
+import keyword
+import re
+
+from lib2to3 import pytree
+from lib2to3.pgen2 import token
+
+from yapf.yapflib import pytree_utils
+from yapf.yapflib import style
+
+
+class Subtype(object):
+  """Subtype information about tokens.
+
+  Gleaned from parsing the code. Helps determine the best formatting.
+  """
+  NONE = 0
+  UNARY_OPERATOR = 1
+  BINARY_OPERATOR = 2
+  SUBSCRIPT_COLON = 3
+  DEFAULT_OR_NAMED_ASSIGN = 4
+  VARARGS_STAR = 5
+  KWARGS_STAR_STAR = 6
+  ASSIGN_OPERATOR = 7
+  DICTIONARY_KEY = 8
+  DICT_SET_GENERATOR = 9
+
+
+class FormatToken(object):
+  """A wrapper around pytree Leaf nodes.
+
+  This represents the token plus additional information useful for reformatting
+  the code.
+
+  Attributes:
+    next_token: The token in the unwrapped line after this token or None if this
+      is the last token in the unwrapped line.
+    previous_token: The token in the unwrapped line before this token or None if
+      this is the first token in the unwrapped line.
+    matching_bracket: If a bracket token ('[', '{', or '(') the matching
+      bracket.
+    whitespace_prefix: The prefix for the whitespace.
+    spaces_required_before: The number of spaces required before a token. This
+      is a lower-bound for the formatter and not a hard requirement. For
+      instance, a comment may have n required spaces before it. But the
+      formatter won't place n spaces before all comments. Only those that are
+      moved to the end of a line of code. The formatter may use different
+      spacing when appropriate.
+    can_break_before: True if we're allowed to break before this token.
+    must_break_before: True if we're required to break before this token.
+    total_length: The total length of the unwrapped line up to and including
+      whitespace and this token. However, this doesn't include the initial
+      indentation amount.
+    split_penalty: The penalty for splitting the line before this token.
+  """
+
+  def __init__(self, node):
+    """Constructor.
+
+    Arguments:
+      node: (pytree.Leaf) The node that's being wrapped.
+    """
+    assert isinstance(node, pytree.Leaf)
+    self._node = node
+    self.next_token = None
+    self.previous_token = None
+    self.matching_bracket = None
+    self.whitespace_prefix = ''
+    self.can_break_before = False
+    self.must_break_before = False
+    self.total_length = 0  # TODO(morbo): Think up a better name.
+    self.split_penalty = 0
+
+    if self.is_comment:
+      self.spaces_required_before = style.SPACES_BEFORE_COMMENT
+    else:
+      self.spaces_required_before = 0
+
+  def AddWhitespacePrefix(self, newlines_before, spaces=0, indent_level=0):
+    """Register a token's whitespace prefix.
+
+    This is the whitespace that will be output before a token's string.
+
+    Arguments:
+      newlines_before: (int) The number of newlines to place before the token.
+      spaces: (int) The number of spaces to place before the token.
+      indent_level: (int) The indentation level.
+    """
+    spaces_before = ' ' * indent_level * style.INDENT_WIDTH + ' ' * spaces
+
+    if self.is_comment:
+      comment_lines = [s.lstrip() for s in self.value.splitlines()]
+      self._node.value = ('\n' + spaces_before).join(comment_lines)
+
+    self.whitespace_prefix = ('\n' * (self.newlines or newlines_before) +
+                              spaces_before)
+
+  def AdjustNewlinesBefore(self, newlines_before):
+    """Change the number of newlines before this token."""
+    self.whitespace_prefix = ('\n' * newlines_before +
+                              self.whitespace_prefix.lstrip('\n'))
+
+  def OpensScope(self):
+    return self.value in pytree_utils.OPENING_BRACKETS
+
+  def ClosesScope(self):
+    return self.value in pytree_utils.CLOSING_BRACKETS
+
+  def GetPytreeNode(self):
+    return self._node
+
+  @property
+  def token_type(self):
+    return self._node.type
+
+  @property
+  def value(self):
+    return self._node.value
+
+  @property
+  def node_split_penalty(self):
+    """Split penalty attached to the pytree node of this token.
+
+    Returns:
+      The penalty, or None if no annotation is attached.
+    """
+    return pytree_utils.GetNodeAnnotation(self._node,
+                                          pytree_utils.Annotation.SPLIT_PENALTY)
+
+  @property
+  def newlines(self):
+    """The number of newlines needed before this token."""
+    return pytree_utils.GetNodeAnnotation(self._node,
+                                          pytree_utils.Annotation.NEWLINES)
+
+  @property
+  def column(self):
+    """The original column number of the node in the source."""
+    return self._node.column
+
+  @property
+  def lineno(self):
+    """The original line number of the node in the source."""
+    return self._node.lineno
+
+  @property
+  def subtype(self):
+    """Extra type information for directing formatting."""
+    value = pytree_utils.GetNodeAnnotation(self._node,
+                                           pytree_utils.Annotation.SUBTYPE)
+    return Subtype.NONE if value is None else value
+
+  @property
+  def is_binary_op(self):
+    """Token is a binary operator."""
+    return self.subtype == Subtype.BINARY_OPERATOR
+
+  @property
+  def name(self):
+    """A string representation of the node's name."""
+    return pytree_utils.NodeName(self._node)
+
+  def __repr__(self):
+    return 'FormatToken(name={0}, value={1})'.format(self.name, self.value)
+
+  @property
+  def is_comment(self):
+    return self._node.type == token.COMMENT
+
+  @property
+  def is_keyword(self):
+    return keyword.iskeyword(self.value)
+
+  @property
+  def is_name(self):
+    return self._node.type == token.NAME and not self.is_keyword
+
+  @property
+  def is_operator(self):
+    return self._node.value in {'+', '-', '*', '/', '//', '**'}
+
+  @property
+  def is_number(self):
+    return self._node.type == token.NUMBER
+
+  @property
+  def is_string(self):
+    return self._node.type == token.STRING
+
+  @property
+  def is_docstring(self):
+    return (self.is_string and
+            re.match(r'^[uUbB]?[rR]?(?P<delim>"""|\'\'\').*(?P=delim)$',
+                     self.value, re.DOTALL) is not None)
