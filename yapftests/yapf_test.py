@@ -280,13 +280,13 @@ class CommandLineTest(unittest.TestCase):
         A = set([
             'hello',
             'world',
-        ])  # pyformat: disable
+        ])  # yapf: disable
         """)
     expected_formatted_code = textwrap.dedent(u"""\
         A = set([
             'hello',
             'world',
-        ])  # pyformat: disable
+        ])  # yapf: disable
         """)
 
     p = subprocess.Popen(YAPF_BINARY,
