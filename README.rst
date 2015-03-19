@@ -2,6 +2,10 @@
 YAPF
 ====
 
+.. image:: https://travis-ci.org/google/yapf.svg?branch=master
+    :target: https://travis-ci.org/google/yapf
+    :alt: Build status
+
 Introduction
 ============
 
