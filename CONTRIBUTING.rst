@@ -1,9 +1,12 @@
 Want to contribute? Great! First, read this page (including the small print at the end).
 
-### Before you contribute
-Before we can use your code, you must sign the
-[Google Individual Contributor License Agreement](https://developers.google.com/open-source/cla/individual?csw=1)
-(CLA), which you can do online. The CLA is necessary mainly because you own the
+Before you contribute
+---------------------
+
+Before we can use your code, you must sign the `Google Individual Contributor
+License Agreement
+<https://developers.google.com/open-source/cla/individual?csw=1>`_ (CLA), which
+you can do online. The CLA is necessary mainly because you own the
 copyright to your changes, even after your contribution becomes part of our
 codebase, so we need your permission to use and distribute your code. We also
 need to be sure of various other things—for instance that you'll tell us if you
@@ -15,10 +18,23 @@ us first through the issue tracker with your idea so that we can help out and
 possibly guide you. Coordinating up front makes it much easier to avoid
 frustration later on.
 
-### Code reviews
+Code reviews
+------------
+
 All submissions, including submissions by project members, require review. We
 use Github pull requests for this purpose.
 
-### The small print
+YAPF coding style
+-----------------
+
+YAPF follows the `Google Python Style Guide
+<https://google-styleguide.googlecode.com/svn/trunk/pyguide.html>`_, with the
+exception of using 2 spaces for indentation rather than 4. YAPF was initially
+developed internally and 2 spaces is still the prevalent Python style within
+Google.
+
+Small print
+-----------
+
 Contributions made by corporations are covered by a different agreement than
 the one above, the Software Grant and Corporate Contributor License Agreement.
