@@ -24,6 +24,7 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import reformatter
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
@@ -1222,6 +1223,7 @@ def _ParseAndUnwrap(code, dumptree=False):
   Returns:
     List of unwrapped lines.
   """
+  style.INDENT_WIDTH = 2
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
   subtype_assigner.AssignSubtypes(tree)
