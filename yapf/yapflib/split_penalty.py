@@ -239,9 +239,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         return
 
       if isinstance(node, pytree.Leaf):
-        if pytree_utils.GetNodeAnnotation(
-            node,
-            pytree_utils.Annotation.SPLIT_PENALTY) < ARITHMETIC_EXPRESSION:
+        penalty_annotation = pytree_utils.GetNodeAnnotation(
+            node, pytree_utils.Annotation.SPLIT_PENALTY)
+        if (penalty_annotation is None or
+            penalty_annotation < ARITHMETIC_EXPRESSION):
           pytree_utils.SetNodeAnnotation(
               node,
               pytree_utils.Annotation.SPLIT_PENALTY, ARITHMETIC_EXPRESSION)
