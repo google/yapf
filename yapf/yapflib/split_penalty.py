@@ -15,6 +15,7 @@
 
 from lib2to3 import pytree
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
@@ -222,7 +223,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     """Set an UNBREAKABLE penalty annotation on children of node."""
     for child in node.children:
       self.Visit(child)
-    for i in xrange(1, num_children):
+    for i in py3compat.range(1, num_children):
       self._SetUnbreakable(node.children[i])
 
   def _SetArithmeticExpression(self, node):
@@ -264,5 +265,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for child in tree.children:
       self._RecAnnotate(child, annotate_name, annotate_value)
     if isinstance(tree, pytree.Leaf):
-      if pytree_utils.GetNodeAnnotation(tree, annotate_name) < annotate_value:
+      cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name)
+      if cur_annotate is None or cur_annotate < annotate_value:
         pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)

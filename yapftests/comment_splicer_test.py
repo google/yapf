@@ -18,6 +18,7 @@ import textwrap
 import unittest
 
 from yapf.yapflib import comment_splicer
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 
 
@@ -37,7 +38,7 @@ class CommentSplicerTest(unittest.TestCase):
       self.assertIn(text_in_comment, node_value)
 
   def _FindNthChildNamed(self, node, name, n=1):
-    for i, child in enumerate(itertools.ifilter(
+    for i, child in enumerate(py3compat.ifilter(
         lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
       if i == n - 1:
         return child

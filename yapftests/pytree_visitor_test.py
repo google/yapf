@@ -13,9 +13,9 @@
 # limitations under the License.
 """Tests for yapf.pytree_visitor."""
 
-import cStringIO
 import unittest
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
@@ -93,7 +93,7 @@ class PytreeVisitorTest(unittest.TestCase):
     # PyTreeDumper is mainly a debugging utility, so only do basic sanity
     # checking.
     tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
-    stream = cStringIO.StringIO()
+    stream = py3compat.StringIO()
     pytree_visitor.PyTreeDumper(target_stream=stream).Visit(tree)
 
     dump_output = stream.getvalue()
@@ -104,7 +104,7 @@ class PytreeVisitorTest(unittest.TestCase):
   def testDumpPyTree(self):
     # Similar sanity checking for the convenience wrapper DumpPyTree
     tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
-    stream = cStringIO.StringIO()
+    stream = py3compat.StringIO()
     pytree_visitor.DumpPyTree(tree, target_stream=stream)
 
     dump_output = stream.getvalue()
