@@ -82,16 +82,16 @@ Gory Details
 Algorithm Design
 ----------------
 
-The main data structure in YAPF is the UnwrappedLine object. It holds a list of
-FormatTokens, that we would want to place on a single line if there were no
-column limit. An exception being a comment in the middle of an expression
+The main data structure in YAPF is the ``UnwrappedLine`` object. It holds a list
+of ``FormatToken``\s, that we would want to place on a single line if there were
+no column limit. An exception being a comment in the middle of an expression
 statement will force the line to be formatted on more than one line. The
-formatter works on one UnwrappedLine object at a time.
+formatter works on one ``UnwrappedLine`` object at a time.
 
-An UnwrappedLine typically won't affect the formatting of lines before or after
-it. There is a part of the algorithm that may join two or more UnwrappedLines
-into one line. For instance, an if-then statement with a short body can be
-placed on a single line::
+An ``UnwrappedLine`` typically won't affect the formatting of lines before or
+after it. There is a part of the algorithm that may join two or more
+``UnwrappedLine``\s into one line. For instance, an if-then statement with a
+short body can be placed on a single line::
 
     if a == 42: continue
 
@@ -112,10 +112,10 @@ be reformatted.
         pass                                                               # 2
 
 For line (1), the algorithm will build a tree where each node (a
-FormattingDecisionState object) is the state of the line at that token given the
-decision to split before the token or not. Note: the FormatDecisionState objects
-are copied by value so each node in the graph is unique and a change in one
-doesn't affect other nodes.
+``FormattingDecisionState`` object) is the state of the line at that token given
+the decision to split before the token or not. Note: the ``FormatDecisionState``
+objects are copied by value so each node in the graph is unique and a change in
+one doesn't affect other nodes.
 
 Heuristics are used to determine the costs of splitting or not splitting.
 Because a node holds the state of the tree up to a token's insertion, it can
@@ -126,9 +126,9 @@ the edge when not splitting between the previous token and the one being added.
 There are some instances where we will never want to split the line, because
 doing so will always be detrimental (i.e., it will require a backslash-newline,
 which is very rarely desirable). For line (1), we will never want to split the
-first three tokens: 'def', 'xxxxxxxxxxx', and '('. Nor will we want to split
-between the ')' and the ':' at the end. These regions are said to be
-"unbreakable." This is reflected in the tree by there not being a 'split'
+first three tokens: ``def``, ``xxxxxxxxxxx``, and ``(``. Nor will we want to
+split between the ``)`` and the ``:`` at the end. These regions are said to be
+"unbreakable." This is reflected in the tree by there not being a "split"
 decision (left hand branch) within the unbreakable region.
 
 Now that we have the tree, we determine what the "best" formatting is by finding
