@@ -32,10 +32,12 @@ programmer would write if they were following the style guide.
 Installation
 ============
 
-From source directory::
+YAPF currently requires Python 2.7; support for Python 3.x is planned in the
+near future.
+
+To install YAPF from the source directory::
 
     $ sudo python ./setup.py install
-
 
 Usage
 =====
