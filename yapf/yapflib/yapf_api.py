@@ -58,7 +58,7 @@ def FormatFile(filename, lines=None, print_diff=False):
 
 
 def FormatCode(unformatted_source, filename='<unknown>', lines=None,
-               print_diff=False, indent_width=2):
+               print_diff=False):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.
@@ -71,12 +71,10 @@ def FormatCode(unformatted_source, filename='<unknown>', lines=None,
       overrides the 'FLAGS.lines'. It can be used by third-party code (e.g.,
       IDEs) when reformatting a snippet of code.
     print_diff: (bool) Print the diff for the fixed source.
-    indent_width: (int) The width of the indent.
 
   Returns:
     The code reformatted to conform to the desired formatting style.
   """
-  style.INDENT_WIDTH = indent_width
   tree = pytree_utils.ParseCodeToTree(unformatted_source)
 
   # Run passes on the tree, modifying it in place.

@@ -42,6 +42,18 @@ class SingleLineReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSimpleWithIndentOf4(self):
+    unformatted_code = textwrap.dedent("""\
+        if a+b:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if a + b:
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code, indent_width=4)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testSimpleFunctions(self):
     unformatted_code = textwrap.dedent("""\
         def g():
@@ -1209,7 +1221,7 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
-def _ParseAndUnwrap(code, dumptree=False):
+def _ParseAndUnwrap(code, indent_width=2, dumptree=False):
   """Produces unwrapped lines from the given code.
 
   Parses the code into a tree, performs comment splicing and runs the
@@ -1217,13 +1229,14 @@ def _ParseAndUnwrap(code, dumptree=False):
 
   Arguments:
     code: code to parse as a string
+    indent_width: the indent width to set when reformatting
     dumptree: if True, the parsed pytree (after comment splicing) is dumped
               to stderr. Useful for debugging.
 
   Returns:
     List of unwrapped lines.
   """
-  style.INDENT_WIDTH = 2
+  style.INDENT_WIDTH = indent_width
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
   subtype_assigner.AssignSubtypes(tree)
