@@ -32,8 +32,7 @@ programmer would write if they were following the style guide.
 Installation
 ============
 
-YAPF currently requires Python 2.7; support for Python 3.x is planned in the
-near future.
+YAPF supports Python 2.7 and 3.4+.
 
 To install YAPF from the source directory::
 
@@ -58,6 +57,10 @@ Options::
       -l START-END, --lines START-END
                             range of lines to reformat, one-based
       -r, --recursive       run recursively over directories
+
+Note: after reformatting a chunk of code, YAPF verifies that it's correct (can
+be parsed by Python itself). This means that if you're reformatting Python 3
+code, it's best to run YAPF itself under Python 3. The same goes for Python 2.
 
 
 Why Not Improve Existing Tools?
