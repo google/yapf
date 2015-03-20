@@ -919,7 +919,7 @@ class BuganizerFixes(unittest.TestCase):
                                         DDDDDDDDDDDDDDD,
                                         "eeeeeeeee ffffffffff",
                                        ), "rb") as gggggggggggggggggggg:
-                print gggggggggggggggggggg
+                print(gggggggggggggggggggg)
         """)
     expected_formatted_code = textwrap.dedent("""\
         class aaaaaaaaaaaaaa(object):
@@ -928,7 +928,7 @@ class BuganizerFixes(unittest.TestCase):
               with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
                                         "eeeeeeeee ffffffffff",),
                            "rb") as gggggggggggggggggggg:
-                print gggggggggggggggggggg
+                print(gggggggggggggggggggg)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
