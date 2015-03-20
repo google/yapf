@@ -104,9 +104,10 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
   def testReadSingleLineCodeFromStdin(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -120,9 +121,12 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    # We can't pipe unicode through subprocess - need to encode/decode at the
+    # boundary.
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
   def testEncodingVerification(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -136,7 +140,7 @@ class CommandLineTest(unittest.TestCase):
                                      dir=self.test_tmpdir) as outfile:
       with tempfile.NamedTemporaryFile(suffix='.py',
                                        dir=self.test_tmpdir) as testfile:
-        testfile.write(unformatted_code.encode('UTF-8'))
+        testfile.write(unformatted_code.encode('utf-8'))
         subprocess.check_call(YAPF_BINARY + ['--diff', testfile.name],
                               stdout=outfile)
 
@@ -165,9 +169,10 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
   def testReformattingSkippingLines(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -198,9 +203,10 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
   def testReformattingSkippingToEndOfFile(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -243,9 +249,10 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
   def testReformattingSkippingSingleLine(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -273,9 +280,10 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
   def testDisableWholeDataStructure(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -295,9 +303,10 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(input=unformatted_code)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code, expected_formatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
 
 def suite():

@@ -31,6 +31,7 @@ import logging
 import sys
 
 from yapf.yapflib import file_resources
+from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
 
 __version__ = '0.1'
@@ -83,11 +84,11 @@ def main(argv):
         # user will need to hit 'Ctrl-D' more than once if they're inputting
         # the program by hand. 'raw_input' throws an EOFError exception if
         # 'Ctrl-D' is pressed, which makes it easy to bail out of this loop.
-        original_source.append(raw_input())
+        original_source.append(py3compat.raw_input())
       except EOFError:
         break
     sys.stdout.write(yapf_api.FormatCode(
-        unicode('\n'.join(original_source) + '\n'),
+        py3compat.unicode('\n'.join(original_source) + '\n'),
         filename='<stdin>',
         lines=lines))
     return 0
@@ -129,7 +130,7 @@ def _GetLines(line_strings):
   """
   lines = []
   for line_string in line_strings:
-    line = map(int, line_string.split('-', 1))
+    line = list(map(int, line_string.split('-', 1)))
     if line[0] < 1:
       raise ValueError('invalid start of line range: %r' % line)
     if line[0] > line[1]:

@@ -19,19 +19,22 @@ PY3 = sys.version_info[0] == 3
 
 
 if PY3:
-    import io
-    StringIO = io.StringIO
-    BytesIO = io.BytesIO
+  import io
+  StringIO = io.StringIO
+  BytesIO = io.BytesIO
 
-    range = range
-    ifilter = filter
+  range = range
+  ifilter = filter
+  raw_input = input
 else:
-    import cStringIO
-    StringIO = BytesIO = cStringIO.StringIO
+  import __builtin__
+  import cStringIO
+  StringIO = BytesIO = cStringIO.StringIO
 
-    range = xrange
+  range = xrange
 
-    from itertools import ifilter
+  from itertools import ifilter
+  raw_input = raw_input
 
 
 def EncodeForStdout(s):
@@ -45,3 +48,12 @@ def EncodeForStdout(s):
     return s
   else:
     return s.encode('UTF-8')
+
+
+
+def unicode(s):
+  """Force conversion of s to unicode."""
+  if PY3:
+    return s
+  else:
+    return __builtin__.unicode(s, "unicode_escape")
