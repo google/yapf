@@ -19,6 +19,7 @@ import unittest
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
@@ -1194,6 +1195,35 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
         aaaaaaaaaaaaaaaaaaaaaaaa().bbbbbbbbbbbbbbbbbbbbbbbb().ccccccccccccccccccc(
         ).dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff(
         ).gggggggggggggggggg()
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
+@unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
+class TestsForPython3Code(unittest.TestCase):
+  """Test a few constructs that are new Python 3 syntax."""
+
+  def testKeywordOnlyArgSpecifier(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo(a, *, kw):
+          return a+kw
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo(a, *, kw):
+          return a + kw
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testAnnotations(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo(a: list, b: "bar") -> dict:
+          return a+b
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo(a: list, b: "bar") -> dict:
+          return a + b
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
