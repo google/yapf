@@ -240,9 +240,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
       if isinstance(node, pytree.Leaf):
         penalty_annotation = pytree_utils.GetNodeAnnotation(
-            node, pytree_utils.Annotation.SPLIT_PENALTY)
-        if (penalty_annotation is None or
-            penalty_annotation < ARITHMETIC_EXPRESSION):
+            node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
+        if penalty_annotation < ARITHMETIC_EXPRESSION:
           pytree_utils.SetNodeAnnotation(
               node,
               pytree_utils.Annotation.SPLIT_PENALTY, ARITHMETIC_EXPRESSION)
@@ -266,6 +265,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for child in tree.children:
       self._RecAnnotate(child, annotate_name, annotate_value)
     if isinstance(tree, pytree.Leaf):
-      cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name)
-      if cur_annotate is None or cur_annotate < annotate_value:
+      cur_annotate = pytree_utils.GetNodeAnnotation(tree,
+                                                    annotate_name,
+                                                    default=0)
+      if cur_annotate < annotate_value:
         pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)

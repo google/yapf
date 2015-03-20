@@ -338,7 +338,7 @@ _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 
 def _SplitPenalty(prev_token, cur_token):
   """Return the penalty for breaking the line before the current token."""
-  if cur_token.node_split_penalty is not None:
+  if cur_token.node_split_penalty > 0:
     return cur_token.node_split_penalty
 
   if style.SPLIT_BEFORE_LOGICAL_OPERATOR:

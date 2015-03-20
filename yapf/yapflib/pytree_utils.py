@@ -163,18 +163,19 @@ def _InsertNodeAt(new_node, target, after=False):
 _NODE_ANNOTATION_PREFIX = '_yapf_annotation_'
 
 
-def GetNodeAnnotation(node, annotation):
+def GetNodeAnnotation(node, annotation, default=None):
   """Get annotation value from a node.
 
   Arguments:
     node: the node.
     annotation: annotation name - a string.
+    default: the default value to return if there's no annotation.
 
   Returns:
     Value of the annotation in the given node. If the node doesn't have this
-    particular annotation name yet, returns None.
+    particular annotation name yet, returns default.
   """
-  return getattr(node, _NODE_ANNOTATION_PREFIX + annotation, None)
+  return getattr(node, _NODE_ANNOTATION_PREFIX + annotation, default)
 
 
 def SetNodeAnnotation(node, annotation, value):

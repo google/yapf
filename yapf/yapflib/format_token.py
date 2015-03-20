@@ -146,7 +146,8 @@ class FormatToken(object):
       The penalty, or None if no annotation is attached.
     """
     return pytree_utils.GetNodeAnnotation(self._node,
-                                          pytree_utils.Annotation.SPLIT_PENALTY)
+                                          pytree_utils.Annotation.SPLIT_PENALTY,
+                                          default=0)
 
   @property
   def newlines(self):
