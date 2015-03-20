@@ -107,7 +107,6 @@ class BlankLineCalculatorTest(unittest.TestCase):
 
 
         class moo(object):
-
           def method_1(self):
             pass
 

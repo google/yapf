@@ -129,7 +129,6 @@ class SingleLineReformatterTest(unittest.TestCase):
 
 
         class foo(object):
-
           def f(self):
             return 37 * -+2
 
@@ -567,7 +566,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         ''')
     expected_formatted_code = textwrap.dedent('''\
         class F:
-
           def _ProcessArgLists(self, node):
             """Common method for processing argument lists."""
             for child in node.children:
@@ -608,7 +606,7 @@ format_token.Subtype.NONE))
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
   def testClosingBracketIndent(self):
-    unformatted_code = textwrap.dedent('''\
+    code = textwrap.dedent('''\
         def f():
           def g():
             while (xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
@@ -616,17 +614,8 @@ format_token.Subtype.NONE))
                    'bbbbbbb'):
               pass
         ''')
-    expected_formatted_code = textwrap.dedent('''\
-        def f():
-
-          def g():
-            while (xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                   xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
-                   'bbbbbbb'):
-              pass
-        ''')
-    uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
 
   def testClosingBracketsInlinedInCall(self):
     unformatted_code = textwrap.dedent("""\
@@ -645,7 +634,6 @@ format_token.Subtype.NONE))
         """)
     expected_formatted_code = textwrap.dedent("""\
         class Foo(object):
-
           def bar(self):
             self.aaaaaaaa = xxxxxxxxxxxxxxxxxxx.yyyyyyyyyyyyy(
                 self.cccccc.ddddddddd.eeeeeeee,
@@ -663,7 +651,6 @@ format_token.Subtype.NONE))
   def testLineWrapInForExpression(self):
     code = textwrap.dedent("""\
         class A:
-
           def x(self, node, name, n=1):
             for i, child in enumerate(itertools.ifilter(
                 lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
@@ -675,7 +662,6 @@ format_token.Subtype.NONE))
   def testFunctionCallContinuationLine(self):
     code = textwrap.dedent("""\
         class foo:
-
           def bar(self, node, name, n=1):
             if True:
               if True:
@@ -688,7 +674,6 @@ format_token.Subtype.NONE))
   def testI18nNonFormatting(self):
     code = textwrap.dedent("""\
         class F(object):
-
           def __init__(self, fieldname,
                        #. Error message indicating an invalid e-mail address.
                        message=N_('Please check your email address.'), **kwargs):
@@ -733,7 +718,6 @@ format_token.Subtype.NONE))
         """)
     expected_formatted_code = textwrap.dedent("""\
         class Fnord(object):
-
           def Moo(self):
             aaaaaaaaaaaaaaaa = self._bbbbbbbbbbbbbbbbbbbbbbb(
                 ccccccccccccc=ccccccccccccc,
@@ -793,7 +777,6 @@ class BuganizerFixes(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         class Foo(object):
-
           def bar(self):
             with xxxxxxxxxx.yyyyy(
                 'aaaaaaa.bbbbbbbb.ccccccc.dddddddddddddddddddd.eeeeeeeeeee',
@@ -850,7 +833,6 @@ class BuganizerFixes(unittest.TestCase):
   def testB18256666(self):
     code = textwrap.dedent("""\
         class Foo(object):
-
           def Bar(self):
             aaaaa.bbbbbbb(ccc='ddddddddddddddd',
                           eeee='ffffffffffffffffffffff-%s-%s' % (gggg,
@@ -941,7 +923,6 @@ class BuganizerFixes(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         class aaaaaaaaaaaaaa(object):
-
           def bbbbbbbbbb(self):
             with io.open("/dev/null", "rb"):
               with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
@@ -1001,15 +982,12 @@ class BuganizerFixes(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         def foo(self):
          def bar(my_dict_name):
-           self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].\
-IncrementBy.assert_called_once_with('foo_bar_baz_boo')
+          self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with('foo_bar_baz_boo')
         """)
     expected_formatted_code = textwrap.dedent("""\
         def foo(self):
-
           def bar(my_dict_name):
-            self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].\
-IncrementBy.assert_called_once_with(
+            self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
                 'foo_bar_baz_boo')
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)

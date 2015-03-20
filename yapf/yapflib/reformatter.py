@@ -41,11 +41,11 @@ def Reformat(uwlines):
     A string representing the reformatted code.
   """
   final_lines = []
-  prev_last_token = None  # Last token of the previous line.
+  prev_last_uwline = None  # The previous line.
 
   for uwline in _SingleOrMergedLines(uwlines):
     first_token = uwline.first
-    _FormatFirstToken(first_token, uwline.depth, prev_last_token)
+    _FormatFirstToken(first_token, uwline.depth, prev_last_uwline)
 
     indent_amt = style.INDENT_WIDTH * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
@@ -59,7 +59,7 @@ def Reformat(uwlines):
       _AnalyzeSolutionSpace(state, dry_run=False)
 
     final_lines.append(uwline)
-    prev_last_token = uwline.last
+    prev_last_uwline = uwline
 
   formatted_code = []
   for line in final_lines:
@@ -305,7 +305,7 @@ def _MatchingParenSplitDecision(current):
   return newline or current.state.next_token.is_comment
 
 
-def _FormatFirstToken(first_token, indent_depth, prev_last_token):
+def _FormatFirstToken(first_token, indent_depth, prev_last_uwline):
   """Format the first token in the unwrapped line.
 
   Add a newline and the required indent before the first token of the unwrapped
@@ -315,12 +315,12 @@ def _FormatFirstToken(first_token, indent_depth, prev_last_token):
     first_token: (format_token.FormatToken) The first token in the unwrapped
       line.
     indent_depth: (int) The line's indentation depth.
-    prev_last_token: (format_token.FormatToken) The last token of the previous
-      unwrapped line.
+    prev_last_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
+      previous to this line.
   """
   first_token.AddWhitespacePrefix(_CalculateNumberOfNewlines(first_token,
                                                              indent_depth,
-                                                             prev_last_token),
+                                                             prev_last_uwline),
                                   indent_level=indent_depth)
 
 
@@ -329,22 +329,22 @@ ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
-def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_token):
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
   """Calculate the number of newlines we need to add.
 
   Arguments:
     first_token: (format_token.FormatToken) The first token in the unwrapped
       line.
     indent_depth: (int) The line's indentation depth.
-    prev_last_token: (format_token.FormatToken) The last token of the previous
-      unwrapped line.
+    prev_last_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
+      previous to this line.
 
   Returns:
     The number of newlines needed before the first token.
   """
   # TODO(morbo): Special handling for imports.
   # TODO(morbo): Create a knob that can tune these.
-  if prev_last_token is None:
+  if prev_last_uwline is None:
     # The first line in the file. Don't add blank lines.
     # FIXME(morbo): Is this correct?
     if first_token.newlines is not None:
@@ -357,6 +357,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_token):
     # TODO(morbo): Add a knob to adjust this.
     return NO_BLANK_LINES
 
+  prev_last_token = prev_last_uwline.last
   if prev_last_token.is_docstring:
     if not indent_depth and first_token.value in {'class', 'def'}:
       # Separate a class or function from the module-level docstring with two
@@ -386,6 +387,11 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_token):
                                            pytree_utils.Annotation.NEWLINES,
                                            None)
           return NO_BLANK_LINES
+    elif prev_last_uwline.first.value in {'class', 'def'}:
+      if style.NO_BLANK_LINE_AFTER_CLASS_OR_DEF:
+        pytree_utils.SetNodeAnnotation(
+            first_token.node, pytree_utils.Annotation.NEWLINES, None)
+        return NO_BLANK_LINES
 
   # Calculate how many newlines were between the original lines. We want to
   # retain that formatting if it doesn't violate one of the style guide rules.

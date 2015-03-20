@@ -32,6 +32,9 @@ I18N_FUNCTION_CALL = ('N_', '_')
 # The number of columns to use for indentation.
 INDENT_WIDTH = 4
 
+# Insert a blank line after the start of a class and before a method.
+NO_BLANK_LINE_AFTER_CLASS_OR_DEF = True
+
 # The number of spaces required before a trailing comment.
 SPACES_BEFORE_COMMENT = 2
 

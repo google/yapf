@@ -135,6 +135,10 @@ class FormatToken(object):
     return self._node.value
 
   @property
+  def node(self):
+    return self._node
+
+  @property
   def node_split_penalty(self):
     """Split penalty attached to the pytree node of this token.
 
