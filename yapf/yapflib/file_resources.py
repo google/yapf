@@ -21,6 +21,8 @@ import io
 import os
 import sys
 
+from yapf.yapflib import py3compat
+
 
 def GetCommandLineFiles(command_line_file_list, recursive):
   """Return the list of files specified on the command line."""
@@ -44,11 +46,7 @@ def WriteReformattedCode(filename, reformatted_code, in_place):
     with io.open(filename, mode='w', newline='') as fd:
       fd.write(reformatted_code)
   else:
-    # Re-encode the text so that if we pipe the output to a file, it will
-    # have the proper encoding. Otherwise, we'll get a UnicodeEncodeError
-    # exception.
-    reformatted_code = reformatted_code.encode('UTF-8')
-    sys.stdout.write(reformatted_code)
+    sys.stdout.write(py3compat.EncodeForStdout(reformatted_code))
 
 
 def _FindFiles(filenames, recursive):

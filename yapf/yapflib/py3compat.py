@@ -32,3 +32,16 @@ else:
     range = xrange
 
     from itertools import ifilter
+
+
+def EncodeForStdout(s):
+  """Encode the given string for emission to stdout.
+
+  The string may contain non-ascii characters. This is a problem when stdout is
+  redirected, because then Python doesn't know the encoding and we may get a
+  UnicodeEncodeError.
+  """
+  if PY3:
+    return s
+  else:
+    return s.encode('UTF-8')
