@@ -134,7 +134,7 @@ class FormatDecisionState(object):
     if previous_token:
       length = _GetLengthToMatchingParen(previous_token)
       if (previous_token.value == '{' and  # TODO(morbo): List initializers?
-          length + self.column > style.COLUMN_LIMIT):
+          length + self.column > style.Get('COLUMN_LIMIT')):
         return True
 
       # TODO(morbo): This should be controlled with a knob.
@@ -151,7 +151,7 @@ class FormatDecisionState(object):
           next_token.subtype ==
           format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN and
           next_token.node_split_penalty < split_penalty.UNBREAKABLE):
-        return style.SPLIT_BEFORE_NAMED_ASSIGNS
+        return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
     return False
 
@@ -211,7 +211,7 @@ class FormatDecisionState(object):
         self.stack[-1].indent = self.column + spaces
       else:
         self.stack[-1].closing_scope_indent = (
-            self.stack[-1].indent - style.CONTINUATION_INDENT_WIDTH)
+            self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
 
     self.column += spaces
 
@@ -255,7 +255,8 @@ class FormatDecisionState(object):
         (previous.is_comment and previous.previous_token is not None and
          previous.previous_token.OpensScope())):
       self.stack[-1].closing_scope_indent = (
-          max(0, self.stack[-1].indent - style.CONTINUATION_INDENT_WIDTH))
+          max(0,
+              self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH')))
       self.stack[-1].split_before_closing_bracket = True
 
     # Calculate the split penalty.
@@ -263,7 +264,8 @@ class FormatDecisionState(object):
 
     # Add a penalty for each increasing newline we add.
     last = self.stack[-1]
-    penalty += style.SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT * last.num_line_splits
+    penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
+                last.num_line_splits)
     if not must_split:
       # Don't penalize for a must split.
       last.num_line_splits += 1
@@ -302,7 +304,7 @@ class FormatDecisionState(object):
     # for the subsequent tokens.
     if current.OpensScope():
       last = self.stack[-1]
-      new_indent = style.CONTINUATION_INDENT_WIDTH + last.last_space
+      new_indent = style.Get('CONTINUATION_INDENT_WIDTH') + last.last_space
 
       self.stack.append(_ParenState(new_indent, self.stack[-1].last_space))
       self.stack[-1].break_before_paremeter = False
@@ -325,9 +327,9 @@ class FormatDecisionState(object):
 
     # Calculate the penalty for overflowing the column limit.
     penalty = 0
-    if self.column > style.COLUMN_LIMIT:
-      excess_characters = self.column - style.COLUMN_LIMIT
-      penalty = style.SPLIT_PENALTY_EXCESS_CHARACTER * excess_characters
+    if self.column > style.Get('COLUMN_LIMIT'):
+      excess_characters = self.column - style.Get('COLUMN_LIMIT')
+      penalty = style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
 
     if is_multiline_string:
       # If this is a multiline string, the column is actually the

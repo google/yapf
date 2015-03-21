@@ -250,7 +250,7 @@ def _ParseAndUnwrap(code, dumptree=False):
   Returns:
     List of unwrapped lines.
   """
-  style.INDENT_WIDTH = 2
+  style.Set('INDENT_WIDTH', 2)
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
   subtype_assigner.AssignSubtypes(tree)

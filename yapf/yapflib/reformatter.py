@@ -47,7 +47,7 @@ def Reformat(uwlines):
     first_token = uwline.first
     _FormatFirstToken(first_token, uwline.depth, prev_last_uwline)
 
-    indent_amt = style.INDENT_WIDTH * uwline.depth
+    indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
     if _LineContainsI18n(uwline):
       _EmitLineUnformatted(state)
@@ -109,17 +109,18 @@ def _LineContainsI18n(uwline):
   Returns:
     True if the line contains i18n comments or function calls. False otherwise.
   """
-  if style.I18N_COMMENT and any(re.search(style.I18N_COMMENT, token.value)
-                                for token in uwline.tokens):
+  if (style.Get('I18N_COMMENT') and
+      any(re.search(style.Get('I18N_COMMENT'), token.value)
+          for token in uwline.tokens)):
     # Contains an i18n comment.
     return True
 
-  if style.I18N_FUNCTION_CALL:
+  if style.Get('I18N_FUNCTION_CALL'):
     length = len(uwline.tokens)
     index = 0
     while index < length - 1:
       if (uwline.tokens[index + 1].value == '(' and
-          uwline.tokens[index].value in style.I18N_FUNCTION_CALL):
+          uwline.tokens[index].value in style.Get('I18N_FUNCTION_CALL')):
         return True
       index += 1
 
@@ -135,8 +136,8 @@ def _CanPlaceOnSingleLine(uwline):
   Returns:
     True if the line can or should be added to a single line. False otherwise.
   """
-  indent_amt = style.INDENT_WIDTH * uwline.depth
-  return (uwline.last.total_length + indent_amt <= style.COLUMN_LIMIT and
+  indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
+  return (uwline.last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
           not any(token.is_comment for token in uwline.tokens[:-1]))
 
 
@@ -255,7 +256,7 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
 
   if previous_node.state.next_token.value in pytree_utils.CLOSING_BRACKETS:
     if _MatchingParenSplitDecision(previous_node) != newline:
-      penalty += style.SPLIT_PENALTY_MATCHING_BRACKET
+      penalty += style.Get('SPLIT_PENALTY_MATCHING_BRACKET')
 
   node = _StateNode(previous_node.state, newline, previous_node)
   penalty += node.state.AddTokenToState(newline=newline, dry_run=True)
@@ -388,7 +389,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
                                            None)
           return NO_BLANK_LINES
     elif prev_last_uwline.first.value in {'class', 'def'}:
-      if style.NO_BLANK_LINE_AFTER_CLASS_OR_DEF:
+      if style.Get('NO_BLANK_LINE_AFTER_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(
             first_token.node, pytree_utils.Annotation.NEWLINES, None)
         return NO_BLANK_LINES

@@ -341,10 +341,10 @@ def _SplitPenalty(prev_token, cur_token):
   if cur_token.node_split_penalty > 0:
     return cur_token.node_split_penalty
 
-  if style.SPLIT_BEFORE_LOGICAL_OPERATOR:
+  if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
     # Prefer to split before 'and' and 'or'.
     if prev_token.value in _LOGICAL_OPERATORS:
-      return style.SPLIT_PENALTY_LOGICAL_OPERATOR
+      return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
     if cur_token.value in _LOGICAL_OPERATORS:
       return 0
   else:
@@ -352,11 +352,11 @@ def _SplitPenalty(prev_token, cur_token):
     if prev_token.value in _LOGICAL_OPERATORS:
       return 0
     if cur_token.value in _LOGICAL_OPERATORS:
-      return style.SPLIT_PENALTY_LOGICAL_OPERATOR
+      return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
 
   if prev_token.subtype is format_token.Subtype.UNARY_OPERATOR:
     # Try not to break after a unary operator.
-    return style.SPLIT_PENALTY_AFTER_UNARY_OPERATOR
+    return style.Get('SPLIT_PENALTY_AFTER_UNARY_OPERATOR')
   if prev_token.value == ',':
     # Breaking after a comma is fine, if need be.
     return 0
@@ -373,7 +373,7 @@ def _SplitPenalty(prev_token, cur_token):
     return split_penalty.UNBREAKABLE
   if prev_token.value in pytree_utils.OPENING_BRACKETS:
     # Slightly prefer
-    return style.SPLIT_PENALTY_AFTER_OPENING_BRACKET
+    return style.Get('SPLIT_PENALTY_AFTER_OPENING_BRACKET')
   if cur_token.value == ':':
     # Don't split before a colon.
     return split_penalty.UNBREAKABLE

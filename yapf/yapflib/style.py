@@ -13,60 +13,74 @@
 # limitations under the License.
 """Python format style guidelines."""
 
-# The column limit.
-COLUMN_LIMIT = 80
 
-# Indent width for line continuations.
-CONTINUATION_INDENT_WIDTH = 4
+def Get(setting_name):
+    """Get a style setting."""
+    return _style[setting_name]
 
-# The regex for an i18n comment. The presence of this comment stops reformatting
-# of that line, because the comments are required to be next to the string they
-# translate.
-I18N_COMMENT = r'#\..*'
 
-# The i18n function call names. The presence of this function stops
-# reformattting on that line, because the string it has cannot be moved away
-# from the i18n comment.
-I18N_FUNCTION_CALL = ('N_', '_')
+def Set(setting_name, value):
+    """Set a style setting."""
+    _style[setting_name] = value
 
-# The number of columns to use for indentation.
-INDENT_WIDTH = 4
 
-# Insert a blank line after the start of a class and before a method.
-NO_BLANK_LINE_AFTER_CLASS_OR_DEF = True
+_style = dict(
+    # The column limit.
+    COLUMN_LIMIT = 80,
 
-# The number of spaces required before a trailing comment.
-SPACES_BEFORE_COMMENT = 2
+    # Indent width for line continuations.
+    CONTINUATION_INDENT_WIDTH = 4,
 
-# Set to True to prefer splitting before 'and' or 'or' rather than after.
-SPLIT_BEFORE_LOGICAL_OPERATOR = False
+    # The regex for an i18n comment. The presence of this comment stops
+    # reformatting of that line, because the comments are required to be next to
+    # the string they translate.
+    I18N_COMMENT = r'#\..*',
 
-# Split named assignments onto individual lines.
-SPLIT_BEFORE_NAMED_ASSIGNS = True
+    # The i18n function call names. The presence of this function stops
+    # reformattting on that line, because the string it has cannot be moved away
+    # from the i18n comment.
+    I18N_FUNCTION_CALL = ('N_', '_'),
 
-# The penalty for splitting the line after a unary operator.
-SPLIT_PENALTY_AFTER_UNARY_OPERATOR = 100
+    # The number of columns to use for indentation.
+    INDENT_WIDTH = 4,
 
-# The penalty for characters over the column limit.
-SPLIT_PENALTY_EXCESS_CHARACTER = 200
+    # Insert a blank line after the start of a class and before a method.
+    NO_BLANK_LINE_AFTER_CLASS_OR_DEF = True,
 
-# The penalty of splitting the line around the 'and' and 'or' operators.
-SPLIT_PENALTY_LOGICAL_OPERATOR = 30
+    # The number of spaces required before a trailing comment.
+    SPACES_BEFORE_COMMENT = 2,
 
-# The penalty for not matching the splitting decision for the matching bracket
-# tokens. For instance, if there is a newline after the opening bracket, we
-# would tend to expect one before the closing bracket, and vice versa.
-SPLIT_PENALTY_MATCHING_BRACKET = 50
+    # Set to True to prefer splitting before 'and' or 'or' rather than after.
+    SPLIT_BEFORE_LOGICAL_OPERATOR = False,
 
-# The penalty for splitting right after the opening bracket.
-SPLIT_PENALTY_AFTER_OPENING_BRACKET = 30
+    # Split named assignments onto individual lines.
+    SPLIT_BEFORE_NAMED_ASSIGNS = True,
 
-# The penalty incurred by adding a line split to the unwrapped line. The more
-# line splits added the higher the penalty.
-SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = 30
+    # The penalty for splitting the line after a unary operator.
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR = 100,
 
-# The number of columns used for tab stops.
-TAB_WIDTH = 8
+    # The penalty for characters over the column limit.
+    SPLIT_PENALTY_EXCESS_CHARACTER = 200,
 
-# Use tabs in the resulting file.
-USE_TAB = False
+    # The penalty of splitting the line around the 'and' and 'or' operators.
+    SPLIT_PENALTY_LOGICAL_OPERATOR = 30,
+
+    # The penalty for not matching the splitting decision for the matching
+    # bracket tokens. For instance, if there is a newline after the opening
+    # bracket, we would tend to expect one before the closing bracket, and vice
+    # versa.
+    SPLIT_PENALTY_MATCHING_BRACKET = 50,
+
+    # The penalty for splitting right after the opening bracket.
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET = 30,
+
+    # The penalty incurred by adding a line split to the unwrapped line. The
+    # more line splits added the higher the penalty.
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = 30,
+
+    # The number of columns used for tab stops.
+    TAB_WIDTH = 8,
+
+    # Use tabs in the resulting file.
+    USE_TAB = False,
+)

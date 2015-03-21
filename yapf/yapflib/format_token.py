@@ -89,7 +89,7 @@ class FormatToken(object):
     self.split_penalty = 0
 
     if self.is_comment:
-      self.spaces_required_before = style.SPACES_BEFORE_COMMENT
+      self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
     else:
       self.spaces_required_before = 0
 
@@ -103,7 +103,8 @@ class FormatToken(object):
       spaces: (int) The number of spaces to place before the token.
       indent_level: (int) The indentation level.
     """
-    spaces_before = ' ' * indent_level * style.INDENT_WIDTH + ' ' * spaces
+    spaces_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
+                     ' ' * spaces)
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]

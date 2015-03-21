@@ -52,8 +52,8 @@ def CanMergeMultipleLines(lines):
     only happen if two consecutive lines can be joined, due to the style guide.
   """
   # The indentation amount for the starting line (number of spaces).
-  indent_amt = lines[0].depth * style.INDENT_WIDTH
-  if len(lines) == 1 or indent_amt > style.COLUMN_LIMIT:
+  indent_amt = lines[0].depth * style.Get('INDENT_WIDTH')
+  if len(lines) == 1 or indent_amt > style.Get('COLUMN_LIMIT'):
     return False
 
   if (len(lines) >= 3 and lines[2].depth >= lines[1].depth and
@@ -68,7 +68,7 @@ def CanMergeMultipleLines(lines):
     # Don't join lines onto the starting line of a class or function.
     return False
 
-  limit = style.COLUMN_LIMIT - indent_amt
+  limit = style.Get('COLUMN_LIMIT') - indent_amt
   if lines[0].last.total_length < limit:
     limit -= lines[0].last.total_length
 

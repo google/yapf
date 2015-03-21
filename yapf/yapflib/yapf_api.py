@@ -36,7 +36,7 @@ from yapf.yapflib import subtype_assigner
 
 
 def FormatFile(filename, lines=None, print_diff=False):
-  """Format a single Python file and returns the formatted code.
+  """Format a single Python file and return the formatted code.
 
   Arguments:
     filename: (unicode) The file to reformat.
