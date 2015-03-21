@@ -33,9 +33,10 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf']
 class YapfTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    style.Set('INDENT_WIDTH', 2)
+    style.SetGlobalStyle(style.CreateGoogleStyle())
     formatted_code = yapf_api.FormatCode(unformatted_code)
     self.assertEqual(expected_formatted_code, formatted_code)
+
 
   def testSimple(self):
     unformatted_code = textwrap.dedent(u"""\

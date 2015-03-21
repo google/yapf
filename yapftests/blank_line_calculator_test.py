@@ -107,6 +107,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
 
 
         class moo(object):
+
           def method_1(self):
             pass
 
@@ -250,7 +251,7 @@ def _ParseAndUnwrap(code, dumptree=False):
   Returns:
     List of unwrapped lines.
   """
-  style.Set('INDENT_WIDTH', 2)
+  style.SetGlobalStyle(style.CreateGoogleStyle())
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
   subtype_assigner.AssignSubtypes(tree)
