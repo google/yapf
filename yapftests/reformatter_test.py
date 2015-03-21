@@ -31,6 +31,10 @@ from yapf.yapflib import subtype_assigner
 
 class SingleLineReformatterTest(unittest.TestCase):
 
+  @classmethod
+  def setUpClass(kls):
+    style.SetGlobalStyle(style.CreateGoogleStyle())
+
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
         if a+b:
@@ -41,18 +45,6 @@ class SingleLineReformatterTest(unittest.TestCase):
           pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
-  def testSimpleWithIndentOf4(self):
-    unformatted_code = textwrap.dedent("""\
-        if a+b:
-          pass
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        if a + b:
-            pass
-        """)
-    uwlines = _ParseAndUnwrap(unformatted_code, indent_width=4)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSimpleFunctions(self):
@@ -743,6 +735,10 @@ format_token.Subtype.NONE))
 
 class BuganizerFixes(unittest.TestCase):
 
+  @classmethod
+  def setUpClass(kls):
+    style.SetGlobalStyle(style.CreateGoogleStyle())
+
   def testB19377034(self):
     code = textwrap.dedent("""\
         def f():
@@ -1212,9 +1208,59 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
+class TestsForPEP8Style(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(kls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testIndent4(self):
+    unformatted_code = textwrap.dedent("""\
+        if a+b:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if a + b:
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testNoBlankBetweenClassAndDef(self):
+    unformatted_code = textwrap.dedent("""\
+        class Foo:
+
+          def joe():
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class Foo:
+            def joe():
+                pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSingleWhiteBeforeTrailingComment(self):
+    unformatted_code = textwrap.dedent("""\
+        if a+b:  # comment
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if a + b: # comment
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
 class TestsForPython3Code(unittest.TestCase):
   """Test a few constructs that are new Python 3 syntax."""
+
+  @classmethod
+  def setUpClass(kls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testKeywordOnlyArgSpecifier(self):
     unformatted_code = textwrap.dedent("""\
@@ -1223,7 +1269,7 @@ class TestsForPython3Code(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def foo(a, *, kw):
-          return a + kw
+            return a + kw
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1235,13 +1281,13 @@ class TestsForPython3Code(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def foo(a: list, b: "bar") -> dict:
-          return a + b
+            return a + b
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
-def _ParseAndUnwrap(code, indent_width=2, dumptree=False):
+def _ParseAndUnwrap(code, dumptree=False):
   """Produces unwrapped lines from the given code.
 
   Parses the code into a tree, performs comment splicing and runs the
@@ -1249,17 +1295,12 @@ def _ParseAndUnwrap(code, indent_width=2, dumptree=False):
 
   Arguments:
     code: code to parse as a string
-    indent_width: the indent width to set when reformatting
     dumptree: if True, the parsed pytree (after comment splicing) is dumped
               to stderr. Useful for debugging.
 
   Returns:
     List of unwrapped lines.
   """
-  st = style.CreateGoogleStyle()
-  st['INDENT_WIDTH'] = indent_width
-  style.SetGlobalStyle(st)
-
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
   subtype_assigner.AssignSubtypes(tree)
