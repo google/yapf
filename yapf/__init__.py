@@ -47,6 +47,10 @@ def main(argv):
     0 if there were no errors, non-zero otherwise.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
+  parser.add_argument(
+      '--style', action='store', default=None,
+      help=('specify formatting style: either a style name (for example "pep8" '
+            'or "google"), or the name of a file with style settings'))
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument(
       '-d', '--diff', action='store_true',
@@ -90,14 +94,15 @@ def main(argv):
     sys.stdout.write(yapf_api.FormatCode(
         py3compat.unicode('\n'.join(original_source) + '\n'),
         filename='<stdin>',
+        style_config=args.style,
         lines=lines))
     return 0
 
-  FormatFiles(files, lines, args.in_place)
+  FormatFiles(files, lines, style_config=args.style, in_place=args.in_place)
   return 0
 
 
-def FormatFiles(filenames, lines, in_place=False):
+def FormatFiles(filenames, lines, style_config=None, in_place=False):
   """Format a list of files.
 
   Arguments:
@@ -106,11 +111,13 @@ def FormatFiles(filenames, lines, in_place=False):
       that we want to format. The lines are 1-based indexed. This argument
       overrides the 'args.lines'. It can be used by third-party code (e.g.,
       IDEs) when reformatting a snippet of code.
+    style_config: (string) Style name or file path.
     in_place: (bool) Modify the files in place.
   """
   for filename in filenames:
     logging.info('Reformatting %s', filename)
-    reformatted_code = yapf_api.FormatFile(filename, lines)
+    reformatted_code = yapf_api.FormatFile(
+        filename, style_config=style_config, lines=lines)
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place)
 

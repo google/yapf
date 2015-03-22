@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Python format style guidelines."""
+"""Python formatting style settings."""
+
+from yapf.yapflib import py3compat
 
 
 def Get(setting_name):
@@ -95,12 +97,103 @@ def CreateGoogleStyle():
   style['SPACES_BEFORE_COMMENT'] = 2
   style['NO_BLANK_LINE_AFTER_CLASS_OR_DEF'] = False
   style['I18N_COMMENT'] = r'#\..*'
-  style['I18N_FUNCTION_CALL'] = ('N_', '_')
+  style['I18N_FUNCTION_CALL'] = ['N_', '_']
   return style
+
+
+_STYLE_NAME_TO_FACTORY = dict(
+    pep8 = CreatePEP8Style,
+    google = CreateGoogleStyle,
+)
+
+
+def _StringListConverter(s):
+  """Option value converter for a comma-separated list of strings."""
+  return [part.strip() for part in s.split(',')]
+
+
+def _BoolConverter(s):
+  """Option value converter for a boolean."""
+  # borrowed from configparser.
+  BOOLEAN_STATES = {'1': True, 'yes': True, 'true': True, 'on': True,
+                    '0': False, 'no': False, 'false': False, 'off': False}
+  return BOOLEAN_STATES[s.lower()]
+
+
+# Different style options need to have their values interpreted differently when
+# read from the config file. This dict maps an option name to a "converter"
+# function that accepts the string read for the option's value from the file and
+# returns it wrapper in actual Python type that's going to be meaningful to
+# yapf.
+_STYLE_OPTION_VALUE_CONVERTER = dict(
+    COLUMN_LIMIT = int,
+    I18N_COMMENT = str,
+    I18N_FUNCTION_CALL = _StringListConverter,
+    INDENT_WIDTH = int,
+    CONTINUATION_INDENT_WIDTH = int,
+    NO_BLANK_LINE_AFTER_CLASS_OR_DEF = _BoolConverter,
+    SPACES_BEFORE_COMMENT = int,
+    SPLIT_BEFORE_LOGICAL_OPERATOR = _BoolConverter,
+    SPLIT_BEFORE_NAMED_ASSIGNS = _BoolConverter,
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR = int,
+    SPLIT_PENALTY_EXCESS_CHARACTER = int,
+    SPLIT_PENALTY_LOGICAL_OPERATOR = int,
+    SPLIT_PENALTY_MATCHING_BRACKET = int,
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET = int,
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = int,
+    USE_TAB = _BoolConverter,
+    TAB_WIDTH = int,
+)
+
+
+def CreateStyleFromConfig(style_config):
+  """Create a style dict from the given config.
+
+  Arguments:
+    style_config: either a style name or a file name. The file is expected to
+    contain settings. It can have a special BASED_ON_STYLE setting naming the
+    style which it derives from. If no such setting is found, it derives from
+    the default style. When style_config is None, the DEFAULT_STYLE_FACTORY
+    config is created.
+  Returns:
+    A style dict.
+  """
+  if style_config is None:
+    return DEFAULT_STYLE_FACTORY()
+  style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
+  if style_factory is not None:
+    return style_factory()
+  # Unknown style name - assume a file path.
+  with open(style_config) as style_file:
+    config = py3compat.ConfigParser()
+    config.read_file(style_file)
+    if not config.has_section('style'):
+      raise RuntimeError('Unable to find section [style] in {0}'.format(
+          style_config))
+    # Initialize the base style.
+    if config.has_option('style', 'based_on_style'):
+      based_on = config.get('style', 'based_on_style').lower()
+      base_style = _STYLE_NAME_TO_FACTORY[based_on]()
+    else:
+      base_style = DEFAULT_STYLE_FACTORY()
+    # Read all options specified in the file and update the style.
+    for option, value in config.items('style'):
+      if option.lower() == 'based_on_style':
+        # Now skip this one - we've already handled it and it's not one of the
+        # recognized style options.
+        continue
+      option = option.upper()
+      base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
+    return base_style
+
+
+# The default style - used if yapf is not invoked without specifically
+# requesting a formatting style.
+DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
 
 # TODO(eliben): For now we're preserving the global presence of a style dict.
 # Refactor this so that the style is passed around through yapf rather than
 # being global.
 _style = {}
-SetGlobalStyle(CreatePEP8Style())
+SetGlobalStyle(DEFAULT_STYLE_FACTORY())
