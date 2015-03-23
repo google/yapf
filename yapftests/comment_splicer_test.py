@@ -13,7 +13,6 @@
 # limitations under the License.
 """Tests for yapf.comment_splicer."""
 
-import itertools
 import textwrap
 import unittest
 

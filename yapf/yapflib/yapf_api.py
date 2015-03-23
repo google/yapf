@@ -31,7 +31,6 @@ from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import reformatter
 from yapf.yapflib import split_penalty
-from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
