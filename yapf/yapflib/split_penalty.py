@@ -127,6 +127,13 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       self._SetStronglyConnected(node.children[0], node.children[-1])
     elif node.children[0].value == '[':
       self._SetStronglyConnected(node.children[-1])
+    elif len(node.children) == 2:
+      # Don't split an empty argument list if at all possible.
+      self._SetStronglyConnected(node.children[1])
+    elif len(node.children) == 3:
+      if pytree_utils.NodeName(node.children[1]) == 'NAME':
+        # Don't split an argument list with one element if at all possible.
+        self._SetStronglyConnected(node.children[1], node.children[2])
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
     # power: atom trailer* ['**' factor]
