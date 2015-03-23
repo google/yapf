@@ -48,8 +48,17 @@ def CreatePEP8Style():
       # Indent width for line continuations.
       CONTINUATION_INDENT_WIDTH=4,
 
-      # Insert a blank line after the start of a class and before a method.
-      NO_BLANK_LINE_AFTER_CLASS_OR_DEF=True,
+      # Insert a blank line before a 'def' or 'class' immediately nested within
+      # another 'def' or 'class'.
+      #
+      # For example:
+      #
+      # class Foo:
+      #                    # <------ this blank line
+      #   def method():
+      #     ...
+      #
+      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
 
       # The number of spaces required before a trailing comment.
       SPACES_BEFORE_COMMENT=1,
@@ -95,7 +104,7 @@ def CreateGoogleStyle():
   style = CreatePEP8Style()
   style['INDENT_WIDTH'] = 2
   style['SPACES_BEFORE_COMMENT'] = 2
-  style['NO_BLANK_LINE_AFTER_CLASS_OR_DEF'] = False
+  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['I18N_COMMENT'] = r'#\..*'
   style['I18N_FUNCTION_CALL'] = ['N_', '_']
   return style
@@ -131,7 +140,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     I18N_FUNCTION_CALL = _StringListConverter,
     INDENT_WIDTH = int,
     CONTINUATION_INDENT_WIDTH = int,
-    NO_BLANK_LINE_AFTER_CLASS_OR_DEF = _BoolConverter,
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF = _BoolConverter,
     SPACES_BEFORE_COMMENT = int,
     SPLIT_BEFORE_LOGICAL_OPERATOR = _BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS = _BoolConverter,

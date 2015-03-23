@@ -41,11 +41,12 @@ class UtilsTest(unittest.TestCase):
 
 def _LooksLikeGoogleStyle(cfg):
   return (cfg['INDENT_WIDTH'] == 2 and
-          not cfg['NO_BLANK_LINE_AFTER_CLASS_OR_DEF'])
+          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
 
 
 def _LooksLikePEP8Style(cfg):
-  return cfg['INDENT_WIDTH'] == 4 and cfg['NO_BLANK_LINE_AFTER_CLASS_OR_DEF']
+  return (cfg['INDENT_WIDTH'] == 4 and
+          not cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
   
 
 class PredefinedStylesByNameTest(unittest.TestCase):
