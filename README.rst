@@ -17,7 +17,11 @@ But it doesn't mean that the code looks good.
 YAPF takes a different approach. It's based off of 'clang-format', developed by
 Daniel Jasper. In essence, the algorithm takes the code and reformats it to the
 best formatting that conforms to the style guide, even if the original code
-didn't violate the style guide.
+didn't violate the style guide. The idea is also similar to the 'gotmt' tool for
+the Go programming language: end all holy wars about formatting - if the whole
+code base of a project is simply piped through YAPF whenever modifications are
+made, the style remains consistent throughout the project and there's no point
+arguing about style in every code review.
 
 The ultimate goal is that the code YAPF produces is as good as the code that a
 programmer would write if they were following the style guide.
@@ -38,11 +42,17 @@ To install YAPF from the source directory::
 
     $ sudo python ./setup.py install
 
+If you intend to use YAPF as a command-line tool rather than as a library,
+installation is not necessary. YAPF supports being run as a directory by the
+Python interpreter. If you cloned/unzipped yapf into ``DIR``, it's possible to
+run::
+
+    $ PYTHONPATH=DIR python DIR/yapf [options] ... 
+
 Usage
 =====
 
 Options::
-
 
     usage: yapf [-h] [--style STYLE] [-d | -i] [-l START-END | -r] ...
 
@@ -95,13 +105,11 @@ designed to come up with the best formatting possible. Existing tools were
 created with different goals in mind, and would require extensive modifications
 to convert to using clang-format's algorithm.
 
-
 Can I Use YAPF In My Program?
 =============================
 
 Please do! YAPF was designed to be used as a library as well as a command line
 tool. This means that a tool or IDE plugin is free to use YAPF.
-
 
 Gory Details
 ============
