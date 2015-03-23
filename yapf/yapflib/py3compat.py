@@ -56,4 +56,4 @@ def unicode(s):
   if PY3:
     return s
   else:
-    return __builtin__.unicode(s, "unicode_escape")
+    return __builtin__.unicode(s, 'unicode_escape')
