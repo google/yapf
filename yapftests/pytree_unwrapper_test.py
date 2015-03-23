@@ -367,12 +367,5 @@ class MatchBracketsTest(unittest.TestCase):
     ])
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(PytreeUnwrapperTest))
-  result.addTests(unittest.makeSuite(MatchBracketsTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

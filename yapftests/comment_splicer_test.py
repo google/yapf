@@ -302,11 +302,5 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(arith_expr.children[-1], '# com 3')
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(CommentSplicerTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

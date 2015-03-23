@@ -194,11 +194,5 @@ class SubtypeAssignerTest(unittest.TestCase):
     ])
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(SubtypeAssignerTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

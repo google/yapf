@@ -113,11 +113,5 @@ class PytreeVisitorTest(unittest.TestCase):
     self.assertIn("EQUAL(Leaf(22, '='))", dump_output)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(PytreeVisitorTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

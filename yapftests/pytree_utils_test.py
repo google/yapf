@@ -181,14 +181,5 @@ class AnnotationsTest(unittest.TestCase):
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._node, _FOO), 20)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(NodeNameTest))
-  result.addTests(unittest.makeSuite(ParseCodeToTreeTest))
-  result.addTests(unittest.makeSuite(InsertNodesBeforeAfterTest))
-  result.addTests(unittest.makeSuite(AnnotationsTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

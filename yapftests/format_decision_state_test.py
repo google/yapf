@@ -159,11 +159,5 @@ class FormatDecisionStateTest(unittest.TestCase):
     self.assertEqual(repr(state), repr(clone))
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(FormatDecisionStateTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

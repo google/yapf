@@ -142,13 +142,5 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(UtilsTest))
-  result.addTests(unittest.makeSuite(PredefinedStylesByNameTest))
-  result.addTests(unittest.makeSuite(StyleFromFileTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

@@ -268,11 +268,5 @@ def _ParseAndUnwrap(code, dumptree=False):
   return uwlines
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(BlankLineCalculatorTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()
