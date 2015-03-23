@@ -32,7 +32,7 @@ from yapf.yapflib import subtype_assigner
 class SingleLineReformatterTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(kls):
+  def setUpClass(cls):
     style.SetGlobalStyle(style.CreateGoogleStyle())
 
   def testSimple(self):
@@ -736,8 +736,22 @@ format_token.Subtype.NONE))
 class BuganizerFixes(unittest.TestCase):
 
   @classmethod
-  def setUpClass(kls):
+  def setUpClass(cls):
     style.SetGlobalStyle(style.CreateGoogleStyle())
+
+  def testB19547210(self):
+    code = textwrap.dedent("""\
+        while True:
+          if True:
+            if True:
+              if True:
+                if xxxxxxxxxxxx.yyyyyyy(aa).zzzzzzz() not in (
+                    xxxxxxxxxxxx.yyyyyyyyyyyyyy.zzzzzzzz,
+                    xxxxxxxxxxxx.yyyyyyyyyyyyyy.zzzzzzzz):
+                  continue
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
 
   def testB19377034(self):
     code = textwrap.dedent("""\
@@ -1211,7 +1225,7 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
 class TestsForPEP8Style(unittest.TestCase):
 
   @classmethod
-  def setUpClass(kls):
+  def setUpClass(cls):
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testIndent4(self):
@@ -1259,7 +1273,7 @@ class TestsForPython3Code(unittest.TestCase):
   """Test a few constructs that are new Python 3 syntax."""
 
   @classmethod
-  def setUpClass(kls):
+  def setUpClass(cls):
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testKeywordOnlyArgSpecifier(self):

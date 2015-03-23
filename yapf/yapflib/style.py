@@ -30,64 +30,64 @@ def SetGlobalStyle(style):
 def CreatePEP8Style():
   return dict(
       # The column limit.
-      COLUMN_LIMIT = 80,
+      COLUMN_LIMIT=80,
 
       # The regex for an i18n comment. The presence of this comment stops
       # reformatting of that line, because the comments are required to be
       # next to the string they translate.
-      I18N_COMMENT = '',
+      I18N_COMMENT='',
 
       # The i18n function call names. The presence of this function stops
       # reformattting on that line, because the string it has cannot be moved
       # away from the i18n comment.
-      I18N_FUNCTION_CALL = '',
+      I18N_FUNCTION_CALL='',
 
       # The number of columns to use for indentation.
-      INDENT_WIDTH = 4,
+      INDENT_WIDTH=4,
 
       # Indent width for line continuations.
-      CONTINUATION_INDENT_WIDTH = 4,
+      CONTINUATION_INDENT_WIDTH=4,
 
       # Insert a blank line after the start of a class and before a method.
-      NO_BLANK_LINE_AFTER_CLASS_OR_DEF = True,
+      NO_BLANK_LINE_AFTER_CLASS_OR_DEF=True,
 
       # The number of spaces required before a trailing comment.
-      SPACES_BEFORE_COMMENT = 1,
+      SPACES_BEFORE_COMMENT=1,
 
       # Set to True to prefer splitting before 'and' or 'or' rather than
       # after.
-      SPLIT_BEFORE_LOGICAL_OPERATOR = False,
+      SPLIT_BEFORE_LOGICAL_OPERATOR=False,
 
       # Split named assignments onto individual lines.
-      SPLIT_BEFORE_NAMED_ASSIGNS = True,
+      SPLIT_BEFORE_NAMED_ASSIGNS=True,
 
       # The penalty for splitting the line after a unary operator.
-      SPLIT_PENALTY_AFTER_UNARY_OPERATOR = 100,
+      SPLIT_PENALTY_AFTER_UNARY_OPERATOR=100,
 
       # The penalty for characters over the column limit.
-      SPLIT_PENALTY_EXCESS_CHARACTER = 200,
+      SPLIT_PENALTY_EXCESS_CHARACTER=200,
 
       # The penalty of splitting the line around the 'and' and 'or' operators.
-      SPLIT_PENALTY_LOGICAL_OPERATOR = 30,
+      SPLIT_PENALTY_LOGICAL_OPERATOR=30,
 
       # The penalty for not matching the splitting decision for the matching
       # bracket tokens. For instance, if there is a newline after the opening
       # bracket, we would tend to expect one before the closing bracket, and
       # vice versa.
-      SPLIT_PENALTY_MATCHING_BRACKET = 50,
+      SPLIT_PENALTY_MATCHING_BRACKET=50,
 
       # The penalty for splitting right after the opening bracket.
-      SPLIT_PENALTY_AFTER_OPENING_BRACKET = 30,
+      SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
 
       # The penalty incurred by adding a line split to the unwrapped line. The
       # more line splits added the higher the penalty.
-      SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = 30,
+      SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
 
       # Use tabs in the resulting file.
-      USE_TAB = False,
+      USE_TAB=False,
 
       # The number of columns used for tab stops.
-      TAB_WIDTH = 8,
+      TAB_WIDTH=8,
   )
 
 

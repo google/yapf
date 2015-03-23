@@ -47,6 +47,12 @@ def EncodeForStdout(s):
   The string may contain non-ascii characters. This is a problem when stdout is
   redirected, because then Python doesn't know the encoding and we may get a
   UnicodeEncodeError.
+
+  Arguments:
+    s: (string) The string to encode.
+
+  Returns:
+    The encoded string if Python 2.7.
   """
   if PY3:
     return s
@@ -59,7 +65,7 @@ def unicode(s):
   if PY3:
     return s
   else:
-    return __builtin__.unicode(s, "unicode_escape")
+    return __builtin__.unicode(s, 'unicode_escape')
 
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
