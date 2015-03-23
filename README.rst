@@ -43,7 +43,8 @@ Usage
 
 Options::
 
-    usage: __main__.py [-h] [-d | -i] [-l START-END | -r] ...
+
+    usage: yapf [-h] [--style STYLE] [-d | -i] [-l START-END | -r] ...
 
     Formatter for Python code.
 
@@ -52,6 +53,9 @@ Options::
 
     optional arguments:
       -h, --help            show this help message and exit
+      --style STYLE         specify formatting style: either a style name (for
+                            example "pep8" or "google"), or the name of a file
+                            with style settings
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -l START-END, --lines START-END
@@ -62,6 +66,26 @@ Note: after reformatting a chunk of code, YAPF verifies that it's correct (can
 be parsed by Python itself). This means that if you're reformatting Python 3
 code, it's best to run YAPF itself under Python 3. The same goes for Python 2.
 
+Formatting style
+----------------
+
+The formatting style used by YAPF is configurable and there are many "knobs"
+that can be used to tune how YAPF does formatting. See the ``style.py`` module
+for the full list.
+
+To control the style, run YAPF with the ``--style`` argument. It accepts either
+one of the predefined styles (currently "pep8" or "google"), or a path to a
+configuration file that specifies the desired style. The file is a simple
+listing of (case-insensitive) ``key = value`` pairs with a ``[style]`` heading.
+For example:
+
+    [style]
+    based_on_style = pep8
+    spaces_before_comment = 4
+    split_before_logical_operator = true
+
+The ``based_on_style`` setting determines which of the predefined styles this
+custom style is based on (think of it like subclassing).
 
 Why Not Improve Existing Tools?
 ===============================
