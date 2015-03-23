@@ -13,7 +13,18 @@
 # limitations under the License.
 """Python formatting style settings."""
 
+import os
+
 from yapf.yapflib import py3compat
+
+
+class Error(Exception):
+  pass
+
+
+class StyleConfigError(Error):
+  """Raised when there's a problem reading the style configuration."""
+  pass
 
 
 def Get(setting_name):
@@ -134,6 +145,8 @@ def _BoolConverter(s):
 # function that accepts the string read for the option's value from the file and
 # returns it wrapper in actual Python type that's going to be meaningful to
 # yapf.
+#
+# Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     COLUMN_LIMIT = int,
     I18N_COMMENT = str,
@@ -173,11 +186,15 @@ def CreateStyleFromConfig(style_config):
   if style_factory is not None:
     return style_factory()
   # Unknown style name - assume a file path.
+  if not os.path.exists(style_config):
+    # Provide a more meaningful error here.
+    raise StyleConfigError('"{0}" is not a valid style or file path'.format(
+        style_config))
   with open(style_config) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
     if not config.has_section('style'):
-      raise RuntimeError('Unable to find section [style] in {0}'.format(
+      raise StyleConfigError('Unable to find section [style] in {0}'.format(
           style_config))
     # Initialize the base style.
     if config.has_option('style', 'based_on_style'):
@@ -192,6 +209,8 @@ def CreateStyleFromConfig(style_config):
         # recognized style options.
         continue
       option = option.upper()
+      if not option in _STYLE_OPTION_VALUE_CONVERTER:
+        raise StyleConfigError('Unknown style option "{0}"'.format(option))
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     return base_style
 

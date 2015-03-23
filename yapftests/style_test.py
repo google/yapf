@@ -47,7 +47,7 @@ def _LooksLikeGoogleStyle(cfg):
 def _LooksLikePEP8Style(cfg):
   return (cfg['INDENT_WIDTH'] == 4 and
           not cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
-  
+
 
 class PredefinedStylesByNameTest(unittest.TestCase):
 
@@ -73,7 +73,7 @@ def _TempFileContents(dir, contents):
     f.write(contents)
     f.flush()
     yield f
-  
+
 
 class StyleFromFileTest(unittest.TestCase):
 
@@ -121,7 +121,7 @@ class StyleFromFileTest(unittest.TestCase):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
-        SPLIT_BEFORE_NAMED_ASSIGNS = False
+        SPLIT_BEFORE_NAMED_ASSIGNS=False
         split_before_logical_operator = true
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
@@ -140,6 +140,32 @@ class StyleFromFileTest(unittest.TestCase):
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
+
+  def test_ErrorNoStyleFile(self):
+    with self.assertRaisesRegexp(style.StyleConfigError,
+                                 'is not a valid style or file path'):
+      cfg = style.CreateStyleFromConfig('/8822/xyznosuchfile')
+
+  def test_ErrorNoStyleSection(self):
+    cfg = textwrap.dedent('''\
+        [s]
+        TAB_WIDTH=2
+        ''')
+    with _TempFileContents(self.test_tmpdir, cfg) as f:
+      with self.assertRaisesRegexp(style.StyleConfigError,
+                                   'Unable to find section'):
+        cfg = style.CreateStyleFromConfig(f.name)
+
+  def test_ErrorUnknownStyleOption(self):
+    cfg = textwrap.dedent('''\
+        [style]
+        TAB_WIDTH=2
+        hummus=2
+        ''')
+    with _TempFileContents(self.test_tmpdir, cfg) as f:
+      with self.assertRaisesRegexp(style.StyleConfigError,
+                                   'Unknown style option'):
+        cfg = style.CreateStyleFromConfig(f.name)
 
 
 def suite():
