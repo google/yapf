@@ -26,6 +26,8 @@ if PY3:
   range = range
   ifilter = filter
   raw_input = input
+
+  import configparser
 else:
   import __builtin__
   import cStringIO
@@ -35,6 +37,8 @@ else:
 
   from itertools import ifilter
   raw_input = raw_input
+
+  import ConfigParser as configparser
 
 
 def EncodeForStdout(s):
@@ -62,3 +66,12 @@ def unicode(s):
     return s
   else:
     return __builtin__.unicode(s, 'unicode_escape')
+
+
+# In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
+# exist in Python 2 yet. To avoid deprecation warnings, subclass ConfigParser to
+# fix this - now read_file works across all Python versions we care about.
+class ConfigParser(configparser.ConfigParser):
+  if not PY3:
+    def read_file(self, fp, source=None):
+      self.readfp(fp, filename=source)

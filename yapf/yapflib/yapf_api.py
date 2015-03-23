@@ -17,6 +17,18 @@ The main APIs that YAPF exposes to drive the reformatting.
 
   FormatFile(): reformat a file.
   FormatCode(): reformat a string of code.
+
+These APIs have some common arguments:
+
+  style_config: (string) Either a style name or a path to a file that contains
+    formatting style settings. If None is specified, use the default style
+    as set in style.DEFAULT_STYLE_FACTORY
+  lines: (list of tuples of integers) A list of tuples of lines, [start, end],
+    that we want to format. The lines are 1-based indexed. It can be used by
+    third-party code (e.g., IDEs) when reformatting a snippet of code rather
+    than a whole file.
+  print_diff: (bool) Instead of returning the reformatted source, return a
+    diff that turns the formatted source into reformatter source.
 """
 
 import difflib
@@ -31,19 +43,16 @@ from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import reformatter
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
-def FormatFile(filename, lines=None, print_diff=False):
+def FormatFile(filename, style_config=None, lines=None, print_diff=False):
   """Format a single Python file and return the formatted code.
 
   Arguments:
     filename: (unicode) The file to reformat.
-    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
-      that we want to format. The lines are 1-based indexed. This argument
-      overrides the 'FLAGS.lines'. It can be used by third-party code (e.g.,
-      IDEs) when reformatting a snippet of code.
-    print_diff: (bool) Print the diff for the fixed source.
+    style_config, lines, print_diff: see comment at the top of this module.
 
   Returns:
     The reformatted code or None if the file doesn't exist.
@@ -52,12 +61,12 @@ def FormatFile(filename, lines=None, print_diff=False):
   if original_source is None:
     return None
 
-  return FormatCode(original_source, filename=filename, lines=lines,
-                    print_diff=print_diff)
+  return FormatCode(original_source, style_config=style_config,
+                    filename=filename, lines=lines, print_diff=print_diff)
 
 
-def FormatCode(unformatted_source, filename='<unknown>', lines=None,
-               print_diff=False):
+def FormatCode(unformatted_source, filename='<unknown>', style_config=None,
+               lines=None, print_diff=False):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.
@@ -65,15 +74,12 @@ def FormatCode(unformatted_source, filename='<unknown>', lines=None,
   Arguments:
     unformatted_source: (unicode) The code to format.
     filename: (unicode) The name of the file being reformatted.
-    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
-      that we want to format. The lines are 1-based indexed. This argument
-      overrides the 'FLAGS.lines'. It can be used by third-party code (e.g.,
-      IDEs) when reformatting a snippet of code.
-    print_diff: (bool) Print the diff for the fixed source.
+    style_config, lines, print_diff: see comment at the top of this module.
 
   Returns:
     The code reformatted to conform to the desired formatting style.
   """
+  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
   tree = pytree_utils.ParseCodeToTree(unformatted_source)
 
   # Run passes on the tree, modifying it in place.

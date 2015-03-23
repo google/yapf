@@ -18,6 +18,7 @@ import unittest
 from yapftests import blank_line_calculator_test
 from yapftests import blank_line_calculator_test
 from yapftests import comment_splicer_test
+from yapftests import file_resources_test
 from yapftests import format_decision_state_test
 from yapftests import format_token_test
 from yapftests import line_joiner_test
@@ -26,6 +27,7 @@ from yapftests import pytree_utils_test
 from yapftests import pytree_visitor_test
 from yapftests import reformatter_test
 from yapftests import split_penalty_test
+from yapftests import style_test
 from yapftests import subtype_assigner_test
 from yapftests import unwrapped_line_test
 from yapftests import yapf_test
@@ -36,6 +38,7 @@ def suite():
   result.addTests(blank_line_calculator_test.suite())
   result.addTests(blank_line_calculator_test.suite())
   result.addTests(comment_splicer_test.suite())
+  result.addTests(file_resources_test.suite())
   result.addTests(format_decision_state_test.suite())
   result.addTests(format_token_test.suite())
   result.addTests(line_joiner_test.suite())
@@ -44,6 +47,7 @@ def suite():
   result.addTests(pytree_visitor_test.suite())
   result.addTests(reformatter_test.suite())
   result.addTests(split_penalty_test.suite())
+  result.addTests(style_test.suite())
   result.addTests(subtype_assigner_test.suite())
   result.addTests(unwrapped_line_test.suite())
   result.addTests(yapf_test.suite())

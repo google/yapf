@@ -37,11 +37,13 @@ def stdout_redirector(stream):
 
 class WriteReformattedCodeTest(unittest.TestCase):
 
-  def setUp(self):
-    self.test_tmpdir = tempfile.mkdtemp()
+  @classmethod
+  def setUpClass(cls):
+    cls.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
-    shutil.rmtree(self.test_tmpdir)
+  @classmethod
+  def tearDownClass(cls):
+    shutil.rmtree(cls.test_tmpdir)
 
   def testWriteToFile(self):
     s = u'foobar'
@@ -58,6 +60,12 @@ class WriteReformattedCodeTest(unittest.TestCase):
     with stdout_redirector(stream):
       file_resources.WriteReformattedCode(None, s, in_place=False)
     self.assertEqual(stream.getvalue(), s)
+
+
+def suite():
+  result = unittest.TestSuite()
+  result.addTests(unittest.makeSuite(WriteReformattedCodeTest))
+  return result
 
 
 if __name__ == '__main__':

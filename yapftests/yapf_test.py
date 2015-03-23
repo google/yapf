@@ -48,11 +48,13 @@ class YapfTest(unittest.TestCase):
 class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""
 
-  def setUp(self):
-    self.test_tmpdir = tempfile.mkdtemp()
+  @classmethod
+  def setUpClass(cls):
+    cls.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
-    shutil.rmtree(self.test_tmpdir)
+  @classmethod
+  def tearDownClass(cls):
+    shutil.rmtree(cls.test_tmpdir)
 
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -109,6 +111,53 @@ class CommandLineTest(unittest.TestCase):
         unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
+  def testSetGoogleStyle(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo(): # trail
+            x = 37 
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():  # trail
+          x = 37
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY + ['--style=Google'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
+  def testSetCustomStyleBasedOnGoogle(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo(): # trail
+            x = 37 
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():    # trail
+          x = 37
+        """)
+
+    with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
+      f.write(textwrap.dedent('''\
+          [style]
+          based_on_style = Google
+          SPACES_BEFORE_COMMENT = 4
+          '''))
+      f.flush()
+
+      p = subprocess.Popen(YAPF_BINARY + ['--style={0}'.format(f.name)],
+                           stdout=subprocess.PIPE,
+                           stdin=subprocess.PIPE,
+                           stderr=subprocess.STDOUT)
+      reformatted_code, stderrdata = p.communicate(
+          unformatted_code.encode('utf-8'))
+      self.assertIsNone(stderrdata)
+      self.assertEqual(reformatted_code.decode('utf-8'),
+                       expected_formatted_code)
 
   def testReadSingleLineCodeFromStdin(self):
     unformatted_code = textwrap.dedent(u"""\
