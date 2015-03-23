@@ -77,7 +77,7 @@ To control the style, run YAPF with the ``--style`` argument. It accepts either
 one of the predefined styles (currently "pep8" or "google"), or a path to a
 configuration file that specifies the desired style. The file is a simple
 listing of (case-insensitive) ``key = value`` pairs with a ``[style]`` heading.
-For example:
+For example::
 
     [style]
     based_on_style = pep8
