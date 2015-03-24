@@ -227,8 +227,8 @@ def _SpaceRequiredBetween(left, right):
   if _IsBinaryOperator(left) or _IsBinaryOperator(right):
     # Enforce spaces around binary operators.
     return True
-  if _IsUnaryOperator(left) and (right.is_name or right.is_number or
-                                 right.value == '('):
+  if (_IsUnaryOperator(left) and left.value != 'not' and
+      (right.is_name or right.is_number or right.value == '(')):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
     return False

@@ -732,6 +732,14 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSpaceAfterNotOperator(self):
+    code = textwrap.dedent("""\
+        if not (this and that):
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
