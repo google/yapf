@@ -30,7 +30,8 @@ class RunTests(Command):
     pass
 
   def run(self):
-    tests = unittest.TestSuite(yapftests.suite())
+    loader = unittest.TestLoader()
+    tests = loader.discover('yapftests', pattern='*_test.py', top_level_dir='.')
     runner = unittest.TextTestRunner()
     runner.run(tests)
 

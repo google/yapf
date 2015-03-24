@@ -108,12 +108,5 @@ class UnwrappedLineFormattingInformationTest(unittest.TestCase):
     self.assertEqual(lparen.split_penalty, split_penalty.UNBREAKABLE)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(UnwrappedLineBasicTest))
-  result.addTests(unittest.makeSuite(UnwrappedLineFormattingInformationTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

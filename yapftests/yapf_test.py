@@ -359,12 +359,5 @@ class CommandLineTest(unittest.TestCase):
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(YapfTest))
-  result.addTests(unittest.makeSuite(CommandLineTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

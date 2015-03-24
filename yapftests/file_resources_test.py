@@ -62,11 +62,5 @@ class WriteReformattedCodeTest(unittest.TestCase):
     self.assertEqual(stream.getvalue(), s)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(WriteReformattedCodeTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

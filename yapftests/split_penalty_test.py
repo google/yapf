@@ -252,11 +252,5 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', UNBREAKABLE)])
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(SplitPenaltyTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

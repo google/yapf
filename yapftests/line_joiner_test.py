@@ -85,11 +85,5 @@ class LineJoinerTest(unittest.TestCase):
     self._CheckLineJoining(code, join_lines=True)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(LineJoinerTest))
-  return result
-
-
 if __name__ == '__main__':
   unittest.main()

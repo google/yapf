@@ -32,11 +32,5 @@ class FormatTokenTest(unittest.TestCase):
     self.assertTrue(tok.is_comment)
 
 
-def suite():
-  result = unittest.TestSuite()
-  result.addTests(unittest.makeSuite(FormatTokenTest))
-  return result
-
-
 if __name__ == "__main__":
   unittest.main()
