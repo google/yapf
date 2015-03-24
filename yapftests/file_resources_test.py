@@ -27,12 +27,12 @@ from yapf.yapflib import py3compat
 
 @contextlib.contextmanager
 def stdout_redirector(stream):
-    old_stdout = sys.stdout
-    sys.stdout = stream
-    try:
-        yield
-    finally:
-        sys.stdout = old_stdout
+  old_stdout = sys.stdout
+  sys.stdout = stream
+  try:
+    yield
+  finally:
+    sys.stdout = old_stdout
 
 
 class WriteReformattedCodeTest(unittest.TestCase):
