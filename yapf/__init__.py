@@ -98,11 +98,13 @@ def main(argv):
         lines=lines))
     return 0
 
-  FormatFiles(files, lines, style_config=args.style, in_place=args.in_place)
+  FormatFiles(files, lines, style_config=args.style, in_place=args.in_place,
+              print_diff=args.diff)
   return 0
 
 
-def FormatFiles(filenames, lines, style_config=None, in_place=False):
+def FormatFiles(filenames, lines, style_config=None, in_place=False,
+                print_diff=False):
   """Format a list of files.
 
   Arguments:
@@ -113,11 +115,13 @@ def FormatFiles(filenames, lines, style_config=None, in_place=False):
       IDEs) when reformatting a snippet of code.
     style_config: (string) Style name or file path.
     in_place: (bool) Modify the files in place.
+    print_diff: (bool) Instead of returning the reformatted source, return a
+      diff that turns the formatted source into reformatter source.
   """
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     reformatted_code = yapf_api.FormatFile(
-        filename, style_config=style_config, lines=lines)
+        filename, style_config=style_config, lines=lines, print_diff=print_diff)
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place)
 
