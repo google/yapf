@@ -211,7 +211,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('a', STRONGLY_CONNECTED),
         ('in', STRONGLY_CONNECTED),
         ('foo', STRONGLY_CONNECTED),
-        ('if', None),
+        ('if', 0),
         ('a', STRONGLY_CONNECTED),
         ('.', UNBREAKABLE),
         ('x', STRONGLY_CONNECTED),
