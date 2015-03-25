@@ -38,16 +38,12 @@ Installation
 
 YAPF supports Python 2.7 and 3.4+.
 
-To install YAPF from the source directory::
-
-    $ sudo python ./setup.py install
-
 If you intend to use YAPF as a command-line tool rather than as a library,
 installation is not necessary. YAPF supports being run as a directory by the
 Python interpreter. If you cloned/unzipped yapf into ``DIR``, it's possible to
 run::
 
-    $ PYTHONPATH=DIR python DIR/yapf [options] ... 
+    $ PYTHONPATH=DIR python DIR/yapf [options] ...
 
 Usage
 =====
