@@ -19,12 +19,22 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
-UNBREAKABLE = 1000 * 1000
-STRONGLY_CONNECTED = 1000
-ARITHMETIC_EXPRESSION = 42
-
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
+UNBREAKABLE = 1000 * 1000
+STRONGLY_CONNECTED = 1000
+
+OR_TEST = 42
+AND_TEST = 142
+NOT_TEST = 242
+COMPARISON_EXPRESSION = 342
+STAR_EXPRESSION = 442
+EXPR_EXPRESSION = 542
+XOR_EXPRESSION = 642
+AND_EXPRESSION = 742
+SHIFT_EXPRESSION = 842
+ARITHMETIC_EXPRESSION = 942
+TERM_EXPRESSION = 1042
 
 
 def ComputeSplitPenalties(tree):
@@ -104,21 +114,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         # all possible.
         self._SetStronglyConnected(prev_child, child)
       prev_child = child
-
-  def Visit_comparison(self, node):  # pylint: disable=invalid-name
-    # comparison ::= expr (comp_op expr)*
-    self.DefaultNodeVisit(node)
-    self._SetArithmeticExpression(node)
-
-  def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
-    # arith_expr ::= term (('+'|'-') term)*
-    self.DefaultNodeVisit(node)
-    self._SetArithmeticExpression(node)
-
-  def Visit_term(self, node):  # pylint: disable=invalid-name
-    # term ::= factor (('*'|'/'|'%'|'//') factor)*
-    self.DefaultNodeVisit(node)
-    self._SetArithmeticExpression(node)
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
@@ -213,6 +208,61 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
+  def Visit_or_test(self, node):  # pylint: disable=invalid-name
+    # or_test ::= and_test ('or' and_test)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, OR_TEST)
+
+  def Visit_and_test(self, node):  # pylint: disable=invalid-name
+    # and_test ::= not_test ('and' not_test)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, AND_TEST)
+
+  def Visit_not_test(self, node):  # pylint: disable=invalid-name
+    # not_test ::= 'not' not_test | comparison
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, NOT_TEST)
+
+  def Visit_comparison(self, node):  # pylint: disable=invalid-name
+    # comparison ::= expr (comp_op expr)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, COMPARISON_EXPRESSION)
+
+  def Visit_star_expr(self, node):  # pylint: disable=invalid-name
+    # star_expr ::= '*' expr
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, STAR_EXPRESSION)
+
+  def Visit_expr(self, node):  # pylint: disable=invalid-name
+    # expr ::= xor_expr ('|' xor_expr)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, EXPR_EXPRESSION)
+
+  def Visit_xor_expr(self, node):  # pylint: disable=invalid-name
+    # xor_expr ::= and_expr ('^' and_expr)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, XOR_EXPRESSION)
+
+  def Visit_and_expr(self, node):  # pylint: disable=invalid-name
+    # and_expr ::= shift_expr ('&' shift_expr)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, AND_EXPRESSION)
+
+  def Visit_shift_expr(self, node):  # pylint: disable=invalid-name
+    # shift_expr ::= arith_expr ('<<'|'>>' arith_expr)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, SHIFT_EXPRESSION)
+
+  def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
+    # arith_expr ::= term (('+'|'-') term)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, ARITHMETIC_EXPRESSION)
+
+  def Visit_term(self, node):  # pylint: disable=invalid-name
+    # term ::= factor (('*'|'/'|'%'|'//') factor)*
+    self.DefaultNodeVisit(node)
+    self._SetExpressionPenalty(node, TERM_EXPRESSION)
+
   ############################################################################
   # Helper methods that set the annotations.
 
@@ -233,7 +283,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for i in py3compat.range(1, num_children):
       self._SetUnbreakable(node.children[i])
 
-  def _SetArithmeticExpression(self, node):
+  def _SetExpressionPenalty(self, node, penalty):
     """Set an ARITHMETIC_EXPRESSION penalty annotation children nodes."""
 
     def FirstChildNode(node):
@@ -246,13 +296,15 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         return
 
       if isinstance(node, pytree.Leaf):
+        if node.value in {'(', 'for', 'if'}:
+          return
         penalty_annotation = pytree_utils.GetNodeAnnotation(
             node, pytree_utils.Annotation.SPLIT_PENALTY,
             default=0)
-        if penalty_annotation < ARITHMETIC_EXPRESSION:
+        if penalty_annotation < penalty:
           pytree_utils.SetNodeAnnotation(node,
                                          pytree_utils.Annotation.SPLIT_PENALTY,
-                                         ARITHMETIC_EXPRESSION)
+                                         penalty)
       else:
         for child in node.children:
           RecArithmeticExpression(child, first_child_leaf)

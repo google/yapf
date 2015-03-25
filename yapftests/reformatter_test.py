@@ -606,8 +606,8 @@ format_token.Subtype.NONE))
 
           def g():
             while (xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                   xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
-                   'bbbbbbb'):
+                   xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
+                  ):
               pass
         ''')
     uwlines = _ParseAndUnwrap(code)
@@ -752,6 +752,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testExpressionPenalties(self):
+    code = textwrap.dedent("""\
+      def f():
+        if ((left.value == '(' and right.value == ')') or
+            (left.value == '[' and right.value == ']') or
+            (left.value == '{' and right.value == '}')):
+          return False
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
 
 class BuganizerFixes(unittest.TestCase):
 
@@ -876,8 +886,8 @@ class BuganizerFixes(unittest.TestCase):
 
           def Bar(self):
             aaaaa.bbbbbbb(ccc='ddddddddddddddd',
-                          eeee='ffffffffffffffffffffff-%s-%s' % (gggg,
-                                                                 int(time.time())),
+                          eeee='ffffffffffffffffffffff-%s-%s' %
+                          (gggg, int(time.time())),
                           hhhhhh={
                               'iiiiiiiiiii': iiiiiiiiiii,
                               'jjjj': jjjj.jjjjj(),
@@ -1077,8 +1087,9 @@ class BuganizerFixes(unittest.TestCase):
           bad_slice = map(math.sqrt,
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
           a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
-          bad_slice = ("I am a crazy, no good, string whats too long, etc." +
-                       " no really ")[:ARBITRARY_CONSTANT_A]
+          bad_slice = (
+              "I am a crazy, no good, string whats too long, etc." + " no really "
+          )[:ARBITRARY_CONSTANT_A]
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1094,8 +1105,8 @@ class BuganizerFixes(unittest.TestCase):
         if True:
           if True:
             if True:
-              print(("Return code was %d" + (", and the process timed out." if
-                                             did_time_out else ".")) % errorcode)
+              print(("Return code was %d" + (", and the process timed out."
+                                             if did_time_out else ".")) % errorcode)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
