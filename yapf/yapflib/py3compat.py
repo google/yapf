@@ -28,6 +28,10 @@ if PY3:
   raw_input = input
 
   import configparser
+
+  # Mappings from strings to booleans (such as '1' to True, 'false' to False, 
+  # etc.)
+  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser.BOOLEAN_STATES
 else:
   import __builtin__
   import cStringIO
@@ -39,6 +43,7 @@ else:
   raw_input = raw_input
 
   import ConfigParser as configparser
+  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states
 
 
 def EncodeForStdout(s):

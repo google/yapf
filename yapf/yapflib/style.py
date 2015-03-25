@@ -132,12 +132,10 @@ def _StringListConverter(s):
   return [part.strip() for part in s.split(',')]
 
 
+
 def _BoolConverter(s):
   """Option value converter for a boolean."""
-  # borrowed from configparser.
-  BOOLEAN_STATES = {'1': True, 'yes': True, 'true': True, 'on': True,
-                    '0': False, 'no': False, 'false': False, 'off': False}
-  return BOOLEAN_STATES[s.lower()]
+  return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
 
 
 # Different style options need to have their values interpreted differently when
