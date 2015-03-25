@@ -57,8 +57,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [ft.value
-                         for ft in uwl.tokens
+      filtered_values = [ft.value for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       actual.append((uwl.depth, filtered_values))
 
@@ -74,7 +73,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     self._CheckUnwrappedLines(uwlines, [
         (0, ['x', '=', '1']),
         (0, ['# a comment']),
-        (0, ['y', '=', '2'])])
+        (0, ['y', '=', '2'])])  # yapf: disable
 
   def testSimpleMultilineStatement(self):
     code = textwrap.dedent(r"""
@@ -83,7 +82,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
       """)
     uwlines = self._ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
-        (0, ['y', '=', '(', '1', '+', 'x', ')'])])
+        (0, ['y', '=', '(', '1', '+', 'x', ')'])])  # yapf: disable
 
   def testFileScopeWithInlineComment(self):
     code = textwrap.dedent(r"""
@@ -93,7 +92,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     uwlines = self._ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['x', '=', '1', '# a comment']),
-        (0, ['y', '=', '2'])])
+        (0, ['y', '=', '2'])])  # yapf: disable
 
   def testSimpleIf(self):
     code = textwrap.dedent(r"""
@@ -105,7 +104,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     self._CheckUnwrappedLines(uwlines, [
         (0, ['if', 'foo', ':']),
         (1, ['x', '=', '1']),
-        (1, ['y', '=', '2'])])
+        (1, ['y', '=', '2'])])  # yapf: disable
 
   def testSimpleIfWithComments(self):
     code = textwrap.dedent(r"""
@@ -119,7 +118,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (0, ['# c1']),
         (0, ['if', 'foo', ':', '# c2']),
         (1, ['x', '=', '1']),
-        (1, ['y', '=', '2'])])
+        (1, ['y', '=', '2'])])  # yapf: disable
 
   def testIfWithCommentsInside(self):
     code = textwrap.dedent(r"""
@@ -135,7 +134,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (1, ['# c1']),
         (1, ['x', '=', '1', '# c2']),
         (1, ['# c3']),
-        (1, ['y', '=', '2'])])
+        (1, ['y', '=', '2'])])  # yapf: disable
 
   def testIfElifElse(self):
     code = textwrap.dedent(r"""
@@ -155,7 +154,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (1, ['y', '=', '1']),
         (0, ['else', ':']),
         (1, ['# c3']),
-        (1, ['z', '=', '1'])])
+        (1, ['z', '=', '1'])])  # yapf: disable
 
   def testNestedCompoundTwoLevel(self):
     code = textwrap.dedent(r"""
@@ -173,7 +172,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (1, ['while', 't', ':']),
         (2, ['# c2']),
         (2, ['j', '=', '1']),
-        (1, ['k', '=', '1'])])
+        (1, ['k', '=', '1'])])  # yapf: disable
 
   def testSimpleWhile(self):
     code = textwrap.dedent(r"""
@@ -185,7 +184,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     self._CheckUnwrappedLines(uwlines, [
         (0, ['while', 'x', '>', '1', ':', '# c1']),
         (1, ['# c2']),
-        (1, ['x', '=', '1'])])
+        (1, ['x', '=', '1'])])  # yapf: disable
 
   def testSimpleTry(self):
     code = textwrap.dedent(r"""
@@ -211,7 +210,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (0, ['else', ':']),
         (1, ['pass']),
         (0, ['finally', ':']),
-        (1, ['pass'])])
+        (1, ['pass'])])  # yapf: disable
 
   def testSimpleFuncdef(self):
     code = textwrap.dedent(r"""
@@ -223,7 +222,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     self._CheckUnwrappedLines(uwlines, [
         (0, ['def', 'foo', '(', 'x', ')', ':', '# c1']),
         (1, ['# c2']),
-        (1, ['return', 'x'])])
+        (1, ['return', 'x'])])  # yapf: disable
 
   def testTwoFuncDefs(self):
     code = textwrap.dedent(r"""
@@ -242,7 +241,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (1, ['return', 'x']),
         (0, ['def', 'bar', '(', ')', ':', '# c3']),
         (1, ['# c4']),
-        (1, ['return', 'x'])])
+        (1, ['return', 'x'])])  # yapf: disable
 
   def testSimpleClassDef(self):
     code = textwrap.dedent(r"""
@@ -254,7 +253,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     self._CheckUnwrappedLines(uwlines, [
         (0, ['class', 'Klass', ':', '# c1']),
         (1, ['# c2']),
-        (1, ['p', '=', '1'])])
+        (1, ['p', '=', '1'])])  # yapf: disable
 
   def testSingleLineStmtInFunc(self):
     code = textwrap.dedent(r"""
@@ -263,7 +262,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     uwlines = self._ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['def', 'f', '(', ')', ':']),
-        (1, ['return', '37'])])
+        (1, ['return', '37'])])  # yapf: disable
 
   def testMultipleComments(self):
     code = textwrap.dedent(r"""
@@ -278,7 +277,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (0, ['# Comment #1']),
         (0, ['# Comment #2']),
         (0, ['def', 'f', '(', ')', ':']),
-        (1, ['pass'])])
+        (1, ['pass'])])  # yapf: disable
 
 
 class MatchBracketsTest(unittest.TestCase):
@@ -315,8 +314,7 @@ class MatchBracketsTest(unittest.TestCase):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [(ft, ft.matching_bracket)
-                         for ft in uwl.tokens
+      filtered_values = [(ft, ft.matching_bracket) for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
@@ -340,7 +338,7 @@ class MatchBracketsTest(unittest.TestCase):
     self._CheckMatchingBrackets(uwlines, [
         [(2, 24), (7, 15), (10, 14), (19, 23)],
         []
-    ])
+    ])  # yapf: disable
 
   def testDecorator(self):
     code = textwrap.dedent("""\
@@ -353,7 +351,7 @@ class MatchBracketsTest(unittest.TestCase):
         [(2, 3)],
         [(2, 8)],
         []
-    ])
+    ])  # yapf: disable
 
   def testClassDef(self):
     code = textwrap.dedent("""\
@@ -364,7 +362,7 @@ class MatchBracketsTest(unittest.TestCase):
     self._CheckMatchingBrackets(uwlines, [
         [(2, 8)],
         []
-    ])
+    ])  # yapf: disable
 
 
 if __name__ == '__main__':
