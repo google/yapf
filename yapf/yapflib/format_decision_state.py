@@ -268,7 +268,7 @@ class FormatDecisionState(object):
                 last.num_line_splits)
     if not must_split and current.value not in {'if', 'for'}:
       # Don't penalize for a must split or for splitting before an
-      # if-conditional or list comprehension.
+      # if-expression or list comprehension.
       last.num_line_splits += 1
 
     return penalty + 10
