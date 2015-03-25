@@ -61,12 +61,18 @@ def FormatFile(filename, style_config=None, lines=None, print_diff=False):
   if original_source is None:
     return None
 
-  return FormatCode(original_source, style_config=style_config,
-                    filename=filename, lines=lines, print_diff=print_diff)
+  return FormatCode(original_source,
+                    style_config=style_config,
+                    filename=filename,
+                    lines=lines,
+                    print_diff=print_diff)
 
 
-def FormatCode(unformatted_source, filename='<unknown>', style_config=None,
-               lines=None, print_diff=False):
+def FormatCode(unformatted_source,
+               filename='<unknown>',
+               style_config=None,
+               lines=None,
+               print_diff=False):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.
@@ -205,8 +211,8 @@ def _FormatLineSnippets(unformatted_source, uwlines, lines):
       if snippet[0].is_comment:
         if snippet[0].first.value.count('\n') == len(blank_lines):
           blank_lines = ''
-    reformatted_sources[(start, end)] = (
-        blank_lines + reformatter.Reformat(snippet).rstrip())
+    reformatted_sources[(start, end)] = (blank_lines +
+                                         reformatter.Reformat(snippet).rstrip())
 
   # Next we reconstruct the finalized lines inserting the reformatted lines at
   # the appropriate places.

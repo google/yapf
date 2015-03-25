@@ -89,10 +89,8 @@ def _EmitLineUnformatted(state):
   """
   prev_lineno = None
   while state.next_token:
-    newline = (
-        prev_lineno is not None and
-        state.next_token.lineno > state.next_token.previous_token.lineno
-    )
+    newline = (prev_lineno is not None and
+               state.next_token.lineno > state.next_token.previous_token.lineno)
     prev_lineno = state.next_token.lineno
     state.AddTokenToState(newline=newline, dry_run=False)
 
@@ -109,9 +107,9 @@ def _LineContainsI18n(uwline):
   Returns:
     True if the line contains i18n comments or function calls. False otherwise.
   """
-  if (style.Get('I18N_COMMENT') and
-      any(re.search(style.Get('I18N_COMMENT'), token.value)
-          for token in uwline.tokens)):
+  if (style.Get('I18N_COMMENT') and any(re.search(style.Get('I18N_COMMENT'),
+                                                  token.value)
+                                        for token in uwline.tokens)):
     # Contains an i18n comment.
     return True
 
@@ -390,8 +388,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
           return NO_BLANK_LINES
     elif prev_last_uwline.first.value in {'class', 'def'}:
       if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
-        pytree_utils.SetNodeAnnotation(
-            first_token.node, pytree_utils.Annotation.NEWLINES, None)
+        pytree_utils.SetNodeAnnotation(first_token.node,
+                                       pytree_utils.Annotation.NEWLINES, None)
         return NO_BLANK_LINES
 
   # Calculate how many newlines were between the original lines. We want to

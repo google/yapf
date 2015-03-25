@@ -69,9 +69,9 @@ def SpliceComments(tree):
             # result of the way pytrees are organized, this node can be under
             # an inappropriate parent.
             assert prev_leaf[0] is not None
-            pytree_utils.InsertNodesAfter(_CreateCommentsFromPrefix(
-                comment_prefix, comment_lineno,
-                standalone=False), prev_leaf[0])
+            pytree_utils.InsertNodesAfter(
+                _CreateCommentsFromPrefix(comment_prefix, comment_lineno,
+                                          standalone=False), prev_leaf[0])
           elif child.type == token.DEDENT:
             # Comment prefixes on DEDENT nodes also deserve special treatment,
             # because their final placement depends on their prefix.
@@ -111,10 +111,9 @@ def SpliceComments(tree):
                 # parent to insert into. See comments above
                 # _STANDALONE_LINE_NODES for more details.
                 node_with_line_parent = _FindNodeWithStandaloneLineParent(child)
-                pytree_utils.InsertNodesBefore(
-                    _CreateCommentsFromPrefix(
-                        comment_prefix, comment_lineno, standalone=True),
-                    node_with_line_parent)
+                pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno,
+                    standalone=True), node_with_line_parent)
                 break
               else:
                 if comment_lineno == prev_leaf[0].lineno:
@@ -191,10 +190,9 @@ def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, standalone=False):
 # line, not on the same line with other code), it's important to insert it into
 # an appropriate parent of the node it's attached to. An appropriate parent
 # is the first "standaline line node" in the parent chain of a node.
-_STANDALONE_LINE_NODES = frozenset(['suite', 'if_stmt', 'while_stmt',
-                                    'for_stmt', 'try_stmt', 'with_stmt',
-                                    'funcdef', 'classdef', 'decorated',
-                                    'file_input'])
+_STANDALONE_LINE_NODES = frozenset(
+    ['suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
+     'funcdef', 'classdef', 'decorated', 'file_input'])
 
 
 def _FindNodeWithStandaloneLineParent(node):

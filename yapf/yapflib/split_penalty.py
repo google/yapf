@@ -143,10 +143,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # relax some of the formatting restrictions.
     surrounded_by_parens = (
         node.parent and pytree_utils.NodeName(node.parent) == 'atom' and
-        isinstance(node.parent.children[0], pytree.Leaf) and
-        node.parent.children[0].value == '(' and
-        isinstance(node.parent.children[-1], pytree.Leaf) and
-        node.parent.children[-1].value == ')')
+        isinstance(node.parent.children[0],
+                   pytree.Leaf) and node.parent.children[0].value == '(' and
+        isinstance(node.parent.children[-1],
+                   pytree.Leaf) and node.parent.children[-1].value == ')')
 
     # When atom is followed by a trailer, we can not break between them.
     # E.g. arr[idx] - no break allowed between 'arr' and '['.
@@ -247,11 +247,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
       if isinstance(node, pytree.Leaf):
         penalty_annotation = pytree_utils.GetNodeAnnotation(
-            node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
+            node, pytree_utils.Annotation.SPLIT_PENALTY,
+            default=0)
         if penalty_annotation < ARITHMETIC_EXPRESSION:
-          pytree_utils.SetNodeAnnotation(
-              node,
-              pytree_utils.Annotation.SPLIT_PENALTY, ARITHMETIC_EXPRESSION)
+          pytree_utils.SetNodeAnnotation(node,
+                                         pytree_utils.Annotation.SPLIT_PENALTY,
+                                         ARITHMETIC_EXPRESSION)
       else:
         for child in node.children:
           RecArithmeticExpression(child, first_child_leaf)
@@ -272,8 +273,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for child in tree.children:
       self._RecAnnotate(child, annotate_name, annotate_value)
     if isinstance(tree, pytree.Leaf):
-      cur_annotate = pytree_utils.GetNodeAnnotation(tree,
-                                                    annotate_name,
+      cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name,
                                                     default=0)
       if cur_annotate < annotate_value:
         pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
