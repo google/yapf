@@ -187,17 +187,32 @@ def CreateStyleFromConfig(style_config):
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
     return style_factory()
-  # Unknown style name - assume a file path.
-  if not os.path.exists(style_config):
+  # Unknown config name: assume it's a file name then.
+  return _CreateStyleFormConfigFile(style_config)
+
+
+def _CreateStyleFormConfigFile(config_filename):
+  """Create a style dict from a configuration file.
+
+  Arguments:
+    config_filename: name of a config file.
+
+  Returns:
+    A style dict.
+
+  Raises:
+    StyleConfigError: if an unknown style option was encountered.
+  """
+  if not os.path.exists(config_filename):
     # Provide a more meaningful error here.
     raise StyleConfigError('"{0}" is not a valid style or file path'.format(
-        style_config))
-  with open(style_config) as style_file:
+        config_filename))
+  with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
     if not config.has_section('style'):
       raise StyleConfigError('Unable to find section [style] in {0}'.format(
-          style_config))
+          config_filename))
     # Initialize the base style.
     if config.has_option('style', 'based_on_style'):
       based_on = config.get('style', 'based_on_style').lower()
@@ -215,6 +230,7 @@ def CreateStyleFromConfig(style_config):
         raise StyleConfigError('Unknown style option "{0}"'.format(option))
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     return base_style
+  
 
 
 # The default style - used if yapf is not invoked without specifically
