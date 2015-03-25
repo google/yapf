@@ -99,7 +99,7 @@ def FormatCode(unformatted_source, filename='<unknown>', style_config=None,
   if lines is not None:
     reformatted_source = _FormatLineSnippets(unformatted_source, uwlines, lines)
   else:
-    lines = _LinesToSkip(uwlines)
+    lines = _LinesToFormat(uwlines)
     if lines:
       reformatted_source = _FormatLineSnippets(unformatted_source, uwlines,
                                                lines)
@@ -149,7 +149,7 @@ DISABLE_PATTERN = r'^#+ +yapf: *disable$'
 ENABLE_PATTERN = r'^#+ +yapf: *enable$'
 
 
-def _LinesToSkip(uwlines):
+def _LinesToFormat(uwlines):
   """Skip sections of code that we shouldn't reformat."""
   start = 1
   lines = []
@@ -198,7 +198,15 @@ def _FormatLineSnippets(unformatted_source, uwlines, lines):
           index += 1
         break
       index += 1
-    reformatted_sources[(start, end)] = reformatter.Reformat(snippet).rstrip()
+    # Make sure to re-add preceding blank lines to the code snippet.
+    blank_lines = ''
+    if snippet:
+      blank_lines = '\n' * (snippet[0].lineno - start)
+      if snippet[0].is_comment:
+        if snippet[0].first.value.count('\n') == len(blank_lines):
+          blank_lines = ''
+    reformatted_sources[(start, end)] = (
+        blank_lines + reformatter.Reformat(snippet).rstrip())
 
   # Next we reconstruct the finalized lines inserting the reformatted lines at
   # the appropriate places.
