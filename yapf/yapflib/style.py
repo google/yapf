@@ -122,8 +122,8 @@ def CreateGoogleStyle():
 
 
 _STYLE_NAME_TO_FACTORY = dict(
-    pep8 = CreatePEP8Style,
-    google = CreateGoogleStyle,
+    pep8=CreatePEP8Style,
+    google=CreateGoogleStyle,
 )
 
 
@@ -148,23 +148,23 @@ def _BoolConverter(s):
 #
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
-    COLUMN_LIMIT = int,
-    I18N_COMMENT = str,
-    I18N_FUNCTION_CALL = _StringListConverter,
-    INDENT_WIDTH = int,
-    CONTINUATION_INDENT_WIDTH = int,
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF = _BoolConverter,
-    SPACES_BEFORE_COMMENT = int,
-    SPLIT_BEFORE_LOGICAL_OPERATOR = _BoolConverter,
-    SPLIT_BEFORE_NAMED_ASSIGNS = _BoolConverter,
-    SPLIT_PENALTY_AFTER_UNARY_OPERATOR = int,
-    SPLIT_PENALTY_EXCESS_CHARACTER = int,
-    SPLIT_PENALTY_LOGICAL_OPERATOR = int,
-    SPLIT_PENALTY_MATCHING_BRACKET = int,
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET = int,
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = int,
-    USE_TAB = _BoolConverter,
-    TAB_WIDTH = int,
+    COLUMN_LIMIT=int,
+    I18N_COMMENT=str,
+    I18N_FUNCTION_CALL=_StringListConverter,
+    INDENT_WIDTH=int,
+    CONTINUATION_INDENT_WIDTH=int,
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
+    SPACES_BEFORE_COMMENT=int,
+    SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
+    SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
+    SPLIT_PENALTY_EXCESS_CHARACTER=int,
+    SPLIT_PENALTY_LOGICAL_OPERATOR=int,
+    SPLIT_PENALTY_MATCHING_BRACKET=int,
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
+    USE_TAB=_BoolConverter,
+    TAB_WIDTH=int,
 )
 
 
@@ -173,12 +173,16 @@ def CreateStyleFromConfig(style_config):
 
   Arguments:
     style_config: either a style name or a file name. The file is expected to
-    contain settings. It can have a special BASED_ON_STYLE setting naming the
-    style which it derives from. If no such setting is found, it derives from
-    the default style. When style_config is None, the DEFAULT_STYLE_FACTORY
-    config is created.
+      contain settings. It can have a special BASED_ON_STYLE setting naming the
+      style which it derives from. If no such setting is found, it derives from
+      the default style. When style_config is None, the DEFAULT_STYLE_FACTORY
+      config is created.
+
   Returns:
     A style dict.
+
+  Raises:
+    StyleConfigError: if an unknown style option was encountered.
   """
   if style_config is None:
     return DEFAULT_STYLE_FACTORY()
@@ -209,7 +213,7 @@ def CreateStyleFromConfig(style_config):
         # recognized style options.
         continue
       option = option.upper()
-      if not option in _STYLE_OPTION_VALUE_CONVERTER:
+      if option not in _STYLE_OPTION_VALUE_CONVERTER:
         raise StyleConfigError('Unknown style option "{0}"'.format(option))
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     return base_style
