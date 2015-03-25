@@ -740,6 +740,18 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testNoPenaltySplitting(self):
+    code = textwrap.dedent("""\
+        def f():
+          if True:
+            if True:
+              python_files.extend(os.path.join(filename, f)
+                                  for f in os.listdir(filename)
+                                  if IsPythonFile(os.path.join(filename, f)))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
