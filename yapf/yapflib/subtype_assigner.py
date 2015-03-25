@@ -59,10 +59,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # dictsetmaker ::= (test ':' test (comp_for |
     #                                   (',' test ':' test)* [','])) |
     #                  (test (comp_for | (',' test)* [',']))
-    dict_maker = (
-        len(node.children) > 1 and isinstance(node.children[1], pytree.Leaf) and
-        node.children[1].value == ':'
-    )
+    dict_maker = (len(node.children) > 1 and isinstance(
+        node.children[1], pytree.Leaf) and node.children[1].value == ':')
     last_was_comma = False
     for child in node.children:
       self.Visit(child)
@@ -225,15 +223,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf):
-        self._SetTokenSubtype(
-            child,
-            subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
-                                                  format_token.Subtype.NONE))
+        self._SetTokenSubtype(child,
+                              subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
+                                  child.value, format_token.Subtype.NONE))
 
   def _SetTokenSubtype(self, node, subtype):
     """Set the token's subtype only if it's not already set."""
-    if not pytree_utils.GetNodeAnnotation(node,
-                                          pytree_utils.Annotation.SUBTYPE):
+    if not pytree_utils.GetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE):
       pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                      subtype)
 

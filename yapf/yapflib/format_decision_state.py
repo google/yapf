@@ -85,9 +85,8 @@ class FormatDecisionState(object):
     # Note: 'first_indent' is implicit in the stack. Also, we ignore 'previous',
     # because it shouldn't have a bearing on this comparison. (I.e., it will
     # report equal if 'next_token' does.)
-    return (self.next_token == other.next_token and
-            self.column == other.column and
-            self.paren_level == other.paren_level and
+    return (self.next_token == other.next_token and self.column == other.column
+            and self.paren_level == other.paren_level and
             self.start_of_line_level == other.start_of_line_level and
             self.lowest_level_on_line == other.lowest_level_on_line and
             (self.ignore_stack_for_comparison or
@@ -148,8 +147,7 @@ class FormatDecisionState(object):
         return True
 
       if (next_token and previous_token.value != '(' and
-          next_token.subtype ==
-          format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN and
+          next_token.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN and
           next_token.node_split_penalty < split_penalty.UNBREAKABLE):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
@@ -171,8 +169,9 @@ class FormatDecisionState(object):
       The penalty of splitting after the current token.
     """
     if not self.stack:
-      self.column = (self.next_token.spaces_required_before +
-                     len(self.next_token.value))
+      self.column = (
+          self.next_token.spaces_required_before + len(self.next_token.value)
+      )
       self.next_token = self.next_token.next_token
       return 0
 
@@ -211,7 +210,8 @@ class FormatDecisionState(object):
         self.stack[-1].indent = self.column + spaces
       else:
         self.stack[-1].closing_scope_indent = (
-            self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+            self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH')
+        )
 
     self.column += spaces
 
@@ -255,8 +255,8 @@ class FormatDecisionState(object):
         (previous.is_comment and previous.previous_token is not None and
          previous.previous_token.OpensScope())):
       self.stack[-1].closing_scope_indent = (
-          max(0,
-              self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH')))
+          max(0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+      )
       self.stack[-1].split_before_closing_bracket = True
 
     # Calculate the split penalty.
@@ -264,8 +264,9 @@ class FormatDecisionState(object):
 
     # Add a penalty for each increasing newline we add.
     last = self.stack[-1]
-    penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
-                last.num_line_splits)
+    penalty += (
+        style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') * last.num_line_splits
+    )
     if not must_split and current.value not in {'if', 'for'}:
       # Don't penalize for a must split or for splitting before an
       # if-expression or list comprehension.

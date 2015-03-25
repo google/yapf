@@ -211,8 +211,9 @@ def _FormatLineSnippets(unformatted_source, uwlines, lines):
       if snippet[0].is_comment:
         if snippet[0].first.value.count('\n') == len(blank_lines):
           blank_lines = ''
-    reformatted_sources[(start, end)] = (blank_lines +
-                                         reformatter.Reformat(snippet).rstrip())
+    reformatted_sources[(start, end)] = (
+        blank_lines + reformatter.Reformat(snippet).rstrip()
+    )
 
   # Next we reconstruct the finalized lines inserting the reformatted lines at
   # the appropriate places.

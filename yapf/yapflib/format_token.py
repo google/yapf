@@ -103,20 +103,23 @@ class FormatToken(object):
       spaces: (int) The number of spaces to place before the token.
       indent_level: (int) The indentation level.
     """
-    spaces_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
-                     ' ' * spaces)
+    spaces_before = (
+        ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces
+    )
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
       self._node.value = ('\n' + spaces_before).join(comment_lines)
 
-    self.whitespace_prefix = ('\n' * (self.newlines or newlines_before) +
-                              spaces_before)
+    self.whitespace_prefix = (
+        '\n' * (self.newlines or newlines_before) + spaces_before
+    )
 
   def AdjustNewlinesBefore(self, newlines_before):
     """Change the number of newlines before this token."""
-    self.whitespace_prefix = ('\n' * newlines_before +
-                              self.whitespace_prefix.lstrip('\n'))
+    self.whitespace_prefix = (
+        '\n' * newlines_before + self.whitespace_prefix.lstrip('\n')
+    )
 
   def OpensScope(self):
     return self.value in pytree_utils.OPENING_BRACKETS

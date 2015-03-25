@@ -79,8 +79,9 @@ class UnwrappedLine(object):
       token.can_break_before = (token.must_break_before or
                                 _CanBreakBefore(prev_token, token))
 
-      token.total_length = (prev_length + len(token.value) +
-                            token.spaces_required_before)
+      token.total_length = (
+          prev_length + len(token.value) + token.spaces_required_before
+      )
 
       prev_length = token.total_length
       prev_token = token
