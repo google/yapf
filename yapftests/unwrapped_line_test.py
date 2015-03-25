@@ -46,8 +46,7 @@ class UnwrappedLineBasicTest(unittest.TestCase):
     self.assertEqual(['DOT', 'VBAR'], [tok.name for tok in uwl.tokens])
 
   def testFirstLast(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.'),
-                                 (token.LPAR, '('),
+    toks = _MakeFormatTokenList([(token.DOT, '.'), (token.LPAR, '('),
                                  (token.VBAR, '|')])
     uwl = unwrapped_line.UnwrappedLine(20, toks)
     self.assertEqual(20, uwl.depth)
@@ -55,8 +54,7 @@ class UnwrappedLineBasicTest(unittest.TestCase):
     self.assertEqual('VBAR', uwl.last.name)
 
   def testAsCode(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.'),
-                                 (token.LPAR, '('),
+    toks = _MakeFormatTokenList([(token.DOT, '.'), (token.LPAR, '('),
                                  (token.VBAR, '|')])
     uwl = unwrapped_line.UnwrappedLine(2, toks)
     self.assertEqual('    . ( |', uwl.AsCode())

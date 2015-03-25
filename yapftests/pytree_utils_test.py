@@ -63,8 +63,7 @@ class ParseCodeToTreeTest(unittest.TestCase):
     self.assertEqual('simple_stmt', pytree_utils.NodeName(tree.children[0]))
 
   def testPrintStatementToTree(self):
-    tree = pytree_utils.ParseCodeToTree(
-        'print "hello world"\n')
+    tree = pytree_utils.ParseCodeToTree('print "hello world"\n')
     self.assertEqual('file_input', pytree_utils.NodeName(tree))
     self.assertEqual(2, len(tree.children))
     self.assertEqual('simple_stmt', pytree_utils.NodeName(tree.children[0]))
@@ -86,8 +85,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
     lpar2 = pytree.Leaf(token.LPAR, '(')
     simple_stmt = pytree.Node(_GRAMMAR_SYMBOL2NUMBER['simple_stmt'],
                               [pytree.Leaf(token.NAME, 'foo')])
-    return pytree.Node(_GRAMMAR_SYMBOL2NUMBER['suite'],
-                       [lpar1, lpar2, simple_stmt])
+    return pytree.Node(_GRAMMAR_SYMBOL2NUMBER['suite'], [lpar1, lpar2,
+                                                         simple_stmt])
 
   def _MakeNewNodeRPAR(self):
     return pytree.Leaf(token.RPAR, ')')
@@ -97,8 +96,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
 
   def testInsertNodesBefore(self):
     # Insert before simple_stmt and make sure it went to the right place
-    pytree_utils.InsertNodesBefore(
-        [self._MakeNewNodeRPAR()], self._simple_tree.children[2])
+    pytree_utils.InsertNodesBefore([self._MakeNewNodeRPAR()],
+                                   self._simple_tree.children[2])
     self.assertEqual(4, len(self._simple_tree.children))
     self.assertEqual('RPAR',
                      pytree_utils.NodeName(self._simple_tree.children[2]))
@@ -138,8 +137,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
   def testInsertNodesWhichHasParent(self):
     # Try to insert an existing tree node into another place and fail.
     with self.assertRaises(RuntimeError):
-      pytree_utils.InsertNodesAfter(
-          [self._simple_tree.children[1]], self._simple_tree.children[0])
+      pytree_utils.InsertNodesAfter([self._simple_tree.children[1]],
+                                    self._simple_tree.children[0])
 
 
 class AnnotationsTest(unittest.TestCase):

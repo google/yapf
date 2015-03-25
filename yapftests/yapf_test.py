@@ -37,7 +37,6 @@ class YapfTest(unittest.TestCase):
     formatted_code = yapf_api.FormatCode(unformatted_code)
     self.assertEqual(expected_formatted_code, formatted_code)
 
-
   def testSimple(self):
     unformatted_code = textwrap.dedent(u"""\
         print('foo')

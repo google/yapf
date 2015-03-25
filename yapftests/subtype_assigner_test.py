@@ -57,8 +57,7 @@ class SubtypeAssignerTest(unittest.TestCase):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [(ft.value, ft.subtype)
-                         for ft in uwl.tokens
+      filtered_values = [(ft.value, ft.subtype) for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
@@ -94,7 +93,7 @@ class SubtypeAssignerTest(unittest.TestCase):
          (':', format_token.Subtype.SUBSCRIPT_COLON),
          ('42', format_token.Subtype.NONE),
          (']', format_token.Subtype.NONE)]
-    ])
+    ])  # yapf: disable
 
   def testFuncCallWithDefaultAssign(self):
     code = textwrap.dedent(r"""
@@ -110,7 +109,7 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('=', format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN),
          ("'hello world'", format_token.Subtype.NONE),
          (')', format_token.Subtype.NONE)]
-    ])
+    ])  # yapf: disable
 
   def testSetComprehension(self):
     code = textwrap.dedent("""\
@@ -138,7 +137,7 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('in', format_token.Subtype.NONE),
          ('strs', format_token.Subtype.NONE),
          ('}', format_token.Subtype.NONE)]
-    ])
+    ])  # yapf: disable
 
   def testUnaryNotOperator(self):
     code = textwrap.dedent("""\
@@ -148,7 +147,7 @@ class SubtypeAssignerTest(unittest.TestCase):
     self._CheckFormatTokenSubtypes(uwlines, [
         [('not', format_token.Subtype.UNARY_OPERATOR),
          ('a', format_token.Subtype.NONE)]
-    ])
+    ])  # yapf: disable
 
   def testBitwiseOperators(self):
     code = textwrap.dedent("""\
@@ -175,7 +174,7 @@ class SubtypeAssignerTest(unittest.TestCase):
          (')', format_token.Subtype.NONE),
          ('>>', format_token.Subtype.BINARY_OPERATOR),
          ('1', format_token.Subtype.NONE)]
-    ])
+    ])  # yapf: disable
 
   def testSubscriptColon(self):
     code = textwrap.dedent("""\
@@ -191,7 +190,7 @@ class SubtypeAssignerTest(unittest.TestCase):
          (':', format_token.Subtype.SUBSCRIPT_COLON),
          ('1', format_token.Subtype.NONE),
          (']', format_token.Subtype.NONE)]
-    ])
+    ])  # yapf: disable
 
 
 if __name__ == '__main__':

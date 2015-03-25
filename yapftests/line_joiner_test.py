@@ -48,8 +48,7 @@ class LineJoinerTest(unittest.TestCase):
       join_lines: True if we expect the lines to be joined.
     """
     uwlines = self._ParseAndUnwrap(code)
-    self.assertEqual(line_joiner.CanMergeMultipleLines(uwlines),
-                     join_lines)
+    self.assertEqual(line_joiner.CanMergeMultipleLines(uwlines), join_lines)
 
   def testSimpleSingleLineStatement(self):
     code = textwrap.dedent(u"""\

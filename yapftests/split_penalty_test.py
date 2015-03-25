@@ -54,14 +54,13 @@ class SplitPenaltyTest(unittest.TestCase):
       list_of_expected: list of (name, penalty) pairs. Non-semantic tokens are
         filtered out from the expected values.
     """
+
     def FlattenRec(tree):
       if pytree_utils.NodeName(tree) in pytree_utils.NONSEMANTIC_TOKENS:
         return []
       if isinstance(tree, pytree.Leaf):
-        return [(tree.value,
-                 pytree_utils.GetNodeAnnotation(
-                     tree,
-                     pytree_utils.Annotation.SPLIT_PENALTY))]
+        return [(tree.value, pytree_utils.GetNodeAnnotation(
+            tree, pytree_utils.Annotation.SPLIT_PENALTY))]
       nodes = []
       for node in tree.children:
         nodes += FlattenRec(node)
@@ -84,7 +83,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', None),
         (':', UNBREAKABLE),
         ('pass', None),
-    ])
+    ])  # yapf: disable
 
     # Test function definition with trailing comment.
     code = textwrap.dedent(r"""
@@ -100,7 +99,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', None),
         (':', UNBREAKABLE),
         ('pass', None),
-    ])
+    ])  # yapf: disable
 
     # Test class definitions.
     code = textwrap.dedent(r"""
@@ -122,7 +121,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', None),
         (':', UNBREAKABLE),
         ('pass', None),
-    ])
+    ])  # yapf: disable
 
     # Test lambda definitions.
     code = textwrap.dedent(r"""
@@ -136,7 +135,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('b', UNBREAKABLE),
         (':', UNBREAKABLE),
         ('None', None),
-    ])
+    ])  # yapf: disable
 
     # Test dotted names.
     code = textwrap.dedent(r"""
@@ -150,7 +149,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('b', UNBREAKABLE),
         ('.', UNBREAKABLE),
         ('c', UNBREAKABLE),
-    ])
+    ])  # yapf: disable
 
   def testStronglyConnected(self):
     # Test dictionary keys.
@@ -178,7 +177,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('37', None),
         (',', None),
         ('}', None),
-    ])
+    ])  # yapf: disable
 
     # Test subscripts.
     code = textwrap.dedent(r"""
@@ -198,7 +197,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('-', STRONGLY_CONNECTED),
         ('1', STRONGLY_CONNECTED),
         (']', STRONGLY_CONNECTED),
-    ])
+    ])  # yapf: disable
 
     # Test list comprehension.
     code = textwrap.dedent(r"""
@@ -219,7 +218,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
         (']', None),
-    ])
+    ])  # yapf: disable
 
   def testFuncCalls(self):
     code = 'foo(1, 2, 3)\n'
@@ -232,7 +231,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('2', None),
         (',', None),
         ('3', None),
-        (')', UNBREAKABLE)])
+        (')', UNBREAKABLE)])  # yapf: disable
 
     # Now a method call, which has more than one trailer
     code = 'foo.bar.baz(1, 2, 3)\n'
@@ -249,7 +248,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('2', None),
         (',', None),
         ('3', None),
-        (')', UNBREAKABLE)])
+        (')', UNBREAKABLE)])  # yapf: disable
 
 
 if __name__ == '__main__':
