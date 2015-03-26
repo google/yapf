@@ -304,8 +304,9 @@ def _MustBreakBefore(prev_token, cur_token):
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
     return True
-  # TODO(morbo): There may be more to add here.
-  return False
+  return pytree_utils.GetNodeAnnotation(cur_token.node,
+                                        pytree_utils.Annotation.MUST_SPLIT,
+                                        default=False)
 
 
 def _CanBreakBefore(prev_token, cur_token):

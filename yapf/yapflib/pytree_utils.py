@@ -44,6 +44,7 @@ class Annotation(object):
   """Annotation names associated with pytrees."""
   CHILD_INDENT = 'child_indent'
   NEWLINES = 'newlines'
+  MUST_SPLIT = 'must_split'
   SPLIT_PENALTY = 'split_penalty'
   SUBTYPE = 'subtype'
 

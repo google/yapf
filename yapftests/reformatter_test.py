@@ -795,6 +795,27 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSplitListWithTerminatingComma(self):
+    unformatted_code = textwrap.dedent("""\
+        FOO = ['bar', 'baz', 'mux', 'qux', 'quux', 'quuux', 'quuuux',
+          'quuuuux', 'quuuuuux', 'quuuuuuux', lambda a, b: 37,]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        FOO = ['bar',
+               'baz',
+               'mux',
+               'qux',
+               'quux',
+               'quuux',
+               'quuuux',
+               'quuuuux',
+               'quuuuuux',
+               'quuuuuuux',
+               lambda a, b: 37,]
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 

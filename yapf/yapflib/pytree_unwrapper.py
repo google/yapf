@@ -28,6 +28,7 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 
 # The word "token" is overloaded within this module, so for clarity rename
 # the imported pgen2.token module.
+from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 
 from yapf.yapflib import pytree_utils
@@ -194,6 +195,14 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
     self._cur_depth -= 1
 
+  def Visit_listmaker(self, node):  # pylint: disable=invalid-name
+    _DetermineMustSplitAnnotation(node)
+    self.DefaultNodeVisit(node)
+
+  def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
+    _DetermineMustSplitAnnotation(node)
+    self.DefaultNodeVisit(node)
+
   def DefaultLeafVisit(self, leaf):
     """Default visitor for tree leaves.
 
@@ -251,3 +260,34 @@ def _AdjustSplitPenalty(uwline):
       bracket_level += 1
     elif token.value in pytree_utils.CLOSING_BRACKETS:
       bracket_level -= 1
+
+
+def _DetermineMustSplitAnnotation(node):
+  """Enforce a split in the list if the list ends with a comma."""
+  if not (isinstance(node.children[-1], pytree.Leaf) and
+          node.children[-1].value == ','):
+    return
+  num_children = len(node.children)
+  index = 0
+  while index < num_children - 1:
+    child = node.children[index]
+    if isinstance(child, pytree.Leaf) and child.value == ',':
+      next_child = node.children[index + 1]
+      if pytree_utils.NodeName(next_child) == 'COMMENT':
+        index += 1
+        if index >= num_children:
+          break
+      _SetMustSplitOnFirstLeaf(node.children[index + 1])
+    index += 1
+
+
+def _SetMustSplitOnFirstLeaf(node):
+  """Set the "must split" annotation on the first leaf node."""
+  def FindFirstLeaf(node):
+    if isinstance(node, pytree.Leaf):
+      return node
+
+    return FindFirstLeaf(node.children[0])
+
+  pytree_utils.SetNodeAnnotation(
+      FindFirstLeaf(node), pytree_utils.Annotation.MUST_SPLIT, True)
