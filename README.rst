@@ -38,6 +38,11 @@ Installation
 
 YAPF supports Python 2.7 and 3.4+.
 
+We consider YAPF to be "alpha" quality, currently. Therefore, we don't yet
+support official releases to PyPI and the most stable and correct version is
+at the tip of the ``master`` branch in this repository. We plan to make a
+first beta release (including to PyPI) in the next few weeks.
+
 If you intend to use YAPF as a command-line tool rather than as a library,
 installation is not necessary. YAPF supports being run as a directory by the
 Python interpreter. If you cloned/unzipped yapf into ``DIR``, it's possible to
