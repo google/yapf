@@ -100,8 +100,6 @@ def FormatCode(unformatted_source,
   for uwl in uwlines:
     uwl.CalculateFormattingInformation()
 
-  line_joiner.CanMergeMultipleLines(uwlines)
-
   if lines is not None:
     reformatted_source = _FormatLineSnippets(unformatted_source, uwlines, lines)
   else:

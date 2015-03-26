@@ -416,17 +416,20 @@ def _SingleOrMergedLines(uwlines):
     succeeding line, or the next two lines merged into one line.
   """
   index = 0
+  last_was_merged = False
   while index < len(uwlines):
     # TODO(morbo): This splice is potentially very slow. Come up with a more
     # performance-friendly way of determining if two lines can be merged.
-    if line_joiner.CanMergeMultipleLines(uwlines[index:]):
+    if line_joiner.CanMergeMultipleLines(uwlines[index:], last_was_merged):
       for token in uwlines[index + 1].tokens:
         uwlines[index].AppendToken(token)
       yield uwlines[index]
       index += 2
+      last_was_merged = True
     else:
       yield uwlines[index]
       index += 1
+      last_was_merged = False
 
 
 def _NoBlankLinesBeforeCurrentToken(text, cur_token, prev_token):

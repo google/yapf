@@ -55,7 +55,14 @@ def _NormalizeCode(code):
   if re.match(r'(if|while|for|with|def|class)\b', code):
     code += '\n    pass'
   elif re.match(r'(elif|else)\b', code):
-    code = 'if True:\n    pass\n' + code + '\n    pass'
+    try:
+      try_code = 'if True:\n    pass\n' + code + '\n    pass'
+      ast.parse(textwrap.dedent(try_code.lstrip('\n')).lstrip(), '<string>',
+                'exec')
+      code = try_code
+    except SyntaxError:
+      # The assumption here is that the code is on a single line.
+      code = 'if True: pass\n' + code
   elif code.startswith('@'):
     code += '\ndef _():\n    pass'
   elif re.match(r'try\b', code):

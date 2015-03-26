@@ -40,12 +40,13 @@ _CLASS_OR_FUNC = frozenset({'def', 'class'})
 _COMPOUND_STMT = frozenset({'def', 'class', 'if', 'for', 'with', 'while'})
 
 
-def CanMergeMultipleLines(lines):
+def CanMergeMultipleLines(lines, last_was_merged=False):
   """Determine if multiple lines can be joined into one.
 
   Arguments:
     lines: (list of UnwrappedLine) This is a splice of UnwrappedLines from the
       full code base.
+    last_was_merged: (bool) The last line was merged.
 
   Returns:
     True if two consecutive lines can be joined together. In reality, this will
@@ -73,6 +74,8 @@ def CanMergeMultipleLines(lines):
     limit -= lines[0].last.total_length
 
     if lines[0].first.value == 'if':
+      return _CanMergeLineIntoIfStatement(lines, limit)
+    if last_was_merged and lines[0].first.value in {'elif', 'else'}:
       return _CanMergeLineIntoIfStatement(lines, limit)
 
   # TODO(morbo): Other control statements?

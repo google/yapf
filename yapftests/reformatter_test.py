@@ -763,6 +763,15 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testSingleLineIfStatements(self):
+    code = textwrap.dedent("""\
+        if True: a = 42
+        elif False: b = 42
+        else: c = 42
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
   def testLineDepthOfSingleLineStatement(self):
     unformatted_code = textwrap.dedent("""\
         while True: continue
