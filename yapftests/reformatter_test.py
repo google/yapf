@@ -763,6 +763,30 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testLineDepthOfSingleLineStatement(self):
+    unformatted_code = textwrap.dedent("""\
+        while True: continue
+        for x in range(3): continue
+        try: a = 42
+        except: b = 42
+        with open(a) as fd: a = fd.read()
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        while True:
+          continue
+        for x in range(3):
+          continue
+        try:
+          a = 42
+        except:
+          b = 42
+        with open(a) as fd:
+          a = fd.read()
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
 class BuganizerFixes(unittest.TestCase):
 
   @classmethod
