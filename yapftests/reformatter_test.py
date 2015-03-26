@@ -847,6 +847,13 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testRelativeImportStatements(self):
+    code = textwrap.dedent("""\
+        from ... import bork
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 

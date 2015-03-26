@@ -211,6 +211,9 @@ def _SpaceRequiredBetween(left, right):
   if left.value == 'from' and right.value == '.':
     # Space before the '.' in an import statement.
     return True
+  if left.value == '.' and right.value == 'import':
+    # Space after the '.' in an import statement.
+    return True
   if ((right.is_keyword or right.is_name) and
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
