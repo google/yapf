@@ -131,7 +131,6 @@ def _StringListConverter(s):
   return [part.strip() for part in s.split(',')]
 
 
-
 def _BoolConverter(s):
   """Option value converter for a boolean."""
   return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
@@ -229,7 +228,6 @@ def _CreateStyleFormConfigFile(config_filename):
         raise StyleConfigError('Unknown style option "{0}"'.format(option))
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     return base_style
-  
 
 
 # The default style - used if yapf is not invoked without specifically

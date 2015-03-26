@@ -29,7 +29,7 @@ if PY3:
 
   import configparser
 
-  # Mappings from strings to booleans (such as '1' to True, 'false' to False, 
+  # Mappings from strings to booleans (such as '1' to True, 'false' to False,
   # etc.)
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser.BOOLEAN_STATES
 else:
@@ -43,7 +43,7 @@ else:
   raw_input = raw_input
 
   import ConfigParser as configparser
-  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states
+  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access
 
 
 def EncodeForStdout(s):

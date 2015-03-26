@@ -141,6 +141,7 @@ def _GetLines(line_strings):
   """
   lines = []
   for line_string in line_strings:
+    # The 'list' here is needed by Python 3.
     line = list(map(int, line_string.split('-', 1)))
     if line[0] < 1:
       raise ValueError('invalid start of line range: %r' % line)

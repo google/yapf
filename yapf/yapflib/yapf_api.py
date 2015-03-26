@@ -38,7 +38,6 @@ import re
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
-from yapf.yapflib import line_joiner
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import reformatter
