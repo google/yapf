@@ -52,6 +52,15 @@ def _NormalizeCode(code):
   """Make sure that the code snippet is compilable."""
   code = textwrap.dedent(code.lstrip('\n')).lstrip()
 
+  # Split the code to lines and get rid of all leading full-comment lines as
+  # they can mess up the normalization attempt.
+  lines = code.split('\n')
+  for i, line in enumerate(lines):
+    line = line.strip()
+    if line and not line.startswith('#'):
+        break
+  code = '\n'.join(lines[i:]) + '\n'
+
   if re.match(r'(if|while|for|with|def|class)\b', code):
     code += '\n    pass'
   elif re.match(r'(elif|else)\b', code):

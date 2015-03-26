@@ -343,6 +343,24 @@ class SingleLineReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testCommentBetweenDecorators(self):
+    unformatted_code = textwrap.dedent("""\
+        @foo()
+        # frob
+        @bar
+        def x  (self):
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        @foo()
+        # frob
+        @bar
+        def x(self):
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testListComprehension(self):
     unformatted_code = textwrap.dedent("""\
         def given(y):
