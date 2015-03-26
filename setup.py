@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import codecs
 import unittest
 from distutils.core import setup, Command
 
@@ -36,7 +37,7 @@ class RunTests(Command):
     runner.run(tests)
 
 
-with open('README.rst', 'r') as fd:
+with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(
       name='yapf',
       version=yapf.__version__,
