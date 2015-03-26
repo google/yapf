@@ -343,6 +343,19 @@ class SingleLineReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testListComprehension(self):
+    unformatted_code = textwrap.dedent("""\
+        def given(y):
+            [k for k in ()
+              if k in y]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def given(y):
+          [k for k in () if k in y]
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    
   def testOpeningAndClosingBrackets(self):
     unformatted_code = textwrap.dedent("""\
         foo( ( 1, 2, 3, ) )
