@@ -43,6 +43,14 @@ class YapfTest(unittest.TestCase):
         """)
     self._Check(unformatted_code, unformatted_code)
 
+  def testNoEndingNewline(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if True: pass""")
+    expected_formatted_code = textwrap.dedent(u"""\
+        if True: pass
+        """)
+    self._Check(unformatted_code, expected_formatted_code)
+
 
 class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""

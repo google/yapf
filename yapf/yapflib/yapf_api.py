@@ -85,7 +85,7 @@ def FormatCode(unformatted_source,
     The code reformatted to conform to the desired formatting style.
   """
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
-  tree = pytree_utils.ParseCodeToTree(unformatted_source)
+  tree = pytree_utils.ParseCodeToTree(unformatted_source.rstrip() + '\n')
 
   # Run passes on the tree, modifying it in place.
   comment_splicer.SpliceComments(tree)
