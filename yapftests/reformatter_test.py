@@ -1321,11 +1321,11 @@ class TestsForPEP8Style(unittest.TestCase):
 
   def testSingleWhiteBeforeTrailingComment(self):
     unformatted_code = textwrap.dedent("""\
-        if a+b:  # comment
+        if a+b: # comment
           pass
         """)
     expected_formatted_code = textwrap.dedent("""\
-        if a + b: # comment
+        if a + b:  # comment
             pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)

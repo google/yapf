@@ -72,7 +72,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
 
       # The number of spaces required before a trailing comment.
-      SPACES_BEFORE_COMMENT=1,
+      SPACES_BEFORE_COMMENT=2,
 
       # Set to True to prefer splitting before 'and' or 'or' rather than
       # after.
@@ -114,7 +114,6 @@ def CreatePEP8Style():
 def CreateGoogleStyle():
   style = CreatePEP8Style()
   style['INDENT_WIDTH'] = 2
-  style['SPACES_BEFORE_COMMENT'] = 2
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['I18N_COMMENT'] = r'#\..*'
   style['I18N_FUNCTION_CALL'] = ['N_', '_']
