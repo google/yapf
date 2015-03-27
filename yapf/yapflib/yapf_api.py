@@ -56,7 +56,7 @@ def FormatFile(filename, style_config=None, lines=None, print_diff=False):
   Returns:
     The reformatted code or None if the file doesn't exist.
   """
-  original_source = ReadFile(filename, logging.warning)
+  original_source = _ReadFile(filename, logging.warning)
   if original_source is None:
     return None
 
@@ -121,7 +121,7 @@ def FormatCode(unformatted_source,
   return reformatted_source
 
 
-def ReadFile(filename, logger=None):
+def _ReadFile(filename, logger=None):
   """Read the contents of the file.
 
   An optional logger can be specified to emit messages to your favorite logging
