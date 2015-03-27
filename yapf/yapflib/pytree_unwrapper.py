@@ -213,8 +213,12 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     """
     if (leaf.type not in _WHITESPACE_TOKENS and
         (leaf.type != grammar_token.COMMENT or leaf.value.strip())):
-      # Add non-whitespace tokens and comments that aren't empty.
-      self._cur_unwrapped_line.AppendNode(leaf)
+      if leaf.value == ';':
+        # Split up multiple statements on one line.
+        self._StartNewLine()
+      else:
+        # Add non-whitespace tokens and comments that aren't empty.
+        self._cur_unwrapped_line.AppendNode(leaf)
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}

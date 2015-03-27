@@ -1408,12 +1408,20 @@ class TestsForPEP8Style(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testSpaceBeforeSemicolon(self):
+  def testSplittingSemicolonStatements(self):
     unformatted_code = textwrap.dedent("""\
-        x = y + 42 ; z = n * 42
+        def f():
+          x = y + 42 ; z = n * 42
+          if True: a += 1 ; b += 1; c += 1
         """)
     expected_formatted_code = textwrap.dedent("""\
-        x = y + 42; z = n * 42
+        def f():
+            x = y + 42
+            z = n * 42
+            if True:
+                a += 1
+                b += 1
+                c += 1
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
