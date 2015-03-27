@@ -41,7 +41,9 @@ def main(argv):
   """Main program.
 
   Arguments:
-    argv: (Positional arguments) A list of files to reformat.
+    argv:
+      command-line arguments, such as sys.argv (including the program name in
+      argv[0]).
 
   Returns:
     0 if there were no errors, non-zero otherwise.
@@ -69,7 +71,7 @@ def main(argv):
       help='run recursively over directories')
 
   parser.add_argument('files', nargs=argparse.REMAINDER)
-  args = parser.parse_args()
+  args = parser.parse_args(argv[1:])
 
   if args.lines and len(args.files) > 1:
     parser.error('cannot use -l/--lines with more than one file')
