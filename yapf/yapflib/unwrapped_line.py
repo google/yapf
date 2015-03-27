@@ -294,6 +294,9 @@ def _SpaceRequiredBetween(left, right):
   }):
     # Don't separate a '*' or '**' from the opening bracket.
     return False
+  if right.value == ';':
+    # Avoid spaces before a semicolon. (Why is there a semicolon?!)
+    return False
   return True
 
 
