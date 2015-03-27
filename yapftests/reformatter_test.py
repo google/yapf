@@ -861,6 +861,17 @@ class BuganizerFixes(unittest.TestCase):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateGoogleStyle())
 
+  def testB19626808(self):
+    code = textwrap.dedent("""\
+        if True:
+          aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb('ccccccccccc',
+                                            ddddddddd='eeeee').fffffffff([
+                                                ggggggggggggggggggggg
+                                            ])
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
   def testB19547210(self):
     code = textwrap.dedent("""\
         while True:
@@ -945,15 +956,22 @@ class BuganizerFixes(unittest.TestCase):
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB19073499(self):
-    code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
         instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
             {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
             {  # Inline comment about why fnord has the value 6.
                 'fnord': 6
             }))
         """)
-    uwlines = _ParseAndUnwrap(code)
-    self.assertEqual(code, reformatter.Reformat(uwlines))
+    expected_formatted_code = textwrap.dedent("""\
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
+            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
+                {  # Inline comment about why fnord has the value 6.
+                    'fnord': 6
+                }))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB18257115(self):
     unformatted_code = textwrap.dedent("""\
@@ -1297,7 +1315,7 @@ parameter_5, parameter_6): pass
         aaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccc(
             DC_1, (CL - 50, CL), AAAAAAAA, BBBBBBBBBBBBBBBB, 98.0,
             CCCCCCC).ddddddddd(  # Look! A comment is here.
-            AAAAAAAA - (20 * 60 - 5))
+                AAAAAAAA - (20 * 60 - 5))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))

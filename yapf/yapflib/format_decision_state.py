@@ -315,6 +315,7 @@ class FormatDecisionState(object):
     # If we encounter a closing bracket, we can remove a level from our
     # parenthesis stack.
     if len(self.stack) > 1 and current.ClosesScope():
+      self.stack[-2].last_space = self.stack[-1].last_space
       self.stack.pop()
       self.paren_level -= 1
 
