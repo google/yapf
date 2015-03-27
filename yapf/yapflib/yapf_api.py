@@ -110,7 +110,8 @@ def FormatCode(unformatted_source,
       reformatted_source = _FormatLineSnippets(unformatted_source, uwlines,
                                                lines)
     else:
-      reformatted_source = reformatter.Reformat(uwlines)
+      reformatted_source = reformatter.Reformat(
+        uwlines, unformatted_source=unformatted_source)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source

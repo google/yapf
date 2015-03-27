@@ -25,7 +25,7 @@ import sys
 import textwrap
 
 
-def VerifyCode(code):
+def VerifyCode(code, compile_flags=0):
   """Verify that the reformatted code is syntactically correct.
 
   Arguments:
@@ -35,14 +35,17 @@ def VerifyCode(code):
     SyntaxError if the code was reformatted incorrectly.
   """
   try:
-    compile(textwrap.dedent(code).encode('UTF-8'), '<string>', 'exec')
+    compile(textwrap.dedent(code).encode('UTF-8'),
+            '<string>', 'exec', flags=compile_flags)
   except SyntaxError:
     try:
-      ast.parse(textwrap.dedent(code.lstrip('\n')).lstrip(), '<string>', 'exec')
+      ast.parse(textwrap.dedent(code.lstrip('\n')).lstrip(),
+                '<string>', 'exec')
     except SyntaxError:
       try:
         normalized_code = _NormalizeCode(code)
-        compile(normalized_code.encode('UTF-8'), '<string>', 'exec')
+        compile(normalized_code.encode('UTF-8'),
+                '<string>', 'exec', flags=compile_flags)
       except SyntaxError:
         sys.stderr.write('INTERNAL ERROR: %s\n' % code)
         raise
