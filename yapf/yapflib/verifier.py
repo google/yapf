@@ -58,7 +58,7 @@ def _NormalizeCode(code):
   for i, line in enumerate(lines):
     line = line.strip()
     if line and not line.startswith('#'):
-        break
+      break
   code = '\n'.join(lines[i:]) + '\n'
 
   if re.match(r'(if|while|for|with|def|class)\b', code):
