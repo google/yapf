@@ -35,6 +35,7 @@ import difflib
 import io
 import logging
 import re
+import sys
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
@@ -56,6 +57,7 @@ def FormatFile(filename, style_config=None, lines=None, print_diff=False):
   Returns:
     The reformatted code or None if the file doesn't exist.
   """
+  _CheckPythonVersion()
   original_source = _ReadFile(filename, logging.warning)
   if original_source is None:
     return None
@@ -84,6 +86,7 @@ def FormatCode(unformatted_source,
   Returns:
     The code reformatted to conform to the desired formatting style.
   """
+  _CheckPythonVersion()
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
   tree = pytree_utils.ParseCodeToTree(unformatted_source.rstrip() + '\n')
 
@@ -119,6 +122,16 @@ def FormatCode(unformatted_source,
     return code_diff
 
   return reformatted_source
+
+
+def _CheckPythonVersion():
+  errmsg = 'yapf is only supported for Python 2.7 or 3.4+'
+  if sys.version_info[0] == 2:
+    if sys.version_info[1] < 7:
+      raise RuntimeError(errmsg)
+  elif sys.version_info[0] == 3:
+    if sys.version_info[1] < 4:
+      raise RuntimeError(errmsg)
 
 
 def _ReadFile(filename, logger=None):
