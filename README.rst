@@ -73,7 +73,7 @@ Options::
       -h, --help            show this help message and exit
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
-                            with style settings
+                            with style settings. pep8 is the default.
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -l START-END, --lines START-END

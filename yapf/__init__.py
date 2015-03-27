@@ -48,9 +48,10 @@ def main(argv):
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
   parser.add_argument(
-      '--style', action='store', default=None,
+      '--style', action='store', default='pep8',
       help=('specify formatting style: either a style name (for example "pep8" '
-            'or "google"), or the name of a file with style settings'))
+            'or "google"), or the name of a file with style settings. pep8 is '
+            ' the default.'))
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument(
       '-d', '--diff', action='store_true',
