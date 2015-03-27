@@ -41,7 +41,7 @@ def SetGlobalStyle(style):
 def CreatePEP8Style():
   return dict(
       # The column limit.
-      COLUMN_LIMIT=80,
+      COLUMN_LIMIT=79,
 
       # The regex for an i18n comment. The presence of this comment stops
       # reformatting of that line, because the comments are required to be
@@ -113,6 +113,7 @@ def CreatePEP8Style():
 
 def CreateGoogleStyle():
   style = CreatePEP8Style()
+  style['COLUMN_LIMIT'] = 80
   style['INDENT_WIDTH'] = 2
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['I18N_COMMENT'] = r'#\..*'
