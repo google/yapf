@@ -36,9 +36,7 @@ programmer would write if they were following the style guide.
 Installation
 ============
 
-YAPF supports Python 2.7 and 3.4+.
-
-We consider YAPF to be "alpha" quality, currently. Therefore, we don't yet
+We consider YAPF to be "alpha" quality at this time. Therefore, we don't yet
 support official releases to PyPI and the most stable and correct version is
 at the tip of the ``master`` branch in this repository. We plan to make a
 first beta release (including to PyPI) in the next few weeks.
@@ -49,6 +47,15 @@ Python interpreter. If you cloned/unzipped yapf into ``DIR``, it's possible to
 run::
 
     $ PYTHONPATH=DIR python DIR/yapf [options] ...
+
+Python versions
+===============
+
+YAPF supports Python 2.7 and 3.4+.
+
+YAPF requires the code it formats to be valid Python for the version YAPF itself
+runs under. Therefore, if you format Python 3 code with YAPF, run YAPF itself
+under Python 3 (and similarly for Python 2).
 
 Usage
 =====
