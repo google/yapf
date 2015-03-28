@@ -1475,6 +1475,35 @@ class TestVerifyNoVerify(unittest.TestCase):
     self.assertEqual(expected_formatted_code,
                      reformatter.Reformat(uwlines, verify=False))
 
+  def testVerifyFutureImport(self):
+    unformatted_code = textwrap.dedent("""\
+        from __future__ import print_function
+
+        def call_my_function(the_function):
+          the_function("hi")
+
+        if __name__ == "__main__":
+          call_my_function(print)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    with self.assertRaises(SyntaxError):
+      reformatter.Reformat(uwlines, verify=True)
+
+    expected_formatted_code = textwrap.dedent("""\
+        from __future__ import print_function
+
+
+        def call_my_function(the_function):
+            the_function("hi")
+
+
+        if __name__ == "__main__":
+            call_my_function(print)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code,
+                     reformatter.Reformat(uwlines, verify=False))
+
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
 class TestsForPython3Code(unittest.TestCase):
