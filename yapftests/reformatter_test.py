@@ -95,6 +95,33 @@ class BasicReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testBlankLinesAtEndOfFile(self):
+    unformatted_code = textwrap.dedent("""\
+        def foobar(): # foo
+         pass
+
+
+
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foobar():  # foo
+          pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        x = {  'a':37,'b':42,
+
+        'c':927}
+
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        x = {'a': 37, 'b': 42, 'c': 927}
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testLineContinuation(self):
     unformatted_code = textwrap.dedent("""\
         x = {  'a':37,'b':42,
