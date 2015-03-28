@@ -29,7 +29,7 @@ from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
-class SingleLineReformatterTest(unittest.TestCase):
+class BasicReformatterTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
