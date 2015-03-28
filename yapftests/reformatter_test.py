@@ -912,6 +912,39 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testBlankLinesBeforeFunctionsNotInColumnZero(self):
+    unformatted_code = textwrap.dedent("""\
+        import signal
+
+
+        try:
+          signal.SIGALRM
+          # ..................................................................
+          # ...............................................................
+
+
+          def timeout(seconds=1):
+            pass
+        except:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        import signal
+
+        try:
+          signal.SIGALRM
+
+          # ..................................................................
+          # ...............................................................
+
+          def timeout(seconds=1):
+            pass
+        except:
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 

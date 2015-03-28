@@ -156,20 +156,18 @@ def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, standalone=False):
 
   lines = comment_prefix.split('\n')
   index = 0
-  while True:
-    if index >= len(lines):
-      break
-
+  while index < len(lines):
     comment_block = []
     while index < len(lines) and lines[index].lstrip().startswith('#'):
       comment_block.append(lines[index])
       index += 1
 
     if comment_block:
+      new_column = len(comment_block[0]) - len(comment_block[0].lstrip())
       new_lineno = comment_lineno + index - 1
       comment_leaf = pytree.Leaf(type=token.COMMENT,
                                  value='\n'.join(comment_block).strip(),
-                                 context=('', (new_lineno, 0)))
+                                 context=('', (new_lineno, new_column)))
       comment_node = comment_leaf if not standalone else pytree.Node(
           pygram.python_symbols.simple_stmt, [comment_leaf])
       comments.append(comment_node)

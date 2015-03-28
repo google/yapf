@@ -71,7 +71,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
         self.last_comment_lineno == node.children[0].lineno - 1):
       self._SetNumNewlines(node.children[0], _NO_BLANK_LINES)
     else:
-      self._SetNumNewlines(node.children[0], self._GetNumNewlines())
+      self._SetNumNewlines(node.children[0], self._GetNumNewlines(node))
     for child in node.children:
       self.Visit(child)
     self.last_was_decorator = True
@@ -103,17 +103,11 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     Arguments:
       node: (pytree.Node) The node to visit.
     """
-
-    def GetFirstChildLeaf(node):
-      if isinstance(node, pytree.Leaf):
-        return node
-      return GetFirstChildLeaf(node.children[0])
-
     if self.last_was_class_or_function:
       if pytree_utils.NodeName(node) in _PYTHON_STATEMENTS:
-        leaf = GetFirstChildLeaf(node)
+        leaf = _GetFirstChildLeaf(node)
         if pytree_utils.NodeName(leaf) != 'COMMENT':
-          self._SetNumNewlines(leaf, self._GetNumNewlines())
+          self._SetNumNewlines(leaf, self._GetNumNewlines(leaf))
     self.last_was_class_or_function = False
     super(_BlankLineCalculator, self).DefaultNodeVisit(node)
 
@@ -143,14 +137,14 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
       if self.last_comment_lineno + 1 == node.children[index].lineno:
         num_newlines = _NO_BLANK_LINES
       else:
-        num_newlines = self._GetNumNewlines()
+        num_newlines = self._GetNumNewlines(node)
       self._SetNumNewlines(node.children[index], num_newlines)
     return index
 
-  def _GetNumNewlines(self):
+  def _GetNumNewlines(self, node):
     if self.last_was_decorator:
       return _NO_BLANK_LINES
-    elif self._IsTopLevel():
+    elif self._IsTopLevel(node):
       return _TWO_BLANK_LINES
     return _ONE_BLANK_LINE
 
@@ -158,5 +152,12 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.NEWLINES,
                                    num_newlines)
 
-  def _IsTopLevel(self):
-    return not (self.class_level or self.function_level)
+  def _IsTopLevel(self, node):
+    return (not (self.class_level or self.function_level) and
+            _GetFirstChildLeaf(node).column == 0)
+
+
+def _GetFirstChildLeaf(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return _GetFirstChildLeaf(node.children[0])
