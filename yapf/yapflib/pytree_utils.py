@@ -67,6 +67,17 @@ def NodeName(node):
     return pygram.python_grammar.number2symbol[node.type]
 
 
+# lib2to3 thoughtfully provides pygram.python_grammar_no_print_statement for
+# parsing Python 3 code that wouldn't parse otherwise (when 'print' is used in a
+# context where a keyword is disallowed).
+# It forgets to do the same for 'exec' though. Luckily, Python is amenable to
+# monkey-patching.
+_GRAMMAR_FOR_PY3 = pygram.python_grammar_no_print_statement.copy()
+del _GRAMMAR_FOR_PY3.keywords['exec']
+
+_GRAMMAR_FOR_PY2 = pygram.python_grammar.copy()
+
+
 def ParseCodeToTree(code):
   """Parse the given code to a lib2to3 pytree.
 
@@ -79,15 +90,14 @@ def ParseCodeToTree(code):
   # This function is tiny, but the incantation for invoking the parser correctly
   # is sufficiently magical to be worth abstracting away.
   try:
-    # Try to parse the code treating 'print' as a function call (3.0 behavior).
-    parser_driver = driver.Driver(pygram.python_grammar_no_print_statement,
-                                  convert=pytree.convert)
+    # Try to parse using a Python 3 grammar, which is more permissive (print and
+    # exec are not keywords).
+    parser_driver = driver.Driver(_GRAMMAR_FOR_PY3, convert=pytree.convert)
     tree = parser_driver.parse_string(code, debug=False)
   except parse.ParseError:
-    # Treating 'print' as a function call failed. Now try to parse the code
-    # with 'print' as a statement (pre-3.0 behavior). If this fails, then
+    # Now try to parse using a Python 2 grammar; If this fails, then
     # there's something else wrong with the code.
-    parser_driver = driver.Driver(pygram.python_grammar, convert=pytree.convert)
+    parser_driver = driver.Driver(_GRAMMAR_FOR_PY2, convert=pytree.convert)
     tree = parser_driver.parse_string(code, debug=False)
   return _WrapEndMarker(tree)
 

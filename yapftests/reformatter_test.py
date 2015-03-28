@@ -1564,6 +1564,12 @@ class TestsForPython3Code(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testExecAsNonKeyword(self):
+    unformatted_code = "methods.exec( sys.modules[name])\n"
+    expected_formatted_code = "methods.exec(sys.modules[name])\n"
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 def _ParseAndUnwrap(code, dumptree=False):
   """Produces unwrapped lines from the given code.
