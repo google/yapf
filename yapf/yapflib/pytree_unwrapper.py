@@ -211,8 +211,9 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     Arguments:
       leaf: the leaf to visit.
     """
-    if (leaf.type not in _WHITESPACE_TOKENS and
-        (leaf.type != grammar_token.COMMENT or leaf.value.strip())):
+    if leaf.type in _WHITESPACE_TOKENS:
+      self._StartNewLine()
+    elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
       if leaf.value == ';':
         # Split up multiple statements on one line.
         self._StartNewLine()

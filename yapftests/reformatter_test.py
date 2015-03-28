@@ -170,6 +170,15 @@ class SingleLineReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testEndingWhitespaceAfterSimpleStatement(self):
+    code = textwrap.dedent("""\
+        import foo as bar
+        # Thing 1
+        # Thing 2
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
   def testDocstrings(self):
     unformatted_code = textwrap.dedent('''\
         u"""Module-level docstring."""
