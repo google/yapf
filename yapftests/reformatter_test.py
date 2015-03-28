@@ -170,6 +170,13 @@ class SingleLineReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSingleComment(self):
+    code = textwrap.dedent("""\
+        # Thing 1
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
   def testEndingWhitespaceAfterSimpleStatement(self):
     code = textwrap.dedent("""\
         import foo as bar

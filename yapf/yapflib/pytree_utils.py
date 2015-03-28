@@ -89,6 +89,22 @@ def ParseCodeToTree(code):
     # there's something else wrong with the code.
     parser_driver = driver.Driver(pygram.python_grammar, convert=pytree.convert)
     tree = parser_driver.parse_string(code, debug=False)
+  return _WrapEndMarker(tree)
+
+
+def _WrapEndMarker(tree):
+  """Wrap a single ENDMARKER token in a "file_input" node.
+
+  Arguments:
+    tree: (pytree.Node) The root node of the parsed tree.
+
+  Returns:
+    The root node of the parsed tree. If the tree is a single ENDMARKER node,
+    then that node is wrapped in a "file_input" node. That will ensure we don't
+    skip comments attached to that node.
+  """
+  if isinstance(tree, pytree.Leaf) and tree.type == token.ENDMARKER:
+    return pytree.Node(pygram.python_symbols.file_input, [tree])
   return tree
 
 
