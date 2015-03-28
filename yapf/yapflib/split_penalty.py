@@ -23,6 +23,7 @@ from yapf.yapflib import pytree_visitor
 # README file.
 UNBREAKABLE = 1000 * 1000
 STRONGLY_CONNECTED = 1000
+CONTIGUOUS_LIST = 500
 
 OR_TEST = 42
 AND_TEST = 142
@@ -262,6 +263,13 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # term ::= factor (('*'|'/'|'%'|'//') factor)*
     self.DefaultNodeVisit(node)
     self._SetExpressionPenalty(node, TERM_EXPRESSION)
+
+  def Visit_atom(self, node):  # pylint: disable=invalid-name
+    # atom ::= '(' [yield_expr|testlist_gexp] ')'
+    self.DefaultNodeVisit(node)
+    if node.children[0].value == '(':
+      if node.children[0].lineno == node.children[-1].lineno:
+        self._SetExpressionPenalty(node, CONTIGUOUS_LIST)
 
   ############################################################################
   # Helper methods that set the annotations.

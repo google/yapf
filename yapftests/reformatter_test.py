@@ -897,6 +897,21 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testSingleLineList(self):
+    # A list on a single line should prefer to remain contiguous.
+    unformatted_code = textwrap.dedent("""\
+        bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb = aaaaaaaaaaa(
+            ("...", "."), "..",
+            ".............................................."
+        )
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb = aaaaaaaaaaa(
+            ("...", "."), "..", "..............................................")
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
@@ -1240,9 +1255,8 @@ class BuganizerFixes(unittest.TestCase):
           bad_slice = map(math.sqrt,
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
           a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
-          bad_slice = (
-              "I am a crazy, no good, string whats too long, etc." + " no really "
-          )[:ARBITRARY_CONSTANT_A]
+          bad_slice = ("I am a crazy, no good, string whats too long, etc." +
+                       " no really ")[:ARBITRARY_CONSTANT_A]
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
