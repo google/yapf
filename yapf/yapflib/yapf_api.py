@@ -29,6 +29,7 @@ These APIs have some common arguments:
     than a whole file.
   print_diff: (bool) Instead of returning the reformatted source, return a
     diff that turns the formatted source into reformatter source.
+  verify: (bool) True if reformatted code should be verified for syntax.
 """
 
 import difflib
@@ -47,12 +48,13 @@ from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
-def FormatFile(filename, style_config=None, lines=None, print_diff=False):
+def FormatFile(filename, style_config=None, lines=None, print_diff=False,
+               verify=True):
   """Format a single Python file and return the formatted code.
 
   Arguments:
     filename: (unicode) The file to reformat.
-    style_config, lines, print_diff: see comment at the top of this module.
+    remaining arguments: see comment at the top of this module.
 
   Returns:
     The reformatted code or None if the file doesn't exist.
@@ -66,14 +68,16 @@ def FormatFile(filename, style_config=None, lines=None, print_diff=False):
                     style_config=style_config,
                     filename=filename,
                     lines=lines,
-                    print_diff=print_diff)
+                    print_diff=print_diff,
+                    verify=verify)
 
 
 def FormatCode(unformatted_source,
                filename='<unknown>',
                style_config=None,
                lines=None,
-               print_diff=False):
+               print_diff=False,
+               verify=True):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.
@@ -81,7 +85,7 @@ def FormatCode(unformatted_source,
   Arguments:
     unformatted_source: (unicode) The code to format.
     filename: (unicode) The name of the file being reformatted.
-    style_config, lines, print_diff: see comment at the top of this module.
+    remaining arguments: see comment at the top of this module.
 
   Returns:
     The code reformatted to conform to the desired formatting style.
@@ -103,14 +107,15 @@ def FormatCode(unformatted_source,
     uwl.CalculateFormattingInformation()
 
   if lines is not None:
-    reformatted_source = _FormatLineSnippets(unformatted_source, uwlines, lines)
+    reformatted_source = _FormatLineSnippets(unformatted_source, uwlines,
+                                             lines, verify)
   else:
     lines = _LinesToFormat(uwlines)
     if lines:
       reformatted_source = _FormatLineSnippets(unformatted_source, uwlines,
-                                               lines)
+                                               lines, verify)
     else:
-      reformatted_source = reformatter.Reformat(uwlines)
+      reformatted_source = reformatter.Reformat(uwlines, verify)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source
@@ -186,7 +191,7 @@ def _LinesToFormat(uwlines):
   return lines
 
 
-def _FormatLineSnippets(unformatted_source, uwlines, lines):
+def _FormatLineSnippets(unformatted_source, uwlines, lines, verify=True):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.
@@ -196,6 +201,7 @@ def _FormatLineSnippets(unformatted_source, uwlines, lines):
     uwlines: (list of UnwrappedLine) The unwrapped lines.
     lines: (list of tuples of integers) A list of lines that we want to format.
       The lines are 1-indexed.
+    verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
     The code reformatted to conform to the desired formatting style.
@@ -222,7 +228,7 @@ def _FormatLineSnippets(unformatted_source, uwlines, lines):
         if snippet[0].first.value.count('\n') == len(blank_lines):
           blank_lines = ''
     reformatted_sources[(start, end)] = (
-        blank_lines + reformatter.Reformat(snippet).rstrip()
+        blank_lines + reformatter.Reformat(snippet, verify).rstrip()
     )
 
   # Next we reconstruct the finalized lines inserting the reformatted lines at

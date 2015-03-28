@@ -389,7 +389,7 @@ class SingleLineReformatterTest(unittest.TestCase):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-    
+
   def testOpeningAndClosingBrackets(self):
     unformatted_code = textwrap.dedent("""\
         foo( ( 1, 2, 3, ) )
@@ -1441,6 +1441,39 @@ class TestsForPEP8Style(unittest.TestCase):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
+@unittest.skipIf(py3compat.PY3, 'Requires Python 2')
+class TestVerifyNoVerify(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testVerifyException(self):
+    unformatted_code = textwrap.dedent("""\
+        class ABC(metaclass=type):
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    with self.assertRaises(SyntaxError):
+      reformatter.Reformat(uwlines, verify=True)
+    with self.assertRaises(SyntaxError):
+      # default should be True
+      reformatter.Reformat(uwlines)
+
+  def testNoVerify(self):
+    unformatted_code = textwrap.dedent("""\
+        class ABC(metaclass=type):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class ABC(metaclass=type):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code,
+                     reformatter.Reformat(uwlines, verify=False))
 
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')

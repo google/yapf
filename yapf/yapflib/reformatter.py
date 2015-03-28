@@ -31,11 +31,12 @@ from yapf.yapflib import style
 from yapf.yapflib import verifier
 
 
-def Reformat(uwlines):
+def Reformat(uwlines, verify=True):
   """Reformat the unwrapped lines.
 
   Arguments:
     uwlines: (list of unwrapped_line.UnwrappedLine) Lines we want to format.
+    verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
     A string representing the reformatted code.
@@ -70,7 +71,8 @@ def Reformat(uwlines):
       formatted_line.append(token.whitespace_prefix)
       formatted_line.append(token.value)
     formatted_code.append(''.join(formatted_line))
-    verifier.VerifyCode(formatted_code[-1])
+    if verify:
+      verifier.VerifyCode(formatted_code[-1])
 
   return ''.join(formatted_code) + '\n'
 

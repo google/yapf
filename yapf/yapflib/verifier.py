@@ -25,6 +25,9 @@ import sys
 import textwrap
 
 
+class InternalError(Exception): pass
+
+
 def VerifyCode(code):
   """Verify that the reformatted code is syntactically correct.
 
@@ -44,7 +47,6 @@ def VerifyCode(code):
         normalized_code = _NormalizeCode(code)
         compile(normalized_code.encode('UTF-8'), '<string>', 'exec')
       except SyntaxError:
-        sys.stderr.write('INTERNAL ERROR: %s\n' % code)
         raise
 
 

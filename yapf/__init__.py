@@ -54,6 +54,9 @@ def main(argv):
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. pep8 is '
             ' the default.'))
+  parser.add_argument(
+      '--noverify', action='store_true',
+      help='do not verify refomatted code for syntax errors')
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument(
       '-d', '--diff', action='store_true',
@@ -98,16 +101,17 @@ def main(argv):
         py3compat.unicode('\n'.join(original_source) + '\n'),
         filename='<stdin>',
         style_config=args.style,
-        lines=lines))
+        lines=lines,
+        verify=not args.noverify))
     return 0
 
   FormatFiles(files, lines, style_config=args.style, in_place=args.in_place,
-              print_diff=args.diff)
+              print_diff=args.diff, verify=not args.noverify)
   return 0
 
 
 def FormatFiles(filenames, lines, style_config=None, in_place=False,
-                print_diff=False):
+                print_diff=False, verify=True):
   """Format a list of files.
 
   Arguments:
@@ -120,11 +124,13 @@ def FormatFiles(filenames, lines, style_config=None, in_place=False,
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
+    verify: (bool) True if reformatted code should be verified for syntax.
   """
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     reformatted_code = yapf_api.FormatFile(
-        filename, style_config=style_config, lines=lines, print_diff=print_diff)
+        filename, style_config=style_config, lines=lines,
+        print_diff=print_diff, verify=verify)
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place)
 
