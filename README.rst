@@ -26,7 +26,7 @@ arguing about style in every code review.
 The ultimate goal is that the code YAPF produces is as good as the code that a
 programmer would write if they were following the style guide.
 
-.. note::
+.. footer::
 
     YAPF is not an official Google product (experimental or otherwise), it is
     just code that happens to be owned by Google.
@@ -85,7 +85,7 @@ be parsed by Python itself). This means that if you're reformatting Python 3
 code, it's best to run YAPF itself under Python 3. The same goes for Python 2.
 
 Formatting style
-----------------
+================
 
 The formatting style used by YAPF is configurable and there are many "knobs"
 that can be used to tune how YAPF does formatting. See the ``style.py`` module
@@ -104,6 +104,51 @@ For example::
 
 The ``based_on_style`` setting determines which of the predefined styles this
 custom style is based on (think of it like subclassing).
+
+Example
+=======
+
+This ugly code:
+
+.. code-block:: python
+
+    x = {  'a':37,'b':42,
+
+    'c':927}
+
+    y = 'hello ''world'
+    z = 'hello '+'world'
+    a = 'hello {}'.format('world')
+    class foo  (     object  ):
+      def f    (self   ):
+        return       37*-+2
+      def g(self, x,y=42):
+          return y
+    def f  (   a ) :
+      return      37+-+a[42-x :  y**3]
+
+Is reformatted into:
+
+.. code-block:: python
+
+    x = {'a': 37, 'b': 42, 'c': 927}
+
+    y = 'hello ' 'world'
+    z = 'hello ' + 'world'
+    a = 'hello {}'.format('world')
+
+
+    class foo(object):
+
+      def f(self):
+        return 37 * -+2
+
+      def g(self, x, y=42):
+        return y
+
+
+    def f(a):
+      return 37 + -+a[42 - x:y ** 3]
 
 Why Not Improve Existing Tools?
 ===============================
@@ -134,7 +179,9 @@ formatter works on one ``UnwrappedLine`` object at a time.
 An ``UnwrappedLine`` typically won't affect the formatting of lines before or
 after it. There is a part of the algorithm that may join two or more
 ``UnwrappedLine``\s into one line. For instance, an if-then statement with a
-short body can be placed on a single line::
+short body can be placed on a single line:
+
+.. code-block:: python
 
     if a == 42: continue
 
