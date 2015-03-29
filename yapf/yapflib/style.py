@@ -71,6 +71,10 @@ def CreatePEP8Style():
       #
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
 
+      # Insert a space between the ending comma and closing bracket of a list,
+      # etc.
+      SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
+
       # The number of spaces required before a trailing comment.
       SPACES_BEFORE_COMMENT=2,
 
@@ -118,6 +122,7 @@ def CreateGoogleStyle():
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['I18N_COMMENT'] = r'#\..*'
   style['I18N_FUNCTION_CALL'] = ['N_', '_']
+  style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
   return style
 
 

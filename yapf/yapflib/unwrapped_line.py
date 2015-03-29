@@ -203,8 +203,8 @@ def _SpaceRequiredBetween(left, right):
     # We never want a space before a colon or comma.
     return False
   if left.value == ',' and right.value in ']})':
-    # We don't want a space between a comma and the ending bracket.
-    return False
+    # Add a space between ending ',' and closing bracket if requested.
+    return style.Get('SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET')
   if left.value == ',':
     # We want a space after a comma.
     return True
