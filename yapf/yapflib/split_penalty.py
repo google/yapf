@@ -99,6 +99,18 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
 
+  def Visit_argument(self, node):  # pylint: disable=invalid-name
+    # argument ::= test [comp_for] | test '=' test  # Really [keyword '='] test
+    self.DefaultNodeVisit(node)
+
+    index = 0
+    while index < len(node.children) - 1:
+      next_child = node.children[index + 1]
+      if isinstance(next_child, pytree.Leaf) and next_child.value == '=':
+        self._SetStronglyConnected(node.children[index + 1],
+                                   node.children[index + 2])
+      index += 1
+
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name
     # dotted_name ::= NAME ('.' NAME)*
     self._SetUnbreakableOnChildren(node, num_children=len(node.children))
@@ -132,7 +144,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         self._SetStronglyConnected(node.children[1], node.children[2])
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
-    # power: atom trailer* ['**' factor]
+    # power ::= atom trailer* ['**' factor]
     self.DefaultNodeVisit(node)
 
     # See if this node is surrounded by parentheses. If it is, then we can

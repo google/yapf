@@ -945,6 +945,18 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testNoKeywordArgumentBreakage(self):
+    code = textwrap.dedent("""\
+        class A(object):
+
+          def b(self):
+            if self.aaaaaaaaaaaaaaaaaaaa not in self.bbbbbbbbbb(
+                cccccccccccccccccccc=True):
+              pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
@@ -1026,8 +1038,7 @@ class BuganizerFixes(unittest.TestCase):
                 'aaaaaaa.bbbbbbbb.ccccccc.dddddddddddddddddddd.eeeeeeeeeee',
                 fffffffffff=(
                     aaaaaaa.bbbbbbbb.ccccccc.dddddddddddddddddddd.Mmmmmmmmmmmmmmmmmm(
-                        -1, 'permission error')
-                )):
+                        -1, 'permission error'))):
               self.assertRaises(nnnnnnnnnnnnnnnn.ooooo, ppppp.qqqqqqqqqqqqqqqqq)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -1086,15 +1097,15 @@ class BuganizerFixes(unittest.TestCase):
         class Foo(object):
 
           def Bar(self):
-            aaaaa.bbbbbbb(ccc='ddddddddddddddd',
-                          eeee='ffffffffffffffffffffff-%s-%s' %
-                          (gggg, int(time.time())),
-                          hhhhhh={
-                              'iiiiiiiiiii': iiiiiiiiiii,
-                              'jjjj': jjjj.jjjjj(),
-                              'kkkkkkkkkkkk': kkkkkkkkkkkk,
-                          },
-                          llllllllll=mmmmmm.nnnnnnnnnnnnnnnn)
+            aaaaa.bbbbbbb(
+                ccc='ddddddddddddddd',
+                eeee='ffffffffffffffffffffff-%s-%s' % (gggg, int(time.time())),
+                hhhhhh={
+                    'iiiiiiiiiii': iiiiiiiiiii,
+                    'jjjj': jjjj.jjjjj(),
+                    'kkkkkkkkkkkk': kkkkkkkkkkkk,
+                },
+                llllllllll=mmmmmm.nnnnnnnnnnnnnnnn)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
@@ -1348,11 +1359,11 @@ class BuganizerFixes(unittest.TestCase):
           if (aaaaaa.bbbbb.ccccccccccccc != ddddddd.eeeeeeeeee.fffffffffffff or
               eeeeee.fffff.ggggggggggggggggggggggggggg() !=
               hhhhhhh.iiiiiiiiii.jjjjjjjjjjjj):
-            aaaaaaaa.bbbbbbbbbbbb(aaaaaa.bbbbb.cc,
-                                  dddddddddddd=eeeeeeeeeeeeeeeeeee.fffffffffffffffff(
-                                      gggggg.hh, iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk,
-                                      lllll.mm),
-                                  nnnnnnnnnn=ooooooo.pppppppppp)
+            aaaaaaaa.bbbbbbbbbbbb(
+                aaaaaa.bbbbb.cc,
+                dddddddddddd=eeeeeeeeeeeeeeeeeee.fffffffffffffffff(
+                    gggggg.hh, iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk, lllll.mm),
+                nnnnnnnnnn=ooooooo.pppppppppp)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
