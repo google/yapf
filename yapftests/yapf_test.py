@@ -27,7 +27,9 @@ from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-YAPF_BINARY = [sys.executable, '-m', 'yapf']
+
+# Verification is turned off by default, but want to enable it for testing.
+YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify']
 
 
 class YapfTest(unittest.TestCase):

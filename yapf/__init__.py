@@ -55,8 +55,8 @@ def main(argv):
             'or "google"), or the name of a file with style settings. pep8 is '
             ' the default.'))
   parser.add_argument(
-      '--noverify', action='store_true',
-      help='do not verify refomatted code for syntax errors')
+      '--verify', action='store_true',
+      help='try to verify refomatted code for syntax errors')
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument(
       '-d', '--diff', action='store_true',
@@ -102,11 +102,11 @@ def main(argv):
         filename='<stdin>',
         style_config=args.style,
         lines=lines,
-        verify=not args.noverify))
+        verify=args.verify))
     return 0
 
   FormatFiles(files, lines, style_config=args.style, in_place=args.in_place,
-              print_diff=args.diff, verify=not args.noverify)
+              print_diff=args.diff, verify=args.verify)
   return 0
 
 
