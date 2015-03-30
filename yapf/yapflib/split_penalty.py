@@ -198,11 +198,18 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for trailer in node.children[1:]:
       if pytree_utils.NodeName(trailer) != 'trailer':
         break
-      if trailer.children[0].value == '(' and len(trailer.children) > 2:
-        # If the trailer's children are '()', then don't set the ')' as
-        # unbreakable. It's sometimes necessary, though undesirable, to split
-        # the two.
-        self._SetUnbreakable(trailer.children[-1])
+      if trailer.children[0].value == '(':
+        if len(trailer.children) > 2:
+          self._SetUnbreakable(trailer.children[-1])
+          if _FirstChildNode(trailer).lineno == _LastChildNode(trailer).lineno:
+            # If the trailer was originally on one line, then try to keep it
+            # like that.
+            self._SetExpressionPenalty(trailer, CONTIGUOUS_LIST)
+        else:
+          # If the trailer's children are '()', then make it a strongly
+          # connected region.  It's sometimes necessary, though undesirable, to
+          # split the two.
+          self._SetStronglyConnected(trailer.children[-1])
 
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]
@@ -306,11 +313,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def _SetExpressionPenalty(self, node, penalty):
     """Set an ARITHMETIC_EXPRESSION penalty annotation children nodes."""
 
-    def FirstChildNode(node):
-      if isinstance(node, pytree.Leaf):
-        return node
-      return FirstChildNode(node.children[0])
-
     def RecArithmeticExpression(node, first_child_leaf):
       if node is first_child_leaf:
         return
@@ -329,7 +331,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         for child in node.children:
           RecArithmeticExpression(child, first_child_leaf)
 
-    RecArithmeticExpression(node, FirstChildNode(node))
+    RecArithmeticExpression(node, _FirstChildNode(node))
 
   def _RecAnnotate(self, tree, annotate_name, annotate_value):
     """Recursively set the given annotation on all leafs of the subtree.
@@ -349,3 +351,15 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                                                     default=0)
       if cur_annotate < annotate_value:
         pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
+
+
+def _FirstChildNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return _FirstChildNode(node.children[0])
+
+
+def _LastChildNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return _LastChildNode(node.children[-1])

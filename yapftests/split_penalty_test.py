@@ -25,6 +25,7 @@ from yapf.yapflib import split_penalty
 
 UNBREAKABLE = split_penalty.UNBREAKABLE
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
+CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
 
 
 class SplitPenaltyTest(unittest.TestCase):
@@ -226,11 +227,11 @@ class SplitPenaltyTest(unittest.TestCase):
     self._CheckPenalties(tree, [
         ('foo', None),
         ('(', UNBREAKABLE),
-        ('1', None),
-        (',', None),
-        ('2', None),
-        (',', None),
-        ('3', None),
+        ('1', CONTIGUOUS_LIST),
+        (',', CONTIGUOUS_LIST),
+        ('2', CONTIGUOUS_LIST),
+        (',', CONTIGUOUS_LIST),
+        ('3', CONTIGUOUS_LIST),
         (')', UNBREAKABLE)])  # yapf: disable
 
     # Now a method call, which has more than one trailer
@@ -243,11 +244,11 @@ class SplitPenaltyTest(unittest.TestCase):
         ('.', UNBREAKABLE),
         ('baz', UNBREAKABLE),
         ('(', UNBREAKABLE),
-        ('1', None),
-        (',', None),
-        ('2', None),
-        (',', None),
-        ('3', None),
+        ('1', CONTIGUOUS_LIST),
+        (',', CONTIGUOUS_LIST),
+        ('2', CONTIGUOUS_LIST),
+        (',', CONTIGUOUS_LIST),
+        ('3', CONTIGUOUS_LIST),
         (')', UNBREAKABLE)])  # yapf: disable
 
 

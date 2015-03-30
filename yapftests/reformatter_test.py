@@ -957,6 +957,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testTrailerOnSingleLine(self):
+    code = textwrap.dedent("""\
+        urlpatterns = patterns('', url(r'^$', 'homepage_view'),
+                               url(r'^/login/$', 'login_view'),
+                               url(r'^/login/$', 'logout_view'),
+                               url(r'^/user/(?P<username>\w+)/$', 'profile_view'))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
