@@ -27,6 +27,7 @@ from yapf.yapflib import reformatter
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
+from yapf.yapflib import verifier
 
 
 class BasicReformatterTest(unittest.TestCase):
@@ -1563,9 +1564,9 @@ class TestVerifyNoVerify(unittest.TestCase):
           pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    with self.assertRaises(SyntaxError):
+    with self.assertRaises(verifier.InternalError):
       reformatter.Reformat(uwlines, verify=True)
-    with self.assertRaises(SyntaxError):
+    with self.assertRaises(verifier.InternalError):
       # default should be True
       reformatter.Reformat(uwlines)
 
@@ -1593,7 +1594,7 @@ class TestVerifyNoVerify(unittest.TestCase):
           call_my_function(print)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    with self.assertRaises(SyntaxError):
+    with self.assertRaises(verifier.InternalError):
       reformatter.Reformat(uwlines, verify=True)
 
     expected_formatted_code = textwrap.dedent("""\

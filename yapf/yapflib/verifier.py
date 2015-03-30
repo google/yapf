@@ -25,7 +25,9 @@ import sys
 import textwrap
 
 
-class InternalError(Exception): pass
+class InternalError(Exception):
+  """Internal error in verifying formatted code."""
+  pass
 
 
 def VerifyCode(code):
@@ -46,8 +48,8 @@ def VerifyCode(code):
       try:
         normalized_code = _NormalizeCode(code)
         compile(normalized_code.encode('UTF-8'), '<string>', 'exec')
-      except SyntaxError:
-        raise
+      except SyntaxError as e:
+        raise InternalError(sys.exc_info()[1])
 
 
 def _NormalizeCode(code):
