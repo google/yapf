@@ -9,10 +9,10 @@ YAPF
 Introduction
 ============
 
-Most of the current formatters for Python -- e.g., autopep8, and pep8ify -- are
-made to remove lint errors from code. This has some obvious limitations. For
-instance, code that conforms to the PEP 8 guidelines may not be reformatted.
-But it doesn't mean that the code looks good.
+Most of the current formatters for Python --- e.g., autopep8, and pep8ify ---
+are made to remove lint errors from code. This has some obvious limitations.
+For instance, code that conforms to the PEP 8 guidelines may not be
+reformatted.  But it doesn't mean that the code looks good.
 
 YAPF takes a different approach. It's based off of 'clang-format', developed by
 Daniel Jasper. In essence, the algorithm takes the code and reformats it to the
@@ -62,7 +62,8 @@ Usage
 
 Options::
 
-    usage: yapf [-h] [--style STYLE] [-d | -i] [-l START-END | -r] ...
+    usage: yapf [-h] [--style STYLE] [--noverify] [-d | -i] [-l START-END | -r]
+                ...
 
     Formatter for Python code.
 
@@ -74,15 +75,21 @@ Options::
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
                             with style settings. pep8 is the default.
+      --noverify            do not verify refomatted code for syntax errors
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -l START-END, --lines START-END
                             range of lines to reformat, one-based
       -r, --recursive       run recursively over directories
 
-Note: after reformatting a chunk of code, YAPF verifies that it's correct (can
-be parsed by Python itself). This means that if you're reformatting Python 3
-code, it's best to run YAPF itself under Python 3. The same goes for Python 2.
+.. note::
+
+  After reformatting a chunk of code, YAPF verifies that it's correct (can be
+  parsed by Python itself). This means that if you're reformatting Python 3
+  code, it's best to run YAPF itself under Python 3. The same goes for Python
+  2.
+  
+  It's possible to disable verification with the ``--noverify`` flag.
 
 Formatting style
 ================
@@ -139,16 +146,15 @@ Is reformatted into:
 
 
     class foo(object):
+        def f(self):
+            return 37 * -+2
 
-      def f(self):
-        return 37 * -+2
-
-      def g(self, x, y=42):
-        return y
+        def g(self, x, y=42):
+            return y
 
 
     def f(a):
-      return 37 + -+a[42 - x:y ** 3]
+        return 37 + -+a[42 - x:y ** 3]
 
 Why Not Improve Existing Tools?
 ===============================
