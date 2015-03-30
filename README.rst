@@ -24,7 +24,8 @@ made, the style remains consistent throughout the project and there's no point
 arguing about style in every code review.
 
 The ultimate goal is that the code YAPF produces is as good as the code that a
-programmer would write if they were following the style guide.
+programmer would write if they were following the style guide. It takes away
+some of the drudgery of maintaining your code.
 
 .. footer::
 
@@ -62,8 +63,7 @@ Usage
 
 Options::
 
-    usage: yapf [-h] [--style STYLE] [--noverify] [-d | -i] [-l START-END | -r]
-                ...
+    usage: yapf [-h] [--style STYLE] [--noverify] [-d | -i] [-l START-END | -r] ...
 
     Formatter for Python code.
 
@@ -88,7 +88,7 @@ Options::
   parsed by Python itself). This means that if you're reformatting Python 3
   code, it's best to run YAPF itself under Python 3. The same goes for Python
   2.
-  
+
   It's possible to disable verification with the ``--noverify`` flag.
 
 Formatting style
@@ -115,7 +115,7 @@ custom style is based on (think of it like subclassing).
 Example
 =======
 
-This ugly code:
+An example of the type of formatting that YAPF can do, it will take this ugly code:
 
 .. code-block:: python
 
@@ -134,7 +134,7 @@ This ugly code:
     def f  (   a ) :
       return      37+-+a[42-x :  y**3]
 
-Is reformatted into:
+and reformat it into:
 
 .. code-block:: python
 
@@ -156,8 +156,47 @@ Is reformatted into:
     def f(a):
         return 37 + -+a[42 - x:y ** 3]
 
+(Potentially) Frequently Asked Questions
+========================================
+
+Why does YAPF destroy my awesome formatting?
+--------------------------------------------
+
+YAPF tries very hard to get the formatting correct. But for some code, it won't
+be as good as hand-formatting. In particular, large data literals may become
+horribly disfigured under YAPF.
+
+The reason for this is manifold. But in essence YAPF is simply a tool to help
+with development. It will format things to coincide with the style guide, but
+that may not equate with readability.
+
+What can be done to alleviate this situation is to indicate regions YAPF should
+ignore when reformatting something:
+
+.. code-block:: python
+
+    # yapf: disable
+    FOO = {
+        # ... some very large, complex data literal.
+    }
+
+    BAR = [
+        # ... another large data literal.
+    ]
+    # yapf: enable
+
+You can also disable formatting for a single literal like this:
+
+.. code-block:: python
+
+    BAZ = {
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 12]
+    }  # yapf: disable
+
 Why Not Improve Existing Tools?
-===============================
+-------------------------------
 
 We wanted to use clang-format's reformatting algorithm. It's very powerful and
 designed to come up with the best formatting possible. Existing tools were
@@ -165,7 +204,7 @@ created with different goals in mind, and would require extensive modifications
 to convert to using clang-format's algorithm.
 
 Can I Use YAPF In My Program?
-=============================
+-----------------------------
 
 Please do! YAPF was designed to be used as a library as well as a command line
 tool. This means that a tool or IDE plugin is free to use YAPF.
