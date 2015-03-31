@@ -968,6 +968,19 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testIfConditionalParens(self):
+    code = textwrap.dedent("""\
+        class Foo:
+
+          def bar():
+            if True:
+              if (child.type == grammar_token.NAME and
+                  child.value in substatement_names):
+                pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
