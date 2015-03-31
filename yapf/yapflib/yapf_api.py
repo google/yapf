@@ -40,6 +40,7 @@ import sys
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
+from yapf.yapflib import continuation_splicer
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import reformatter
@@ -99,6 +100,7 @@ def FormatCode(unformatted_source,
 
   # Run passes on the tree, modifying it in place.
   comment_splicer.SpliceComments(tree)
+  continuation_splicer.SpliceContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)

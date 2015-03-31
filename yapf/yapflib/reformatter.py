@@ -52,8 +52,10 @@ def Reformat(uwlines, verify=True):
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
     if _LineContainsI18n(uwline):
       _EmitLineUnformatted(state)
-    elif _CanPlaceOnSingleLine(uwline):
-      # The unwrapped line fits on one line.
+    elif _CanPlaceOnSingleLine(uwline) or _LineHasContinuationMarkers(uwline):
+      # The unwrapped line fits on one line. Or the line contains continuation
+      # markers, in which case we assume the programmer formatted the code this
+      # way intentionally.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
     else:
@@ -125,6 +127,11 @@ def _LineContainsI18n(uwline):
       index += 1
 
   return False
+
+
+def _LineHasContinuationMarkers(uwline):
+  """Return true if the line has continuation markers in it."""
+  return any(tok.is_continuation for tok in uwline.tokens)
 
 
 def _CanPlaceOnSingleLine(uwline):
