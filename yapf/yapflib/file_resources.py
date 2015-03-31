@@ -56,10 +56,10 @@ def _FindFiles(filenames, recursive):
     if os.path.isdir(filename):
       if recursive:
         # TODO(morbo): Look into a version of os.walk that can handle recursion.
-        python_files.extend(os.path.join(dirpath, f)
-                            for dirpath, _, filelist in os.walk(filename)
-                            for f in filelist
-                            if IsPythonFile(os.path.join(dirpath, f)))
+        python_files.extend(
+            os.path.join(dirpath, f)
+            for dirpath, _, filelist in os.walk(filename) for f in filelist
+            if IsPythonFile(os.path.join(dirpath, f)))
       else:
         python_files.extend(os.path.join(filename, f)
                             for f in os.listdir(filename)

@@ -48,7 +48,10 @@ from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
-def FormatFile(filename, style_config=None, lines=None, print_diff=False,
+def FormatFile(filename,
+               style_config=None,
+               lines=None,
+               print_diff=False,
                verify=True):
   """Format a single Python file and return the formatted code.
 
@@ -107,8 +110,8 @@ def FormatCode(unformatted_source,
     uwl.CalculateFormattingInformation()
 
   if lines is not None:
-    reformatted_source = _FormatLineSnippets(unformatted_source, uwlines,
-                                             lines, verify)
+    reformatted_source = _FormatLineSnippets(unformatted_source, uwlines, lines,
+                                             verify)
   else:
     lines = _LinesToFormat(uwlines)
     if lines:
