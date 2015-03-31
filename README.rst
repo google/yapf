@@ -63,7 +63,7 @@ Usage
 
 Options::
 
-    usage: yapf [-h] [--style STYLE] [--noverify] [-d | -i] [-l START-END | -r] ...
+    usage: yapf [-h] [--style STYLE] [-d | -i] [-l START-END | -r] ...
 
     Formatter for Python code.
 
@@ -75,21 +75,11 @@ Options::
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
                             with style settings. pep8 is the default.
-      --noverify            do not verify refomatted code for syntax errors
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -l START-END, --lines START-END
                             range of lines to reformat, one-based
       -r, --recursive       run recursively over directories
-
-.. note::
-
-  After reformatting a chunk of code, YAPF verifies that it's correct (can be
-  parsed by Python itself). This means that if you're reformatting Python 3
-  code, it's best to run YAPF itself under Python 3. The same goes for Python
-  2.
-
-  It's possible to disable verification with the ``--noverify`` flag.
 
 Formatting style
 ================
