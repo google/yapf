@@ -119,11 +119,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     # standalone comment and in the case of it coming directly after the
     # funcdef, it is a "top" comment for the whole function.
     # TODO(eliben): add more relevant compound statements here.
-    single_stmt_suite = (
-        node.parent and
-        pytree_utils.NodeName(node.parent) in
-        {'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'expect_clause',
-         'with_stmt', 'funcdef', 'classdef'})
+    single_stmt_suite = (node.parent and pytree_utils.NodeName(node.parent) in {
+        'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'expect_clause',
+        'with_stmt', 'funcdef', 'classdef'
+    })
     is_comment_stmt = pytree_utils.NodeName(node.children[0]) == 'COMMENT'
     if single_stmt_suite and not is_comment_stmt:
       self._cur_depth += 1
@@ -288,11 +287,12 @@ def _DetermineMustSplitAnnotation(node):
 
 def _SetMustSplitOnFirstLeaf(node):
   """Set the "must split" annotation on the first leaf node."""
+
   def FindFirstLeaf(node):
     if isinstance(node, pytree.Leaf):
       return node
 
     return FindFirstLeaf(node.children[0])
 
-  pytree_utils.SetNodeAnnotation(
-      FindFirstLeaf(node), pytree_utils.Annotation.MUST_SPLIT, True)
+  pytree_utils.SetNodeAnnotation(FindFirstLeaf(node),
+                                 pytree_utils.Annotation.MUST_SPLIT, True)
