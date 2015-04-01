@@ -19,6 +19,7 @@ import unittest
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
+from yapf.yapflib import continuation_splicer
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -123,7 +124,7 @@ class BasicReformatterTest(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testLineContinuation(self):
+  def testMultipleUgliness(self):
     unformatted_code = textwrap.dedent("""\
         x = {  'a':37,'b':42,
 
@@ -134,8 +135,7 @@ class BasicReformatterTest(unittest.TestCase):
         a = 'hello {}'.format('world')
         class foo  (     object  ):
           def f    (self   ):
-            return       \\
-        37*-+2
+            return       37*-+2
           def g(self, x,y=42):
               return y
         def f  (   a ) :
@@ -981,6 +981,32 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testContinuationMarkers(self):
+    code = textwrap.dedent("""\
+        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. "\\
+               "Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur "\\
+               "ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis "\\
+               "sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. "\\
+               "Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet"
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
+    code = textwrap.dedent("""\
+        from __future__ import nested_scopes, generators, division, absolute_import, with_statement, \\
+            print_function, unicode_literals
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
+    code = textwrap.dedent("""\
+        if aaaaaaaaa == 42 and bbbbbbbbbbbbbb == 42 and \\
+           cccccccc == 42:
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
@@ -1681,6 +1707,7 @@ def _ParseAndUnwrap(code, dumptree=False):
   """
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
+  continuation_splicer.SpliceContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)

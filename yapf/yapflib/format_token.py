@@ -25,6 +25,9 @@ from lib2to3.pgen2 import token
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 
+CONTINUATION = token.N_TOKENS
+token.N_TOKENS += 1
+
 
 class Subtype(object):
   """Subtype information about tokens.
@@ -192,6 +195,10 @@ class FormatToken(object):
   @property
   def is_comment(self):
     return self._node.type == token.COMMENT
+
+  @property
+  def is_continuation(self):
+    return self._node.type == CONTINUATION
 
   @property
   def is_keyword(self):

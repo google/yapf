@@ -193,6 +193,9 @@ def _IsBinaryOperator(tok):
 
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
+  if left.is_continuation or right.is_continuation:
+    # The continuation node's value has all of the spaces it needs.
+    return False
   if right.name in pytree_utils.NONSEMANTIC_TOKENS:
     # No space before a non-semantic token.
     return False
