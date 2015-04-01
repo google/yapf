@@ -111,16 +111,8 @@ def FormatCode(unformatted_source,
   for uwl in uwlines:
     uwl.CalculateFormattingInformation()
 
-  if lines is not None:
-    reformatted_source = _FormatLineSnippets(unformatted_source, uwlines, lines,
-                                             verify)
-  else:
-    lines = _LinesToFormat(uwlines)
-    if lines:
-      reformatted_source = _FormatLineSnippets(unformatted_source, uwlines,
-                                               lines, verify)
-    else:
-      reformatted_source = reformatter.Reformat(uwlines, verify)
+  _MarkLinesToFormat(uwlines, lines)
+  reformatted_source = reformatter.Reformat(uwlines, verify)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source
@@ -175,84 +167,36 @@ DISABLE_PATTERN = r'^#+ +yapf: *disable$'
 ENABLE_PATTERN = r'^#+ +yapf: *enable$'
 
 
-def _LinesToFormat(uwlines):
+def _MarkLinesToFormat(uwlines, lines):
   """Skip sections of code that we shouldn't reformat."""
-  start = 1
-  lines = []
-  for uwline in uwlines:
+  if lines:
+    for uwline in uwlines:
+      uwline.disable = True
+
+    for start, end in sorted(lines):
+      for uwline in uwlines:
+        if uwline.lineno > end:
+          break
+        if uwline.lineno >= start:
+          uwline.disable = False
+    return
+
+  index = 0
+  while index < len(uwlines):
+    uwline = uwlines[index]
     if uwline.is_comment:
       if re.search(DISABLE_PATTERN, uwline.first.value.strip(), re.IGNORECASE):
-        lines.append((start, uwline.lineno))
-      elif re.search(ENABLE_PATTERN, uwline.first.value.strip(), re.IGNORECASE):
-        start = uwline.lineno
-    elif re.search(DISABLE_PATTERN, uwline.last.value.strip(), re.IGNORECASE):
-      # Disable only one line.
-      if uwline.lineno != start:
-        lines.append((start, uwline.lineno - 1))
-      start = uwline.last.lineno + 1
-
-  if start != 1 and start <= uwlines[-1].last.lineno + 1:
-    lines.append((start, uwlines[-1].last.lineno))
-  return lines
-
-
-def _FormatLineSnippets(unformatted_source, uwlines, lines, verify=True):
-  """Format a string of Python code.
-
-  This provides an alternative entry point to YAPF.
-
-  Arguments:
-    unformatted_source: (unicode) The code to format.
-    uwlines: (list of UnwrappedLine) The unwrapped lines.
-    lines: (list of tuples of integers) A list of lines that we want to format.
-      The lines are 1-indexed.
-    verify: (bool) True if reformatted code should be verified for syntax.
-
-  Returns:
-    The code reformatted to conform to the desired formatting style.
-  """
-  # First we reformat only those lines that we want to reformat.
-  index = 0
-  reformatted_sources = dict()
-  for start, end in sorted(lines):
-    snippet = []
-    while index < len(uwlines):
-      if start <= uwlines[index].lineno or start < uwlines[index].last.lineno:
         while index < len(uwlines):
-          if end < uwlines[index].lineno:
+          uwline = uwlines[index]
+          uwline.disable = True
+          if (uwline.is_comment and
+              re.search(ENABLE_PATTERN, uwline.first.value.strip(),
+                        re.IGNORECASE)):
             break
-          snippet.append(uwlines[index])
           index += 1
-        break
-      index += 1
-    # Make sure to re-add preceding blank lines to the code snippet.
-    blank_lines = ''
-    if snippet:
-      blank_lines = '\n' * (snippet[0].lineno - start)
-      if snippet[0].is_comment:
-        if snippet[0].first.value.count('\n') == len(blank_lines):
-          blank_lines = ''
-    reformatted_sources[(start, end)] = (
-        blank_lines + reformatter.Reformat(snippet, verify).rstrip()
-    )
-
-  # Next we reconstruct the finalized lines inserting the reformatted lines at
-  # the appropriate places.
-  prev_end = 0
-  finalized_lines = []
-  unformatted_lines = unformatted_source.splitlines()
-  for key in sorted(reformatted_sources):
-    start, end = key
-    finalized_lines.extend(unformatted_lines[prev_end:start - 1])
-    finalized_lines.append(reformatted_sources[key])
-    prev_end = end
-
-  # If there are any remaining lines, place them at the end.
-  if prev_end < len(unformatted_lines):
-    finalized_lines.extend(unformatted_lines[prev_end:])
-
-  # Construct the reformatted sources.
-  return '\n'.join(finalized_lines).rstrip() + '\n'
+    elif re.search(DISABLE_PATTERN, uwline.last.value.strip(), re.IGNORECASE):
+      uwline.disable = True
+    index += 1
 
 
 def _GetUnifiedDiff(before, after, filename='code'):

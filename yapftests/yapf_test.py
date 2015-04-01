@@ -209,6 +209,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
+
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
@@ -218,6 +219,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
                 xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
+
 
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
@@ -250,6 +252,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
                 xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
+
 
         # yapf: disable
         def g():
@@ -291,10 +294,12 @@ class CommandLineTest(unittest.TestCase):
                 xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
+
         # yapf: disable
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
+
 
         def f():
             def e():
@@ -356,6 +361,29 @@ class CommandLineTest(unittest.TestCase):
             'hello',
             'world',
         ])  # yapf: disable
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY,
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
+  def testDisableButAdjustIndentations(self):
+    unformatted_code = textwrap.dedent(u"""\
+        class SplitPenaltyTest(unittest.TestCase):
+          def testUnbreakable(self):
+            self._CheckPenalties(tree, [
+            ])  # yapf: disable
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        class SplitPenaltyTest(unittest.TestCase):
+            def testUnbreakable(self):
+                self._CheckPenalties(tree, [
+                ])  # yapf: disable
         """)
 
     p = subprocess.Popen(YAPF_BINARY,

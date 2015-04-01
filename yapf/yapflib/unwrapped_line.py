@@ -46,9 +46,11 @@ class UnwrappedLine(object):
     Arguments:
       depth: indentation depth of this line
       tokens: initial list of tokens
+      disable: ignore this line for formatting.
     """
     self.depth = depth
     self._tokens = tokens or []
+    self.disable = False
 
     if self._tokens:
       # Set up a doubly linked list.
