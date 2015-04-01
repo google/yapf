@@ -284,7 +284,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     self._SetExpressionPenalty(node, TERM_EXPRESSION)
 
   def Visit_atom(self, node):  # pylint: disable=invalid-name
-    # atom ::= '(' [yield_expr|testlist_gexp] ')'
+    # atom ::= ('(' [yield_expr|testlist_gexp] ')'
+    #           '[' [listmaker] ']' |
+    #           '{' [dictsetmaker] '}')
     self.DefaultNodeVisit(node)
     if node.children[0].value == '(':
       if node.children[0].lineno == node.children[-1].lineno:
@@ -294,6 +296,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         pytree_utils.SetNodeAnnotation(node.children[-1],
                                        pytree_utils.Annotation.SPLIT_PENALTY,
                                        UNBREAKABLE)
+    elif node.children[0].value in '[{':
+      # Keep empty containers together if we can.
+      if len(node.children) == 2:
+        self._SetStronglyConnected(node.children[-1])
 
   ############################################################################
   # Helper methods that set the annotations.

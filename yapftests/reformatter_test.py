@@ -1007,6 +1007,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testEmptyContainers(self):
+    code = textwrap.dedent("""\
+        flags.DEFINE_list(
+            'output_dirs', [],
+            'Lorem ipsum dolor sit amet, consetetur adipiscing elit. Donec a diam lectus. '
+            'Sed sit amet ipsum mauris. Maecenas congue.')
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
