@@ -1589,6 +1589,16 @@ class TestsForPEP8Style(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testContinuedNonOudentedLine(self):
+    code = textwrap.dedent("""\
+        class eld(d):
+            if str(geom.geom_type).upper(
+            ) != self.geom_type and not self.geom_type == 'GEOMETRY':
+                ror(code='om_type')
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 @unittest.skipIf(py3compat.PY3, 'Requires Python 2')
 class TestVerifyNoVerify(unittest.TestCase):
