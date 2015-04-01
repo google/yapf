@@ -254,9 +254,8 @@ class FormatDecisionState(object):
     if (previous.OpensScope() or
         (previous.is_comment and previous.previous_token is not None and
          previous.previous_token.OpensScope())):
-      self.stack[-1].closing_scope_indent = (
-          max(0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
-      )
+      self.stack[-1].closing_scope_indent = max(
+          0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       self.stack[-1].split_before_closing_bracket = True
 
     # Calculate the split penalty.
@@ -277,12 +276,18 @@ class FormatDecisionState(object):
   def _GetNewlineColumn(self):
     """Return the new column on the newline."""
     current = self.next_token
+    previous = current.previous_token
     top_of_stack = self.stack[-1]
 
     if current.OpensScope():
       return self.first_indent if not self.paren_level else top_of_stack.indent
 
     if current.ClosesScope():
+      if (previous.OpensScope() or
+          (previous.is_comment and previous.previous_token is not None and
+           previous.previous_token.OpensScope())):
+        return max(
+            0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent
 
     return top_of_stack.indent
