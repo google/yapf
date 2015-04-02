@@ -19,12 +19,9 @@ Pull them out and make it into nodes of their own.
   SpliceContinuations(): the main funciton exported by this module.
 """
 
-from lib2to3 import pygram
 from lib2to3 import pytree
-from lib2to3.pgen2 import token
 
 from yapf.yapflib import format_token
-from yapf.yapflib import pytree_utils
 
 
 def SpliceContinuations(tree):

@@ -12,10 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for yapf.file_resources"""
+"""Tests for yapf.file_resources."""
 
 import contextlib
-import os
 import shutil
 import sys
 import tempfile
@@ -26,7 +25,7 @@ from yapf.yapflib import py3compat
 
 
 @contextlib.contextmanager
-def stdout_redirector(stream):
+def stdout_redirector(stream):  # pylint: disable=invalid-name
   old_stdout = sys.stdout
   sys.stdout = stream
   try:

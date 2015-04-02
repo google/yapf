@@ -124,7 +124,7 @@ class CommandLineTest(unittest.TestCase):
   def testSetGoogleStyle(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo(): # trail
-            x = 37 
+            x = 37
         """)
     expected_formatted_code = textwrap.dedent(u"""\
         def foo():  # trail

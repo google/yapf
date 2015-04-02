@@ -48,7 +48,7 @@ def VerifyCode(code):
       try:
         normalized_code = _NormalizeCode(code)
         compile(normalized_code.encode('UTF-8'), '<string>', 'exec')
-      except SyntaxError as e:
+      except SyntaxError:
         raise InternalError(sys.exc_info()[1])
 
 
@@ -59,6 +59,7 @@ def _NormalizeCode(code):
   # Split the code to lines and get rid of all leading full-comment lines as
   # they can mess up the normalization attempt.
   lines = code.split('\n')
+  i = 0
   for i, line in enumerate(lines):
     line = line.strip()
     if line and not line.startswith('#'):

@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for yapf.style"""
+"""Tests for yapf.style."""
 
 import contextlib
 import shutil
@@ -25,14 +25,14 @@ from yapf.yapflib import style
 
 class UtilsTest(unittest.TestCase):
 
-  def test_StringListConverter(self):
+  def testStringListConverter(self):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('foo,bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('  foo'), ['foo'])
     self.assertEqual(style._StringListConverter('joe  ,foo,  bar'),
                      ['joe', 'foo', 'bar'])
 
-  def test_BoolConverter(self):
+  def testBoolConverter(self):
     self.assertEqual(style._BoolConverter('true'), True)
     self.assertEqual(style._BoolConverter('1'), True)
     self.assertEqual(style._BoolConverter('false'), False)
@@ -51,25 +51,25 @@ def _LooksLikePEP8Style(cfg):
 
 class PredefinedStylesByNameTest(unittest.TestCase):
 
-  def test_Default(self):
+  def testDefault(self):
     # default is PEP8
     cfg = style.CreateStyleFromConfig(None)
     self.assertTrue(_LooksLikePEP8Style(cfg))
 
-  def test_GoogleByName(self):
+  def testGoogleByName(self):
     for google_name in ('google', 'Google', 'GOOGLE'):
       cfg = style.CreateStyleFromConfig(google_name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
 
-  def test_PEP8ByName(self):
+  def testPEP8ByName(self):
     for pep8_name in ('PEP8', 'pep8', 'Pep8'):
       cfg = style.CreateStyleFromConfig(pep8_name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
 
 
 @contextlib.contextmanager
-def _TempFileContents(dir, contents):
-  with tempfile.NamedTemporaryFile(dir=dir, mode='w') as f:
+def _TempFileContents(dirname, contents):
+  with tempfile.NamedTemporaryFile(dir=dirname, mode='w') as f:
     f.write(contents)
     f.flush()
     yield f
@@ -85,7 +85,7 @@ class StyleFromFileTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
-  def test_DefaultBasedOnStyle(self):
+  def testDefaultBasedOnStyle(self):
     cfg = textwrap.dedent('''\
         [style]
         tab_width = 20
@@ -95,7 +95,7 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['TAB_WIDTH'], 20)
 
-  def test_DefaultBasedOnPEP8Style(self):
+  def testDefaultBasedOnPEP8Style(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = pep8
@@ -106,7 +106,7 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['TAB_WIDTH'], 40)
 
-  def test_DefaultBasedOnGoogleStyle(self):
+  def testDefaultBasedOnGoogleStyle(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
@@ -117,7 +117,7 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
       self.assertEqual(cfg['SPLIT_PENALTY_MATCHING_BRACKET'], 33)
 
-  def test_BoolOptionValue(self):
+  def testBoolOptionValue(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
@@ -130,7 +130,7 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertEqual(cfg['SPLIT_BEFORE_NAMED_ASSIGNS'], False)
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
-  def test_StringListOptionValue(self):
+  def testStringListOptionValue(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
@@ -141,12 +141,12 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
 
-  def test_ErrorNoStyleFile(self):
+  def testErrorNoStyleFile(self):
     with self.assertRaisesRegexp(style.StyleConfigError,
                                  'is not a valid style or file path'):
-      cfg = style.CreateStyleFromConfig('/8822/xyznosuchfile')
+      style.CreateStyleFromConfig('/8822/xyznosuchfile')
 
-  def test_ErrorNoStyleSection(self):
+  def testErrorNoStyleSection(self):
     cfg = textwrap.dedent('''\
         [s]
         TAB_WIDTH=2
@@ -154,9 +154,9 @@ class StyleFromFileTest(unittest.TestCase):
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unable to find section'):
-        cfg = style.CreateStyleFromConfig(f.name)
+        style.CreateStyleFromConfig(f.name)
 
-  def test_ErrorUnknownStyleOption(self):
+  def testErrorUnknownStyleOption(self):
     cfg = textwrap.dedent('''\
         [style]
         TAB_WIDTH=2
@@ -165,12 +165,12 @@ class StyleFromFileTest(unittest.TestCase):
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unknown style option'):
-        cfg = style.CreateStyleFromConfig(f.name)
+        style.CreateStyleFromConfig(f.name)
 
 
 class StyleFromCommandLine(unittest.TestCase):
 
-  def test_DefaultBasedOnStyle(self):
+  def testDefaultBasedOnStyle(self):
     cfg = style.CreateStyleFromConfig(
         '{based_on_style: pep8,'
         ' indent_width: 2,'

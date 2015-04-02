@@ -41,9 +41,8 @@ def main(argv):
   """Main program.
 
   Arguments:
-    argv:
-      command-line arguments, such as sys.argv (including the program name in
-      argv[0]).
+    argv: command-line arguments, such as sys.argv (including the program name
+      in argv[0]).
 
   Returns:
     0 if there were no errors, non-zero otherwise.
@@ -53,7 +52,7 @@ def main(argv):
       '--style', action='store', default='pep8',
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. pep8 is '
-            ' the default.'))
+            'the default.'))
   parser.add_argument(
       '--verify', action='store_true',
       help='try to verify refomatted code for syntax errors')
