@@ -64,7 +64,7 @@ def FormatFile(filename,
     The reformatted code or None if the file doesn't exist.
   """
   _CheckPythonVersion()
-  original_source = _ReadFile(filename, logging.warning)
+  original_source = ReadFile(filename, logging.warning)
   if original_source is None:
     return None
 
@@ -136,11 +136,12 @@ def _CheckPythonVersion():
       raise RuntimeError(errmsg)
 
 
-def _ReadFile(filename, logger=None):
+def ReadFile(filename, logger=None):
   """Read the contents of the file.
 
   An optional logger can be specified to emit messages to your favorite logging
-  stream. If specified, then no exception is raised.
+  stream. If specified, then no exception is raised. This is external so that it
+  can be used by third-party applications.
 
   Arguments:
     filename: (unicode) The name of the file.
