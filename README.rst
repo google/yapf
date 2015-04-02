@@ -88,11 +88,12 @@ The formatting style used by YAPF is configurable and there are many "knobs"
 that can be used to tune how YAPF does formatting. See the ``style.py`` module
 for the full list.
 
-To control the style, run YAPF with the ``--style`` argument. It accepts either
-one of the predefined styles (currently "pep8" or "google"), or a path to a
-configuration file that specifies the desired style. The file is a simple
-listing of (case-insensitive) ``key = value`` pairs with a ``[style]`` heading.
-For example::
+To control the style, run YAPF with the ``--style`` argument. It accepts one of
+the predefined styles (e.g., ``pep8`` or ``google``), a path to a configuration
+file that specifies the desired style, or a dictionary of key/value pairs.
+
+The config file is a simple listing of (case-insensitive) ``key = value`` pairs
+with a ``[style]`` heading. For example::
 
     [style]
     based_on_style = pep8
@@ -101,6 +102,14 @@ For example::
 
 The ``based_on_style`` setting determines which of the predefined styles this
 custom style is based on (think of it like subclassing).
+
+It's also possible to do the same on the command line with a dictionary. For
+example::
+
+    --style='{based_on_style: google, indent_width: 4}'
+
+This will take the ``google`` base style and modify it to have four space
+indentations.
 
 Example
 =======
