@@ -14,6 +14,7 @@
 """Python formatting style settings."""
 
 import os
+import re
 
 from yapf.yapflib import py3compat
 
@@ -192,22 +193,27 @@ def CreateStyleFromConfig(style_config):
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
     return style_factory()
-  # Unknown config name: assume it's a file name then.
-  return _CreateStyleFormConfigFile(style_config)
+  if style_config.startswith('{'):
+    # Most likely a style specification from the command line.
+    config = _CreateConfigParserFromConfigString(style_config)
+  else:
+    # Unknown config name: assume it's a file name then.
+    config = _CreateConfigParserFromConfigFile(style_config)
+  return _CreateStyleFromConfigParser(config)
 
 
-def _CreateStyleFormConfigFile(config_filename):
-  """Create a style dict from a configuration file.
+def _CreateConfigParserFromConfigString(config_string):
+  """Given a config string from the command line, return a config parser."""
+  config = py3compat.ConfigParser()
+  config.add_section('style')
+  for key, value in re.findall(r'([a-zA-Z0-9_]*): *([a-zA-Z0-9_]+)',
+                               config_string):
+    config.set('style', key, value)
+  return config
 
-  Arguments:
-    config_filename: name of a config file.
 
-  Returns:
-    A style dict.
-
-  Raises:
-    StyleConfigError: if an unknown style option was encountered.
-  """
+def _CreateConfigParserFromConfigFile(config_filename):
+  """Read the file and return a ConfigParser object."""
   if not os.path.exists(config_filename):
     # Provide a more meaningful error here.
     raise StyleConfigError('"{0}" is not a valid style or file path'.format(
@@ -218,23 +224,38 @@ def _CreateStyleFormConfigFile(config_filename):
     if not config.has_section('style'):
       raise StyleConfigError('Unable to find section [style] in {0}'.format(
           config_filename))
-    # Initialize the base style.
-    if config.has_option('style', 'based_on_style'):
-      based_on = config.get('style', 'based_on_style').lower()
-      base_style = _STYLE_NAME_TO_FACTORY[based_on]()
-    else:
-      base_style = DEFAULT_STYLE_FACTORY()
-    # Read all options specified in the file and update the style.
-    for option, value in config.items('style'):
-      if option.lower() == 'based_on_style':
-        # Now skip this one - we've already handled it and it's not one of the
-        # recognized style options.
-        continue
-      option = option.upper()
-      if option not in _STYLE_OPTION_VALUE_CONVERTER:
-        raise StyleConfigError('Unknown style option "{0}"'.format(option))
-      base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
-    return base_style
+    return config
+
+
+def _CreateStyleFromConfigParser(config):
+  """Create a style dict from a configuration file.
+
+  Arguments:
+    config: a ConfigParser object.
+
+  Returns:
+    A style dict.
+
+  Raises:
+    StyleConfigError: if an unknown style option was encountered.
+  """
+  # Initialize the base style.
+  if config.has_option('style', 'based_on_style'):
+    based_on = config.get('style', 'based_on_style').lower()
+    base_style = _STYLE_NAME_TO_FACTORY[based_on]()
+  else:
+    base_style = DEFAULT_STYLE_FACTORY()
+  # Read all options specified in the file and update the style.
+  for option, value in config.items('style'):
+    if option.lower() == 'based_on_style':
+      # Now skip this one - we've already handled it and it's not one of the
+      # recognized style options.
+      continue
+    option = option.upper()
+    if option not in _STYLE_OPTION_VALUE_CONVERTER:
+      raise StyleConfigError('Unknown style option "{0}"'.format(option))
+    base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
+  return base_style
 
 
 # The default style - used if yapf is not invoked without specifically

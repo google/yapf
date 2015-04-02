@@ -168,5 +168,16 @@ class StyleFromFileTest(unittest.TestCase):
         cfg = style.CreateStyleFromConfig(f.name)
 
 
+class StyleFromCommandLine(unittest.TestCase):
+
+  def test_DefaultBasedOnStyle(self):
+    cfg = style.CreateStyleFromConfig(
+        '{based_on_style: pep8,'
+        ' indent_width: 2,'
+        ' blank_line_before_nested_class_or_def: True}')
+    self.assertTrue(_LooksLikeGoogleStyle(cfg))
+    self.assertEqual(cfg['INDENT_WIDTH'], 2)
+
+
 if __name__ == '__main__':
   unittest.main()
