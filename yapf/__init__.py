@@ -72,7 +72,7 @@ def main(argv):
       '-r', '--recursive', action='store_true',
       help='run recursively over directories')
 
-  parser.add_argument('files', nargs=argparse.REMAINDER)
+  parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
 
   if args.lines and len(args.files) > 1:
