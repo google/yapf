@@ -165,7 +165,7 @@ YAPF tries very hard to get the formatting correct. But for some code, it won't
 be as good as hand-formatting. In particular, large data literals may become
 horribly disfigured under YAPF.
 
-The reason for this is manifold. But in essence YAPF is simply a tool to help
+The reason for this is many-fold. But in essence YAPF is simply a tool to help
 with development. It will format things to coincide with the style guide, but
 that may not equate with readability.
 
