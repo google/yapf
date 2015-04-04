@@ -1017,6 +1017,29 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testSplitStringsIfSurroundedByParens(self):
+    unformatted_code = textwrap.dedent("""\
+        a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx' 'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'bbbbbbbbbbbbbbbbbbbbbbbbbb' 'cccccccccccccccccccccccccccccccc' 'ddddddddddddddddddddddddddddd')
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy':
+                     baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                    'bbbbbbbbbbbbbbbbbbbbbbbbbb'
+                    'cccccccccccccccccccccccccccccccc'
+                    'ddddddddddddddddddddddddddddd')
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    code = textwrap.dedent("""\
+        a = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+'bbbbbbbbbbbbbbbbbbbbbbbbbb' 'cccccccccccccccccccccccccccccccc' \
+'ddddddddddddddddddddddddddddd'
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 

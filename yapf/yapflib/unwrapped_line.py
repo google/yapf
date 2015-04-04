@@ -309,7 +309,8 @@ def _MustBreakBefore(prev_token, cur_token):
   if prev_token.is_comment:
     # Must break if the previous token was a comment.
     return True
-  if cur_token.is_string and prev_token.is_string:
+  if (_IsSurroundedByBrackets(cur_token) and cur_token.is_string and
+      prev_token.is_string):
     # We want consecutive strings to be on separate lines. This is a
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
@@ -343,6 +344,37 @@ def _CanBreakBefore(prev_token, cur_token):
     return False
   # TODO(morbo): There may be more to add here.
   return True
+
+
+def _IsSurroundedByBrackets(tok):
+  """Return True if the token is surrounded by brackets."""
+  paren_count = 0
+  brace_count = 0
+  sq_bracket_count = 0
+  previous_token = tok.previous_token
+  while previous_token:
+    if previous_token.value == ')':
+      paren_count -= 1
+    elif previous_token.value == '}':
+      brace_count -= 1
+    elif previous_token.value == ']':
+      sq_bracket_count -= 1
+
+    if previous_token.value == '(':
+      if paren_count == 0:
+        return True
+      paren_count += 1
+    elif previous_token.value == '{':
+      if brace_count == 0:
+        return True
+      brace_count += 1
+    elif previous_token.value == '[':
+      if sq_bracket_count == 0:
+        return True
+      sq_bracket_count += 1
+
+    previous_token = previous_token.previous_token
+  return False
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
