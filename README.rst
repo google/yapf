@@ -6,8 +6,9 @@ YAPF
     :target: https://travis-ci.org/google/yapf
     :alt: Build status
 
-.. image:: https://coveralls.io/repos/google/yapf/badge.svg
-    :target: https://coveralls.io/r/google/yapf
+
+.. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=master
+    :target: https://coveralls.io/r/google/yapf?branch=master
     :alt: Coverage status
 
 Introduction
