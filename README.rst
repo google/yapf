@@ -57,7 +57,7 @@ run::
 Python versions
 ===============
 
-YAPF supports Python 2.7 and 3.4+.
+YAPF supports Python 2.7 and 3.4.1+.
 
 YAPF requires the code it formats to be valid Python for the version YAPF itself
 runs under. Therefore, if you format Python 3 code with YAPF, run YAPF itself
