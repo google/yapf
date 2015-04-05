@@ -1047,6 +1047,22 @@ class BuganizerFixes(unittest.TestCase):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateGoogleStyle())
 
+  def testB20073838(self):
+    code = textwrap.dedent("""\
+        class DummyModel(object):
+
+          def do_nothing(self, class_1_count):
+            if True:
+              class_0_count = num_votes - class_1_count
+              return ('{class_0_name}={class_0_count}, {class_1_name}={class_1_count}'
+                      .format(class_0_name=self.class_0_name,
+                              class_0_count=class_0_count,
+                              class_1_name=self.class_1_name,
+                              class_1_count=class_1_count))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
   def testB19626808(self):
     code = textwrap.dedent("""\
         if True:
@@ -1149,11 +1165,11 @@ class BuganizerFixes(unittest.TestCase):
             }))
         """)
     expected_formatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc()
-                    .ddddddddddd({'aa': 'context!'}).eeeeeeeeeeeeeeeeeee({
-                        # Inline comment about why fnord has the value 6.
-                        'fnord': 6
-                    }))
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
+            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
+                {  # Inline comment about why fnord has the value 6.
+                    'fnord': 6
+                }))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))

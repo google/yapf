@@ -182,10 +182,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
             # It may be necessary (though undesirable) to split up a previous
             # function call's parentheses to the next line.
             self._SetUnbreakable(prev_trailer.children[-1])
-          if not surrounded_by_parens:
-            # If this is surrounded by parentheses, we can allow the '.' to be
-            # on the next line. This is for "builder" type calling chains.
-            self._SetUnbreakable(cur_trailer.children[0])
+          self._SetUnbreakable(cur_trailer.children[0])
           prev_trailer_idx = cur_trailer_idx
         else:
           break
@@ -209,6 +206,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
           # connected region.  It's sometimes necessary, though undesirable, to
           # split the two.
           self._SetStronglyConnected(trailer.children[-1])
+
+    # If the original source has a "builder" style calls, then we should allow
+    # the reformatter to retain that.
+    _AllowBuilderStyleCalls(node)
 
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]
@@ -356,6 +357,25 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                                                     default=0)
       if cur_annotate < annotate_value:
         pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
+
+
+def _AllowBuilderStyleCalls(node):
+  def RecGetLeaves(node):
+    if isinstance(node, pytree.Leaf):
+      return [node]
+    children = []
+    for child in node.children:
+      children += RecGetLeaves(child)
+    return children
+
+  list_of_children = RecGetLeaves(node)
+  prev_child = None
+  for child in list_of_children:
+    if child.value == '.':
+      if prev_child.lineno != child.lineno:
+        pytree_utils.SetNodeAnnotation(
+            child, pytree_utils.Annotation.SPLIT_PENALTY, None)
+    prev_child = child
 
 
 def _FirstChildNode(node):
