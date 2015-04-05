@@ -474,7 +474,7 @@ class CommandLineTest(unittest.TestCase):
 
 
 
-        #comment
+        #comment  
 
         #   trailing whitespace    
         """)
@@ -491,7 +491,7 @@ class CommandLineTest(unittest.TestCase):
 
         #comment
 
-        #   trailing whitespace
+        #   trailing whitespace    
         """)
 
     p = subprocess.Popen(YAPF_BINARY + ['--lines', '3-3', '--lines', '13-13'],

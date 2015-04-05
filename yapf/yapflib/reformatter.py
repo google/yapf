@@ -51,10 +51,15 @@ def Reformat(uwlines, verify=True):
     indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
 
-    if prev_uwline and prev_uwline.disable and not uwline.disable:
-      # Keep the vertical spacing between a disabled and enabled formatting
-      # region.
-      _RetainVerticalSpacing(prev_uwline, uwline)
+    if not uwline.disable:
+      if uwline.first.is_comment:
+        uwline.first.node.value = uwline.first.node.value.rstrip()
+      elif uwline.last.is_comment:
+        uwline.last.node.value = uwline.last.node.value.rstrip()
+      if prev_uwline and prev_uwline.disable:
+        # Keep the vertical spacing between a disabled and enabled formatting
+        # region.
+        _RetainVerticalSpacing(prev_uwline, uwline)
 
     if _LineContainsI18n(uwline) or uwline.disable:
       _RetainHorizontalSpacing(uwline)

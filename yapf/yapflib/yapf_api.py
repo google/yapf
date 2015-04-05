@@ -96,7 +96,9 @@ def FormatCode(unformatted_source,
   """
   _CheckPythonVersion()
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
-  tree = pytree_utils.ParseCodeToTree(unformatted_source.rstrip() + '\n')
+  if not unformatted_source.endswith('\n'):
+    unformatted_source += '\n'
+  tree = pytree_utils.ParseCodeToTree(unformatted_source)
 
   # Run passes on the tree, modifying it in place.
   comment_splicer.SpliceComments(tree)
