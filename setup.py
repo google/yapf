@@ -15,7 +15,7 @@
 
 import codecs
 import unittest
-from distutils.core import setup, Command
+from setuptools import setup, Command
 
 import yapf
 import yapftests
