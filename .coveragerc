@@ -1,0 +1,4 @@
+[report]
+# Verifier is used for testing only.
+omit =
+  */verifier.py
