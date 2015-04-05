@@ -42,16 +42,17 @@ def Reformat(uwlines, verify=True):
     A string representing the reformatted code.
   """
   final_lines = []
-  prev_last_uwline = None  # The previous line.
+  prev_uwline = None  # The previous line.
 
   for uwline in _SingleOrMergedLines(uwlines):
     first_token = uwline.first
-    _FormatFirstToken(first_token, uwline.depth, prev_last_uwline)
+    _FormatFirstToken(first_token, uwline.depth, prev_uwline)
 
     indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
     if _LineContainsI18n(uwline) or uwline.disable:
-      uwline.RetainHorizontalSpacing()
+      _RetainHorizontalSpacing(uwline)
+      _RetainVerticalSpacing(prev_uwline, uwline)
       _EmitLineUnformatted(state)
     elif _CanPlaceOnSingleLine(uwline) or _LineHasContinuationMarkers(uwline):
       # The unwrapped line fits on one line. Or the line contains continuation
@@ -63,7 +64,7 @@ def Reformat(uwlines, verify=True):
       _AnalyzeSolutionSpace(state, dry_run=False)
 
     final_lines.append(uwline)
-    prev_last_uwline = uwline
+    prev_uwline = uwline
 
   formatted_code = []
   for line in final_lines:
@@ -78,6 +79,24 @@ def Reformat(uwlines, verify=True):
       verifier.VerifyCode(formatted_code[-1])
 
   return ''.join(formatted_code) + '\n'
+
+
+def _RetainHorizontalSpacing(uwline):
+  """Retain all horizontal spacing between tokens."""
+  map(lambda x: x.RetainHorizontalSpacing(), uwline.tokens)
+
+
+def _RetainVerticalSpacing(prev_uwline, cur_uwline):
+  """Retain all vertical spacing between lines."""
+  if not prev_uwline:
+    return
+  prev_lineno = prev_uwline.last.lineno
+  if cur_uwline.first.is_comment:
+    cur_lineno = cur_uwline.first.lineno - cur_uwline.first.value.count('\n')
+  else:
+    cur_lineno = cur_uwline.first.lineno
+  num_newlines = cur_lineno - prev_lineno
+  cur_uwline.first.AdjustNewlinesBefore(num_newlines)
 
 
 def _EmitLineUnformatted(state):
@@ -314,7 +333,7 @@ def _MatchingParenSplitDecision(current):
   return newline or current.state.next_token.is_comment
 
 
-def _FormatFirstToken(first_token, indent_depth, prev_last_uwline):
+def _FormatFirstToken(first_token, indent_depth, prev_uwline):
   """Format the first token in the unwrapped line.
 
   Add a newline and the required indent before the first token of the unwrapped
@@ -324,12 +343,12 @@ def _FormatFirstToken(first_token, indent_depth, prev_last_uwline):
     first_token: (format_token.FormatToken) The first token in the unwrapped
       line.
     indent_depth: (int) The line's indentation depth.
-    prev_last_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
+    prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
   """
   first_token.AddWhitespacePrefix(_CalculateNumberOfNewlines(first_token,
                                                              indent_depth,
-                                                             prev_last_uwline),
+                                                             prev_uwline),
                                   indent_level=indent_depth)
 
 
@@ -338,14 +357,14 @@ ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
-def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
   """Calculate the number of newlines we need to add.
 
   Arguments:
     first_token: (format_token.FormatToken) The first token in the unwrapped
       line.
     indent_depth: (int) The line's indentation depth.
-    prev_last_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
+    prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
 
   Returns:
@@ -353,7 +372,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
   """
   # TODO(morbo): Special handling for imports.
   # TODO(morbo): Create a knob that can tune these.
-  if prev_last_uwline is None:
+  if prev_uwline is None:
     # The first line in the file. Don't add blank lines.
     # FIXME(morbo): Is this correct?
     if first_token.newlines is not None:
@@ -366,7 +385,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
     # TODO(morbo): Add a knob to adjust this.
     return NO_BLANK_LINES
 
-  prev_last_token = prev_last_uwline.last
+  prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
     if not indent_depth and first_token.value in {'class', 'def'}:
       # Separate a class or function from the module-level docstring with two
@@ -396,7 +415,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_last_uwline):
                                            pytree_utils.Annotation.NEWLINES,
                                            None)
           return NO_BLANK_LINES
-    elif prev_last_uwline.first.value in {'class', 'def'}:
+    elif prev_uwline.first.value in {'class', 'def'}:
       if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)

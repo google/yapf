@@ -87,9 +87,6 @@ class UnwrappedLine(object):
       prev_length = token.total_length
       prev_token = token
 
-  def RetainHorizontalSpacing(self):
-    map(lambda x: x.RetainHorizontalSpacing(), self.tokens)
-
   ############################################################################
   # Token Access and Manipulation Methods                                    #
   ############################################################################
