@@ -395,7 +395,7 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
-  def testRetainingVerticalWhitespace(self):
+  def testRetainingHorizontalWhitespace(self):
     unformatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):

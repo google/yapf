@@ -124,7 +124,7 @@ class FormatToken(object):
         '\n' * newlines_before + self.whitespace_prefix.lstrip('\n')
     )
 
-  def RetainVerticalSpacing(self):
+  def RetainHorizontalSpacing(self):
     previous = self.previous_token
     if previous is None:
       return
