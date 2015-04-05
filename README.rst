@@ -6,6 +6,10 @@ YAPF
     :target: https://travis-ci.org/google/yapf
     :alt: Build status
 
+.. image:: http://img.shields.io/coveralls/google/yapf.svg
+    :target: https://coveralls.io/r/google/yapf
+    :alt: Coverage status
+
 Introduction
 ============
 
