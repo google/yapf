@@ -461,6 +461,48 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
+    unformatted_code = textwrap.dedent(u"""\
+
+
+        if a:     b
+
+
+        if c:
+            to_much      + indent
+
+            same
+
+
+
+        #comment
+
+        #   trailing whitespace    
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+
+        if c:
+            to_much      + indent
+
+            same
+
+
+
+        #comment
+
+        #   trailing whitespace
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY + ['--lines', '3-3', '--lines', '13-13'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
 
 if __name__ == '__main__':
   unittest.main()
