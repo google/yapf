@@ -1,11 +1,14 @@
 language: python
+
 python:
   - "2.7"
   - "3.4"
+
+install:
+  - pip install --quiet coveralls
 
 script:
   coverage run --source=yapf setup.py test
 
 after_success:
-  - pip install --quiet coveralls
-  - coveralls
+  coveralls
