@@ -49,6 +49,9 @@ def main(argv):
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
   parser.add_argument(
+      '--version', action='store_true',
+      help='print version number and exit')
+  parser.add_argument(
       '--style', action='store', default='pep8',
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. pep8 is '
@@ -74,6 +77,10 @@ def main(argv):
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
+
+  if args.version:
+    print('yapf %s' % __version__)
+    return 0
 
   if args.lines and len(args.files) > 1:
     parser.error('cannot use -l/--lines with more than one file')
