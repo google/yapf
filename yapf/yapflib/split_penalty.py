@@ -35,7 +35,6 @@ XOR_EXPRESSION = 642
 AND_EXPRESSION = 742
 SHIFT_EXPRESSION = 842
 ARITHMETIC_EXPRESSION = 942
-TERM_EXPRESSION = 1042
 
 
 def ComputeSplitPenalties(tree):
@@ -132,9 +131,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
     self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
-      self._SetStronglyConnected(node.children[0], node.children[-1])
+      self._SetUnbreakableOnChildren(node, num_children=len(node.children))
     elif node.children[0].value == '[':
-      self._SetStronglyConnected(node.children[-1])
+      self._SetUnbreakable(node.children[-1])
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
@@ -277,11 +276,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # arith_expr ::= term (('+'|'-') term)*
     self.DefaultNodeVisit(node)
     self._SetExpressionPenalty(node, ARITHMETIC_EXPRESSION)
-
-  def Visit_term(self, node):  # pylint: disable=invalid-name
-    # term ::= factor (('*'|'/'|'%'|'//') factor)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, TERM_EXPRESSION)
 
   def Visit_atom(self, node):  # pylint: disable=invalid-name
     # atom ::= ('(' [yield_expr|testlist_gexp] ')'

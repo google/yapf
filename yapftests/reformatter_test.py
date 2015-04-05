@@ -1149,11 +1149,11 @@ class BuganizerFixes(unittest.TestCase):
             }))
         """)
     expected_formatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
-                {  # Inline comment about why fnord has the value 6.
-                    'fnord': 6
-                }))
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc()
+                    .ddddddddddd({'aa': 'context!'}).eeeeeeeeeeeeeeeeeee({
+                        # Inline comment about why fnord has the value 6.
+                        'fnord': 6
+                    }))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1631,6 +1631,30 @@ class TestsForPEP8Style(unittest.TestCase):
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
+
+  def testWrappingPercentExpressions(self):
+    unformatted_code = textwrap.dedent("""\
+        def f():
+            if True:
+                zzzzz = '%s-%s' % (xxxxxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxx.yyy + 1)
+                zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxx.yyy + 1)
+                zzzzz = '%s-%s' % (xxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxxxxxx + 1)
+                zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxxxxxx + 1)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f():
+            if True:
+                zzzzz = '%s-%s' % (xxxxxxxxxxxxxxxxxxxxxxxxxx + 1,
+                                   xxxxxxxxxxxxxxxxx.yyy + 1)
+                zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxxxxx + 1,
+                                   xxxxxxxxxxxxxxxxx.yyy + 1)
+                zzzzz = '%s-%s' % (xxxxxxxxxxxxxxxxxxxxxxx + 1,
+                                   xxxxxxxxxxxxxxxxxxxxx + 1)
+                zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxx + 1,
+                                   xxxxxxxxxxxxxxxxxxxxx + 1)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
 @unittest.skipIf(py3compat.PY3, 'Requires Python 2')

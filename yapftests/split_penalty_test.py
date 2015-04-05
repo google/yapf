@@ -197,7 +197,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (':', STRONGLY_CONNECTED),
         ('-', STRONGLY_CONNECTED),
         ('1', STRONGLY_CONNECTED),
-        (']', STRONGLY_CONNECTED),
+        (']', UNBREAKABLE),
     ])  # yapf: disable
 
     # Test list comprehension.
@@ -215,7 +215,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('if', 0),
         ('a', STRONGLY_CONNECTED),
         ('.', UNBREAKABLE),
-        ('x', STRONGLY_CONNECTED),
+        ('x', UNBREAKABLE),
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
         (']', None),
