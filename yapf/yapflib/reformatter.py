@@ -51,6 +51,7 @@ def Reformat(uwlines, verify=True):
     indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
     if _LineContainsI18n(uwline) or uwline.disable:
+      uwline.RetainVerticalSpacing()
       _EmitLineUnformatted(state)
     elif _CanPlaceOnSingleLine(uwline) or _LineHasContinuationMarkers(uwline):
       # The unwrapped line fits on one line. Or the line contains continuation

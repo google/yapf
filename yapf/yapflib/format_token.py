@@ -124,6 +124,19 @@ class FormatToken(object):
         '\n' * newlines_before + self.whitespace_prefix.lstrip('\n')
     )
 
+  def RetainVerticalSpacing(self):
+    previous = self.previous_token
+    if previous is None:
+      return
+    if self.node.lineno != previous.node.lineno:
+      return
+    current_column = self.node.column
+    previous_column = previous.node.column
+
+    self.spaces_required_before = max(
+        self.spaces_required_before,
+        current_column - (previous_column + len(previous.value)))
+
   def OpensScope(self):
     return self.value in pytree_utils.OPENING_BRACKETS
 
