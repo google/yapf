@@ -26,7 +26,7 @@ from yapf.yapflib import py3compat
 
 def GetCommandLineFiles(command_line_file_list, recursive):
   """Return the list of files specified on the command line."""
-  return _FindFiles(command_line_file_list, recursive)
+  return _FindPythonFiles(command_line_file_list, recursive)
 
 
 def WriteReformattedCode(filename, reformatted_code, in_place):
@@ -49,7 +49,7 @@ def WriteReformattedCode(filename, reformatted_code, in_place):
     sys.stdout.write(py3compat.EncodeForStdout(reformatted_code))
 
 
-def _FindFiles(filenames, recursive):
+def _FindPythonFiles(filenames, recursive):
   """Find all Python files."""
   python_files = []
   for filename in filenames:
