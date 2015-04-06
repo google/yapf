@@ -146,15 +146,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # power ::= atom trailer* ['**' factor]
     self.DefaultNodeVisit(node)
 
-    # See if this node is surrounded by parentheses. If it is, then we can
-    # relax some of the formatting restrictions.
-    surrounded_by_parens = (
-        node.parent and pytree_utils.NodeName(node.parent) == 'atom' and
-        isinstance(node.parent.children[0],
-                   pytree.Leaf) and node.parent.children[0].value == '(' and
-        isinstance(node.parent.children[-1],
-                   pytree.Leaf) and node.parent.children[-1].value == ')')
-
     # When atom is followed by a trailer, we can not break between them.
     # E.g. arr[idx] - no break allowed between 'arr' and '['.
     if (len(node.children) > 1 and
@@ -360,6 +351,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
 
 def _AllowBuilderStyleCalls(node):
+  """Allow splitting before '.' if it's a builder style function call."""
   def RecGetLeaves(node):
     if isinstance(node, pytree.Leaf):
       return [node]

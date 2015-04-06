@@ -79,7 +79,7 @@ def main(argv):
   args = parser.parse_args(argv[1:])
 
   if args.version:
-    print('yapf %s' % __version__)
+    print('yapf {}'.format(__version__))
     return 0
 
   if args.lines and len(args.files) > 1:
@@ -166,7 +166,7 @@ def _GetLines(line_strings):
   return lines
 
 
-def run_main():
+def run_main():  # pylint: disable=invalid-name
   sys.exit(main(sys.argv))
 
 

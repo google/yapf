@@ -94,7 +94,8 @@ def Reformat(uwlines, verify=True):
 
 def _RetainHorizontalSpacing(uwline):
   """Retain all horizontal spacing between tokens."""
-  map(lambda x: x.RetainHorizontalSpacing(), uwline.tokens)
+  for tok in uwline.tokens:
+    tok.RetainHorizontalSpacing()
 
 
 def _RetainVerticalSpacing(prev_uwline, cur_uwline):
