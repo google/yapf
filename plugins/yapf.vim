@@ -23,7 +23,7 @@
 function! yapf#YAPF() range
   " Determine range to format.
   let l:line_ranges = a:firstline . '-' . a:lastline
-  let l:cmd = 'env PYTHONPATH=~/github/yapf /opt/local/bin/python -m yapf --lines=' . l:line_ranges
+  let l:cmd = 'env PYTHONPATH=<path_to_srcdir>/yapf <path_to_python>/python -m yapf --lines=' . l:line_ranges
 
   " Call YAPF with the current buffer
   let l:formatted_text = system(l:cmd, join(getline(1, '$'), "\n") . "\n")
