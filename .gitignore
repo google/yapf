@@ -24,5 +24,7 @@
 #==============================================================================#
 # Directories to ignore (do not add trailing '/'s, they skip symlinks).
 #==============================================================================#
-# The build directory.
 build
+dist
+.tox
+yapf.egg-info
