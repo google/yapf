@@ -366,7 +366,7 @@ def _AllowBuilderStyleCalls(node):
     if child.value == '.':
       if prev_child.lineno != child.lineno:
         pytree_utils.SetNodeAnnotation(
-            child, pytree_utils.Annotation.SPLIT_PENALTY, None)
+            child, pytree_utils.Annotation.SPLIT_PENALTY, 0)
     prev_child = child
 
 
