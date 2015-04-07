@@ -42,15 +42,18 @@ some of the drudgery of maintaining your code.
 Installation
 ============
 
-We consider YAPF to be "alpha" quality at this time. Therefore, we don't yet
-support official releases to PyPI and the most stable and correct version is
-at the tip of the ``master`` branch in this repository. We plan to make a
-first beta release (including to PyPI) in the next few weeks.
+To install YAPF from PyPI::
 
-If you intend to use YAPF as a command-line tool rather than as a library,
-installation is not necessary. YAPF supports being run as a directory by the
-Python interpreter. If you cloned/unzipped yapf into ``DIR``, it's possible to
-run::
+    $ pip install yapf
+
+YAPF is still considered in "alpha" stage, and the released version may change
+often; therefore, the best way to keep up-to-date with the latest development
+is to clone this repository.
+
+Note that if you intend to use YAPF as a command-line tool rather than as a
+library, installation is not necessary. YAPF supports being run as a directory
+by the Python interpreter. If you cloned/unzipped YAPF into ``DIR``, it's
+possible to run::
 
     $ PYTHONPATH=DIR python DIR/yapf [options] ...
 
