@@ -48,32 +48,37 @@ def main(argv):
     0 if there were no errors, non-zero otherwise.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
+  parser.add_argument('--version',
+                      action='store_true',
+                      help='print version number and exit')
   parser.add_argument(
-      '--version', action='store_true',
-      help='print version number and exit')
-  parser.add_argument(
-      '--style', action='store', default='pep8',
+      '--style',
+      action='store',
+      default='pep8',
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. pep8 is '
             'the default.'))
-  parser.add_argument(
-      '--verify', action='store_true',
-      help='try to verify refomatted code for syntax errors')
+  parser.add_argument('--verify',
+                      action='store_true',
+                      help='try to verify refomatted code for syntax errors')
   diff_inplace_group = parser.add_mutually_exclusive_group()
-  diff_inplace_group.add_argument(
-      '-d', '--diff', action='store_true',
-      help='print the diff for the fixed source')
-  diff_inplace_group.add_argument(
-      '-i', '--in-place', action='store_true',
-      help='make changes to files in place')
+  diff_inplace_group.add_argument('-d', '--diff',
+                                  action='store_true',
+                                  help='print the diff for the fixed source')
+  diff_inplace_group.add_argument('-i', '--in-place',
+                                  action='store_true',
+                                  help='make changes to files in place')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
   lines_recursive_group.add_argument(
-      '-l', '--lines', metavar='START-END', action='append', default=None,
+      '-l', '--lines',
+      metavar='START-END',
+      action='append',
+      default=None,
       help='range of lines to reformat, one-based')
-  lines_recursive_group.add_argument(
-      '-r', '--recursive', action='store_true',
-      help='run recursively over directories')
+  lines_recursive_group.add_argument('-r', '--recursive',
+                                     action='store_true',
+                                     help='run recursively over directories')
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
@@ -111,13 +116,19 @@ def main(argv):
         verify=args.verify))
     return 0
 
-  FormatFiles(files, lines, style_config=args.style, in_place=args.in_place,
-              print_diff=args.diff, verify=args.verify)
+  FormatFiles(files, lines,
+              style_config=args.style,
+              in_place=args.in_place,
+              print_diff=args.diff,
+              verify=args.verify)
   return 0
 
 
-def FormatFiles(filenames, lines, style_config=None, in_place=False,
-                print_diff=False, verify=True):
+def FormatFiles(filenames, lines,
+                style_config=None,
+                in_place=False,
+                print_diff=False,
+                verify=True):
   """Format a list of files.
 
   Arguments:
@@ -134,9 +145,11 @@ def FormatFiles(filenames, lines, style_config=None, in_place=False,
   """
   for filename in filenames:
     logging.info('Reformatting %s', filename)
-    reformatted_code = yapf_api.FormatFile(
-        filename, style_config=style_config, lines=lines,
-        print_diff=print_diff, verify=verify)
+    reformatted_code = yapf_api.FormatFile(filename,
+                                           style_config=style_config,
+                                           lines=lines,
+                                           print_diff=print_diff,
+                                           verify=verify)
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place)
 
