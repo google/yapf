@@ -2,10 +2,13 @@
 YAPF
 ====
 
+.. image:: https://badge.fury.io/py/yapf.svg
+    :target: http://badge.fury.io/py/yapf
+    :alt: PyPI version
+
 .. image:: https://travis-ci.org/google/yapf.svg?branch=master
     :target: https://travis-ci.org/google/yapf
     :alt: Build status
-
 
 .. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=master
     :target: https://coveralls.io/r/google/yapf?branch=master
