@@ -192,6 +192,20 @@ class SubtypeAssignerTest(unittest.TestCase):
          (']', format_token.Subtype.NONE)]
     ])  # yapf: disable
 
+  def testFunctionCallWithStarExpression(self):
+    code = textwrap.dedent("""\
+        [a, *b]
+        """)
+    uwlines = self._ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(uwlines, [
+        [('[', format_token.Subtype.NONE),
+         ('a', format_token.Subtype.NONE),
+         (',', format_token.Subtype.NONE),
+         ('*', format_token.Subtype.UNARY_OPERATOR),
+         ('b', format_token.Subtype.NONE),
+         (']', format_token.Subtype.NONE)]
+    ])  # yapf: disable
+
 
 if __name__ == '__main__':
   unittest.main()
