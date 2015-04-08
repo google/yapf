@@ -37,6 +37,10 @@ from yapf.yapflib import yapf_api
 __version__ = '0.1.4'
 
 
+class YapfError(Exception):
+  pass
+
+
 def main(argv):
   """Main program.
 
@@ -91,8 +95,7 @@ def main(argv):
     parser.error('cannot use -l/--lines with more than one file')
 
   lines = _GetLines(args.lines) if args.lines is not None else None
-  files = file_resources.GetCommandLineFiles(argv[1:], args.recursive)
-  if not files:
+  if not args.files:
     # No arguments specified. Read code from stdin.
     if args.in_place or args.diff:
       parser.error('cannot use --in_place or --diff flags when reading '
@@ -116,6 +119,9 @@ def main(argv):
         verify=args.verify))
     return 0
 
+  files = file_resources.GetCommandLineFiles(args.files, args.recursive)
+  if not files:
+    raise YapfError('Input filenames did not match any python files')
   FormatFiles(files, lines,
               style_config=args.style,
               in_place=args.in_place,
