@@ -18,13 +18,17 @@
 # vim swap files
 .*.sw?
 .sw?
-#OS X specific files.
+# OS X specific files.
 .DS_store
 
 #==============================================================================#
+# Files to ignore
+#==============================================================================#
+/.coverage
+
 # Directories to ignore (do not add trailing '/'s, they skip symlinks).
 #==============================================================================#
-build
-dist
-.tox
-yapf.egg-info
+/build
+/dist
+/.tox
+/yapf.egg-info
