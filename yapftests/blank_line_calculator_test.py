@@ -251,7 +251,7 @@ def _ParseAndUnwrap(code, dumptree=False):
   Returns:
     List of unwrapped lines.
   """
-  style.SetGlobalStyle(style.CreateChromiumStyle())
+  style.SetGlobalStyle(style.CreateStyleFromConfig('chromium'))
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
   subtype_assigner.AssignSubtypes(tree)
