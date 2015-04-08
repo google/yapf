@@ -102,7 +102,10 @@ def _RetainVerticalSpacing(prev_uwline, cur_uwline):
   """Retain all vertical spacing between lines."""
   if not prev_uwline:
     return
-  prev_lineno = prev_uwline.last.lineno
+  if prev_uwline.last.is_string:
+    prev_lineno = prev_uwline.last.lineno + prev_uwline.last.value.count('\n')
+  else:
+    prev_lineno = prev_uwline.last.lineno
   if cur_uwline.first.is_comment:
     cur_lineno = cur_uwline.first.lineno - cur_uwline.first.value.count('\n')
   else:
