@@ -28,10 +28,14 @@ YAPF coding style
 -----------------
 
 YAPF follows the `Google Python Style Guide
-<https://google-styleguide.googlecode.com/svn/trunk/pyguide.html>`_, with the
-exception of using 2 spaces for indentation rather than 4. YAPF was initially
-developed internally and 2 spaces is still the prevalent Python style within
-Google.
+<https://google-styleguide.googlecode.com/svn/trunk/pyguide.html>`_, with two
+exceptions:
+
+- 2 spaces for indentation rather than 4.
+- CamelCase for function and method names rather than words_with_underscores.
+
+The rational for this is that YAPF was initially developed at Google where these
+two exceptions are still part of the internal Python style guide.
 
 Small print
 -----------
