@@ -41,6 +41,9 @@ def SetGlobalStyle(style):
 
 def CreatePEP8Style():
   return dict(
+      # Align closing bracket with visual indentation.
+      ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT = True,
+
       # The column limit.
       COLUMN_LIMIT=79,
 
@@ -118,6 +121,7 @@ def CreatePEP8Style():
 
 def CreateGoogleStyle():
   style = CreatePEP8Style()
+  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['COLUMN_LIMIT'] = 80
   style['INDENT_WIDTH'] = 2
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
@@ -151,6 +155,7 @@ def _BoolConverter(s):
 #
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
+    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     COLUMN_LIMIT=int,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,

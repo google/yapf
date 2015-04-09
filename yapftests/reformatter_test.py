@@ -1692,6 +1692,41 @@ class TestsForPEP8Style(unittest.TestCase):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testAlignClosingBracketWithVisualIndentation(self):
+    unformatted_code = textwrap.dedent("""\
+        TEST_LIST = ('foo', 'bar',  # first comment
+                     'baz',  # second comment
+                    )
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        TEST_LIST = ('foo', 'bar',  # first comment
+                     'baz',  # second comment
+                     )
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        def f():
+
+          def g():
+            while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                   xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
+                  ):
+              pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f():
+            def g():
+                while (
+                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
+                ):
+                    pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 @unittest.skipIf(py3compat.PY3, 'Requires Python 2')
 class TestVerifyNoVerify(unittest.TestCase):
