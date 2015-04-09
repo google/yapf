@@ -35,7 +35,7 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify']
 class YapfTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    style.SetGlobalStyle(style.CreateGoogleStyle())
+    style.SetGlobalStyle(style.CreateChromiumStyle())
     formatted_code = yapf_api.FormatCode(unformatted_code)
     self.assertEqual(expected_formatted_code, formatted_code)
 
@@ -148,7 +148,7 @@ class CommandLineTest(unittest.TestCase):
           x = 37
         """)
 
-    p = subprocess.Popen(YAPF_BINARY + ['--style=Google'],
+    p = subprocess.Popen(YAPF_BINARY + ['--style=yapf'],
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
@@ -157,7 +157,7 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
-  def testSetCustomStyleBasedOnGoogle(self):
+  def testSetCustomStyleBasedOnYapf(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo(): # trail
             x = 37
@@ -170,7 +170,7 @@ class CommandLineTest(unittest.TestCase):
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
       f.write(textwrap.dedent('''\
           [style]
-          based_on_style = Google
+          based_on_style = yapf
           SPACES_BEFORE_COMMENT = 4
           '''))
       f.flush()

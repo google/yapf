@@ -117,7 +117,7 @@ def CreateGoogleStyle():
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['COLUMN_LIMIT'] = 80
-  style['INDENT_WIDTH'] = 2
+  style['INDENT_WIDTH'] = 4
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['I18N_COMMENT'] = r'#\..*'
   style['I18N_FUNCTION_CALL'] = ['N_', '_']
@@ -125,9 +125,17 @@ def CreateGoogleStyle():
   return style
 
 
+def CreateChromiumStyle():
+  style = CreateGoogleStyle()
+  style['INDENT_WIDTH'] = 2
+  return style
+
+
 _STYLE_NAME_TO_FACTORY = dict(
     pep8=CreatePEP8Style,
+    chromium=CreateChromiumStyle,
     google=CreateGoogleStyle,
+    yapf=CreateChromiumStyle,  # Shortcut to the YAPF programming style.
 )  # yapf: disable
 
 

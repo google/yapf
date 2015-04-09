@@ -35,7 +35,7 @@ class BasicReformatterTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateGoogleStyle())
+    style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
@@ -1085,7 +1085,7 @@ class BuganizerFixes(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateGoogleStyle())
+    style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testB20073838(self):
     code = textwrap.dedent("""\
