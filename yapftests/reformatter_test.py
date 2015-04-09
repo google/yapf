@@ -1040,6 +1040,26 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testMultilineShebang(self):
+    code = textwrap.dedent("""\
+        #!/bin/sh
+        if "true" : '''\'
+        then
+
+        export FOO=123
+        exec /usr/bin/env python "$0" "$@"
+
+        exit 127
+        fi
+        '''
+
+        import os
+
+        assert os.environ['FOO'] == '123'
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 

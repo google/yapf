@@ -234,7 +234,11 @@ class FormatToken(object):
     return self._node.type == token.STRING
 
   @property
-  def is_docstring(self):
+  def is_multiline_string(self):
     return (self.is_string and
             re.match(r'^[uUbB]?[rR]?(?P<delim>"""|\'\'\').*(?P=delim)$',
                      self.value, re.DOTALL) is not None)
+
+  @property
+  def is_docstring(self):
+    return self.is_multiline_string and not self.node.prev_sibling

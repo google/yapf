@@ -113,7 +113,7 @@ def CreatePEP8Style():
 
       # The number of columns used for tab stops.
       TAB_WIDTH=8,
-  )
+  )  # yapf: disable
 
 
 def CreateGoogleStyle():
@@ -130,7 +130,7 @@ def CreateGoogleStyle():
 _STYLE_NAME_TO_FACTORY = dict(
     pep8=CreatePEP8Style,
     google=CreateGoogleStyle,
-)
+)  # yapf: disable
 
 
 def _StringListConverter(s):

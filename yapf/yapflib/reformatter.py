@@ -465,8 +465,14 @@ def _SingleOrMergedLines(uwlines):
     # TODO(morbo): This splice is potentially very slow. Come up with a more
     # performance-friendly way of determining if two lines can be merged.
     if line_joiner.CanMergeMultipleLines(uwlines[index:], last_was_merged):
-      for token in uwlines[index + 1].tokens:
+      next_uwline = uwlines[index + 1]
+      for token in next_uwline.tokens:
         uwlines[index].AppendToken(token)
+      if (len(next_uwline.tokens) == 1 and
+          next_uwline.first.is_multiline_string):
+        # This may be a multiline shebang. In that case, we want to retain the
+        # formatting. Otherwise, it could mess up the shell script's syntax.
+        uwlines[index].disable = True
       yield uwlines[index]
       index += 2
       last_was_merged = True

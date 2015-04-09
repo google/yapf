@@ -98,6 +98,9 @@ def _CanMergeLineIntoIfStatement(lines, limit):
   Returns:
     True if the lines can be merged, False otherwise.
   """
+  if len(lines[1].tokens) == 1 and lines[1].last.is_multiline_string:
+    # This might be part of a multiline shebang.
+    return True
   if lines[0].lineno != lines[1].lineno:
     # Don't merge lines if the original lines weren't merged.
     return False
