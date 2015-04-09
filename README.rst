@@ -125,7 +125,8 @@ indentations.
 Example
 =======
 
-An example of the type of formatting that YAPF can do, it will take this ugly code:
+An example of the type of formatting that YAPF can do, it will take this ugly
+code:
 
 .. code-block:: python
 
