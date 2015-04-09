@@ -12,6 +12,8 @@ Releasing a new version
 
 * Push to PyPI: python setup.py sdist upload
 
+* Test in a clean virtualenv that 'pip install yapf' works with the new version
+
 * Commit the version bump; add tag with git tag v<VERSION_NUM>; git push --tags
 
 TODO: figure out a way to make tox work to make virtualenv testing easier.
