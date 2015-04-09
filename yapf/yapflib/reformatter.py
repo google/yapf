@@ -412,7 +412,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
     else:
       return ONE_BLANK_LINE
 
-  if first_token.value in {'class', 'def'}:
+  if first_token.value in {'class', 'def', '@'}:
     # TODO(morbo): This can go once the blank line calculator is more
     # sophisticated.
     if not indent_depth:

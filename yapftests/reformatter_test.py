@@ -174,6 +174,15 @@ class BasicReformatterTest(unittest.TestCase):
         class Bar(object):
           pass
 
+        global_assignment = 42
+
+        # Comment attached to class with decorator.
+        # Comment attached to class with decorator.
+        @noop
+        @noop
+        class Baz(object):
+          pass
+
         # Intermediate comment
 
         class Qux(object):
@@ -187,6 +196,17 @@ class BasicReformatterTest(unittest.TestCase):
 
         # Attached comment
         class Bar(object):
+          pass
+
+
+        global_assignment = 42
+
+
+        # Comment attached to class with decorator.
+        # Comment attached to class with decorator.
+        @noop
+        @noop
+        class Baz(object):
           pass
 
         # Intermediate comment
