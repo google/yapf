@@ -1027,6 +1027,17 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testCommentsWithContinuationMarkers(self):
+    code = textwrap.dedent("""\
+        def fn(arg):
+          v = fn2(key1=True,
+                  #c1
+                  key2=arg)\\
+                        .fn3()
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
   def testEmptyContainers(self):
     code = textwrap.dedent("""\
         flags.DEFINE_list(

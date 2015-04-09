@@ -65,10 +65,20 @@ def Reformat(uwlines, verify=True):
       _RetainHorizontalSpacing(uwline)
       _RetainVerticalSpacing(prev_uwline, uwline)
       _EmitLineUnformatted(state)
-    elif _CanPlaceOnSingleLine(uwline) or _LineHasContinuationMarkers(uwline):
-      # The unwrapped line fits on one line. Or the line contains continuation
-      # markers, in which case we assume the programmer formatted the code this
-      # way intentionally.
+    elif _LineHasContinuationMarkers(uwline):
+      # The line contains continuation markers, in which case we assume the
+      # programmer formatted the code this way intentionally.
+      while state.next_token:
+        next_token_lineno = state.next_token.lineno
+        prev_token = state.next_token.previous_token
+        prev_token_lineno = prev_token.lineno if prev_token else next_token_lineno
+        if prev_token.is_continuation:
+          newline = False
+        else:
+          newline = next_token_lineno != prev_token_lineno
+        state.AddTokenToState(newline=newline, dry_run=False)
+    elif _CanPlaceOnSingleLine(uwline):
+      # The unwrapped line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
     else:
