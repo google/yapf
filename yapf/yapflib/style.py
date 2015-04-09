@@ -110,12 +110,6 @@ def CreatePEP8Style():
       # The penalty incurred by adding a line split to the unwrapped line. The
       # more line splits added the higher the penalty.
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
-
-      # Use tabs in the resulting file.
-      USE_TAB=False,
-
-      # The number of columns used for tab stops.
-      TAB_WIDTH=8,
   )  # yapf: disable
 
 
@@ -172,8 +166,6 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_MATCHING_BRACKET=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
-    USE_TAB=_BoolConverter,
-    TAB_WIDTH=int,
 )
 
 

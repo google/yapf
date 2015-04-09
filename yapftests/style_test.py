@@ -88,23 +88,23 @@ class StyleFromFileTest(unittest.TestCase):
   def testDefaultBasedOnStyle(self):
     cfg = textwrap.dedent('''\
         [style]
-        tab_width = 20
+        continuation_indent_width = 20
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
-      self.assertEqual(cfg['TAB_WIDTH'], 20)
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnPEP8Style(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = pep8
-        tab_width = 40
+        continuation_indent_width = 40
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
-      self.assertEqual(cfg['TAB_WIDTH'], 40)
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
   def testDefaultBasedOnGoogleStyle(self):
     cfg = textwrap.dedent('''\
@@ -149,7 +149,7 @@ class StyleFromFileTest(unittest.TestCase):
   def testErrorNoStyleSection(self):
     cfg = textwrap.dedent('''\
         [s]
-        TAB_WIDTH=2
+        indent_width=2
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       with self.assertRaisesRegexp(style.StyleConfigError,
@@ -159,7 +159,7 @@ class StyleFromFileTest(unittest.TestCase):
   def testErrorUnknownStyleOption(self):
     cfg = textwrap.dedent('''\
         [style]
-        TAB_WIDTH=2
+        indent_width=2
         hummus=2
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:

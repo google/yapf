@@ -121,6 +121,23 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
+  def testReadFromStdinWithEscapedStrings(self):
+    unformatted_code = textwrap.dedent(u"""\
+        s =   "foo\\nbar"
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        s = "foo\\nbar"
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY,
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
   def testSetGoogleStyle(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo(): # trail
