@@ -24,7 +24,11 @@ import collections
 import heapq
 import re
 
+from lib2to3 import pytree
+from lib2to3.pgen2 import token
+
 from yapf.yapflib import format_decision_state
+from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
@@ -90,11 +94,11 @@ def Reformat(uwlines, verify=True):
   formatted_code = []
   for line in final_lines:
     formatted_line = []
-    for token in line.tokens:
-      if token.name in pytree_utils.NONSEMANTIC_TOKENS:
+    for tok in line.tokens:
+      if tok.name in pytree_utils.NONSEMANTIC_TOKENS:
         continue
-      formatted_line.append(token.whitespace_prefix)
-      formatted_line.append(token.value)
+      formatted_line.append(tok.whitespace_prefix)
+      formatted_line.append(tok.value)
     formatted_code.append(''.join(formatted_line))
     if verify:
       verifier.VerifyCode(formatted_code[-1])
@@ -157,8 +161,8 @@ def _LineContainsI18n(uwline):
     True if the line contains i18n comments or function calls. False otherwise.
   """
   if (style.Get('I18N_COMMENT') and any(re.search(style.Get('I18N_COMMENT'),
-                                                  token.value)
-                                        for token in uwline.tokens)):
+                                                  tok.value)
+                                        for tok in uwline.tokens)):
     # Contains an i18n comment.
     return True
 
@@ -190,7 +194,7 @@ def _CanPlaceOnSingleLine(uwline):
   """
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
   return (uwline.last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
-          not any(token.is_comment for token in uwline.tokens[:-1]))
+          not any(tok.is_comment for tok in uwline.tokens[:-1]))
 
 
 class _StateNode(object):
@@ -472,12 +476,29 @@ def _SingleOrMergedLines(uwlines):
   index = 0
   last_was_merged = False
   while index < len(uwlines):
-    # TODO(morbo): This splice is potentially very slow. Come up with a more
-    # performance-friendly way of determining if two lines can be merged.
-    if line_joiner.CanMergeMultipleLines(uwlines[index:], last_was_merged):
+    if uwlines[index].disable:
+      uwline = uwlines[index]
+      index += 1
+      while index < len(uwlines):
+        column = uwline.last.column + 2
+        if uwlines[index].lineno != uwline.lineno:
+          break
+        if uwline.last.value != ':':
+          leaf = pytree.Leaf(
+              type=token.SEMI,
+              value=';',
+              context=('', (uwline.lineno, column)))
+          uwline.AppendToken(format_token.FormatToken(leaf))
+        for tok in uwlines[index].tokens:
+          uwline.AppendToken(tok)
+        index += 1
+      yield uwline
+    elif line_joiner.CanMergeMultipleLines(uwlines[index:], last_was_merged):
+      # TODO(morbo): This splice is potentially very slow. Come up with a more
+      # performance-friendly way of determining if two lines can be merged.
       next_uwline = uwlines[index + 1]
-      for token in next_uwline.tokens:
-        uwlines[index].AppendToken(token)
+      for tok in next_uwline.tokens:
+        uwlines[index].AppendToken(tok)
       if (len(next_uwline.tokens) == 1 and
           next_uwline.first.is_multiline_string):
         # This may be a multiline shebang. In that case, we want to retain the

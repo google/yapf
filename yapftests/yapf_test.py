@@ -538,6 +538,29 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), unformatted_code)
 
+  def testRetainingSemicolonsWhenSpecifyingLines(self):
+    unformatted_code = textwrap.dedent("""\
+        a = line_to_format
+        def f():
+            x = y + 42; z = n * 42
+            if True: a += 1 ; b += 1 ; c += 1
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a = line_to_format
+        def f():
+            x = y + 42; z = n * 42
+            if True: a += 1 ; b += 1 ; c += 1
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-1'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), unformatted_code)
+
 
 if __name__ == '__main__':
   unittest.main()
