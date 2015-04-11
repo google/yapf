@@ -29,6 +29,7 @@ function! yapf#YAPF() range
   let l:formatted_text = system(l:cmd, join(getline(1, '$'), "\n") . "\n")
 
   " Update the buffer.
+  execute '1,' . string(line('$')) . 'delete'
   call setline(1, split(l:formatted_text, "\n"))
 
   " Reset cursor to first line of the formatted range.
