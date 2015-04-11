@@ -34,7 +34,7 @@ from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 
 class YapfError(Exception):
