@@ -142,8 +142,12 @@ def _EmitLineUnformatted(state):
   """
   prev_lineno = None
   while state.next_token:
+    previous_token = state.next_token.previous_token
+    previous_lineno = previous_token.lineno
+    if previous_token.is_multiline_string:
+      previous_lineno += previous_token.value.count('\n')
     newline = (prev_lineno is not None and
-               state.next_token.lineno > state.next_token.previous_token.lineno)
+               state.next_token.lineno > previous_lineno)
     prev_lineno = state.next_token.lineno
     state.AddTokenToState(newline=newline, dry_run=False)
 

@@ -559,7 +559,38 @@ class CommandLineTest(unittest.TestCase):
     reformatted_code, stderrdata = p.communicate(
         unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), unformatted_code)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
+  def testDisabledMultilineStrings(self):
+    unformatted_code = textwrap.dedent('''\
+        foo=42
+        def f():
+            email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+        <b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+        <b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+        <b>Residence: </b>"""+palace["Winter"]+"""<br>
+        </body>
+        </html>"""
+        ''')
+    expected_formatted_code = textwrap.dedent('''\
+        foo = 42
+        def f():
+            email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
+        <b>Czar: </b>""" + despot["Nicholas"] + """<br>
+        <b>Minion: </b>""" + serf["Dmitri"] + """<br>
+        <b>Residence: </b>""" + palace["Winter"] + """<br>
+        </body>
+        </html>"""
+        ''')
+
+    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-1'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
 
 if __name__ == '__main__':
