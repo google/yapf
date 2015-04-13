@@ -177,7 +177,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
 )
 
 
-def CreateStyleFromConfig(style_config):
+def CreateStyleFromConfig(style_config, style_opts=None):
   """Create a style dict from the given config.
 
   Arguments:
@@ -186,6 +186,7 @@ def CreateStyleFromConfig(style_config):
       style which it derives from. If no such setting is found, it derives from
       the default style. When style_config is None, the DEFAULT_STYLE_FACTORY
       config is created.
+    style_opts: dictionary of style overrides.
 
   Returns:
     A style dict.
@@ -194,17 +195,26 @@ def CreateStyleFromConfig(style_config):
     StyleConfigError: if an unknown style option was encountered.
   """
   if style_config is None:
-    return DEFAULT_STYLE_FACTORY()
+    style = DEFAULT_STYLE_FACTORY()
+    if style_opts:
+      style.update(style_opts)
+    return style
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
-    return style_factory()
+    style = style_factory()
+    if style_opts:
+      style.update(style_opts)
+    return style
   if style_config.startswith('{'):
     # Most likely a style specification from the command line.
     config = _CreateConfigParserFromConfigString(style_config)
   else:
     # Unknown config name: assume it's a file name then.
     config = _CreateConfigParserFromConfigFile(style_config)
-  return _CreateStyleFromConfigParser(config)
+  style = _CreateStyleFromConfigParser(config)
+  if style_opts:
+    style.update(style_opts)
+  return style
 
 
 def _CreateConfigParserFromConfigString(config_string):

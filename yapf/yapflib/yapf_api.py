@@ -23,6 +23,7 @@ These APIs have some common arguments:
   style_config: (string) Either a style name or a path to a file that contains
     formatting style settings. If None is specified, use the default style
     as set in style.DEFAULT_STYLE_FACTORY
+  style_opts: (dict) Dictionary of style overrides.
   lines: (list of tuples of integers) A list of tuples of lines, [start, end],
     that we want to format. The lines are 1-based indexed. It can be used by
     third-party code (e.g., IDEs) when reformatting a snippet of code rather
@@ -51,6 +52,7 @@ from yapf.yapflib import subtype_assigner
 
 def FormatFile(filename,
                style_config=None,
+               style_opts=None,
                lines=None,
                print_diff=False,
                verify=True):
@@ -70,6 +72,7 @@ def FormatFile(filename,
 
   return FormatCode(original_source,
                     style_config=style_config,
+                    style_opts=style_opts,
                     filename=filename,
                     lines=lines,
                     print_diff=print_diff,
@@ -79,6 +82,7 @@ def FormatFile(filename,
 def FormatCode(unformatted_source,
                filename='<unknown>',
                style_config=None,
+               style_opts=None,
                lines=None,
                print_diff=False,
                verify=True):
@@ -95,7 +99,7 @@ def FormatCode(unformatted_source,
     The code reformatted to conform to the desired formatting style.
   """
   _CheckPythonVersion()
-  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
+  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config, style_opts))
   if not unformatted_source.endswith('\n'):
     unformatted_source += '\n'
   tree = pytree_utils.ParseCodeToTree(unformatted_source)

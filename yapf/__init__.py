@@ -62,6 +62,10 @@ def main(argv):
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. pep8 is '
             'the default.'))
+  parser.add_argument('--max-line-width', type=int, default=0,
+                      help='override maximum line width')
+  parser.add_argument('--indent-width', type=int, default=0,
+                      help='override indent width')
   parser.add_argument('--verify',
                       action='store_true',
                       help='try to verify refomatted code for syntax errors')
@@ -91,6 +95,12 @@ def main(argv):
     print('yapf {}'.format(__version__))
     return 0
 
+  style_opts = {}
+  if args.max_line_width:
+    style_opts['COLUMN_LIMIT'] = args.max_line_width
+  if args.indent_width:
+    style_opts['INDENT_WIDTH'] = args.indent_width
+
   if args.lines and len(args.files) > 1:
     parser.error('cannot use -l/--lines with more than one file')
 
@@ -115,6 +125,7 @@ def main(argv):
         py3compat.unicode('\n'.join(original_source) + '\n'),
         filename='<stdin>',
         style_config=args.style,
+        style_opts=style_opts,
         lines=lines,
         verify=args.verify))
     return 0
@@ -124,6 +135,7 @@ def main(argv):
     raise YapfError('Input filenames did not match any python files')
   FormatFiles(files, lines,
               style_config=args.style,
+              style_opts=style_opts,
               in_place=args.in_place,
               print_diff=args.diff,
               verify=args.verify)
@@ -132,6 +144,7 @@ def main(argv):
 
 def FormatFiles(filenames, lines,
                 style_config=None,
+                style_opts=None,
                 in_place=False,
                 print_diff=False,
                 verify=True):
@@ -144,6 +157,7 @@ def FormatFiles(filenames, lines,
       overrides the 'args.lines'. It can be used by third-party code (e.g.,
       IDEs) when reformatting a snippet of code.
     style_config: (string) Style name or file path.
+    style_opts: (dict) Style options overrides.
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
@@ -153,6 +167,7 @@ def FormatFiles(filenames, lines,
     logging.info('Reformatting %s', filename)
     reformatted_code = yapf_api.FormatFile(filename,
                                            style_config=style_config,
+                                           style_opts=style_opts,
                                            lines=lines,
                                            print_diff=print_diff,
                                            verify=verify)
