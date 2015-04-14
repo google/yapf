@@ -195,6 +195,8 @@ def CreateStyleFromConfig(style_config):
   """
   if style_config is None:
     return DEFAULT_STYLE_FACTORY()
+  if isinstance(style_config, dict):
+    return style_config
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
     return style_factory()
@@ -262,6 +264,30 @@ def _CreateStyleFromConfigParser(config):
     base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
   return base_style
 
+
+_PROJECT_CONFIG = ('setup.cfg', 'tox.ini', '.pep8')
+
+
+def SearchForLocalConfig(files):
+  """If a config file (with setup.cfg, tox.ini or .pep8) can be found which
+  shares a common-prefix to the files passed, return this style dict. If
+  none are found return the default style.
+
+  Arguments:
+    files: A list of files.
+  """
+  parent = tail = files and os.path.abspath(os.path.commonprefix(files))
+
+  while tail:
+    for fn in _PROJECT_CONFIG:
+      try:
+        return _CreateStyleFromConfigParser(
+            _CreateConfigParserFromConfigFile(os.path.join(parent, fn)))
+      except StyleConfigError:
+        pass
+    parent, tail = os.path.split(parent)
+
+  return DEFAULT_STYLE_FACTORY()  # Failed to find a valid config file.
 
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.

@@ -91,6 +91,9 @@ def main(argv):
     print('yapf {}'.format(__version__))
     return 0
 
+  if args.style[:5].lower() == 'local':
+    args.style = yapf_api.style.SearchForLocalConfig(args.files)
+
   if args.lines and len(args.files) > 1:
     parser.error('cannot use -l/--lines with more than one file')
 
@@ -149,6 +152,7 @@ def FormatFiles(filenames, lines,
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
   """
+  # TODO do style_config magic just once
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     reformatted_code = yapf_api.FormatFile(filename,

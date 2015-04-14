@@ -71,6 +71,12 @@ class PredefinedStylesByNameTest(unittest.TestCase):
       cfg = style.CreateStyleFromConfig(pep8_name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
 
+  def testLocalByName(self):
+    # NOTE: this tests assumes that style.cfg includes based_on_style yapf
+    for local_name in ('LOCAL', 'local', 'Local'):
+      cfg = style.SearchForLocalConfig(__file__)
+      self.assertTrue(_LooksLikeYapfStyle(cfg))
+
 
 @contextlib.contextmanager
 def _TempFileContents(dirname, contents):
