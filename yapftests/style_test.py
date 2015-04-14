@@ -195,5 +195,13 @@ class StyleFromCommandLine(unittest.TestCase):
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
 
+class StyleSettings(unittest.TestCase):
+
+  def testSettings(self):
+    settings = sorted(style.Settings())
+    expected = sorted(list(style._style) + ['BASED_ON_STYLE'])
+    self.assertListEqual(settings, expected)
+
+
 if __name__ == '__main__':
   unittest.main()
