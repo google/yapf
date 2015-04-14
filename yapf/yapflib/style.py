@@ -33,6 +33,13 @@ def Get(setting_name):
   return _style[setting_name]
 
 
+def Settings():
+  """Return all style settings."""
+  for setting in _style:
+    yield setting
+  yield 'BASED_ON_STYLE'
+
+
 def SetGlobalStyle(style):
   """Set a style dict."""
   global _style

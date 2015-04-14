@@ -54,7 +54,10 @@ def main(argv):
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
   parser.add_argument('--version',
                       action='store_true',
-                      help='print version number and exit')
+                      help='show version number and exit')
+  parser.add_argument('--style-settings',
+                      action='store_true',
+                      help='show style settings and exit')
   parser.add_argument(
       '--style',
       action='store',
@@ -89,6 +92,11 @@ def main(argv):
 
   if args.version:
     print('yapf {}'.format(__version__))
+    return 0
+
+  if args.style_settings:
+    for arg in sorted(yapf_api.style.Settings()):
+      print(arg)
     return 0
 
   if args.lines and len(args.files) > 1:
