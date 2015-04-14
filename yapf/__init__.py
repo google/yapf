@@ -26,12 +26,15 @@ formatting decisions based on what's the best format for each line.
 If no filenames are specified, YAPF reads the code from stdin.
 """
 
+from __future__ import print_function
+
 import argparse
 import logging
 import sys
 
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
+from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 __version__ = '0.1.5'
@@ -54,7 +57,10 @@ def main(argv):
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
   parser.add_argument('--version',
                       action='store_true',
-                      help='print version number and exit')
+                      help='show version number and exit')
+  parser.add_argument('--style-help',
+                      action='store_true',
+                      help='show style settings and exit')
   parser.add_argument(
       '--style',
       action='store',
@@ -89,6 +95,15 @@ def main(argv):
 
   if args.version:
     print('yapf {}'.format(__version__))
+    return 0
+
+  if args.style_help:
+    style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
+    for option, docstring in sorted(style.Help().items()):
+      print(option, "=", style.Get(option), sep='')
+      for line in docstring.splitlines():
+        print('  ', line)
+      print()
     return 0
 
   if args.lines and len(args.files) > 1:
