@@ -16,4 +16,4 @@ Releasing a new version
 
 * Commit the version bump; add tag with git tag v<VERSION_NUM>; git push --tags
 
-TODO: figure out a way to make tox work to make virtualenv testing easier.
+TODO: discuss how to use tox to make virtualenv testing easier.
