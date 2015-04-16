@@ -592,6 +592,40 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
+  def testDisableWhenSpecifyingLines(self):
+    unformatted_code = textwrap.dedent(u"""\
+        # yapf: disable
+        A = set([
+            'hello',
+            'world',
+        ])
+        # yapf: enable
+        B = set([
+            'hello',
+            'world',
+        ])  # yapf: disable
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        # yapf: disable
+        A = set([
+            'hello',
+            'world',
+        ])
+        # yapf: enable
+        B = set([
+            'hello',
+            'world',
+        ])  # yapf: disable
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-10'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
 if __name__ == '__main__':
   unittest.main()
