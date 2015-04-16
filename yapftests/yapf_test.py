@@ -157,6 +157,26 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
+  def testSetIndentWidth(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo(): # trail
+            x = 37
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():  # trail
+           x = 37
+        """)
+
+    p = subprocess.Popen(YAPF_BINARY + ['--indent-width=3'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    reformatted_code, stderrdata = p.communicate(
+        unformatted_code.encode('utf-8'))
+    self.assertIsNone(stderrdata)
+    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
+
   def testSetCustomStyleBasedOnYapf(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo(): # trail
@@ -491,9 +511,9 @@ class CommandLineTest(unittest.TestCase):
 
 
 
-        #comment  
+        #comment
 
-        #   trailing whitespace    
+        #   trailing whitespace
         """)
     expected_formatted_code = textwrap.dedent(u"""\
         if a: b
@@ -508,7 +528,7 @@ class CommandLineTest(unittest.TestCase):
 
         #comment
 
-        #   trailing whitespace    
+        #   trailing whitespace
         """)
 
     p = subprocess.Popen(YAPF_BINARY + ['--lines', '3-3', '--lines', '13-13'],
