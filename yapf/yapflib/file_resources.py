@@ -23,6 +23,24 @@ import re
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import py3compat
+from yapf.yapflib import style
+
+
+def GetDefaultStyleForDir(dirname):
+  """Return default style name for a given directory.
+
+  Looks for .style.yapf in the parent directories and return the filename if
+  found, otherwise return the glboal default (pep8)."""
+  dirname = os.path.abspath(dirname)
+  while True:
+    style_file = os.path.join(dirname, style.LOCAL_STYLE)
+    if os.path.exists(style_file):
+      return style_file
+    dirname = os.path.dirname(dirname)
+    if not dirname or dirname == os.path.sep:
+      break
+
+  return style.DEFAULT_STYLE
 
 
 def GetCommandLineFiles(command_line_file_list, recursive):

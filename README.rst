@@ -74,7 +74,9 @@ Usage
 
 Options::
 
-    usage: yapf [-h] [--style STYLE] [-d | -i] [-l START-END | -r] ...
+    usage: yapf [-h] [--version] [--style-help] [--style STYLE] [--verify]
+                     [-d | -i] [-l START-END | -r]
+                     [files [files ...]]
 
     Formatter for Python code.
 
@@ -83,9 +85,15 @@ Options::
 
     optional arguments:
       -h, --help            show this help message and exit
+      --version             show version number and exit
+      --style-help          show style settings and exit
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
-                            with style settings. pep8 is the default.
+                            with style settings. The default is pep8 unless a
+                            .style.yapf file located in one of the parent
+                            directories of the source file (or current directory
+                            for stdin)
+      --verify              try to verify refomatted code for syntax errors
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -l START-END, --lines START-END

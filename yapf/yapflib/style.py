@@ -141,7 +141,6 @@ _STYLE_NAME_TO_FACTORY = dict(
     pep8=CreatePEP8Style,
     chromium=CreateChromiumStyle,
     google=CreateGoogleStyle,
-    yapf=CreateChromiumStyle,  # Shortcut to the YAPF programming style.
 )  # yapf: disable
 
 
@@ -278,8 +277,11 @@ def _CreateStyleFromConfigParser(config):
 
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.
+DEFAULT_STYLE = 'pep8'
 DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
+# The name of the file to use for directory-local style defintion.
+LOCAL_STYLE = '.style.yapf'
 
 # TODO(eliben): For now we're preserving the global presence of a style dict.
 # Refactor this so that the style is passed around through yapf rather than

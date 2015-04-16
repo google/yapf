@@ -29,6 +29,7 @@ from __future__ import print_function
 
 import argparse
 import logging
+import os
 import sys
 
 from yapf.yapflib import file_resources
@@ -66,10 +67,15 @@ def main(argv):
   parser.add_argument(
       '--style',
       action='store',
-      default='pep8',
       help=('specify formatting style: either a style name (for example "pep8" '
-            'or "google"), or the name of a file with style settings. pep8 is '
-            'the default.'))
+            'or "google"), or the name of a file with style settings. The '
+            'default is pep8 unless a %s file located in one of the parent '
+            'directories of the source file (or current directory for '
+            'stdin)' % style.LOCAL_STYLE))
+  parser.add_argument('--no-local-style',
+                      action='store_true',
+                      help=('Do not search for local style defintion (%s)' %
+                            style.LOCAL_STYLE))
   parser.add_argument('--verify',
                       action='store_true',
                       help='try to verify reformatted code for syntax errors')
@@ -128,10 +134,13 @@ def main(argv):
         original_source.append(py3compat.raw_input())
       except EOFError:
         break
+    style_config = args.style
+    if style_config is None and not args.no_local_style:
+      style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
     sys.stdout.write(yapf_api.FormatCode(
         py3compat.unicode('\n'.join(original_source) + '\n'),
         filename='<stdin>',
-        style_config=args.style,
+        style_config=style_config,
         lines=lines,
         verify=args.verify))
     return 0
@@ -141,6 +150,7 @@ def main(argv):
     raise YapfError('Input filenames did not match any python files')
   FormatFiles(files, lines,
               style_config=args.style,
+              no_local_style=args.no_local_style,
               in_place=args.in_place,
               print_diff=args.diff,
               verify=args.verify)
@@ -149,6 +159,7 @@ def main(argv):
 
 def FormatFiles(filenames, lines,
                 style_config=None,
+                no_local_style=False,
                 in_place=False,
                 print_diff=False,
                 verify=True):
@@ -161,6 +172,8 @@ def FormatFiles(filenames, lines,
       overrides the 'args.lines'. It can be used by third-party code (e.g.,
       IDEs) when reformatting a snippet of code.
     style_config: (string) Style name or file path.
+    no_local_style: (string) If style_config is None don't search for
+      directory-local style configuration.
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
@@ -168,6 +181,8 @@ def FormatFiles(filenames, lines,
   """
   for filename in filenames:
     logging.info('Reformatting %s', filename)
+    if style_config is None and not no_local_style:
+      style_config = file_resources.GetDefaultStyleForDir(os.path.dirname(filename))
     try:
       reformatted_code, encoding = yapf_api.FormatFile(
           filename, style_config=style_config, lines=lines,
