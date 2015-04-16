@@ -15,6 +15,7 @@
 
 import os
 import re
+import textwrap
 
 from yapf.yapflib import py3compat
 
@@ -33,82 +34,87 @@ def Get(setting_name):
   return _style[setting_name]
 
 
+def Help():
+  """Return all style settings."""
+  return _STYLE_HELP
+
+
 def SetGlobalStyle(style):
   """Set a style dict."""
   global _style
   _style = style
 
 
+_STYLE_HELP = dict(
+    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=
+    'Align closing bracket with visual indentation.',
+    COLUMN_LIMIT='The column limit.',
+    I18N_COMMENT=textwrap.dedent("""\
+      The regex for an i18n comment. The presence of this comment stops
+      reformatting of that line, because the comments are required to be
+      next to the string they translate."""),
+    I18N_FUNCTION_CALL=textwrap.dedent("""\
+      The i18n function call names. The presence of this function stops
+      reformattting on that line, because the string it has cannot be moved
+      away from the i18n comment."""),
+    INDENT_WIDTH='The number of columns to use for indentation.',
+    CONTINUATION_INDENT_WIDTH='Indent width used for line continuations.',
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
+      Insert a blank line before a 'def' or 'class' immediately nested
+      within another 'def' or 'class'.
+
+      For example:
+
+      class Foo:
+                         # <------ this blank line
+        def method():
+          ..."""),
+    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
+      Insert a space between the ending comma and closing bracket of a list,
+      etc."""),
+    SPACES_BEFORE_COMMENT=(
+        'The number of spaces required before a trailing comment.'),
+    SPLIT_BEFORE_LOGICAL_OPERATOR=
+    "Set to True to prefer splitting before 'and' or 'or' rather than after.",
+    SPLIT_BEFORE_NAMED_ASSIGNS='Split named assignments onto individual lines.',
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=
+    'The penalty for splitting the line after a unary operator.',
+    SPLIT_PENALTY_EXCESS_CHARACTER=
+    'The penalty for characters over the column limit.',
+    SPLIT_PENALTY_LOGICAL_OPERATOR=
+    "The penalty of splitting the line around the 'and' and 'or' operators.",
+    SPLIT_PENALTY_MATCHING_BRACKET=textwrap.dedent("""\
+      The penalty for not matching the splitting decision for the matching
+      bracket tokens. For instance, if there is a newline after the opening
+      bracket, we would tend to expect one before the closing bracket, and
+      vice versa."""),
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET=
+    'The penalty for splitting right after the opening bracket.',
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
+      The penalty incurred by adding a line split to the unwrapped line. The
+      more line splits added the higher the penalty."""),
+    #BASED_ON_STYLE='Which predefined style this style is based on',
+)
+
+
 def CreatePEP8Style():
   return dict(
-      # Align closing bracket with visual indentation.
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT = True,
-
-      # The column limit.
       COLUMN_LIMIT=79,
-
-      # The regex for an i18n comment. The presence of this comment stops
-      # reformatting of that line, because the comments are required to be
-      # next to the string they translate.
       I18N_COMMENT='',
-
-      # The i18n function call names. The presence of this function stops
-      # reformattting on that line, because the string it has cannot be moved
-      # away from the i18n comment.
       I18N_FUNCTION_CALL='',
-
-      # The number of columns to use for indentation.
       INDENT_WIDTH=4,
-
-      # Indent width for line continuations.
       CONTINUATION_INDENT_WIDTH=4,
-
-      # Insert a blank line before a 'def' or 'class' immediately nested within
-      # another 'def' or 'class'.
-      #
-      # For example:
-      #
-      # class Foo:
-      #                    # <------ this blank line
-      #   def method():
-      #     ...
-      #
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
-
-      # Insert a space between the ending comma and closing bracket of a list,
-      # etc.
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
-
-      # The number of spaces required before a trailing comment.
       SPACES_BEFORE_COMMENT=2,
-
-      # Set to True to prefer splitting before 'and' or 'or' rather than
-      # after.
       SPLIT_BEFORE_LOGICAL_OPERATOR=False,
-
-      # Split named assignments onto individual lines.
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
-
-      # The penalty for splitting the line after a unary operator.
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=100,
-
-      # The penalty for characters over the column limit.
       SPLIT_PENALTY_EXCESS_CHARACTER=200,
-
-      # The penalty of splitting the line around the 'and' and 'or' operators.
       SPLIT_PENALTY_LOGICAL_OPERATOR=30,
-
-      # The penalty for not matching the splitting decision for the matching
-      # bracket tokens. For instance, if there is a newline after the opening
-      # bracket, we would tend to expect one before the closing bracket, and
-      # vice versa.
       SPLIT_PENALTY_MATCHING_BRACKET=50,
-
-      # The penalty for splitting right after the opening bracket.
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
-
-      # The penalty incurred by adding a line split to the unwrapped line. The
-      # more line splits added the higher the penalty.
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
   )  # yapf: disable
 
