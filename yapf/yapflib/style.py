@@ -35,7 +35,7 @@ def Get(setting_name):
 
 
 def Help():
-  """Return all style settings."""
+  """Return dict mapping style names to help strings."""
   return _STYLE_HELP
 
 
