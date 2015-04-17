@@ -1103,6 +1103,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testNoSplittingWithinSubscriptList(self):
+    code = textwrap.dedent("""\
+        somequitelongvariablename.somemember[(a, b)] = {
+            'somelongkey': 1,
+            'someotherlongkey': 2
+        }
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 

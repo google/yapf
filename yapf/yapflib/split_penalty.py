@@ -22,8 +22,9 @@ from yapf.yapflib import pytree_visitor
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
-STRONGLY_CONNECTED = 1000
+STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
+SUBSCRIPT_LIST = 5000
 
 OR_TEST = 42
 AND_TEST = 142
@@ -133,6 +134,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if node.children[0].value == '.':
       self._SetUnbreakableOnChildren(node, num_children=len(node.children))
     elif node.children[0].value == '[':
+      for child in node.children:
+        self._SetExpressionPenalty(node, SUBSCRIPT_LIST)
+      self._SetUnbreakable(node.children[0])
       self._SetUnbreakable(node.children[-1])
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
@@ -292,13 +296,13 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def _SetUnbreakable(self, node):
     """Set an UNBREAKABLE penalty annotation for the given node."""
-    self._RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY, UNBREAKABLE)
+    _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY, UNBREAKABLE)
 
   def _SetStronglyConnected(self, *nodes):
     """Set a STRONGLY_CONNECTED penalty annotation for the given nodes."""
     for node in nodes:
-      self._RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
-                        STRONGLY_CONNECTED)
+      _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
+                   STRONGLY_CONNECTED)
 
   def _SetUnbreakableOnChildren(self, node, num_children):
     """Set an UNBREAKABLE penalty annotation on children of node."""
@@ -330,24 +334,25 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
     RecArithmeticExpression(node, _FirstChildNode(node))
 
-  def _RecAnnotate(self, tree, annotate_name, annotate_value):
-    """Recursively set the given annotation on all leafs of the subtree.
 
-    Takes care to only increase the penalty. If the node already has a higher
-    or equal penalty associated with it, this is a no-op.
+def _RecAnnotate(tree, annotate_name, annotate_value):
+  """Recursively set the given annotation on all leafs of the subtree.
 
-    Args:
-      tree: subtree to annotate
-      annotate_name: name of the annotation to set
-      annotate_value: value of the annotation to set
-    """
-    for child in tree.children:
-      self._RecAnnotate(child, annotate_name, annotate_value)
-    if isinstance(tree, pytree.Leaf):
-      cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name,
-                                                    default=0)
-      if cur_annotate < annotate_value:
-        pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
+  Takes care to only increase the penalty. If the node already has a higher
+  or equal penalty associated with it, this is a no-op.
+
+  Args:
+    tree: subtree to annotate
+    annotate_name: name of the annotation to set
+    annotate_value: value of the annotation to set
+  """
+  for child in tree.children:
+    _RecAnnotate(child, annotate_name, annotate_value)
+  if isinstance(tree, pytree.Leaf):
+    cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name,
+                                                  default=0)
+    if cur_annotate < annotate_value:
+      pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
 
 
 def _AllowBuilderStyleCalls(node):

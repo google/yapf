@@ -26,6 +26,7 @@ from yapf.yapflib import split_penalty
 UNBREAKABLE = split_penalty.UNBREAKABLE
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
 CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
+SUBSCRIPT_LIST = split_penalty.SUBSCRIPT_LIST
 
 
 class SplitPenaltyTest(unittest.TestCase):
@@ -188,15 +189,15 @@ class SplitPenaltyTest(unittest.TestCase):
     self._CheckPenalties(tree, [
         ('a', None),
         ('[', UNBREAKABLE),
-        ('x', STRONGLY_CONNECTED),
+        ('x', SUBSCRIPT_LIST),
         ('(', UNBREAKABLE),
-        ('42', STRONGLY_CONNECTED),
+        ('42', SUBSCRIPT_LIST),
         (')', UNBREAKABLE),
-        (':', STRONGLY_CONNECTED),
-        ('37', STRONGLY_CONNECTED),
-        (':', STRONGLY_CONNECTED),
-        ('-', STRONGLY_CONNECTED),
-        ('1', STRONGLY_CONNECTED),
+        (':', SUBSCRIPT_LIST),
+        ('37', SUBSCRIPT_LIST),
+        (':', SUBSCRIPT_LIST),
+        ('-', SUBSCRIPT_LIST),
+        ('1', SUBSCRIPT_LIST),
         (']', UNBREAKABLE),
     ])  # yapf: disable
 
