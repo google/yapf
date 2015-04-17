@@ -16,6 +16,7 @@
 import codecs
 import unittest
 from setuptools import setup, Command
+import sys
 
 import yapf
 import yapftests
@@ -34,7 +35,8 @@ class RunTests(Command):
     loader = unittest.TestLoader()
     tests = loader.discover('yapftests', pattern='*_test.py', top_level_dir='.')
     runner = unittest.TextTestRunner()
-    runner.run(tests)
+    results = runner.run(tests)
+    sys.exit(0 if results.wasSuccessful() else 1)
 
 
 with codecs.open('README.rst', 'r', 'utf-8') as fd:

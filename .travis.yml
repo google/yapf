@@ -8,7 +8,7 @@ install:
   - pip install --quiet coveralls
 
 script:
-  coverage run --source=yapf setup.py test
+  - nosetests --with-coverage --cover-package=yapf
 
 after_success:
-  coveralls
+  - coveralls
