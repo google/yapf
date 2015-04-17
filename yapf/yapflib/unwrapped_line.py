@@ -378,6 +378,7 @@ def _IsSurroundedByBrackets(tok):
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
+_TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
 
 
 def _SplitPenalty(prev_token, cur_token):
@@ -431,4 +432,6 @@ def _SplitPenalty(prev_token, cur_token):
   if cur_token.value == '==':
     # We would rather not split before an equality operator.
     return split_penalty.STRONGLY_CONNECTED
+  if prev_token.value in _TERM_OPERATORS or cur_token.value in _TERM_OPERATORS:
+    return 50
   return 0

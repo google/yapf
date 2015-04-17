@@ -1091,6 +1091,18 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testNoSplittingAroundTermOperators(self):
+    unformatted_code = textwrap.dedent("""\
+        a_very_long_function_call_yada_yada_etc_etc_etc(
+            long_arg1, long_arg2 / long_arg3)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a_very_long_function_call_yada_yada_etc_etc_etc(long_arg1,
+                                                        long_arg2 / long_arg3)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
