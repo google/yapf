@@ -165,11 +165,15 @@ def FormatFiles(filenames, lines,
   """
   for filename in filenames:
     logging.info('Reformatting %s', filename)
-    reformatted_code = yapf_api.FormatFile(filename,
-                                           style_config=style_config,
-                                           lines=lines,
-                                           print_diff=print_diff,
-                                           verify=verify)
+    try:
+      reformatted_code = yapf_api.FormatFile(filename,
+                                             style_config=style_config,
+                                             lines=lines,
+                                             print_diff=print_diff,
+                                             verify=verify)
+    except SyntaxError as e:
+      e.filename = filename
+      raise
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place)
 

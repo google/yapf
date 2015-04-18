@@ -24,6 +24,7 @@ the lib2to3 library.
   {Get,Set}NodeAnnotation(): manage custom annotations on pytree nodes.
 """
 
+import ast
 from lib2to3 import pygram
 from lib2to3 import pytree
 from lib2to3.pgen2 import driver
@@ -84,6 +85,10 @@ def ParseCodeToTree(code):
   Arguments:
     code: a string with the code to parse.
 
+  Raises:
+    SyntaxError if the code is invalid syntax.
+    parse.ParseError if some other parsing failure.
+
   Returns:
     The root node of the parsed tree.
   """
@@ -97,8 +102,17 @@ def ParseCodeToTree(code):
   except parse.ParseError:
     # Now try to parse using a Python 2 grammar; If this fails, then
     # there's something else wrong with the code.
-    parser_driver = driver.Driver(_GRAMMAR_FOR_PY2, convert=pytree.convert)
-    tree = parser_driver.parse_string(code, debug=False)
+    try:
+      parser_driver = driver.Driver(_GRAMMAR_FOR_PY2, convert=pytree.convert)
+      tree = parser_driver.parse_string(code, debug=False)
+    except parse.ParseError:
+      # Raise a syntax error if the code is invalid python syntax.
+      try:
+        ast.parse(code)
+      except SyntaxError as e:
+        raise(e)
+      else:
+        raise
   return _WrapEndMarker(tree)
 
 
