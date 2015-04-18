@@ -911,6 +911,38 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSplitListWithInterspersedComments(self):
+    unformatted_code = textwrap.dedent("""\
+        FOO = ['bar',  # bar
+               'baz',  # baz
+               'mux',  # mux
+               'qux',  # qux
+               'quux',  # quux
+               'quuux',  # quuux
+               'quuuux',  # quuuux
+               'quuuuux',  # quuuuux
+               'quuuuuux',  # quuuuuux
+               'quuuuuuux',  # quuuuuuux
+               lambda a, b: 37  # lambda
+              ]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        FOO = ['bar',  # bar
+               'baz',  # baz
+               'mux',  # mux
+               'qux',  # qux
+               'quux',  # quux
+               'quuux',  # quuux
+               'quuuux',  # quuuux
+               'quuuuux',  # quuuuux
+               'quuuuuux',  # quuuuuux
+               'quuuuuuux',  # quuuuuuux
+               lambda a, b: 37  # lambda
+              ]
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testRelativeImportStatements(self):
     code = textwrap.dedent("""\
         from ... import bork
