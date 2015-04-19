@@ -34,6 +34,19 @@ def stdout_redirector(stream):  # pylint: disable=invalid-name
     sys.stdout = old_stdout
 
 
+class BufferedByteStream(object):
+
+  def __init__(self):
+    self.stream = py3compat.BytesIO()
+
+  def getvalue(self):
+    return self.stream.getvalue().decode('utf-8')
+
+  @property
+  def buffer(self):
+    return self.stream
+
+
 class WriteReformattedCodeTest(unittest.TestCase):
 
   @classmethod
@@ -47,7 +60,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
   def testWriteToFile(self):
     s = u'foobar'
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir) as testfile:
-      file_resources.WriteReformattedCode(testfile.name, s, in_place=True)
+      file_resources.WriteReformattedCode(testfile.name, s, in_place=True,
+                                          encoding='utf-8')
       testfile.flush()
 
       with open(testfile.name) as f:
@@ -55,9 +69,18 @@ class WriteReformattedCodeTest(unittest.TestCase):
 
   def testWriteToStdout(self):
     s = u'foobar'
-    stream = py3compat.StringIO()
+    stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
-      file_resources.WriteReformattedCode(None, s, in_place=False)
+      file_resources.WriteReformattedCode(None, s, in_place=False,
+                                          encoding='utf-8')
+    self.assertEqual(stream.getvalue(), s)
+
+  def testWriteEncodedToStdout(self):
+    s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'
+    stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
+    with stdout_redirector(stream):
+      file_resources.WriteReformattedCode(None, s, in_place=False,
+                                          encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
 
 

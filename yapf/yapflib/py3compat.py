@@ -23,6 +23,9 @@ if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
+  import codecs
+  open_with_encoding = codecs.open
+
   range = range
   ifilter = filter
   raw_input = input
@@ -37,6 +40,9 @@ else:
   import cStringIO
   StringIO = BytesIO = cStringIO.StringIO
 
+  import io
+  open_with_encoding = io.open
+
   range = xrange
 
   from itertools import ifilter
@@ -46,8 +52,8 @@ else:
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access
 
 
-def EncodeForStdout(s):
-  """Encode the given string for emission to stdout.
+def EncodeAndWriteToStdout(s, encoding):
+  """Encode the given string and emit to stdout.
 
   The string may contain non-ascii characters. This is a problem when stdout is
   redirected, because then Python doesn't know the encoding and we may get a
@@ -55,14 +61,11 @@ def EncodeForStdout(s):
 
   Arguments:
     s: (string) The string to encode.
-
-  Returns:
-    The encoded string if Python 2.7.
   """
   if PY3:
-    return s
+    sys.stdout.buffer.write(codecs.encode(s, encoding))
   else:
-    return s.encode('UTF-8')
+    sys.stdout.write(s.encode(encoding))
 
 
 def unicode(s):

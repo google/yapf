@@ -38,9 +38,12 @@ import logging
 import re
 import sys
 
+from lib2to3.pgen2 import tokenize
+
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import reformatter
@@ -64,16 +67,16 @@ def FormatFile(filename,
     The reformatted code or None if the file doesn't exist.
   """
   _CheckPythonVersion()
-  original_source = ReadFile(filename, logging.warning)
+  original_source, encoding = ReadFile(filename, logging.warning)
   if original_source is None:
-    return None
+    return None, encoding
 
   return FormatCode(original_source,
                     style_config=style_config,
                     filename=filename,
                     lines=lines,
                     print_diff=print_diff,
-                    verify=verify)
+                    verify=verify), encoding
 
 
 def FormatCode(unformatted_source,
@@ -156,9 +159,19 @@ def ReadFile(filename, logger=None):
     IOError: raised during an error if a logger is not specified.
   """
   try:
-    with io.open(filename, mode='r', newline='') as fd:
+    with open(filename, 'rb') as fd:
+      encoding = tokenize.detect_encoding(fd.readline)[0]
+  except IOError as err:
+    if logger:
+      logger(err)
+    else:
+      raise
+
+  try:
+    with py3compat.open_with_encoding(filename, mode='r',
+                                      encoding=encoding) as fd:
       source = fd.read()
-    return source
+    return source, encoding
   except IOError as err:
     if logger:
       logger(err)

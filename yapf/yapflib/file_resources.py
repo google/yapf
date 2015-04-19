@@ -29,7 +29,7 @@ def GetCommandLineFiles(command_line_file_list, recursive):
   return _FindPythonFiles(command_line_file_list, recursive)
 
 
-def WriteReformattedCode(filename, reformatted_code, in_place):
+def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
   """Emit the reformatted code.
 
   Write the reformatted code into the file, if in_place is True. Otherwise,
@@ -39,14 +39,16 @@ def WriteReformattedCode(filename, reformatted_code, in_place):
     filename: (unicode) The name of the unformatted file.
     reformatted_code: (unicode) The reformatted code.
     in_place: (bool) If True, then write the reformatted code to the file.
+    encoding: (unicode) The encoding of the file.
   """
   if not reformatted_code.strip():
     return
   if in_place:
-    with io.open(filename, mode='w', newline='') as fd:
+    with py3compat.open_with_encoding(filename, mode='w',
+                                      encoding=encoding) as fd:
       fd.write(reformatted_code)
   else:
-    sys.stdout.write(py3compat.EncodeForStdout(reformatted_code))
+    py3compat.EncodeAndWriteToStdout(reformatted_code, encoding)
 
 
 def _FindPythonFiles(filenames, recursive):
