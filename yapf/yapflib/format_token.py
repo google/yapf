@@ -147,10 +147,6 @@ class FormatToken(object):
     return self._node
 
   @property
-  def token_type(self):
-    return self._node.type
-
-  @property
   def value(self):
     return self._node.value
 
@@ -220,10 +216,6 @@ class FormatToken(object):
   @property
   def is_name(self):
     return self._node.type == token.NAME and not self.is_keyword
-
-  @property
-  def is_operator(self):
-    return self._node.value in {'+', '-', '*', '/', '//', '**'}
 
   @property
   def is_number(self):
