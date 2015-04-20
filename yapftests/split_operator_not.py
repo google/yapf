@@ -21,7 +21,7 @@ class TestingNotInParameters(unittest.TestCase):
                 return a
 
 
-            sum("felipe barreto volpone longo nome para quebrar porque anda nao q",
+            sum("a long line to break the line. a long line to break the line brk",
                 not True)
         """)
         uwlines = _ParseAndUnwrap(code)
