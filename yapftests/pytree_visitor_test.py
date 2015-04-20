@@ -50,6 +50,7 @@ _VISITOR_TEST_SIMPLE_CODE = r'''
 foo = bar
 baz = x
 '''
+
 _VISITOR_TEST_NESTED_CODE = r'''
 if x:
   if y:

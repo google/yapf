@@ -85,7 +85,6 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('c', format_token.Subtype.NONE),
          (')', format_token.Subtype.NONE),
          (':', format_token.Subtype.NONE)],
-
         [('return', format_token.Subtype.NONE),
          ('-', format_token.Subtype.UNARY_OPERATOR),
          ('x', format_token.Subtype.NONE),
@@ -124,7 +123,6 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('strs', format_token.Subtype.NONE),
          (')', format_token.Subtype.NONE),
          (':', format_token.Subtype.NONE)],
-
         [('return', format_token.Subtype.NONE),
          ('{', format_token.Subtype.NONE),
          ('s', format_token.Subtype.NONE),

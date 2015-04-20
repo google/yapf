@@ -40,13 +40,15 @@ class UtilsTest(unittest.TestCase):
 
 
 def _LooksLikeYapfStyle(cfg):
-  return (cfg['INDENT_WIDTH'] == 2 and
-          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
+  return (
+      cfg['INDENT_WIDTH'] == 2 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
+  )
 
 
 def _LooksLikeGoogleStyle(cfg):
-  return (cfg['INDENT_WIDTH'] == 4 and
-          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
+  return (
+      cfg['INDENT_WIDTH'] == 4 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
+  )
 
 
 def _LooksLikePEP8Style(cfg):
