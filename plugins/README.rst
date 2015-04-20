@@ -2,6 +2,12 @@
 IDE Plugins
 ===========
 
+Emacs
+=====
+
+The ``Emacs`` plugin is maintained separately.
+Installation directions can be found here: https://github.com/paetzke/py-yapf.el
+
 VIM
 ===
 
