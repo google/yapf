@@ -38,7 +38,6 @@ class RunTests(Command):
     results = runner.run(tests)
     sys.exit(0 if results.wasSuccessful() else 1)
 
-
 with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(
       name='yapf',
@@ -50,24 +49,17 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       maintainer='Bill Wendling',
       maintainer_email='morbo@google.com',
       packages=['yapf', 'yapf.yapflib', 'yapftests'],
-      classifiers=[
-          'Development Status :: 3 - Alpha',
-          'Environment :: Console',
-          'Intended Audience :: Developers',
-          'License :: OSI Approved :: Apache Software License',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.7',
-          'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
-          'Topic :: Software Development :: Libraries :: Python Modules',
-          'Topic :: Software Development :: Quality Assurance',
-      ],
-      entry_points={
-          'console_scripts': ['yapf = yapf:run_main'],
-      },
-      cmdclass={
-          'test': RunTests,
-      },
-  )
+      classifiers=['Development Status :: 3 - Alpha',
+                   'Environment :: Console',
+                   'Intended Audience :: Developers',
+                   'License :: OSI Approved :: Apache Software License',
+                   'Operating System :: OS Independent',
+                   'Programming Language :: Python',
+                   'Programming Language :: Python :: 2',
+                   'Programming Language :: Python :: 2.7',
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.4',
+                   'Topic :: Software Development :: Libraries :: Python Modules',
+                   'Topic :: Software Development :: Quality Assurance',],
+      entry_points={'console_scripts': ['yapf = yapf:run_main'],},
+      cmdclass={'test': RunTests,},)

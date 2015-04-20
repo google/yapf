@@ -60,7 +60,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
   def testWriteToFile(self):
     s = u'foobar'
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir) as testfile:
-      file_resources.WriteReformattedCode(testfile.name, s, in_place=True,
+      file_resources.WriteReformattedCode(testfile.name, s,
+                                          in_place=True,
                                           encoding='utf-8')
       testfile.flush()
 
@@ -71,7 +72,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
     s = u'foobar'
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
-      file_resources.WriteReformattedCode(None, s, in_place=False,
+      file_resources.WriteReformattedCode(None, s,
+                                          in_place=False,
                                           encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
 
@@ -79,7 +81,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
     s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
-      file_resources.WriteReformattedCode(None, s, in_place=False,
+      file_resources.WriteReformattedCode(None, s,
+                                          in_place=False,
                                           encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
 

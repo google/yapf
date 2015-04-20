@@ -1843,7 +1843,8 @@ class TestVerifyNoVerify(unittest.TestCase):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code,
-                     reformatter.Reformat(uwlines, verify=False))
+                     reformatter.Reformat(uwlines,
+                                          verify=False))
 
   def testVerifyFutureImport(self):
     unformatted_code = textwrap.dedent("""\
@@ -1872,7 +1873,8 @@ class TestVerifyNoVerify(unittest.TestCase):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_formatted_code,
-                     reformatter.Reformat(uwlines, verify=False))
+                     reformatter.Reformat(uwlines,
+                                          verify=False))
 
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
