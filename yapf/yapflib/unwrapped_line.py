@@ -383,8 +383,10 @@ _TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
 
 def _SplitPenalty(prev_token, cur_token):
   """Return the penalty for breaking the line before the current token."""
-  if cur_token.node_split_penalty > 0:
-    return cur_token.node_split_penalty
+
+  if prev_token.value == 'not' and (cur_token.value == 'True'
+    or cur_token.value == 'False'):
+    return split_penalty.STRONGLY_CONNECTED
 
   if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
     # Prefer to split before 'and' and 'or'.
