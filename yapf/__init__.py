@@ -73,13 +73,19 @@ def main(argv):
   parser.add_argument('--verify',
                       action='store_true',
                       help='try to verify refomatted code for syntax errors')
-  diff_inplace_group = parser.add_mutually_exclusive_group()
-  diff_inplace_group.add_argument('-d', '--diff',
-                                  action='store_true',
-                                  help='print the diff for the fixed source')
-  diff_inplace_group.add_argument('-i', '--in-place',
-                                  action='store_true',
-                                  help='make changes to files in place')
+  diff_inplace_check_group = parser.add_mutually_exclusive_group()
+  diff_inplace_check_group.add_argument('-c', '--check',
+                                        action='store_true',
+                                        help=('check the files adhere to the '
+                                              'style, exits with status 3 if '
+                                              'not'))
+  diff_inplace_check_group.add_argument('-d', '--diff',
+                                        action='store_true',
+                                        help=('print the diff for the fixed '
+                                              'source'))
+  diff_inplace_check_group.add_argument('-i', '--in-place',
+                                        action='store_true',
+                                        help='make changes to files in place')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
   lines_recursive_group.add_argument(
@@ -114,9 +120,9 @@ def main(argv):
   lines = _GetLines(args.lines) if args.lines is not None else None
   if not args.files:
     # No arguments specified. Read code from stdin.
-    if args.in_place or args.diff:
-      parser.error('cannot use --in_place or --diff flags when reading '
-                   'from stdin')
+    if args.in_place or args.diff or args.check:
+      parser.error('cannot use --in_place, -diff or --check flags when '
+                   'reading from stdin')
 
     original_source = []
     while True:
@@ -139,11 +145,15 @@ def main(argv):
   files = file_resources.GetCommandLineFiles(args.files, args.recursive)
   if not files:
     raise YapfError('Input filenames did not match any python files')
-  FormatFiles(files, lines,
-              style_config=args.style,
-              in_place=args.in_place,
-              print_diff=args.diff,
-              verify=args.verify)
+  reformatted = FormatFiles(files, lines,
+                            style_config=args.style,
+                            in_place=args.in_place,
+                            print_diff=args.diff or args.check,
+                            verify=args.verify)
+
+  if args.check and reformatted:
+      return 3
+
   return 0
 
 
@@ -165,7 +175,11 @@ def FormatFiles(filenames, lines,
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
+
+  Returns:
+    True if at least one file had been reformatted, False if no file could be
   """
+  file_reformatted = False
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     try:
@@ -178,6 +192,8 @@ def FormatFiles(filenames, lines,
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
                                           encoding)
+      file_reformatted = True
+  return file_reformatted
 
 
 def _GetLines(line_strings):

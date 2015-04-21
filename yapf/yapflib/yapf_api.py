@@ -119,7 +119,7 @@ def FormatCode(unformatted_source,
   reformatted_source = reformatter.Reformat(uwlines, verify)
 
   if unformatted_source == reformatted_source:
-    return '' if print_diff else reformatted_source
+    return None if print_diff else reformatted_source
 
   code_diff = _GetUnifiedDiff(unformatted_source, reformatted_source,
                               filename=filename)

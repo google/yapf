@@ -34,9 +34,11 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify']
 
 class YapfTest(unittest.TestCase):
 
-  def _Check(self, unformatted_code, expected_formatted_code):
+  def _Check(self, unformatted_code, expected_formatted_code,
+             print_diff=False):
     style.SetGlobalStyle(style.CreateChromiumStyle())
-    formatted_code = yapf_api.FormatCode(unformatted_code)
+    formatted_code = yapf_api.FormatCode(unformatted_code,
+                                         print_diff=print_diff)
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -52,6 +54,22 @@ class YapfTest(unittest.TestCase):
         if True: pass
         """)
     self._Check(unformatted_code, expected_formatted_code)
+
+  def testPrintDiffButThereIsNoDifference(self):
+      unformatted_code = u'a = 1\n'
+      expected_diff = None
+      self._Check(unformatted_code, expected_diff, print_diff=True)
+
+  def testPrintDiffAndThereIsADifference(self):
+      unformatted_code = u'a    =    1'
+      expected_diff = textwrap.dedent(u"""\
+          --- <unknown>\t(original)
+          +++ <unknown>\t(reformatted)
+          @@ -1 +1 @@
+          -a    =    1
+          +a = 1
+          """)
+      self._Check(unformatted_code, expected_diff, print_diff=True)
 
 
 class CommandLineTest(unittest.TestCase):
@@ -626,6 +644,81 @@ class CommandLineTest(unittest.TestCase):
         unformatted_code.encode('utf-8'))
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+
+  def testCheckOutputCodeWhenCodeDoesMeetStyle(self):
+    unformatted_code = u'a = 1\n'
+    expected_diff = u''
+
+    with tempfile.NamedTemporaryFile(suffix='.py',
+                                     dir=self.test_tmpdir) as testfile:
+      testfile.write(unformatted_code.encode('utf-8'))
+      testfile.seek(0)
+      p = subprocess.Popen(YAPF_BINARY + ['--check', testfile.name],
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT)
+      diff, stderrdata = p.communicate(
+          unformatted_code.encode('utf-8'))
+
+      self.assertEqual(diff.decode('utf-8'), expected_diff)
+      self.assertIsNone(stderrdata)
+
+  def testCheckExitStatusWhenCodeAlreadyMeetsStyle(self):
+    unformatted_code = u'a = 1\n'
+
+    with tempfile.NamedTemporaryFile(suffix='.py',
+                                     dir=self.test_tmpdir) as outfile:
+      with tempfile.NamedTemporaryFile(suffix='.py',
+                                       dir=self.test_tmpdir) as testfile:
+        testfile.write(unformatted_code.encode('utf-8'))
+        testfile.seek(0)
+        subprocess.check_call(YAPF_BINARY + ['--check', testfile.name],
+                              stdout=outfile)
+
+  def testCheckOutputWhenCodeDoesNotMeetStyle(self):
+    unformatted_code = u'a    =     1'
+
+    with tempfile.NamedTemporaryFile(suffix='.py',
+                                     dir=self.test_tmpdir) as testfile:
+
+      expected_diff = (u'--- {}\t(original)\n+++ {}\t(reformatted)\n@@ -1 +1 '
+                        '@@\n-a    =     1\n+a = 1\n'.format(testfile.name,
+                                                             testfile.name))
+
+      testfile.write(unformatted_code.encode('utf-8'))
+      testfile.seek(0)
+      p = subprocess.Popen(YAPF_BINARY + ['--check', testfile.name],
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT)
+      diff, stderrdata = p.communicate(
+          unformatted_code.encode('utf-8'))
+
+      self.assertEqual(diff.decode('utf-8'), expected_diff)
+      self.assertIsNone(stderrdata)
+
+  def testCheckExitStatusWhenCodeDoesNotMeetStyle(self):
+    unformatted_code = u'a    =     1'
+
+    with tempfile.NamedTemporaryFile(suffix='.py',
+                                     dir=self.test_tmpdir) as outfile:
+      with tempfile.NamedTemporaryFile(suffix='.py',
+                                       dir=self.test_tmpdir) as testfile:
+        testfile.write(unformatted_code.encode('utf-8'))
+        testfile.seek(0)
+        with self.assertRaises(subprocess.CalledProcessError) as cm:
+          subprocess.check_call(YAPF_BINARY + ['--check', testfile.name],
+                                stdout=outfile)
+
+        self.assertEqual(cm.exception.returncode, 3)
+
+  def testCheckFlagCannotBeUsedWithSTDIN(self):
+    p = subprocess.Popen(YAPF_BINARY + ['--check'],
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    with self.assertRaises(subprocess.CalledProcessError) as cm:
+      subprocess.check_call(YAPF_BINARY + ['--check'])
+
+    self.assertEqual(cm.exception.returncode, 2)
 
 
 class BadInputTest(unittest.TestCase):
