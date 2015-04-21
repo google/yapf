@@ -379,6 +379,9 @@ def _IsSurroundedByBrackets(tok):
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 _TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
+_LIST_COMP_OPERATORS = frozenset({
+    format_token.Subtype.COMP_FOR, format_token.Subtype.COMP_IF
+})
 
 
 def _SplitPenalty(prev_token, cur_token):
@@ -399,6 +402,9 @@ def _SplitPenalty(prev_token, cur_token):
     if cur_token.value in _LOGICAL_OPERATORS:
       return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
 
+  if cur_token.subtype in _LIST_COMP_OPERATORS:
+    # We don't mind breaking before the 'for' or 'if' of a list comprehension.
+    return 0
   if prev_token.subtype is format_token.Subtype.UNARY_OPERATOR:
     # Try not to break after a unary operator.
     return style.Get('SPLIT_PENALTY_AFTER_UNARY_OPERATOR')

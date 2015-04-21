@@ -63,7 +63,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         node.children[1], pytree.Leaf) and node.children[1].value == ':')
     last_was_comma = False
     for child in node.children:
-      self.Visit(child)
       if pytree_utils.NodeName(child) == 'comp_for':
         self._SetFirstLeafTokenSubtype(child,
                                        format_token.Subtype.DICT_SET_GENERATOR)
@@ -72,6 +71,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
           self._SetFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
         last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
+      self.Visit(child)
 
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name
     # expr_stmt ::= testlist_star_expr (augassign (yield_expr|testlist)
@@ -217,6 +217,16 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' vname)
     #      | vfpdef ['=' test] (',' vfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
+
+  def Visit_comp_for(self, node):  # pylint: disable=invalid-name
+    # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
+    self._SetFirstLeafTokenSubtype(node, format_token.Subtype.COMP_FOR)
+    self.DefaultNodeVisit(node)
+
+  def Visit_comp_if(self, node):  # pylint: disable=invalid-name
+    # comp_if ::= 'if' old_test [comp_iter]
+    self._SetFirstLeafTokenSubtype(node, format_token.Subtype.COMP_IF)
+    self.DefaultNodeVisit(node)
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
