@@ -33,7 +33,6 @@ These APIs have some common arguments:
 """
 
 import difflib
-import io
 import logging
 import re
 import sys

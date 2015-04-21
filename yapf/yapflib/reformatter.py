@@ -75,7 +75,9 @@ def Reformat(uwlines, verify=True):
       while state.next_token:
         next_token_lineno = state.next_token.lineno
         prev_token = state.next_token.previous_token
-        prev_token_lineno = prev_token.lineno if prev_token else next_token_lineno
+        prev_token_lineno = (
+            prev_token.lineno if prev_token else next_token_lineno
+        )
         if prev_token.is_continuation:
           newline = False
         else:

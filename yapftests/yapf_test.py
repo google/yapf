@@ -632,7 +632,7 @@ class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""
 
   def testBadSyntax(self):
-    code = "  a = 1\n"
+    code = '  a = 1\n'
     self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
 
 

@@ -85,8 +85,9 @@ class FormatDecisionState(object):
     # Note: 'first_indent' is implicit in the stack. Also, we ignore 'previous',
     # because it shouldn't have a bearing on this comparison. (I.e., it will
     # report equal if 'next_token' does.)
-    return (self.next_token == other.next_token and self.column == other.column
-            and self.paren_level == other.paren_level and
+    return (self.next_token == other.next_token and
+            self.column == other.column and
+            self.paren_level == other.paren_level and
             self.start_of_line_level == other.start_of_line_level and
             self.lowest_level_on_line == other.lowest_level_on_line and
             (self.ignore_stack_for_comparison or

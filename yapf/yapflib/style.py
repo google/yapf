@@ -93,13 +93,13 @@ _STYLE_HELP = dict(
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the unwrapped line. The
       more line splits added the higher the penalty."""),
-    #BASED_ON_STYLE='Which predefined style this style is based on',
+    # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
 
 def CreatePEP8Style():
   return dict(
-      ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT = True,
+      ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       COLUMN_LIMIT=79,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',

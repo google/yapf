@@ -13,13 +13,13 @@
 # limitations under the License.
 """Utilities for Python2 / Python3 compatibility."""
 
+import io
 import sys
 
 PY3 = sys.version_info[0] == 3
 
 
 if PY3:
-  import io
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
@@ -40,7 +40,6 @@ else:
   import cStringIO
   StringIO = BytesIO = cStringIO.StringIO
 
-  import io
   open_with_encoding = io.open
 
   range = xrange
@@ -61,6 +60,7 @@ def EncodeAndWriteToStdout(s, encoding):
 
   Arguments:
     s: (string) The string to encode.
+    encoding: (string) The encoding of the string.
   """
   if PY3:
     sys.stdout.buffer.write(codecs.encode(s, encoding))

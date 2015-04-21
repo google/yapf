@@ -134,8 +134,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if node.children[0].value == '.':
       self._SetUnbreakableOnChildren(node, num_children=len(node.children))
     elif node.children[0].value == '[':
-      for child in node.children:
-        self._SetExpressionPenalty(node, SUBSCRIPT_LIST)
+      self._SetExpressionPenalty(node, SUBSCRIPT_LIST)
       self._SetUnbreakable(node.children[0])
       self._SetUnbreakable(node.children[-1])
     elif len(node.children) == 2:

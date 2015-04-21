@@ -52,6 +52,9 @@ def main(argv):
 
   Returns:
     0 if there were no errors, non-zero otherwise.
+
+  Raises:
+    YapfError: if none of the supplied files were Python files.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
   parser.add_argument('--version',
@@ -99,7 +102,7 @@ def main(argv):
   if args.style_help:
     style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
     for option, docstring in sorted(style.Help().items()):
-      print(option, "=", style.Get(option), sep='')
+      print(option, '=', style.Get(option), sep='')
       for line in docstring.splitlines():
         print('  ', line)
       print()
@@ -166,11 +169,9 @@ def FormatFiles(filenames, lines,
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     try:
-      reformatted_code, encoding = yapf_api.FormatFile(filename,
-                                                       style_config=style_config,
-                                                       lines=lines,
-                                                       print_diff=print_diff,
-                                                       verify=verify)
+      reformatted_code, encoding = yapf_api.FormatFile(
+          filename, style_config=style_config, lines=lines,
+          print_diff=print_diff, verify=verify)
     except SyntaxError as e:
       e.filename = filename
       raise

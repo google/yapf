@@ -39,7 +39,7 @@ class BufferedByteStream(object):
   def __init__(self):
     self.stream = py3compat.BytesIO()
 
-  def getvalue(self):
+  def getvalue(self):  # pylint: disable=invalid-name
     return self.stream.getvalue().decode('utf-8')
 
   @property
@@ -78,7 +78,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
     self.assertEqual(stream.getvalue(), s)
 
   def testWriteEncodedToStdout(self):
-    s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'
+    s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
       file_resources.WriteReformattedCode(None, s,

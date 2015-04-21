@@ -17,9 +17,7 @@ This module provides functions for interfacing with files: opening, writing, and
 querying.
 """
 
-import io
 import os
-import sys
 
 from yapf.yapflib import py3compat
 
