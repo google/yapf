@@ -34,9 +34,11 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify']
 
 class YapfTest(unittest.TestCase):
 
-  def _Check(self, unformatted_code, expected_formatted_code):
+  def _Check(self, unformatted_code, expected_formatted_code,
+             print_diff=False):
     style.SetGlobalStyle(style.CreateChromiumStyle())
-    formatted_code = yapf_api.FormatCode(unformatted_code)
+    formatted_code = yapf_api.FormatCode(unformatted_code,
+                                         print_diff=print_diff)
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -52,6 +54,22 @@ class YapfTest(unittest.TestCase):
         if True: pass
         """)
     self._Check(unformatted_code, expected_formatted_code)
+
+  def testPrintDiffButThereIsNoDifference(self):
+      unformatted_code = u'a = 1\n'
+      expected_diff = None
+      self._Check(unformatted_code, expected_diff, print_diff=True)
+
+  def testPrintDiffAndThereIsADifference(self):
+      unformatted_code = u'a    =    1'
+      expected_diff = textwrap.dedent(u"""\
+          --- <unknown>\t(original)
+          +++ <unknown>\t(reformatted)
+          @@ -1 +1 @@
+          -a    =    1
+          +a = 1
+          """)
+      self._Check(unformatted_code, expected_diff, print_diff=True)
 
 
 class CommandLineTest(unittest.TestCase):
