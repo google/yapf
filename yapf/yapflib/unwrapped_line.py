@@ -379,13 +379,16 @@ def _IsSurroundedByBrackets(tok):
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 _TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
+_COMPARISON_OPERATORS = frozenset({
+    '<', '>', '==', '>=', '<=', '<>', '!=', 'in', 'not in', 'is', 'is not'
+})
+_LIST_COMP_OPERATORS = frozenset({
+    format_token.Subtype.COMP_FOR, format_token.Subtype.COMP_IF
+})
 
 
 def _SplitPenalty(prev_token, cur_token):
   """Return the penalty for breaking the line before the current token."""
-  if cur_token.node_split_penalty > 0:
-    return cur_token.node_split_penalty
-
   if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
     # Prefer to split before 'and' and 'or'.
     if prev_token.value in _LOGICAL_OPERATORS:
@@ -399,6 +402,9 @@ def _SplitPenalty(prev_token, cur_token):
     if cur_token.value in _LOGICAL_OPERATORS:
       return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
 
+  if cur_token.subtype in _LIST_COMP_OPERATORS:
+    # We don't mind breaking before the 'for' or 'if' of a list comprehension.
+    return 0
   if prev_token.subtype is format_token.Subtype.UNARY_OPERATOR:
     # Try not to break after a unary operator.
     return style.Get('SPLIT_PENALTY_AFTER_UNARY_OPERATOR')
@@ -408,9 +414,6 @@ def _SplitPenalty(prev_token, cur_token):
   if prev_token.value == ':':
     # We would rather not split after a colon.
     return split_penalty.STRONGLY_CONNECTED
-  if prev_token.value == '==':
-    # We would rather not split after an equality operator.
-    return 20
   if prev_token.subtype in {
       format_token.Subtype.VARARGS_STAR, format_token.Subtype.KWARGS_STAR_STAR
   }:
@@ -429,9 +432,8 @@ def _SplitPenalty(prev_token, cur_token):
       cur_token.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN):
     # Don't break before or after an default or named assignment.
     return split_penalty.UNBREAKABLE
-  if cur_token.value == '==':
-    # We would rather not split before an equality operator.
+  if (prev_token.value in _COMPARISON_OPERATORS or
+      cur_token.value in _COMPARISON_OPERATORS):
+    # We would rather not split around comparison operators.
     return split_penalty.STRONGLY_CONNECTED
-  if prev_token.value in _TERM_OPERATORS or cur_token.value in _TERM_OPERATORS:
-    return 50
-  return 0
+  return cur_token.node_split_penalty

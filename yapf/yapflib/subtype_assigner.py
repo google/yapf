@@ -218,6 +218,16 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #      | vfpdef ['=' test] (',' vfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
 
+  def Visit_comp_for(self, node):  # pylint: disable=invalid-name
+    # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
+    self._SetFirstLeafTokenSubtype(node, format_token.Subtype.COMP_FOR)
+    self.DefaultNodeVisit(node)
+
+  def Visit_comp_if(self, node):  # pylint: disable=invalid-name
+    # comp_if ::= 'if' old_test [comp_iter]
+    self._SetFirstLeafTokenSubtype(node, format_token.Subtype.COMP_IF)
+    self.DefaultNodeVisit(node)
+
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
     for child in node.children:
