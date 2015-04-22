@@ -196,6 +196,24 @@ class StyleFromCommandLine(unittest.TestCase):
     self.assertTrue(_LooksLikeYapfStyle(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
+  def testDefaultBasedOnStyleNotStrict(self):
+    cfg = style.CreateStyleFromConfig(
+        '{based_on_style : pep8'
+        ' ,indent_width=2'
+        ' blank_line_before_nested_class_or_def:True}')
+    self.assertTrue(_LooksLikeYapfStyle(cfg))
+    self.assertEqual(cfg['INDENT_WIDTH'], 2)
+
+  def testDefaultBasedOnStyleBadString(self):
+    self.assertRaisesRegexp(style.StyleConfigError, "Unknown style option",
+                            style.CreateStyleFromConfig,
+                            '{based_on_styl: pep8}')
+    self.assertRaisesRegexp(style.StyleConfigError, "not a valid",
+                            style.CreateStyleFromConfig, '{INDENT_WIDTH: FOUR}')
+    self.assertRaisesRegexp(style.StyleConfigError, "Invalid style dict",
+                            style.CreateStyleFromConfig,
+                            '{based_on_style: pep8')
+
 
 class StyleHelp(unittest.TestCase):
 
