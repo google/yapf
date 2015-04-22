@@ -72,7 +72,7 @@ def main(argv):
             'the default.'))
   parser.add_argument('--verify',
                       action='store_true',
-                      help='try to verify refomatted code for syntax errors')
+                      help='try to verify reformatted code for syntax errors')
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument('-d', '--diff',
                                   action='store_true',
