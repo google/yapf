@@ -163,8 +163,7 @@ def ReadFile(filename, logger=None):
   except IOError as err:
     if logger:
       logger(err)
-    else:
-      raise
+    raise
 
   try:
     with py3compat.open_with_encoding(filename, mode='r',
@@ -174,8 +173,7 @@ def ReadFile(filename, logger=None):
   except IOError as err:
     if logger:
       logger(err)
-    else:
-      raise
+    raise
 
 
 DISABLE_PATTERN = r'^#+ +yapf: *disable$'
