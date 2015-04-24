@@ -16,7 +16,15 @@ from yapf.yapflib import subtype_assigner
 class TestingNotInParameters(unittest.TestCase):
 
     def test_notInParams(self):
-        code = textwrap.dedent("""\
+        unformatted_code = textwrap.dedent("""\
+            def sum(a, sprint):
+                return a
+
+
+            sum("a long line to break the line. a long line to break the line brk", not True)
+        """)
+
+        expected_code = textwrap.dedent("""\
             def sum(a, sprint):
                 return a
 
@@ -24,8 +32,9 @@ class TestingNotInParameters(unittest.TestCase):
             sum("a long line to break the line. a long line to break the line brk",
                 not True)
         """)
-        uwlines = _ParseAndUnwrap(code)
-        self.assertEqual(code, reformatter.Reformat(uwlines))
+
+        uwlines = _ParseAndUnwrap(unformatted_code)
+        self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
 
 def _ParseAndUnwrap(code, dumptree=False):

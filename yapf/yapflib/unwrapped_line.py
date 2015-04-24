@@ -388,6 +388,9 @@ def _SplitPenalty(prev_token, cur_token):
     or cur_token.value == 'False'):
     return split_penalty.STRONGLY_CONNECTED
 
+  if cur_token.node_split_penalty > 0:
+    return cur_token.node_split_penalty
+
   if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
     # Prefer to split before 'and' and 'or'.
     if prev_token.value in _LOGICAL_OPERATORS:
