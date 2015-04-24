@@ -288,7 +288,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     elif node.children[0].value in '[{':
       # Keep empty containers together if we can.
       if len(node.children) == 2:
-        self._SetStronglyConnected(node.children[-1])
+        self._SetUnbreakable(node.children[-1])
 
   ############################################################################
   # Helper methods that set the annotations.

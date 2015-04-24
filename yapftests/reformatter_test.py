@@ -1145,6 +1145,17 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertEqual(code, reformatter.Reformat(uwlines))
 
+  def testExcessCharacters(self):
+    code = textwrap.dedent("""\
+      class foo:
+
+        def bar(self):
+          self.write(s=['%s%s %s' % ('many of really', 'long strings',
+                                     '+ just makes up 81')])
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(unittest.TestCase):
 
