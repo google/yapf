@@ -1914,6 +1914,30 @@ class TestsForPython3Code(unittest.TestCase):
     self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
+class TestingNotInParameters(unittest.TestCase):
+
+    def test_notInParams(self):
+        unformatted_code = textwrap.dedent("""\
+            def sum(a, sprint):
+                return a
+
+
+            sum("a long line to break the line. a long line to break the line brk", not True)
+        """)
+
+        expected_code = textwrap.dedent("""\
+            def sum(a, sprint):
+                return a
+
+
+            sum("a long line to break the line. a long line to break the line brk",
+                not True)
+        """)
+
+        uwlines = _ParseAndUnwrap(unformatted_code)
+        self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
+
 def _ParseAndUnwrap(code, dumptree=False):
   """Produces unwrapped lines from the given code.
 
