@@ -102,6 +102,23 @@ class CommandLineTest(unittest.TestCase):
 
     self.assertEqual(reformatted_code, expected_formatted_code)
 
+  def testInPlaceReformattingBlank(self):
+    unformatted_code = u"\n\n"
+    expected_formatted_code = u"\n"
+
+    with tempfile.NamedTemporaryFile(suffix='.py',
+                                     dir=self.test_tmpdir) as testfile:
+      testfile.write(unformatted_code.encode('UTF-8'))
+      testfile.seek(0)
+
+      p = subprocess.Popen(YAPF_BINARY + ['--in-place', testfile.name])
+      p.wait()
+
+      with io.open(testfile.name, mode='r', newline='') as fd:
+        reformatted_code = fd.read()
+
+    self.assertEqual(reformatted_code, expected_formatted_code)
+
   def testReadFromStdin(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo():
