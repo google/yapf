@@ -110,8 +110,6 @@ def FormatCode(unformatted_source,
   blank_line_calculator.CalculateBlankLines(tree)
 
   uwlines = pytree_unwrapper.UnwrapPyTree(tree)
-  if not uwlines:
-    return ''
   for uwl in uwlines:
     uwl.CalculateFormattingInformation()
 
