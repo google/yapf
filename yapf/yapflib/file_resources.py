@@ -79,6 +79,12 @@ def IsPythonFile(filename):
   try:
     with open(filename, 'rb') as fd:
       encoding = tokenize.detect_encoding(fd.readline)[0]
+
+    # Check for correctness of encoding.
+    with py3compat.open_with_encoding(filename, encoding=encoding) as fd:
+      fd.read()
+  except UnicodeDecodeError:
+    encoding = 'latin-1'
   except IOError:
     return False
 
@@ -86,7 +92,7 @@ def IsPythonFile(filename):
     with py3compat.open_with_encoding(filename, mode='r',
                                       encoding=encoding) as fd:
       first_line = fd.readlines()[0]
-  except IOError, IndexError:
+  except (IOError, IndexError):
     return False
 
   return re.match(r'^#!.*\bpython[23]?\b', first_line)
