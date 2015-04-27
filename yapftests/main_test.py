@@ -57,10 +57,23 @@ def patched_input(code):
     yapf.py3compat.raw_input = raw_input
 
 
+class RunMainTest(unittest.TestCase):
+
+  def testShouldHandleYapfError(self):
+    """run_main should handle YapfError and sys.exit(1)"""
+    expected_message = 'yapf: Input filenames did not match any python files\n'
+    sys.argv = ['yapf', 'foo.c']
+    with captured_output() as (out, err):
+      with self.assertRaises(SystemExit):
+        ret = yapf.run_main()
+      self.assertEqual(out.getvalue(), '')
+      self.assertEqual(err.getvalue(), expected_message)
+
+
 class MainTest(unittest.TestCase):
 
   def testNoPythonFilesMatched(self):
-    with self.assertRaisesRegexp(yapf.YapfError,
+    with self.assertRaisesRegexp(yapf.errors.YapfError,
                                  'did not match any python files'):
       yapf.main(['yapf', 'foo.c'])
 
