@@ -62,6 +62,50 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
                      file_resources.GetDefaultStyleForDir(test_filename))
 
 
+def _TouchFiles(filenames):
+  for name in filenames:
+    open(name, 'a').close()
+
+
+class GetCommandLineFilesTest(unittest.TestCase):
+
+  def setUp(self):
+    self.test_tmpdir = tempfile.mkdtemp()
+
+  def tearDown(self):
+    shutil.rmtree(self.test_tmpdir)
+
+  def _MakeTestdir(self, name):
+    fullpath = os.path.join(self.test_tmpdir, name)
+    os.makedirs(fullpath)
+    return fullpath
+
+  def test_nonrecursive_find_in_dir(self):
+    tdir1 = self._MakeTestdir('test1')
+    tdir2 = self._MakeTestdir('test1/foo')
+    file1 = os.path.join(tdir1, 'testfile1.py')
+    file2 = os.path.join(tdir2, 'testfile2.py')
+    _TouchFiles([file1, file2])
+
+    self.assertEqual(file_resources.GetCommandLineFiles([tdir1],
+                                                        recursive=False),
+                     [file1])
+
+  def test_recursive_find_in_dir(self):
+    tdir1 = self._MakeTestdir('test1')
+    tdir2 = self._MakeTestdir('test2/testinner/')
+    tdir3 = self._MakeTestdir('test3/foo/bar/bas/kkk')
+    files = [os.path.join(tdir1, 'testfile1.py'),
+             os.path.join(tdir2, 'testfile2.py'),
+             os.path.join(tdir3, 'testfile3.py')]
+    _TouchFiles(files)
+
+    self.assertEqual(
+      sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                                recursive=True)),
+      sorted(files))
+
+
 class BufferedByteStream(object):
 
   def __init__(self):
