@@ -39,7 +39,7 @@ class UtilsTest(unittest.TestCase):
     self.assertEqual(style._BoolConverter('0'), False)
 
 
-def _LooksLikeYapfStyle(cfg):
+def _LooksLikeChromiumStyle(cfg):
   return (
       cfg['INDENT_WIDTH'] == 2 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
   )
@@ -64,9 +64,9 @@ class PredefinedStylesByNameTest(unittest.TestCase):
     self.assertTrue(_LooksLikePEP8Style(cfg))
 
   def testGoogleByName(self):
-    for google_name in ('yapf', 'Yapf', 'YAPF'):
+    for google_name in ('google', 'Google', 'GOOGLE'):
       cfg = style.CreateStyleFromConfig(google_name)
-      self.assertTrue(_LooksLikeYapfStyle(cfg))
+      self.assertTrue(_LooksLikeGoogleStyle(cfg))
 
   def testPEP8ByName(self):
     for pep8_name in ('PEP8', 'pep8', 'Pep8'):
@@ -113,15 +113,15 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
-  def testDefaultBasedOnYapfStyle(self):
+  def testDefaultBasedOnChromiumStyle(self):
     cfg = textwrap.dedent('''\
         [style]
-        based_on_style = yapf
+        based_on_style = chromium
         split_penalty_matching_bracket = 33
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
-      self.assertTrue(_LooksLikeYapfStyle(cfg))
+      self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['SPLIT_PENALTY_MATCHING_BRACKET'], 33)
 
   def testDefaultBasedOnGoogleStyle(self):
@@ -138,25 +138,25 @@ class StyleFromFileTest(unittest.TestCase):
   def testBoolOptionValue(self):
     cfg = textwrap.dedent('''\
         [style]
-        based_on_style = yapf
+        based_on_style = chromium
         SPLIT_BEFORE_NAMED_ASSIGNS=False
         split_before_logical_operator = true
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
-      self.assertTrue(_LooksLikeYapfStyle(cfg))
+      self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['SPLIT_BEFORE_NAMED_ASSIGNS'], False)
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
   def testStringListOptionValue(self):
     cfg = textwrap.dedent('''\
         [style]
-        based_on_style = yapf
+        based_on_style = chromium
         I18N_FUNCTION_CALL = N_, V_, T_
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
-      self.assertTrue(_LooksLikeYapfStyle(cfg))
+      self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
 
   def testErrorNoStyleFile(self):
@@ -193,7 +193,7 @@ class StyleFromCommandLine(unittest.TestCase):
         '{based_on_style: pep8,'
         ' indent_width: 2,'
         ' blank_line_before_nested_class_or_def: True}')
-    self.assertTrue(_LooksLikeYapfStyle(cfg))
+    self.assertTrue(_LooksLikeChromiumStyle(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnStyleNotStrict(self):
@@ -201,7 +201,7 @@ class StyleFromCommandLine(unittest.TestCase):
         '{based_on_style : pep8'
         ' ,indent_width=2'
         ' blank_line_before_nested_class_or_def:True}')
-    self.assertTrue(_LooksLikeYapfStyle(cfg))
+    self.assertTrue(_LooksLikeChromiumStyle(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnStyleBadString(self):

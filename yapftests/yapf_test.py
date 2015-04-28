@@ -29,7 +29,7 @@ from yapf.yapflib import yapf_api
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
 # Verification is turned off by default, but want to enable it for testing.
-YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify']
+YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 
 class YapfTest(unittest.TestCase):
@@ -155,7 +155,7 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
-  def testSetGoogleStyle(self):
+  def testSetChromiumStyle(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo(): # trail
             x = 37
@@ -165,7 +165,7 @@ class CommandLineTest(unittest.TestCase):
           x = 37
         """)
 
-    p = subprocess.Popen(YAPF_BINARY + ['--style=yapf'],
+    p = subprocess.Popen(YAPF_BINARY + ['--style=chromium'],
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
@@ -174,7 +174,7 @@ class CommandLineTest(unittest.TestCase):
     self.assertIsNone(stderrdata)
     self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
 
-  def testSetCustomStyleBasedOnYapf(self):
+  def testSetCustomStyleBasedOnChromium(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo(): # trail
             x = 37
@@ -187,7 +187,7 @@ class CommandLineTest(unittest.TestCase):
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
       f.write(textwrap.dedent('''\
           [style]
-          based_on_style = yapf
+          based_on_style = chromium
           SPACES_BEFORE_COMMENT = 4
           '''))
       f.flush()

@@ -15,6 +15,7 @@
 """Tests for yapf.file_resources."""
 
 import contextlib
+import os
 import shutil
 import sys
 import tempfile
@@ -32,6 +33,33 @@ def stdout_redirector(stream):  # pylint: disable=invalid-name
     yield
   finally:
     sys.stdout = old_stdout
+
+
+class GetDefaultStyleForDirTest(unittest.TestCase):
+
+  def setUp(self):
+    self.test_tmpdir = tempfile.mkdtemp()
+
+  def tearDown(self):
+    shutil.rmtree(self.test_tmpdir)
+
+  def testNoLocalStyle(self):
+    test_file = os.path.join(self.test_tmpdir, 'file.py')
+    style_name = file_resources.GetDefaultStyleForDir(test_file)
+    self.assertEqual(style_name, 'pep8')
+
+  def testWithLocalStyle(self):
+    # Create an empty .style.yapf file in test_tmpdir
+    style_file = os.path.join(self.test_tmpdir, '.style.yapf')
+    open(style_file, 'w').close()
+
+    test_filename = os.path.join(self.test_tmpdir, 'file.py')
+    self.assertEqual(style_file,
+                     file_resources.GetDefaultStyleForDir(test_filename))
+
+    test_filename = os.path.join(self.test_tmpdir, 'dir1', 'file.py')
+    self.assertEqual(style_file,
+                     file_resources.GetDefaultStyleForDir(test_filename))
 
 
 class BufferedByteStream(object):
