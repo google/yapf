@@ -1,11 +1,11 @@
 Running YAPF on itself
 ----------------------
 
-The run YAPF on all of YAPF::
+To run YAPF on all of YAPF::
 
  $ PYTHONPATH=$PWD/yapf python -m yapf -i -r .
 
-The run YAPF on just the files changed in in the curent git branch::
+To run YAPF on just the files changed in the curent git branch::
 
  $ PYTHONPATH=$PWD/yapf python -m yapf -i $(git diff --name-only @{upstream})
 
