@@ -18,13 +18,10 @@ import re
 import textwrap
 
 from yapf.yapflib import py3compat
+from yapf.yapflib import errors
 
 
-class Error(Exception):
-  pass
-
-
-class StyleConfigError(Error):
+class StyleConfigError(errors.YapfError):
   """Raised when there's a problem reading the style configuration."""
   pass
 

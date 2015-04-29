@@ -32,16 +32,13 @@ import logging
 import os
 import sys
 
+from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 __version__ = '0.1.7'
-
-
-class YapfError(Exception):
-  pass
 
 
 def main(argv):
@@ -147,7 +144,7 @@ def main(argv):
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive)
   if not files:
-    raise YapfError('Input filenames did not match any python files')
+    raise errors.YapfError('Input filenames did not match any python files')
   FormatFiles(files, lines,
               style_config=args.style,
               no_local_style=args.no_local_style,
@@ -213,15 +210,19 @@ def _GetLines(line_strings):
     # The 'list' here is needed by Python 3.
     line = list(map(int, line_string.split('-', 1)))
     if line[0] < 1:
-      raise ValueError('invalid start of line range: %r' % line)
+      raise errors.YapfError('invalid start of line range: %r' % line)
     if line[0] > line[1]:
-      raise ValueError('end comes before start in line range: %r', line)
+      raise errors.YapfError('end comes before start in line range: %r', line)
     lines.append(tuple(line))
   return lines
 
 
 def run_main():  # pylint: disable=invalid-name
-  sys.exit(main(sys.argv))
+  try:
+    sys.exit(main(sys.argv))
+  except errors.YapfError as e:
+    sys.stderr.write('yapf: ' + str(e) + '\n')
+    sys.exit(1)
 
 
 if __name__ == '__main__':
