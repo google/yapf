@@ -47,7 +47,7 @@ class BasicReformatterTest(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateStyleFromConfig('chromium'))
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
@@ -1173,7 +1173,7 @@ class BuganizerFixes(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateStyleFromConfig('chromium'))
 
   def testB20073838(self):
     code = textwrap.dedent("""\
@@ -1695,7 +1695,7 @@ class TestsForPEP8Style(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreatePEP8Style())
+    style.SetGlobalStyle(style.CreateStyleFromConfig('pep8'))
 
   def testIndent4(self):
     unformatted_code = textwrap.dedent("""\
@@ -1841,7 +1841,7 @@ class TestVerifyNoVerify(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreatePEP8Style())
+    style.SetGlobalStyle(style.CreateStyleFromConfig('pep8'))
 
   def testVerifyException(self):
     unformatted_code = textwrap.dedent("""\
@@ -1906,7 +1906,7 @@ class TestsForPython3Code(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreatePEP8Style())
+    style.SetGlobalStyle(style.CreateStyleFromConfig('pep8'))
 
   def testKeywordOnlyArgSpecifier(self):
     unformatted_code = textwrap.dedent("""\

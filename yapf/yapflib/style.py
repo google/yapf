@@ -21,6 +21,10 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import errors
 
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+STYLE_DIRECTORY = os.path.join(os.path.dirname(SCRIPT_DIR), 'styles')
+
+
 class StyleConfigError(errors.YapfError):
   """Raised when there's a problem reading the style configuration."""
   pass
@@ -94,53 +98,6 @@ _STYLE_HELP = dict(
 )
 
 
-def CreatePEP8Style():
-  return dict(
-      ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
-      COLUMN_LIMIT=79,
-      I18N_COMMENT='',
-      I18N_FUNCTION_CALL='',
-      INDENT_WIDTH=4,
-      CONTINUATION_INDENT_WIDTH=4,
-      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
-      SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
-      SPACES_BEFORE_COMMENT=2,
-      SPLIT_BEFORE_LOGICAL_OPERATOR=False,
-      SPLIT_BEFORE_NAMED_ASSIGNS=True,
-      SPLIT_PENALTY_AFTER_UNARY_OPERATOR=100,
-      SPLIT_PENALTY_EXCESS_CHARACTER=2000,
-      SPLIT_PENALTY_LOGICAL_OPERATOR=30,
-      SPLIT_PENALTY_MATCHING_BRACKET=50,
-      SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
-      SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
-  )  # yapf: disable
-
-
-def CreateGoogleStyle():
-  style = CreatePEP8Style()
-  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
-  style['COLUMN_LIMIT'] = 80
-  style['INDENT_WIDTH'] = 4
-  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
-  style['I18N_COMMENT'] = r'#\..*'
-  style['I18N_FUNCTION_CALL'] = ['N_', '_']
-  style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
-  return style
-
-
-def CreateChromiumStyle():
-  style = CreateGoogleStyle()
-  style['INDENT_WIDTH'] = 2
-  return style
-
-
-_STYLE_NAME_TO_FACTORY = dict(
-    pep8=CreatePEP8Style,
-    chromium=CreateChromiumStyle,
-    google=CreateGoogleStyle,
-)  # yapf: disable
-
-
 def _StringListConverter(s):
   """Option value converter for a comma-separated list of strings."""
   return [part.strip() for part in s.split(',')]
@@ -186,8 +143,7 @@ def CreateStyleFromConfig(style_config):
     style_config: either a style name or a file name. The file is expected to
       contain settings. It can have a special BASED_ON_STYLE setting naming the
       style which it derives from. If no such setting is found, it derives from
-      the default style. When style_config is None, the DEFAULT_STYLE_FACTORY
-      config is created.
+      the default style. When style_config is None then DEFAULT_STYLE is used.
 
   Returns:
     A style dict.
@@ -196,17 +152,22 @@ def CreateStyleFromConfig(style_config):
     StyleConfigError: if an unknown style option was encountered.
   """
   if style_config is None:
-    return DEFAULT_STYLE_FACTORY()
-  style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
-  if style_factory is not None:
-    return style_factory()
+    style_config = DEFAULT_STYLE
   if style_config.startswith('{'):
     # Most likely a style specification from the command line.
     config = _CreateConfigParserFromConfigString(style_config)
   else:
-    # Unknown config name: assume it's a file name then.
-    config = _CreateConfigParserFromConfigFile(style_config)
-  return _CreateStyleFromConfigParser(config)
+    if os.path.isfile(style_config):
+      style_filename = style_config
+    else:
+      # Search for style in default locations.
+      style_filename = os.path.join(STYLE_DIRECTORY, style_config.lower() + '.ini')
+      if not os.path.exists(style_filename):
+        # Provide a more meaningful error here.
+        raise StyleConfigError('"{0}" is not a valid style or file path'.format(
+                               style_config))
+    config = _CreateConfigParserFromConfigFile(style_filename)
+  return _CreateStyleFromConfigParser(config, style_config)
 
 
 def _CreateConfigParserFromConfigString(config_string):
@@ -224,10 +185,6 @@ def _CreateConfigParserFromConfigString(config_string):
 
 def _CreateConfigParserFromConfigFile(config_filename):
   """Read the file and return a ConfigParser object."""
-  if not os.path.exists(config_filename):
-    # Provide a more meaningful error here.
-    raise StyleConfigError(
-        '"{0}" is not a valid style or file path'.format(config_filename))
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
@@ -237,7 +194,7 @@ def _CreateConfigParserFromConfigFile(config_filename):
     return config
 
 
-def _CreateStyleFromConfigParser(config):
+def _CreateStyleFromConfigParser(config, style_name):
   """Create a style dict from a configuration file.
 
   Arguments:
@@ -252,9 +209,12 @@ def _CreateStyleFromConfigParser(config):
   # Initialize the base style.
   if config.has_option('style', 'based_on_style'):
     based_on = config.get('style', 'based_on_style').lower()
-    base_style = _STYLE_NAME_TO_FACTORY[based_on]()
   else:
-    base_style = DEFAULT_STYLE_FACTORY()
+    based_on = DEFAULT_STYLE
+  if style_name == DEFAULT_STYLE:
+    base_style = dict()
+  else:
+    base_style = CreateStyleFromConfig(based_on)
   # Read all options specified in the file and update the style.
   for option, value in config.items('style'):
     if option.lower() == 'based_on_style':
@@ -275,7 +235,6 @@ def _CreateStyleFromConfigParser(config):
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.
 DEFAULT_STYLE = 'pep8'
-DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
 # The name of the file to use for directory-local style defintion.
 LOCAL_STYLE = '.style.yapf'
@@ -284,4 +243,4 @@ LOCAL_STYLE = '.style.yapf'
 # Refactor this so that the style is passed around through yapf rather than
 # being global.
 _style = {}
-SetGlobalStyle(DEFAULT_STYLE_FACTORY())
+SetGlobalStyle(CreateStyleFromConfig(DEFAULT_STYLE))

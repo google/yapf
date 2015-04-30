@@ -35,7 +35,7 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class YapfTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateStyleFromConfig('chromium'))
     formatted_code = yapf_api.FormatCode(unformatted_code)
     self.assertEqual(expected_formatted_code, formatted_code)
 
