@@ -62,6 +62,16 @@ class FormatFileTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self.test_tmpdir)
 
+  def assertCodeEqual(self, expected_code, code):
+    if code != expected_code:
+      msg = 'Code format mismatch:\n'
+      msg += 'Expected:\n >'
+      msg += '\n > '.join(expected_code.splitlines())
+      msg += '\nActual:\n >'
+      msg += '\n > '.join(code.splitlines())
+      # TODO(sbc): maybe using difflib here to produce easy to read deltas?
+      self.fail(msg)
+
   def _MakeTempFileWithContents(self, filename, contents):
     path = os.path.join(self.test_tmpdir, filename)
     with open(path, 'w') as f:
@@ -70,7 +80,7 @@ class FormatFileTest(unittest.TestCase):
 
   def testFormatFile(self):
     unformatted_code = textwrap.dedent(u"""\
-        if True: 
+        if True:
          pass
         """)
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
@@ -85,10 +95,56 @@ class FormatFileTest(unittest.TestCase):
         """)
 
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
-    self.assertEqual(formatted_code, expected_formatted_code_pep8)
+    self.assertCodeEqual(expected_formatted_code_pep8, formatted_code)
 
     formatted_code = yapf_api.FormatFile(file1, style_config='chromium')[0]
-    self.assertEqual(formatted_code, expected_formatted_code_chromium)
+    self.assertCodeEqual(expected_formatted_code_chromium, formatted_code)
+
+  def testDisableLinesPattern(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        # yapf: disable
+        if f:    g
+
+        if h:    i
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+        # yapf: disable
+        if f:    g
+
+        if h:    i
+        """)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
+
+  def testDisableAndReenableLinesPattern(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        # yapf: disable
+        if f:    g
+        # yapf: enable
+
+        if h:    i
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+        # yapf: disable
+        if f:    g
+        # yapf: enable
+
+        if h: i
+        """)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testFormatFileLinesSelection(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -109,7 +165,7 @@ class FormatFileTest(unittest.TestCase):
         """)
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
                                          lines=[(1, 2)])[0]
-    self.assertEqual(formatted_code, expected_formatted_code_lines1and2)
+    self.assertCodeEqual(expected_formatted_code_lines1and2, formatted_code)
 
     expected_formatted_code_lines3 = textwrap.dedent(u"""\
         if a:    b
@@ -120,8 +176,7 @@ class FormatFileTest(unittest.TestCase):
         """)
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
                                          lines=[(3, 3)])[0]
-    self.assertEqual(formatted_code, expected_formatted_code_lines3)
-
+    self.assertCodeEqual(expected_formatted_code_lines3, formatted_code)
 
   def testFormatFileDiff(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -143,10 +198,10 @@ class CommandLineTest(unittest.TestCase):
   @classmethod
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
-    
+
   def assertYapfReformats(self, unformatted, expected, extra_options=None):
     """Check that yapf reformats the given code as expected.
-    
+
     Invokes yapf in a subprocess, piping the unformatted code into its stdin.
     Checks that the formatted output is as expected.
 
@@ -163,7 +218,7 @@ class CommandLineTest(unittest.TestCase):
     reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
     self.assertEqual(stderrdata, b'')
     self.assertEqual(reformatted_code.decode('utf-8'), expected)
-    
+
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo():
@@ -504,9 +559,9 @@ class CommandLineTest(unittest.TestCase):
 
 
 
-        #comment  
+        #comment
 
-        #   trailing whitespace    
+        #   trailing whitespace
         """)
     expected_formatted_code = textwrap.dedent(u"""\
         if a: b
@@ -521,7 +576,7 @@ class CommandLineTest(unittest.TestCase):
 
         #comment
 
-        #   trailing whitespace    
+        #   trailing whitespace
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '3-3',
