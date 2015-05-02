@@ -63,7 +63,8 @@ def FormatFile(filename,
     remaining arguments: see comment at the top of this module.
 
   Returns:
-    The reformatted code or None if the file doesn't exist.
+    Pair of reformatted_code, encoding. reformatted_code is None if the file
+    doesn't exist.
   """
   _CheckPythonVersion()
   original_source, encoding = ReadFile(filename, logging.warning)

@@ -32,7 +32,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 
-class YapfTest(unittest.TestCase):
+class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
     style.SetGlobalStyle(style.CreateChromiumStyle())
@@ -52,6 +52,51 @@ class YapfTest(unittest.TestCase):
         if True: pass
         """)
     self._Check(unformatted_code, expected_formatted_code)
+
+    
+class FormatFileTest(unittest.TestCase):
+
+  def setUp(self):
+    self.test_tmpdir = tempfile.mkdtemp()
+
+  def tearDown(self):
+    shutil.rmtree(self.test_tmpdir)
+
+  def testFormatFile(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if True: 
+         pass
+        """)
+    expected_formatted_code_pep8 = textwrap.dedent(u"""\
+        if True:
+            pass
+        """)
+
+    expected_formatted_code_chromium = textwrap.dedent(u"""\
+        if True:
+          pass
+        """)
+
+    file1 = os.path.join(self.test_tmpdir, 'testfile1.py')
+    with open(file1, 'w') as f:
+      f.write(unformatted_code)
+
+    formatted_code = yapf_api.FormatFile(file1)[0]
+    self.assertEqual(formatted_code, expected_formatted_code_pep8)
+
+    formatted_code = yapf_api.FormatFile(file1, style_config='chromium')[0]
+    self.assertEqual(formatted_code, expected_formatted_code_chromium)
+
+  def testFormatFileDiff(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if True: 
+         pass
+        """)
+    file1 = os.path.join(self.test_tmpdir, 'testfile1.py')
+    with open(file1, 'w') as f:
+      f.write(unformatted_code)
+    diff = yapf_api.FormatFile(file1, print_diff=True)[0]
+    self.assertTrue(u'+if True:' in diff)
 
 
 class CommandLineTest(unittest.TestCase):
