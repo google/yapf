@@ -65,6 +65,26 @@ class CommandLineTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
+  def assertYapfReformats(self, unformatted, expected, extra_options=None):
+    """Check that yapf reformats the given code as expected.
+    
+    Invokes yapf in a subprocess, piping the unformatted code into its stdin.
+    Checks that the formatted output is as expected.
+
+    Arguments:
+      unformatted: unformatted code - input to yapf
+      expected: expected formatted code at the output of yapf
+      extra_options: iterable of extra command-line options to pass to yapf
+    """
+    cmdline = YAPF_BINARY + (extra_options or [])
+    p = subprocess.Popen(cmdline,
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
+    reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
+    self.assertEqual(stderrdata, b'')
+    self.assertEqual(reformatted_code.decode('utf-8'), expected)
+    
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo():
@@ -128,15 +148,7 @@ class CommandLineTest(unittest.TestCase):
         def foo():
             x = 37
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testReadFromStdinWithEscapedStrings(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -145,15 +157,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         s = "foo\\nbar"
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testSetChromiumStyle(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -164,15 +168,8 @@ class CommandLineTest(unittest.TestCase):
         def foo():  # trail
           x = 37
         """)
-
-    p = subprocess.Popen(YAPF_BINARY + ['--style=chromium'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--style=chromium'])
 
   def testSetCustomStyleBasedOnChromium(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -191,16 +188,8 @@ class CommandLineTest(unittest.TestCase):
           SPACES_BEFORE_COMMENT = 4
           '''))
       f.flush()
-
-      p = subprocess.Popen(YAPF_BINARY + ['--style={0}'.format(f.name)],
-                           stdout=subprocess.PIPE,
-                           stdin=subprocess.PIPE,
-                           stderr=subprocess.STDOUT)
-      reformatted_code, stderrdata = p.communicate(
-          unformatted_code.encode('utf-8'))
-      self.assertIsNone(stderrdata)
-      self.assertEqual(reformatted_code.decode('utf-8'),
-                       expected_formatted_code)
+      self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                               extra_options=['--style={0}'.format(f.name)])
 
   def testReadSingleLineCodeFromStdin(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -209,17 +198,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         if True: pass
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    # We can't pipe unicode through subprocess - need to encode/decode at the
-    # boundary.
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testEncodingVerification(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -259,15 +238,8 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
         """)
-
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-2'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '1-2'])
 
   def testReformattingSkippingLines(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -294,15 +266,7 @@ class CommandLineTest(unittest.TestCase):
                 pass
         # yapf: enable
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testReformattingSkippingToEndOfFile(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -341,15 +305,7 @@ class CommandLineTest(unittest.TestCase):
                        'bbbbbbb'):
                     pass
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testReformattingSkippingSingleLine(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -372,15 +328,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):  # yapf: disable
                 pass
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testDisableWholeDataStructure(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -395,15 +343,7 @@ class CommandLineTest(unittest.TestCase):
             'world',
         ])  # yapf: disable
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testDisableButAdjustIndentations(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -418,15 +358,7 @@ class CommandLineTest(unittest.TestCase):
                 self._CheckPenalties(tree, [
                 ])  # yapf: disable
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testRetainingHorizontalWhitespace(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -449,15 +381,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy        (zzzzzzzzzzzzz  [0]) ==     'aaaaaaaaaaa' and    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):  # yapf: disable
                 pass
         """)
-
-    p = subprocess.Popen(YAPF_BINARY,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testREtainingVerticalWhitespace(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -485,15 +409,8 @@ class CommandLineTest(unittest.TestCase):
 
                 pass
         """)
-
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-2'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '1-2'])
 
     unformatted_code = textwrap.dedent(u"""\
 
@@ -527,15 +444,9 @@ class CommandLineTest(unittest.TestCase):
 
         #   trailing whitespace    
         """)
-
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '3-3', '--lines', '13-13'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '3-3',
+                                            '--lines', '13-13'])
 
     unformatted_code = textwrap.dedent(u"""\
         '''
@@ -546,14 +457,8 @@ class CommandLineTest(unittest.TestCase):
         import blah
         """)
 
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '2-2'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), unformatted_code)
+    self.assertYapfReformats(unformatted_code, unformatted_code,
+                             extra_options=['--lines', '2-2'])
 
   def testRetainingSemicolonsWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent("""\
@@ -568,15 +473,8 @@ class CommandLineTest(unittest.TestCase):
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
         """)
-
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-1'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '1-1'])
 
   def testDisabledMultilineStrings(self):
     unformatted_code = textwrap.dedent('''\
@@ -599,15 +497,8 @@ class CommandLineTest(unittest.TestCase):
         </body>
         </html>"""
         ''')
-
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-1'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '1-1'])
 
   def testDisableWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -634,15 +525,8 @@ class CommandLineTest(unittest.TestCase):
             'world',
         ])  # yapf: disable
         """)
-
-    p = subprocess.Popen(YAPF_BINARY + ['--lines', '1-10'],
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-    reformatted_code, stderrdata = p.communicate(
-        unformatted_code.encode('utf-8'))
-    self.assertIsNone(stderrdata)
-    self.assertEqual(reformatted_code.decode('utf-8'), expected_formatted_code)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '1-10'])
 
 
 class BadInputTest(unittest.TestCase):
