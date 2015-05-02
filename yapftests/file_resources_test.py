@@ -80,6 +80,20 @@ class GetCommandLineFilesTest(unittest.TestCase):
     os.makedirs(fullpath)
     return fullpath
 
+  def test_find_files_not_dirs(self):
+    tdir1 = self._MakeTestdir('test1')
+    tdir2 = self._MakeTestdir('test2')
+    file1 = os.path.join(tdir1, 'testfile1.py')
+    file2 = os.path.join(tdir2, 'testfile2.py')
+    _TouchFiles([file1, file2])
+
+    self.assertEqual(file_resources.GetCommandLineFiles([file1, file2],
+                                                        recursive=False),
+                     [file1, file2])
+    self.assertEqual(file_resources.GetCommandLineFiles([file1, file2],
+                                                        recursive=True),
+                     [file1, file2])
+
   def test_nonrecursive_find_in_dir(self):
     tdir1 = self._MakeTestdir('test1')
     tdir2 = self._MakeTestdir('test1/foo')
@@ -104,6 +118,49 @@ class GetCommandLineFilesTest(unittest.TestCase):
       sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
                                                 recursive=True)),
       sorted(files))
+
+
+class IsPythonFileTest(unittest.TestCase):
+
+  def setUp(self):
+    self.test_tmpdir = tempfile.mkdtemp()
+
+  def tearDown(self):
+    shutil.rmtree(self.test_tmpdir)
+
+  def test_with_py_extension(self):
+    file1 = os.path.join(self.test_tmpdir, 'testfile1.py')
+    self.assertTrue(file_resources.IsPythonFile(file1))
+
+  def test_empty_without_py_extension(self):
+    file1 = os.path.join(self.test_tmpdir, 'testfile1')
+    self.assertFalse(file_resources.IsPythonFile(file1))
+    file2 = os.path.join(self.test_tmpdir, 'testfile1.rb')
+    self.assertFalse(file_resources.IsPythonFile(file2))
+
+  def test_python_shebang(self):
+    file1 = os.path.join(self.test_tmpdir, 'testfile1')
+    with open(file1, 'w') as f:
+      f.write(u'#!/usr/bin/python\n')
+    self.assertTrue(file_resources.IsPythonFile(file1))
+    
+    file2 = os.path.join(self.test_tmpdir, 'testfile2.run')
+    with open(file2, 'w') as f:
+      f.write(u'#! /bin/python2\n')
+    self.assertTrue(file_resources.IsPythonFile(file1))
+
+  def test_with_latin_encoding(self):
+    file1 = os.path.join(self.test_tmpdir, 'testfile1')
+    with py3compat.open_with_encoding(file1, mode='w', encoding='latin-1') as f:
+      f.write(u'#! /bin/python2\n')
+    self.assertTrue(file_resources.IsPythonFile(file1))
+
+  def test_with_invalid_encoding(self):
+    file1 = os.path.join(self.test_tmpdir, 'testfile1')
+    with open(file1, 'w') as f:
+      f.write(u'#! /bin/python2\n')
+      f.write(u'# -*- coding: iso-3-14159 -*-\n')
+    self.assertFalse(file_resources.IsPythonFile(file1))
 
 
 class BufferedByteStream(object):

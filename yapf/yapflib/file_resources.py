@@ -103,7 +103,10 @@ def IsPythonFile(filename):
       fd.read()
   except UnicodeDecodeError:
     encoding = 'latin-1'
-  except IOError:
+  except (IOError, SyntaxError) as e:
+    # If we fail to detect encoding (or the encoding cookie is incorrect - which
+    # will make detect_encoding raise SyntaxError), assume it's not a Python
+    # file.
     return False
 
   try:
