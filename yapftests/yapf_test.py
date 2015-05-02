@@ -35,8 +35,8 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
-    formatted_code = yapf_api.FormatCode(unformatted_code)
+    formatted_code = yapf_api.FormatCode(unformatted_code,
+                                         style_config='chromium')
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -53,7 +53,7 @@ class FormatCodeTest(unittest.TestCase):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
-    
+
 class FormatFileTest(unittest.TestCase):
 
   def setUp(self):
@@ -62,41 +62,75 @@ class FormatFileTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self.test_tmpdir)
 
+  def _MakeTempFileWithContents(self, filename, contents):
+    path = os.path.join(self.test_tmpdir, filename)
+    with open(path, 'w') as f:
+      f.write(contents)
+    return path
+
   def testFormatFile(self):
     unformatted_code = textwrap.dedent(u"""\
         if True: 
          pass
         """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
     expected_formatted_code_pep8 = textwrap.dedent(u"""\
         if True:
             pass
         """)
-
     expected_formatted_code_chromium = textwrap.dedent(u"""\
         if True:
           pass
         """)
 
-    file1 = os.path.join(self.test_tmpdir, 'testfile1.py')
-    with open(file1, 'w') as f:
-      f.write(unformatted_code)
-
-    formatted_code = yapf_api.FormatFile(file1)[0]
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
     self.assertEqual(formatted_code, expected_formatted_code_pep8)
 
     formatted_code = yapf_api.FormatFile(file1, style_config='chromium')[0]
     self.assertEqual(formatted_code, expected_formatted_code_chromium)
 
+  def testFormatFileLinesSelection(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        if f:    g
+
+        if h:    i
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
+    expected_formatted_code_lines1and2 = textwrap.dedent(u"""\
+        if a: b
+
+        if f:    g
+
+        if h:    i
+        """)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
+                                         lines=[(1, 2)])[0]
+    self.assertEqual(formatted_code, expected_formatted_code_lines1and2)
+
+    expected_formatted_code_lines3 = textwrap.dedent(u"""\
+        if a:    b
+
+        if f: g
+
+        if h:    i
+        """)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
+                                         lines=[(3, 3)])[0]
+    self.assertEqual(formatted_code, expected_formatted_code_lines3)
+
+
   def testFormatFileDiff(self):
     unformatted_code = textwrap.dedent(u"""\
-        if True: 
+        if True:
          pass
         """)
-    file1 = os.path.join(self.test_tmpdir, 'testfile1.py')
-    with open(file1, 'w') as f:
-      f.write(unformatted_code)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
     diff = yapf_api.FormatFile(file1, print_diff=True)[0]
-    self.assertTrue(u'+if True:' in diff)
+    self.assertTrue(u'+    pass' in diff)
 
 
 class CommandLineTest(unittest.TestCase):
@@ -109,7 +143,7 @@ class CommandLineTest(unittest.TestCase):
   @classmethod
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
-
+    
   def assertYapfReformats(self, unformatted, expected, extra_options=None):
     """Check that yapf reformats the given code as expected.
     
