@@ -43,6 +43,7 @@ class ReformatterTest(unittest.TestCase):
       # TODO(sbc): maybe using difflib here to produce easy to read deltas?
       self.fail(msg)
 
+
 class BasicReformatterTest(ReformatterTest):
 
   @classmethod
@@ -1866,8 +1867,8 @@ class TestVerifyNoVerify(ReformatterTest):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code,
-                     reformatter.Reformat(uwlines,
-                                          verify=False))
+                         reformatter.Reformat(uwlines,
+                                              verify=False))
 
   def testVerifyFutureImport(self):
     unformatted_code = textwrap.dedent("""\
@@ -1896,8 +1897,8 @@ class TestVerifyNoVerify(ReformatterTest):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code,
-                     reformatter.Reformat(uwlines,
-                                          verify=False))
+                         reformatter.Reformat(uwlines,
+                                              verify=False))
 
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')

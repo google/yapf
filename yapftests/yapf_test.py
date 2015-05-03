@@ -23,7 +23,6 @@ import tempfile
 import textwrap
 import unittest
 
-from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
@@ -257,8 +256,8 @@ class CommandLineTest(unittest.TestCase):
     self.assertEqual(reformatted_code, expected_formatted_code)
 
   def testInPlaceReformattingBlank(self):
-    unformatted_code = u"\n\n"
-    expected_formatted_code = u"\n"
+    unformatted_code = u'\n\n'
+    expected_formatted_code = u'\n'
 
     with tempfile.NamedTemporaryFile(suffix='.py',
                                      dir=self.test_tmpdir) as testfile:

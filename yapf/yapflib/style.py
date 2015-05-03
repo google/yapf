@@ -17,8 +17,8 @@ import os
 import re
 import textwrap
 
-from yapf.yapflib import py3compat
 from yapf.yapflib import errors
+from yapf.yapflib import py3compat
 
 
 class StyleConfigError(errors.YapfError):
@@ -211,7 +211,7 @@ def CreateStyleFromConfig(style_config):
 
 def _CreateConfigParserFromConfigString(config_string):
   """Given a config string from the command line, return a config parser."""
-  if config_string[0] != "{" or config_string[-1] != "}":
+  if config_string[0] != '{' or config_string[-1] != '}':
     raise StyleConfigError(
         "Invalid style dict syntax: '{}'.".format(config_string))
   config = py3compat.ConfigParser()

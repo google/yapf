@@ -43,12 +43,12 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self.test_tmpdir)
 
-  def testNoLocalStyle(self):
+  def test_no_local_style(self):
     test_file = os.path.join(self.test_tmpdir, 'file.py')
     style_name = file_resources.GetDefaultStyleForDir(test_file)
     self.assertEqual(style_name, 'pep8')
 
-  def testWithLocalStyle(self):
+  def test_with_local_style(self):
     # Create an empty .style.yapf file in test_tmpdir
     style_file = os.path.join(self.test_tmpdir, '.style.yapf')
     open(style_file, 'w').close()
@@ -62,7 +62,7 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
                      file_resources.GetDefaultStyleForDir(test_filename))
 
 
-def _TouchFiles(filenames):
+def _touch_files(filenames):
   for name in filenames:
     open(name, 'a').close()
 
@@ -75,17 +75,17 @@ class GetCommandLineFilesTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self.test_tmpdir)
 
-  def _MakeTestdir(self, name):
+  def _make_test_dir(self, name):
     fullpath = os.path.join(self.test_tmpdir, name)
     os.makedirs(fullpath)
     return fullpath
 
   def test_find_files_not_dirs(self):
-    tdir1 = self._MakeTestdir('test1')
-    tdir2 = self._MakeTestdir('test2')
+    tdir1 = self._make_test_dir('test1')
+    tdir2 = self._make_test_dir('test2')
     file1 = os.path.join(tdir1, 'testfile1.py')
     file2 = os.path.join(tdir2, 'testfile2.py')
-    _TouchFiles([file1, file2])
+    _touch_files([file1, file2])
 
     self.assertEqual(file_resources.GetCommandLineFiles([file1, file2],
                                                         recursive=False),
@@ -95,29 +95,29 @@ class GetCommandLineFilesTest(unittest.TestCase):
                      [file1, file2])
 
   def test_nonrecursive_find_in_dir(self):
-    tdir1 = self._MakeTestdir('test1')
-    tdir2 = self._MakeTestdir('test1/foo')
+    tdir1 = self._make_test_dir('test1')
+    tdir2 = self._make_test_dir('test1/foo')
     file1 = os.path.join(tdir1, 'testfile1.py')
     file2 = os.path.join(tdir2, 'testfile2.py')
-    _TouchFiles([file1, file2])
+    _touch_files([file1, file2])
 
     self.assertEqual(file_resources.GetCommandLineFiles([tdir1],
                                                         recursive=False),
                      [file1])
 
   def test_recursive_find_in_dir(self):
-    tdir1 = self._MakeTestdir('test1')
-    tdir2 = self._MakeTestdir('test2/testinner/')
-    tdir3 = self._MakeTestdir('test3/foo/bar/bas/kkk')
+    tdir1 = self._make_test_dir('test1')
+    tdir2 = self._make_test_dir('test2/testinner/')
+    tdir3 = self._make_test_dir('test3/foo/bar/bas/kkk')
     files = [os.path.join(tdir1, 'testfile1.py'),
              os.path.join(tdir2, 'testfile2.py'),
              os.path.join(tdir3, 'testfile3.py')]
-    _TouchFiles(files)
+    _touch_files(files)
 
     self.assertEqual(
-      sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
-                                                recursive=True)),
-      sorted(files))
+        sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                                  recursive=True)),
+        sorted(files))
 
 
 class IsPythonFileTest(unittest.TestCase):
@@ -143,7 +143,7 @@ class IsPythonFileTest(unittest.TestCase):
     with open(file1, 'w') as f:
       f.write(u'#!/usr/bin/python\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
-    
+
     file2 = os.path.join(self.test_tmpdir, 'testfile2.run')
     with open(file2, 'w') as f:
       f.write(u'#! /bin/python2\n')
@@ -186,7 +186,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
-  def testWriteToFile(self):
+  def test_write_to_file(self):
     s = u'foobar'
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir) as testfile:
       file_resources.WriteReformattedCode(testfile.name, s,
@@ -197,7 +197,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
       with open(testfile.name) as f:
         self.assertEqual(f.read(), s)
 
-  def testWriteToStdout(self):
+  def test_write_to_stdout(self):
     s = u'foobar'
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
@@ -206,7 +206,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
                                           encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
 
-  def testWriteEncodedToStdout(self):
+  def test_write_encoded_to_stdout(self):
     s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):

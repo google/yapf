@@ -29,8 +29,14 @@ from yapf.yapflib import style
 def GetDefaultStyleForDir(dirname):
   """Return default style name for a given directory.
 
-  Looks for .style.yapf in the parent directories and return the filename if
-  found, otherwise return the glboal default (pep8)."""
+  Looks for .style.yapf in the parent directories.
+
+  Arguments:
+    dirname: (unicode) The name of the directory.
+
+  Returns:
+    The filename if found, otherwise return the glboal default (pep8).
+  """
   dirname = os.path.abspath(dirname)
   while True:
     style_file = os.path.join(dirname, style.LOCAL_STYLE)
@@ -103,7 +109,7 @@ def IsPythonFile(filename):
       fd.read()
   except UnicodeDecodeError:
     encoding = 'latin-1'
-  except (IOError, SyntaxError) as e:
+  except (IOError, SyntaxError):
     # If we fail to detect encoding (or the encoding cookie is incorrect - which
     # will make detect_encoding raise SyntaxError), assume it's not a Python
     # file.
