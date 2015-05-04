@@ -1187,7 +1187,7 @@ class BuganizerFixes(ReformatterTest):
     code = textwrap.dedent("""\
         def myfunc_1():
           myarray = numpy.zeros((2, 2, 2))
-          print myarray[:, 1, :]
+          print(myarray[:, 1, :])
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
