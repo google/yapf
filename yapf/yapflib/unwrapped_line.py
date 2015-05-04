@@ -203,8 +203,11 @@ def _SpaceRequiredBetween(left, right):
   if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
     # Spaces between keyword, string, number, and identifier tokens.
     return True
+  if left.value == ',' and right.value == ':':
+    # We do want a space between a comma and colon.
+    return True
   if right.value in ':,':
-    # We never want a space before a colon or comma.
+    # Otherwise, we never want a space before a colon or comma.
     return False
   if left.value == ',' and right.value in ']})':
     # Add a space between ending ',' and closing bracket if requested.
