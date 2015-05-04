@@ -152,6 +152,12 @@ class FormatDecisionState(object):
           next_token.node_split_penalty < split_penalty.UNBREAKABLE):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
+      if (previous_token.value in '{[(' and
+          current.lineno != previous_token.lineno and
+          not current.is_comment):
+        self.stack[-1].split_before_closing_bracket = True
+        return True
+
     return False
 
   def AddTokenToState(self, newline, dry_run, must_split=False):
