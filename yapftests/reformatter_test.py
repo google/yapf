@@ -1173,6 +1173,18 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def test20562732(self):
+    code = textwrap.dedent("""\
+        foo = [
+            # Comment about first list item
+            'First item',
+            # Comment about second list item
+            'Second item',
+        ]
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def test20128830(self):
     code = textwrap.dedent("""\
         a = {

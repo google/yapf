@@ -153,8 +153,7 @@ class FormatDecisionState(object):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
       if (previous_token.value in '{[(' and
-          current.lineno != previous_token.lineno and
-          not current.is_comment):
+          current.lineno != previous_token.lineno):
         self.stack[-1].split_before_closing_bracket = True
         return True
 
