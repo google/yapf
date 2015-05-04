@@ -1183,7 +1183,21 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
-  def test20562732(self):
+  def testB20605036(self):
+    code = textwrap.dedent("""\
+        foo = {
+            'aaaa': {
+                # A comment for no particular reason.
+                'xxxxxxxx': 'bbbbbbbbb',
+                'yyyyyyyyyyyyyyyyyy': 'cccccccccccccccccccccccccccccc'
+                                      'dddddddddddddddddddddddddddddddddddddddddd',
+            }
+        }
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB20562732(self):
     code = textwrap.dedent("""\
         foo = [
             # Comment about first list item
@@ -1195,7 +1209,7 @@ class BuganizerFixes(ReformatterTest):
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
-  def test20128830(self):
+  def testB20128830(self):
     code = textwrap.dedent("""\
         a = {
             'xxxxxxxxxxxxxxxxxxxx': {

@@ -43,9 +43,10 @@ class Subtype(object):
   KWARGS_STAR_STAR = 6
   ASSIGN_OPERATOR = 7
   DICTIONARY_KEY = 8
-  DICT_SET_GENERATOR = 9
-  COMP_FOR = 10
-  COMP_IF = 11
+  DICTIONARY_VALUE = 9
+  DICT_SET_GENERATOR = 10
+  COMP_FOR = 11
+  COMP_IF = 12
 
 
 class FormatToken(object):

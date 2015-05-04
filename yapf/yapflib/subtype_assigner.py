@@ -62,15 +62,20 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     dict_maker = (len(node.children) > 1 and isinstance(
         node.children[1], pytree.Leaf) and node.children[1].value == ':')
     last_was_comma = False
+    last_was_colon = False
     for child in node.children:
       if pytree_utils.NodeName(child) == 'comp_for':
         self._SetFirstLeafTokenSubtype(child,
                                        format_token.Subtype.DICT_SET_GENERATOR)
       else:
-        if dict_maker and last_was_comma:
-          self._SetFirstLeafTokenSubtype(child,
-                                         format_token.Subtype.DICTIONARY_KEY)
+        if dict_maker:
+          if last_was_comma:
+            self._SetFirstLeafTokenSubtype(child,
+                                           format_token.Subtype.DICTIONARY_KEY)
+          elif last_was_colon:
+            self._SetSubtypeRec(child, format_token.Subtype.DICTIONARY_VALUE)
         last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
+        last_was_colon = isinstance(child, pytree.Leaf) and child.value == ':'
       self.Visit(child)
 
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name
@@ -236,6 +241,14 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         self._SetTokenSubtype(child,
                               subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
                                   child.value, format_token.Subtype.NONE))
+
+  def _SetSubtypeRec(self, node, subtype):
+    """Set the leafs in the node to the given subtype."""
+    if isinstance(node, pytree.Leaf):
+      self._SetTokenSubtype(node, subtype)
+      return
+    for child in node.children:
+      self._SetSubtypeRec(child, subtype)
 
   def _SetTokenSubtype(self, node, subtype):
     """Set the token's subtype only if it's not already set."""

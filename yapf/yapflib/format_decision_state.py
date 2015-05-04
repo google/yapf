@@ -291,6 +291,10 @@ class FormatDecisionState(object):
             0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent
 
+    if (previous and previous.is_string and current.is_string and
+        current.subtype == format_token.Subtype.DICTIONARY_VALUE):
+      return previous.column
+
     return top_of_stack.indent
 
   def _MoveStateToNextToken(self):
