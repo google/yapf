@@ -1166,6 +1166,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testDictSetGenerator(self):
+    code = textwrap.dedent("""\
+        foo = {
+            variable: 'hello world. How are you today?'
+            for variable in fnord if variable != 37
+        }
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
