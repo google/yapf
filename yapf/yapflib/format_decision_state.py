@@ -174,13 +174,6 @@ class FormatDecisionState(object):
     Returns:
       The penalty of splitting after the current token.
     """
-    if not self.stack:
-      self.column = (
-          self.next_token.spaces_required_before + len(self.next_token.value)
-      )
-      self.next_token = self.next_token.next_token
-      return 0
-
     penalty = 0
     if newline:
       penalty = self._AddTokenOnNewline(dry_run, must_split)
