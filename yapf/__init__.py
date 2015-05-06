@@ -76,6 +76,11 @@ def main(argv):
   parser.add_argument('--verify',
                       action='store_true',
                       help='try to verify reformatted code for syntax errors')
+
+  parser.add_argument('--stdout-encoding',
+                      action='store',
+                      help='define stdout encoding')
+
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument('-d', '--diff',
                                   action='store_true',
@@ -121,6 +126,7 @@ def main(argv):
       parser.error('cannot use --in_place or --diff flags when reading '
                    'from stdin')
 
+
     original_source = []
     while True:
       try:
@@ -134,12 +140,19 @@ def main(argv):
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
-    sys.stdout.write(yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(original_source) + '\n'),
-        filename='<stdin>',
-        style_config=style_config,
-        lines=lines,
-        verify=args.verify))
+
+    formatedCode = yapf_api.FormatCode(
+                        py3compat.unicode('\n'.join(original_source) + '\n'),
+                        filename='<stdin>',
+                        style_config=style_config,
+                        lines=lines,
+                        verify=args.verify)
+
+    if not args.stdout_encoding:
+        sys.stdout.write(formatedCode)
+    else:
+        sys.stdout.write(formatedCode.encode(args.stdout_encoding))
+
     return 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive)
