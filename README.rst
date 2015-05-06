@@ -94,6 +94,8 @@ Options::
                             directories of the source file (or current directory
                             for stdin)
       --verify              try to verify refomatted code for syntax errors
+      --stdout-encoding STDOUT_ENCODING
+                            define stdout encoding
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
       -l START-END, --lines START-END
