@@ -198,7 +198,7 @@ class CommandLineTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
-  def assertYapfReformats(self, unformatted, expected, extra_options=None):
+  def assertYapfReformats(self, unformatted, expected, extra_options=None, encoding="utf-8"):
     """Check that yapf reformats the given code as expected.
 
     Invokes yapf in a subprocess, piping the unformatted code into its stdin.
@@ -214,9 +214,9 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
+    reformatted_code, stderrdata = p.communicate(unformatted.encode(encoding))
     self.assertEqual(stderrdata, b'')
-    self.assertEqual(reformatted_code.decode('utf-8'), expected)
+    self.assertEqual(reformatted_code.decode(encoding), expected)
 
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -291,6 +291,21 @@ class CommandLineTest(unittest.TestCase):
         s = "foo\\nbar"
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
+
+  def testReadFromStdinWithEncodings(self):
+    # e.g. Linux: `locale -a` => `export LC_ALL="zh_CN.GB2312"` => then sys.stdin.encoding='GB2312'
+    stdin_encoding = sys.stdin.encoding
+    unformatted_code = textwrap.dedent(u"""\
+        def foo():
+          # 中文
+          x = 37
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():
+            # 中文
+            x = 37
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code, encoding=stdin_encoding)
 
   def testSetChromiumStyle(self):
     unformatted_code = textwrap.dedent(u"""\
