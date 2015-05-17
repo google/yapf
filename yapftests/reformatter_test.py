@@ -1176,6 +1176,17 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testUnaryOpInDictionaryValue(self):
+    code = textwrap.dedent("""\
+        beta = "123"
+
+        test = {'alpha': beta[-1]}
+
+        print(beta[-1])
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

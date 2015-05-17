@@ -84,28 +84,28 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '=':
-        self._SetTokenSubtype(child, format_token.Subtype.ASSIGN_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.ASSIGN_OPERATOR, True)
 
   def Visit_or_test(self, node):  # pylint: disable=invalid-name
     # or_test ::= and_test ('or' and_test)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == 'or':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_and_test(self, node):  # pylint: disable=invalid-name
     # and_test ::= not_test ('and' not_test)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == 'and':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_not_test(self, node):  # pylint: disable=invalid-name
     # not_test ::= 'not' not_test | comparison
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == 'not':
-        self._SetTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR, True)
 
   def Visit_comparison(self, node):  # pylint: disable=invalid-name
     # comparison ::= expr (comp_op expr)*
@@ -115,49 +115,49 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if (isinstance(child, pytree.Leaf) and child.value in {
           '<', '>', '==', '>=', '<=', '<>', '!=', 'in', 'not in', 'is', 'is not'
       }):
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_star_expr(self, node):  # pylint: disable=invalid-name
     # star_expr ::= '*' expr
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '*':
-        self._SetTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR, True)
 
   def Visit_expr(self, node):  # pylint: disable=invalid-name
     # expr ::= xor_expr ('|' xor_expr)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '|':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_xor_expr(self, node):  # pylint: disable=invalid-name
     # xor_expr ::= and_expr ('^' and_expr)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '^':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_and_expr(self, node):  # pylint: disable=invalid-name
     # and_expr ::= shift_expr ('&' shift_expr)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '&':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_shift_expr(self, node):  # pylint: disable=invalid-name
     # shift_expr ::= arith_expr (('<<'|'>>') arith_expr)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value in {'<<', '>>'}:
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
     # arith_expr ::= term (('+'|'-') term)*
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value in '+-':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_term(self, node):  # pylint: disable=invalid-name
     # term ::= factor (('*'|'/'|'%'|'//') factor)*
@@ -165,35 +165,35 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
       if (isinstance(child, pytree.Leaf) and
           child.value in {'*', '/', '%', '//'}):
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_factor(self, node):  # pylint: disable=invalid-name
     # factor ::= ('+'|'-'|'~') factor | power
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value in '+-~':
-        self._SetTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR, True)
 
   def Visit_power(self, node):  # pylint: disable=invalid-name
     # power ::= atom trailer* ['**' factor]
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '**':
-        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        self._SetTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR, True)
 
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == ':':
-        self._SetTokenSubtype(child, format_token.Subtype.SUBSCRIPT_COLON)
+        self._SetTokenSubtype(child, format_token.Subtype.SUBSCRIPT_COLON, True)
 
   def Visit_sliceop(self, node):  # pylint: disable=invalid-name
     # sliceop ::= ':' [test]
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == ':':
-        self._SetTokenSubtype(child, format_token.Subtype.SUBSCRIPT_COLON)
+        self._SetTokenSubtype(child, format_token.Subtype.SUBSCRIPT_COLON, True)
 
   def Visit_argument(self, node):  # pylint: disable=invalid-name
     # argument ::=
@@ -250,10 +250,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self._SetSubtypeRec(child, subtype)
 
-  def _SetTokenSubtype(self, node, subtype):
+  def _SetTokenSubtype(self, node, subtype, force=False):
     """Set the token's subtype only if it's not already set."""
-    if not pytree_utils.GetNodeAnnotation(node,
-                                          pytree_utils.Annotation.SUBTYPE):
+    if force or not pytree_utils.GetNodeAnnotation(
+          node, pytree_utils.Annotation.SUBTYPE):
       pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                      subtype)
 
