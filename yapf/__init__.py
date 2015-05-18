@@ -31,8 +31,6 @@ import argparse
 import logging
 import os
 import sys
-import codecs
-import locale
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
@@ -123,8 +121,7 @@ def main(argv):
       parser.error('cannot use --in_place or --diff flags when reading '
                    'from stdin')
 
-    lang, encoding = locale.getdefaultlocale()
-    sys.stdin = codecs.getreader(encoding)(sys.stdin)
+    encoding, sys.stdin = py3compat.stdin()
     original_source = []
     while True:
       try:

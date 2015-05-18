@@ -15,6 +15,8 @@
 
 import io
 import sys
+import codecs
+import locale
 
 PY3 = sys.version_info[0] == 3
 
@@ -23,7 +25,6 @@ if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
-  import codecs
   open_with_encoding = codecs.open
 
   range = range
@@ -74,6 +75,16 @@ def unicode(s):
     return s
   else:
     return __builtin__.unicode(s, 'utf-8')
+
+
+def stdin():
+    """sys.stdin convert, return locale encoding and converted stdin"""
+    _, encoding = locale.getdefaultlocale()
+    if PY3:
+        return encoding, codecs.getreader(encoding)(sys.stdin.detach())
+    else:
+        return encoding, codecs.getreader(encoding)(sys.stdin)
+
 
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
