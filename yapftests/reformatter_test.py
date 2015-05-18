@@ -1187,6 +1187,19 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testUnaryNotOperator(self):
+    code = textwrap.dedent("""\
+        if True:
+          if True:
+            if True:
+              if True:
+                remote_checksum = self.get_checksum(conn, tmp, dest, inject,
+                                                    not directory_prepended,
+                                                    source=source)
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
