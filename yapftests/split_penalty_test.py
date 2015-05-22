@@ -181,26 +181,6 @@ class SplitPenaltyTest(unittest.TestCase):
         ('}', None),
     ])  # yapf: disable
 
-    # Test subscripts.
-    code = textwrap.dedent(r"""
-      a[x(42):37:-1]
-      """)
-    tree = self._ParseAndComputePenalties(code)
-    self._CheckPenalties(tree, [
-        ('a', None),
-        ('[', UNBREAKABLE),
-        ('x', SUBSCRIPT_LIST),
-        ('(', UNBREAKABLE),
-        ('42', SUBSCRIPT_LIST),
-        (')', UNBREAKABLE),
-        (':', SUBSCRIPT_LIST),
-        ('37', SUBSCRIPT_LIST),
-        (':', SUBSCRIPT_LIST),
-        ('-', SUBSCRIPT_LIST),
-        ('1', SUBSCRIPT_LIST),
-        (']', UNBREAKABLE),
-    ])  # yapf: disable
-
     # Test list comprehension.
     code = textwrap.dedent(r"""
       [a for a in foo if a.x == 37]

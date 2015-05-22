@@ -24,7 +24,6 @@ from yapf.yapflib import pytree_visitor
 UNBREAKABLE = 1000 * 1000
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
-SUBSCRIPT_LIST = 5000
 
 OR_TEST = 42
 AND_TEST = 142
@@ -133,10 +132,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
       self._SetUnbreakableOnChildren(node, num_children=len(node.children))
-    elif node.children[0].value == '[':
-      self._SetExpressionPenalty(node, SUBSCRIPT_LIST)
-      self._SetUnbreakable(node.children[0])
-      self._SetUnbreakable(node.children[-1])
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])

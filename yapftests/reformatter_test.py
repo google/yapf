@@ -1200,6 +1200,23 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testRelaxArraySubscriptAffinity(self):
+    code = textwrap.dedent("""\
+        class A(object):
+
+          def f(self, aaaaaaaaa, bbbbbbbbbbbbb, row):
+            if True:
+              if True:
+                if True:
+                  if True:
+                    if row[4] is None or row[5] is None:
+                      bbbbbbbbbbbbb['..............'] = row[
+                          5
+                      ] if row[5] is not None else 5
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -1600,7 +1617,8 @@ class BuganizerFixes(ReformatterTest):
           ok = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
           bad_slice = map(math.sqrt,
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
-          a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
+          a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A
+                                                                      ]
           bad_slice = ("I am a crazy, no good, string whats too long, etc." +
                        " no really ")[:ARBITRARY_CONSTANT_A]
         """)
