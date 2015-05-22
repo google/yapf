@@ -26,7 +26,6 @@ from yapf.yapflib import split_penalty
 UNBREAKABLE = split_penalty.UNBREAKABLE
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
 CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
-SUBSCRIPT_LIST = split_penalty.SUBSCRIPT_LIST
 
 
 class SplitPenaltyTest(unittest.TestCase):
