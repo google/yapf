@@ -1810,6 +1810,18 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSpaceCharacterInComments(self):
+      unformatted_code = textwrap.dedent('''\
+        x = 1 + 2 #my comment
+      ''')
+
+      expected_formatted_code = textwrap.dedent('''\
+         x = 1 + 2 # my comment
+      ''')
+
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testSingleWhiteBeforeTrailingComment(self):
     unformatted_code = textwrap.dedent("""\
         if a+b: # comment
