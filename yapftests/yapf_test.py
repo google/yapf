@@ -573,9 +573,9 @@ class CommandLineTest(unittest.TestCase):
 
 
 
-        #comment
+        # comment
 
-        #   trailing whitespace
+        # trailing whitespace
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '3-3',
