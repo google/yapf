@@ -696,7 +696,6 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  @unittest.skip
   def testI18n(self):
     code = textwrap.dedent("""\
         N_('Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.')  # A comment is here.
@@ -705,7 +704,7 @@ format_token.Subtype.NONE))
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
-        foo('Fake function call')  # . Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.
+        foo('Fake function call')  #. Some years ago - never mind how long preworld.
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

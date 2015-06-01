@@ -172,8 +172,9 @@ def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, standalone=False):
         # This is necessary cause it's possible have #!bin/bash
         # in the start of line, but this shouldn't be treated as
         # a comment line
-        just_code_part = comment_block[0].split('#', 1)
-        comment_block[0] = '# ' + just_code_part[1].strip()
+        splitter = '#.' if comment_block[0].startswith('#.') else '#'
+        just_code_part = comment_block[0].split(splitter, 1)
+        comment_block[0] = '%s %s' % (splitter, just_code_part[1].strip())
 
       comment_block[-1] = comment_block[-1].rstrip('\n')
       comment_leaf = pytree.Leaf(type=token.COMMENT,
