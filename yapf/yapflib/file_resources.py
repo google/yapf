@@ -43,7 +43,8 @@ def GetDefaultStyleForDir(dirname):
     if os.path.exists(style_file):
       return style_file
     dirname = os.path.dirname(dirname)
-    if not dirname or dirname == os.path.sep:
+    if any([not dirname, dirname == os.path.sep,
+            not os.path.basename(dirname)]):
       break
 
   return style.DEFAULT_STYLE
