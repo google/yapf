@@ -186,6 +186,21 @@ class FormatFileTest(unittest.TestCase):
     diff = yapf_api.FormatFile(file1, print_diff=True)[0]
     self.assertTrue(u'+    pass' in diff)
 
+  def testFormatFileInPlace(self):
+    unformatted_code = "True==False\n"
+    formatted_code = "True == False\n"
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+    result, encoding = yapf_api.FormatFile(file1, in_place=True)
+    self.assertEqual(result, None)
+    with open(file1) as f:
+      self.assertCodeEqual(formatted_code, f.read())
+
+    self.assertRaises(ValueError, yapf_api.FormatFile, file1,
+                      in_place=True, print_diff=True)
+
+  def testNoFile(self):
+    self.assertRaises(IOError, yapf_api.FormatFile, "not_a_file.py")
+
 
 class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""
