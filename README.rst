@@ -175,6 +175,65 @@ and reformat it into:
     def f(a):
         return 37 + -+a[42 - x:y ** 3]
 
+Example as a module
+===================
+
+The two main APIs for calling yapf are ``FormatCode`` and ``FormatFile``:
+
+.. code-block:: python
+
+    from yapf.yapf_api import FormatCode  # reformat a string of code
+    from yapf.yapf_api import FormatFile  # reformat a file
+    
+    >>> FormatCode("f ( a = 1, b = 2 )")
+    'f(a=1, b=2)\n'
+
+You can also pass a ``style_config``: Either a style name or a path to a file that contains
+formatting style settings. If None is specified, use the default style
+as set in ``style.DEFAULT_STYLE_FACTORY``.
+
+.. code-block:: python
+
+    >>> FormatCode("def g():\n  return True", style_config='pep8')
+    'def g():\n    return True\n'
+
+    >>> FormatFile("def g():\n  return True", style_config='pep8')
+    'def g():\n    return True\n'
+
+A ``lines`` argument: A list of tuples of lines (ints), [start, end],
+that we want to format. The lines are 1-based indexed. It can be used by
+third-party code (e.g., IDEs) when reformatting a snippet of code rather
+than a whole file.
+
+.. code-block:: python
+
+    >>> FormatCode("def g( ):\n    a=1\n    b = 2\n    return a==b", lines=[(1, 1), (2, 3)])
+    'def g():\n    a = 1\n    b = 2\n    return a==b\n'
+
+A ``print_diff`` (bool): Instead of returning the reformatted source, return a
+diff that turns the formatted source into reformatter source.
+
+.. code-block:: python
+
+    >>> print(FormatCode("a==b", filename="foo.py", print_diff=True))
+    --- foo.py	(original)
+    +++ foo.py	(reformatted)
+    @@ -1 +1 @@
+    -a==b
+    +a == b
+
+Note: the ``filename`` argument is inserted into the diff, the default would use ``<unknown>``.
+
+``FormatFile`` returns reformatted code from the passed file along with its encoding:
+
+.. code-block:: python
+
+    >>> print(open("foo.py").read())  # contents of file
+    a==b
+
+    >>> FormatFile("foo.py")
+    (u'a == b\n', 'utf-8')
+
 (Potentially) Frequently Asked Questions
 ========================================
 
