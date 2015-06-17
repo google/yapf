@@ -178,26 +178,23 @@ and reformat it into:
 Example as a module
 ===================
 
-The two main APIs for calling yapf are ``FormatCode`` and ``FormatFile``:
+The two main APIs for calling yapf are ``FormatCode`` and ``FormatFile``, these
+share several arguments which are described below:
 
 .. code-block:: python
 
-    from yapf.yapf_api import FormatCode  # reformat a string of code
-    from yapf.yapf_api import FormatFile  # reformat a file
+    >>> from yapf.yapf_api import FormatCode  # reformat a string of code
     
     >>> FormatCode("f ( a = 1, b = 2 )")
     'f(a=1, b=2)\n'
 
-You can also pass a ``style_config``: Either a style name or a path to a file that contains
+A ``style_config`` argument: Either a style name or a path to a file that contains
 formatting style settings. If None is specified, use the default style
 as set in ``style.DEFAULT_STYLE_FACTORY``.
 
 .. code-block:: python
 
     >>> FormatCode("def g():\n  return True", style_config='pep8')
-    'def g():\n    return True\n'
-
-    >>> FormatFile("def g():\n  return True", style_config='pep8')
     'def g():\n    return True\n'
 
 A ``lines`` argument: A list of tuples of lines (ints), [start, end],
@@ -222,17 +219,31 @@ diff that turns the formatted source into reformatter source.
     -a==b
     +a == b
 
-Note: the ``filename`` argument is inserted into the diff, the default would use ``<unknown>``.
+Note: the ``filename`` argument for ``FormatCode`` is what is inserted into
+the diff, the default is ``<unknown>``.
 
 ``FormatFile`` returns reformatted code from the passed file along with its encoding:
 
 .. code-block:: python
 
+    >>> from yapf.yapf_api import FormatFile  # reformat a file
+
     >>> print(open("foo.py").read())  # contents of file
     a==b
 
     >>> FormatFile("foo.py")
-    (u'a == b\n', 'utf-8')
+    ('a == b\n', 'utf-8')
+
+The ``in_place`` argument saves the reformatted code back to the file:
+
+.. code-block:: python
+
+    >>> FormatFile("foo.py", in_place=True)
+    (None, 'utf-8')
+
+    >>> print(open("foo.py").read())  # contents of file (now fixed)
+    a == b
+
 
 (Potentially) Frequently Asked Questions
 ========================================
