@@ -42,6 +42,7 @@ from lib2to3.pgen2 import tokenize
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
+from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -55,28 +56,44 @@ def FormatFile(filename,
                style_config=None,
                lines=None,
                print_diff=False,
-               verify=True):
+               verify=True,
+               in_place=False):
   """Format a single Python file and return the formatted code.
 
   Arguments:
     filename: (unicode) The file to reformat.
     remaining arguments: see comment at the top of this module.
+    in_place: (bool) If True, write the reformatted code back to the file.
 
   Returns:
-    Pair of reformatted_code, encoding. reformatted_code is None if the file
-    doesn't exist.
+    Pair of (reformatted_code, encoding). reformatted_code is None if the file
+    is sucessfully written to (having used in_place). reformatted_code is a
+    diff if print_diff is True.
+
+  Raises:
+    IOError: raised if there was an error reading the file.
   """
   _CheckPythonVersion()
-  original_source, encoding = ReadFile(filename, logging.warning)
-  if original_source is None:
-    return None, encoding
 
-  return FormatCode(original_source,
-                    style_config=style_config,
-                    filename=filename,
-                    lines=lines,
-                    print_diff=print_diff,
-                    verify=verify), encoding
+  if in_place and print_diff:
+    raise ValueError("Cannot pass both in_place and print_diff.")
+
+  original_source, encoding = ReadFile(filename, logging.warning)
+
+  reformatted_source = FormatCode(original_source,
+                                  style_config=style_config,
+                                  filename=filename,
+                                  lines=lines,
+                                  print_diff=print_diff,
+                                  verify=verify)
+  if in_place:
+    with py3compat.open_with_encoding(filename,
+                                      mode='w',
+                                      encoding=encoding) as fd:
+      fd.write(reformatted_source)
+      return None, encoding
+
+  return reformatted_source, encoding
 
 
 def FormatCode(unformatted_source,
@@ -154,7 +171,7 @@ def ReadFile(filename, logger=None):
     The contents of filename.
 
   Raises:
-    IOError: raised during an error if a logger is not specified.
+    IOError: raised if there was an error reading the file.
   """
   try:
     with open(filename, 'rb') as fd:
