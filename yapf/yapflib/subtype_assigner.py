@@ -74,8 +74,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                                            format_token.Subtype.DICTIONARY_KEY)
           elif last_was_colon:
             if pytree_utils.NodeName(child) == 'power':
-              self._SetFirstLeafTokenSubtype(
-                  child, format_token.Subtype.DICTIONARY_VALUE)
+              self._SetSubtypeRec(child, format_token.Subtype.NONE, force=True)
             else:
               self._SetSubtypeRec(child, format_token.Subtype.DICTIONARY_VALUE)
         last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
@@ -246,13 +245,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                               subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
                                   child.value, format_token.Subtype.NONE))
 
-  def _SetSubtypeRec(self, node, subtype):
+  def _SetSubtypeRec(self, node, subtype, force=False):
     """Set the leafs in the node to the given subtype."""
     if isinstance(node, pytree.Leaf):
-      self._SetTokenSubtype(node, subtype)
+      self._SetTokenSubtype(node, subtype, force=force)
       return
     for child in node.children:
-      self._SetSubtypeRec(child, subtype)
+      self._SetSubtypeRec(child, subtype, force=force)
 
   def _SetTokenSubtype(self, node, subtype, force=False):
     """Set the token's subtype only if it's not already set."""
@@ -261,9 +260,9 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                      subtype)
 
-  def _SetFirstLeafTokenSubtype(self, node, subtype):
+  def _SetFirstLeafTokenSubtype(self, node, subtype, force=False):
     """Set the first leaf token's subtypes."""
     if isinstance(node, pytree.Leaf):
-      self._SetTokenSubtype(node, subtype)
+      self._SetTokenSubtype(node, subtype, force=force)
       return
-    self._SetFirstLeafTokenSubtype(node.children[0], subtype)
+    self._SetFirstLeafTokenSubtype(node.children[0], subtype, force=force)

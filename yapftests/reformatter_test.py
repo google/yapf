@@ -1222,6 +1222,10 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testFunctionCallInNestedDict(self):
+    code = "a = {'a': {'a': {'a': b(c=d, **e)}}}\n"
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
 class BuganizerFixes(ReformatterTest):
 
