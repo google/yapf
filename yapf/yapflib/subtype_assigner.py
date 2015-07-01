@@ -74,8 +74,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                                            format_token.Subtype.DICTIONARY_KEY)
           elif last_was_colon:
             if pytree_utils.NodeName(child) == 'power':
-              self._SetFirstLeafTokenSubtype(child,
-                                             format_token.Subtype.DICTIONARY_VALUE)
+              self._SetFirstLeafTokenSubtype(
+                  child, format_token.Subtype.DICTIONARY_VALUE)
             else:
               self._SetSubtypeRec(child, format_token.Subtype.DICTIONARY_VALUE)
         last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
@@ -257,7 +257,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
   def _SetTokenSubtype(self, node, subtype, force=False):
     """Set the token's subtype only if it's not already set."""
     if force or not pytree_utils.GetNodeAnnotation(
-          node, pytree_utils.Annotation.SUBTYPE):
+        node, pytree_utils.Annotation.SUBTYPE):
       pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                      subtype)
 

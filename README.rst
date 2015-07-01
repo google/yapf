@@ -213,8 +213,8 @@ diff that turns the formatted source into reformatter source.
 .. code-block:: python
 
     >>> print(FormatCode("a==b", filename="foo.py", print_diff=True))
-    --- foo.py	(original)
-    +++ foo.py	(reformatted)
+    --- foo.py (original)
+    +++ foo.py (reformatted)
     @@ -1 +1 @@
     -a==b
     +a == b

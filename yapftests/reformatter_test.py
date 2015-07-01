@@ -1929,7 +1929,7 @@ class TestsForPEP8Style(ReformatterTest):
 
 class TestingNotInParameters(unittest.TestCase):
 
-  def test_notInParams(self):
+  def testNotInParams(self):
     unformatted_code = textwrap.dedent("""\
       list("a long line to break the line. a long line to break the brk a long lin", not True)
       """)

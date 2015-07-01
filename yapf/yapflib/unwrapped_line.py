@@ -389,10 +389,9 @@ _LIST_COMP_OPERATORS = frozenset({
 
 def _SplitPenalty(prev_token, cur_token):
   """Return the penalty for breaking the line before the current token."""
-  
   if prev_token.value == 'not':
     return split_penalty.STRONGLY_CONNECTED
-  
+
   if cur_token.node_split_penalty > 0:
     return cur_token.node_split_penalty
 

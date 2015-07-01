@@ -42,7 +42,6 @@ from lib2to3.pgen2 import tokenize
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
-from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -72,11 +71,12 @@ def FormatFile(filename,
 
   Raises:
     IOError: raised if there was an error reading the file.
+    ValueError: raised if in_place and print_diff are both specified.
   """
   _CheckPythonVersion()
 
   if in_place and print_diff:
-    raise ValueError("Cannot pass both in_place and print_diff.")
+    raise ValueError('Cannot pass both in_place and print_diff.')
 
   original_source, encoding = ReadFile(filename, logging.warning)
 
