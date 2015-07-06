@@ -56,13 +56,15 @@ def FormatFile(filename,
                lines=None,
                print_diff=False,
                verify=True,
-               in_place=False):
+               in_place=False,
+               logger=None):
   """Format a single Python file and return the formatted code.
 
   Arguments:
     filename: (unicode) The file to reformat.
-    remaining arguments: see comment at the top of this module.
     in_place: (bool) If True, write the reformatted code back to the file.
+    logger: (io streamer) A stream to output logging.
+    remaining arguments: see comment at the top of this module.
 
   Returns:
     Pair of (reformatted_code, encoding). reformatted_code is None if the file
@@ -78,7 +80,7 @@ def FormatFile(filename,
   if in_place and print_diff:
     raise ValueError('Cannot pass both in_place and print_diff.')
 
-  original_source, encoding = ReadFile(filename, logging.warning)
+  original_source, encoding = ReadFile(filename, logger)
 
   reformatted_source = FormatCode(original_source,
                                   style_config=style_config,

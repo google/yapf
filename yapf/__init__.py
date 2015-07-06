@@ -184,7 +184,7 @@ def FormatFiles(filenames, lines,
     try:
       reformatted_code, encoding = yapf_api.FormatFile(
           filename, style_config=style_config, lines=lines,
-          print_diff=print_diff, verify=verify)
+          print_diff=print_diff, verify=verify, logger=logging.warning)
     except SyntaxError as e:
       e.filename = filename
       raise
