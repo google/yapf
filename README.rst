@@ -279,9 +279,9 @@ You can also disable formatting for a single literal like this:
 .. code-block:: python
 
     BAZ = {
-        [1, 2, 3, 4],
-        [5, 6, 7, 8],
-        [9, 10, 11, 12]
+        (1, 2, 3, 4),
+        (5, 6, 7, 8),
+        (9, 10, 11, 12),
     }  # yapf: disable
 
 Why Not Improve Existing Tools?
