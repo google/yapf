@@ -38,7 +38,10 @@ class LineJoinerTest(unittest.TestCase):
     """
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
-    return pytree_unwrapper.UnwrapPyTree(tree)
+    uwlines = pytree_unwrapper.UnwrapPyTree(tree)
+    for uwl in uwlines:
+      uwl.CalculateFormattingInformation()
+    return uwlines
 
   def _CheckLineJoining(self, code, join_lines):
     """Check that the given UnwrappedLines are joined as expected.
@@ -82,6 +85,12 @@ class LineJoinerTest(unittest.TestCase):
         if isinstance(e, int):    continue
         """)
     self._CheckLineJoining(code, join_lines=True)
+
+  def testOverColumnLimit(self):
+    code = textwrap.dedent(u"""\
+        if instance(bbbbbbbbbbbbbbbbbbbbbbbbb, int): cccccccccccccccccccccccccc = ddddddddddddddddddddd
+        """)
+    self._CheckLineJoining(code, join_lines=False)
 
 
 if __name__ == '__main__':

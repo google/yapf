@@ -103,8 +103,7 @@ def _CanMergeLineIntoIfStatement(lines, limit):
   if lines[0].lineno != lines[1].lineno:
     # Don't merge lines if the original lines weren't merged.
     return False
-  if lines[1].is_comment:
-    return False
   if lines[1].last.total_length >= limit:
+    # Don't merge lines if the result goes over the column limit.
     return False
   return True
