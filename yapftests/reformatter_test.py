@@ -1236,6 +1236,17 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testSplitListWithComment(self):
+    code = textwrap.dedent("""\
+      a = [
+          'a',
+          'b',
+          'c'  # hello world
+      ]
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

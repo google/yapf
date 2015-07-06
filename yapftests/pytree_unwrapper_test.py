@@ -279,6 +279,19 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (0, ['def', 'f', '(', ')', ':']),
         (1, ['pass'])])  # yapf: disable
 
+  def testSplitListWithComment(self):
+    code = textwrap.dedent(r"""
+      a = [
+          'a',
+          'b',
+          'c',  # hello world
+      ]
+      """)
+    uwlines = self._ParseAndUnwrap(code)
+    self._CheckUnwrappedLines(uwlines, [
+        (0, ['a', '=', '[', "'a'", ',', "'b'", ',',
+             "'c'", ',', '# hello world', ']'])])  # yapf: disable
+
 
 class MatchBracketsTest(unittest.TestCase):
 
