@@ -37,7 +37,6 @@ follows that there can only be at most two lines to join.
 from yapf.yapflib import style
 
 _CLASS_OR_FUNC = frozenset({'def', 'class'})
-_COMPOUND_STMT = frozenset({'def', 'class', 'if', 'for', 'with', 'while'})
 
 
 def CanMergeMultipleLines(lines, last_was_merged=False):
@@ -107,7 +106,5 @@ def _CanMergeLineIntoIfStatement(lines, limit):
   if lines[1].is_comment:
     return False
   if lines[1].last.total_length >= limit:
-    return False
-  if lines[1].first.value in _COMPOUND_STMT:
     return False
   return True
