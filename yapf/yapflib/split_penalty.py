@@ -85,8 +85,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # lambdef ::= 'lambda' [varargslist] ':' test
     # Loop over the lambda up to and including the colon.
     lambda_has_arglist = pytree_utils.NodeName(node.children[1]) != 'COLON'
-    self._SetUnbreakableOnChildren(node,
-                                   num_children=3 if lambda_has_arglist else 2)
+    self._SetUnbreakableOnChildren(node)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'
@@ -112,7 +111,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name
     # dotted_name ::= NAME ('.' NAME)*
-    self._SetUnbreakableOnChildren(node, num_children=len(node.children))
+    self._SetUnbreakableOnChildren(node)
 
   def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
     # dictsetmaker ::= ( (test ':' test
@@ -131,7 +130,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
     self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
-      self._SetUnbreakableOnChildren(node, num_children=len(node.children))
+      self._SetUnbreakableOnChildren(node)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
@@ -298,11 +297,11 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
                    STRONGLY_CONNECTED)
 
-  def _SetUnbreakableOnChildren(self, node, num_children):
+  def _SetUnbreakableOnChildren(self, node):
     """Set an UNBREAKABLE penalty annotation on children of node."""
     for child in node.children:
       self.Visit(child)
-    for i in py3compat.range(1, num_children):
+    for i in py3compat.range(1, len(node.children)):
       self._SetUnbreakable(node.children[i])
 
   def _SetExpressionPenalty(self, node, penalty):

@@ -1247,6 +1247,33 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testOverColumnLimit(self):
+    unformatted_code = textwrap.dedent("""\
+      class Test:
+
+        def testSomething(self):
+          expected = {
+              ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+          }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      class Test:
+
+        def testSomething(self):
+          expected = {
+              ('aaaaaaaaaaaaa', 'bbbb'):
+              'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'):
+              'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'):
+              'ccccccccccccccccccccccccccccccccccccccccccc',
+          }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

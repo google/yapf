@@ -135,7 +135,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (',', UNBREAKABLE),
         ('b', UNBREAKABLE),
         (':', UNBREAKABLE),
-        ('None', None),
+        ('None', UNBREAKABLE),
     ])  # yapf: disable
 
     # Test dotted names.
@@ -172,7 +172,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('lambda', STRONGLY_CONNECTED),
         ('a', UNBREAKABLE),
         (':', UNBREAKABLE),
-        ('23', STRONGLY_CONNECTED),
+        ('23', UNBREAKABLE),
         (')', UNBREAKABLE),
         (':', STRONGLY_CONNECTED),
         ('37', None),

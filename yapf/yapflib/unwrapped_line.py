@@ -417,9 +417,6 @@ def _SplitPenalty(prev_token, cur_token):
   if prev_token.value == ',':
     # Breaking after a comma is fine, if need be.
     return 0
-  if prev_token.value == ':':
-    # We would rather not split after a colon.
-    return split_penalty.STRONGLY_CONNECTED
   if prev_token.value == '==':
     # We would rather not split after an equality operator.
     return 20
