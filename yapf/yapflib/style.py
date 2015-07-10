@@ -54,6 +54,9 @@ _STYLE_HELP = dict(
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
       away from the i18n comment."""),
+    INDENT_IF_EXPR_CONTINUATION=("""\
+      Prevents an if statement's conditional expression from aligning to the
+      body of the if statement."""),
     INDENT_WIDTH='The number of columns to use for indentation.',
     CONTINUATION_INDENT_WIDTH='Indent width used for line continuations.',
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
@@ -100,6 +103,7 @@ def CreatePEP8Style():
       COLUMN_LIMIT=79,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
+      INDENT_IF_EXPR_CONTINUATION=4,
       INDENT_WIDTH=4,
       CONTINUATION_INDENT_WIDTH=4,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
@@ -130,6 +134,7 @@ def CreateGoogleStyle():
 
 def CreateChromiumStyle():
   style = CreateGoogleStyle()
+  style['INDENT_IF_EXPR_CONTINUATION'] = 0
   style['INDENT_WIDTH'] = 2
   return style
 
@@ -163,6 +168,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     COLUMN_LIMIT=int,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
+    INDENT_IF_EXPR_CONTINUATION=int,
     INDENT_WIDTH=int,
     CONTINUATION_INDENT_WIDTH=int,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,

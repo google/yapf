@@ -89,6 +89,14 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == '=':
         self._SetTokenSubtype(child, format_token.Subtype.ASSIGN_OPERATOR, True)
 
+  def Visit_if_stmt(self, node):  # pylint: disable=invalid-name
+    # if_stmt ::= 'if' test ':' suite ('elif' test ':' suite)*
+    #             ['else' ':' suite]
+    for child in node.children:
+      self.Visit(child)
+      if pytree_utils.NodeName(child).endswith('test'):
+        self._SetTokenExprTypeRec(child, format_token.ExprType.IF_TEST_EXPR)
+
   def Visit_or_test(self, node):  # pylint: disable=invalid-name
     # or_test ::= and_test ('or' and_test)*
     for child in node.children:
@@ -266,3 +274,18 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self._SetTokenSubtype(node, subtype, force=force)
       return
     self._SetFirstLeafTokenSubtype(node.children[0], subtype, force=force)
+
+  def _SetTokenExprTypeRec(self, node, expr_type):
+    """Set the leafs in the node to the given expression type."""
+    if isinstance(node, pytree.Leaf):
+      self._SetTokenExprType(node, expr_type)
+      return
+    for child in node.children:
+      self._SetTokenExprTypeRec(child, expr_type)
+
+  def _SetTokenExprType(self, node, expr_type):
+    """Set the token's expr_type only if it's not already set."""
+    if not pytree_utils.GetNodeAnnotation(node,
+                                          pytree_utils.Annotation.EXPR_TYPE):
+      pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.EXPR_TYPE,
+                                     expr_type)

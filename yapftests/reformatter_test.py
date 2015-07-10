@@ -2058,6 +2058,27 @@ class TestVerifyNoVerify(ReformatterTest):
                          reformatter.Reformat(uwlines,
                                               verify=False))
 
+  def testContinuationLineShouldBeDistinguished(self):
+    unformatted_code = textwrap.dedent("""\
+        class Foo(object):
+
+            def bar(self):
+                if self.solo_generator is None and len(
+                        self.generators + self.next_batch) == 1:
+                    pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class Foo(object):
+            def bar(self):
+                if self.solo_generator is None and len(
+                        self.generators + self.next_batch) == 1:
+                    pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code,
+                         reformatter.Reformat(uwlines,
+                                              verify=False))
+
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
 class TestsForPython3Code(ReformatterTest):

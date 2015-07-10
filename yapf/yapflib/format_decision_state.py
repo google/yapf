@@ -295,6 +295,9 @@ class FormatDecisionState(object):
         current.subtype == format_token.Subtype.DICTIONARY_VALUE):
       return previous.column
 
+    if current.expr_type == format_token.ExprType.IF_TEST_EXPR:
+      return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
+
     return top_of_stack.indent
 
   def _MoveStateToNextToken(self):

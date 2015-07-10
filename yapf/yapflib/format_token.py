@@ -49,6 +49,16 @@ class Subtype(object):
   COMP_IF = 12
 
 
+class ExprType(object):
+  """ExprType information about tokens.
+
+  Additional information about expressions that may be used with the Subtype to
+  determine the best formatting.
+  """
+  NONE = 0
+  IF_TEST_EXPR = 1
+
+
 class FormatToken(object):
   """A wrapper around pytree Leaf nodes.
 
@@ -190,6 +200,13 @@ class FormatToken(object):
     value = pytree_utils.GetNodeAnnotation(self._node,
                                            pytree_utils.Annotation.SUBTYPE)
     return Subtype.NONE if value is None else value
+
+  @property
+  def expr_type(self):
+    """Expression type information for directing formatting."""
+    value = pytree_utils.GetNodeAnnotation(self._node,
+                                           pytree_utils.Annotation.EXPR_TYPE)
+    return ExprType.NONE if value is None else value
 
   @property
   def is_binary_op(self):

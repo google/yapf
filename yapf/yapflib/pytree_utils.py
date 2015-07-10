@@ -48,6 +48,7 @@ class Annotation(object):
   MUST_SPLIT = 'must_split'
   SPLIT_PENALTY = 'split_penalty'
   SUBTYPE = 'subtype'
+  EXPR_TYPE = 'expr_type'
 
 
 def NodeName(node):
