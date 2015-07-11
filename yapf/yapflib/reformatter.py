@@ -89,7 +89,13 @@ def Reformat(uwlines, verify=True):
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
     else:
-      _AnalyzeSolutionSpace(state, dry_run=False)
+      if not _AnalyzeSolutionSpace(state, dry_run=False):
+        # Failsafe mode. If there isn't a solution to the line, then just emit
+        # it as is.
+        state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+        _RetainHorizontalSpacing(uwline)
+        _RetainVerticalSpacing(prev_uwline, uwline)
+        _EmitLineUnformatted(state)
 
     final_lines.append(uwline)
     prev_uwline = uwline
@@ -287,10 +293,12 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
 
   if not p_queue:
     # We weren't able to find a solution. Do nothing.
-    return
+    return False
 
   if not dry_run:
     _ReconstructPath(initial_state, heapq.heappop(p_queue).state_node)
+
+  return True
 
 
 def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
