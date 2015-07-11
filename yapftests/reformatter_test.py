@@ -1281,6 +1281,19 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+
+  def testB20849933(self):
+    code = textwrap.dedent("""\
+        def main(unused_argv):
+          if True:
+            aaaaaaaa = {
+                'xxx':
+                '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
+            }
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB20813997(self):
     code = textwrap.dedent("""\
         def myfunc_1():
@@ -1674,7 +1687,8 @@ class BuganizerFixes(ReformatterTest):
           ok = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
           bad_slice = map(math.sqrt,
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
-          a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A
+          a_long_name_slicing = an_array_with_an_exceedingly_long_name[:
+                                                                       ARBITRARY_CONSTANT_A
                                                                       ]
           bad_slice = ("I am a crazy, no good, string whats too long, etc." +
                        " no really ")[:ARBITRARY_CONSTANT_A]
