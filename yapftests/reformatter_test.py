@@ -1281,7 +1281,6 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
-
   def testB20849933(self):
     code = textwrap.dedent("""\
         def main(unused_argv):

@@ -256,6 +256,9 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
     initial_state: (format_decision_state.FormatDecisionState) The initial state
       to start the search from.
     dry_run: (bool) Don't commit changes if True.
+
+  Returns:
+    True if a formatting solution was found. False otherwise.
   """
   count = 0
   seen = set()

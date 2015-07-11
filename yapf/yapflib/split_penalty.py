@@ -84,7 +84,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_lambdef(self, node):  # pylint: disable=invalid-name
     # lambdef ::= 'lambda' [varargslist] ':' test
     # Loop over the lambda up to and including the colon.
-    lambda_has_arglist = pytree_utils.NodeName(node.children[1]) != 'COLON'
     self._SetUnbreakableOnChildren(node)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
