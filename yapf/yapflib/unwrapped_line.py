@@ -345,6 +345,9 @@ def _CanBreakBefore(prev_token, cur_token):
   if prev_token.is_name and cur_token.value == '.':
     # Don't break before the '.' in a dotted name.
     return False
+  if cur_token.is_comment and prev_token.lineno == cur_token.lineno:
+    # Don't break a comment at the end of the line.
+    return False
   # TODO(morbo): There may be more to add here.
   return True
 

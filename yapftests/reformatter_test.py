@@ -1274,6 +1274,15 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testEndingComment(self):
+    code = textwrap.dedent("""\
+      a = f(a="something",
+            b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
+            c="something else, about which comment doesn't make sense")
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -1797,8 +1806,7 @@ parameter_5, parameter_6): pass
 
     code = textwrap.dedent("""\
         aaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccc(
-            DC_1, (CL - 50, CL), AAAAAAAA, BBBBBBBBBBBBBBBB, 98.0,
-            CCCCCCC).ddddddddd(  # Look! A comment is here.
+            DC_1, (CL - 50, CL), AAAAAAAA, BBBBBBBBBBBBBBBB, 98.0, CCCCCCC).ddddddddd(  # Look! A comment is here.
                 AAAAAAAA - (20 * 60 - 5))
         """)
     uwlines = _ParseAndUnwrap(code)

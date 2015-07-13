@@ -343,7 +343,7 @@ class FormatDecisionState(object):
 
     # Calculate the penalty for overflowing the column limit.
     penalty = 0
-    if self.column > style.Get('COLUMN_LIMIT'):
+    if self.column > style.Get('COLUMN_LIMIT') and not current.is_comment:
       excess_characters = self.column - style.Get('COLUMN_LIMIT')
       penalty = style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
 
