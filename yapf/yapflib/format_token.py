@@ -57,6 +57,7 @@ class ExprType(object):
   """
   NONE = 0
   IF_TEST_EXPR = 1
+  DONT_TOUCH = 2
 
 
 class FormatToken(object):

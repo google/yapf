@@ -246,6 +246,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
+    self._SetTokenExprTypeRec(node, format_token.ExprType.DONT_TOUCH)
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf):
