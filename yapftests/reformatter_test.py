@@ -1288,8 +1288,8 @@ format_token.Subtype.NONE))
       def fn():
         return module \\
                .method(Object(data,
-                                 fn2(arg)
-                             ))
+                   fn2(arg)
+               ))
       """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

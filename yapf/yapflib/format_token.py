@@ -137,12 +137,23 @@ class FormatToken(object):
         '\n' * newlines_before + self.whitespace_prefix.lstrip('\n')
     )
 
-  def RetainHorizontalSpacing(self):
+  def RetainHorizontalSpacing(self, first_column, depth):
+    """Retains a token's horizontal spacing."""
     previous = self.previous_token
     if previous is None:
       return
-    if self.node.lineno != previous.node.lineno:
+
+    cur_lineno = self.lineno
+    prev_lineno = previous.lineno
+    if previous.is_multiline_string:
+      prev_lineno += previous.value.count('\n')
+
+    if cur_lineno != prev_lineno:
+      if not previous.is_continuation:
+        self.spaces_required_before = (
+            self.column - first_column + depth * style.Get('INDENT_WIDTH'))
       return
+
     current_column = self.node.column
     previous_column = previous.node.column
 

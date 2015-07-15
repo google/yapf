@@ -280,6 +280,9 @@ class FormatDecisionState(object):
     previous = current.previous_token
     top_of_stack = self.stack[-1]
 
+    if current.spaces_required_before > 2:
+      return current.spaces_required_before
+
     if current.OpensScope():
       return self.first_indent if not self.paren_level else top_of_stack.indent
 

@@ -119,7 +119,7 @@ def Reformat(uwlines, verify=True):
 def _RetainHorizontalSpacing(uwline):
   """Retain all horizontal spacing between tokens."""
   for tok in uwline.tokens:
-    tok.RetainHorizontalSpacing()
+    tok.RetainHorizontalSpacing(uwline.first.column, uwline.depth)
 
 
 def _RetainVerticalSpacing(prev_uwline, cur_uwline):
@@ -152,12 +152,19 @@ def _EmitLineUnformatted(state):
   """
   prev_lineno = None
   while state.next_token:
+    next_token_lineno = state.next_token.lineno
     previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
+
     if previous_token.is_multiline_string:
       previous_lineno += previous_token.value.count('\n')
-    newline = (prev_lineno is not None and
-               state.next_token.lineno > previous_lineno)
+
+    if previous_token.is_continuation:
+      newline = False
+    else:
+      newline = (prev_lineno is not None and
+                 state.next_token.lineno > previous_lineno)
+
     prev_lineno = state.next_token.lineno
     state.AddTokenToState(newline=newline, dry_run=False)
 
