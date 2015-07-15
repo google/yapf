@@ -73,6 +73,7 @@ def Reformat(uwlines, verify=True):
     elif _LineHasContinuationMarkers(uwline):
       # The line contains continuation markers, in which case we assume the
       # programmer formatted the code this way intentionally.
+      _RetainHorizontalSpacing(uwline)
       while state.next_token:
         next_token_lineno = state.next_token.lineno
         prev_token = state.next_token.previous_token
