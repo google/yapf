@@ -1294,6 +1294,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testIfExpressionWithFunctionCall(self):
+    code = textwrap.dedent("""\
+      if x or z.y(a, c,
+                  aaaaaaaaaaaaaaaaaaaaa=aaaaaaaaaaaaaaaaaa,
+                  bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
+        pass
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

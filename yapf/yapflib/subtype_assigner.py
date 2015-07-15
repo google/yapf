@@ -246,6 +246,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
+    self._SetTokenExprTypeRec(node, format_token.ExprType.NONE, force=True)
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf):
@@ -275,17 +276,17 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       return
     self._SetFirstLeafTokenSubtype(node.children[0], subtype, force=force)
 
-  def _SetTokenExprTypeRec(self, node, expr_type):
+  def _SetTokenExprTypeRec(self, node, expr_type, force=False):
     """Set the leafs in the node to the given expression type."""
     if isinstance(node, pytree.Leaf):
-      self._SetTokenExprType(node, expr_type)
+      self._SetTokenExprType(node, expr_type, force)
       return
     for child in node.children:
       self._SetTokenExprTypeRec(child, expr_type)
 
-  def _SetTokenExprType(self, node, expr_type):
+  def _SetTokenExprType(self, node, expr_type, force=False):
     """Set the token's expr_type only if it's not already set."""
-    if not pytree_utils.GetNodeAnnotation(node,
-                                          pytree_utils.Annotation.EXPR_TYPE):
+    if force or pytree_utils.GetNodeAnnotation(
+        node, pytree_utils.Annotation.EXPR_TYPE) is None:
       pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.EXPR_TYPE,
                                      expr_type)
