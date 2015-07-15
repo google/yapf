@@ -2010,6 +2010,16 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testFunctionCallParametersInIfNotOverIndented(self):
+    code = textwrap.dedent("""\
+      if x or z.y(a, c,
+                  aaaaaaaaaaaaaaaaaaaaa=aaaaaaaaaaaaaaaaaa,
+                  bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
+          pass
+    """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class TestingNotInParameters(unittest.TestCase):
 
