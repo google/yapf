@@ -152,7 +152,6 @@ def _EmitLineUnformatted(state):
   """
   prev_lineno = None
   while state.next_token:
-    next_token_lineno = state.next_token.lineno
     previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
 
