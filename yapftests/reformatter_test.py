@@ -1311,6 +1311,21 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB22527411(self):
+    unformatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(ffffffffffffff)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(
+                ffffffffffffff)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB20849933(self):
     code = textwrap.dedent("""\
         def main(unused_argv):
