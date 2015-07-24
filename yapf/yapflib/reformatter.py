@@ -66,25 +66,11 @@ def Reformat(uwlines, verify=True):
         # region.
         _RetainVerticalSpacing(prev_uwline, uwline)
 
-    if _LineContainsI18n(uwline) or uwline.disable:
+    if (_LineContainsI18n(uwline) or uwline.disable or
+        _LineHasContinuationMarkers(uwline)):
       _RetainHorizontalSpacing(uwline)
       _RetainVerticalSpacing(prev_uwline, uwline)
       _EmitLineUnformatted(state)
-    elif _LineHasContinuationMarkers(uwline):
-      # The line contains continuation markers, in which case we assume the
-      # programmer formatted the code this way intentionally.
-      _RetainHorizontalSpacing(uwline)
-      while state.next_token:
-        next_token_lineno = state.next_token.lineno
-        prev_token = state.next_token.previous_token
-        prev_token_lineno = (
-            prev_token.lineno if prev_token else next_token_lineno
-        )
-        if prev_token.is_continuation:
-          newline = False
-        else:
-          newline = next_token_lineno != prev_token_lineno
-        state.AddTokenToState(newline=newline, dry_run=False)
     elif _CanPlaceOnSingleLine(uwline):
       # The unwrapped line fits on one line.
       while state.next_token:

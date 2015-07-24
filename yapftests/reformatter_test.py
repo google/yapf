@@ -1304,6 +1304,17 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testUnformattedAfterMultilineString(self):
+    code = textwrap.dedent("""\
+      def foo():
+        com_text = \\
+      '''
+      TEST
+      ''' % (input_fname, output_fname)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
