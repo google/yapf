@@ -48,7 +48,6 @@ class Annotation(object):
   MUST_SPLIT = 'must_split'
   SPLIT_PENALTY = 'split_penalty'
   SUBTYPE = 'subtype'
-  EXPR_TYPE = 'expr_type'
 
 
 def NodeName(node):
@@ -228,6 +227,32 @@ def SetNodeAnnotation(node, annotation, value):
     value: annotation value to set.
   """
   setattr(node, _NODE_ANNOTATION_PREFIX + annotation, value)
+
+
+def AppendNodeAnnotation(node, annotation, value):
+  """Appends an annotation value to a list of annotations on the node.
+
+  Arguments:
+    node: the node.
+    annotation: annotation name - a string.
+    value: annotation value to set.
+  """
+  attr = GetNodeAnnotation(node, annotation, set())
+  attr.add(value)
+  SetNodeAnnotation(node, annotation, attr)
+
+
+def RemoveSubtypeAnnotation(node, value):
+  """Removes an annotation value from the subtype annotations on the node.
+
+  Arguments:
+    node: the node.
+    value: annotation value to remove.
+  """
+  attr = GetNodeAnnotation(node, Annotation.SUBTYPE)
+  if attr and value in attr:
+    attr.remove(value)
+    SetNodeAnnotation(node, Annotation.SUBTYPE, attr)
 
 
 def DumpNodeToString(node):

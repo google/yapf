@@ -1315,6 +1315,16 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testNoSpacesAroundKeywordDefaultValues(self):
+    code = textwrap.dedent("""\
+      sources = {
+          'json': request.get_json(silent=True) or {},
+          'json2': request.get_json(silent=True),
+      }
+      json = request.get_json(silent=True) or {}
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
 class BuganizerFixes(ReformatterTest):
 

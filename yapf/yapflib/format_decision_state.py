@@ -138,17 +138,18 @@ class FormatDecisionState(object):
         return True
 
       # TODO(morbo): This should be controlled with a knob.
-      if (current.subtype == format_token.Subtype.DICTIONARY_KEY and
+      if (format_token.Subtype.DICTIONARY_KEY in current.subtypes and
           not current.is_comment):
         # Place each dictionary entry on its own line.
         return True
 
       # TODO(morbo): This should be controlled with a knob.
-      if current.subtype == format_token.Subtype.DICT_SET_GENERATOR:
+      if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
         return True
 
       if (next_token and previous_token.value != '(' and
-          next_token.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN and
+          format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
+              next_token.subtypes and
           next_token.node_split_penalty < split_penalty.UNBREAKABLE):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
@@ -295,10 +296,10 @@ class FormatDecisionState(object):
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
-        current.subtype == format_token.Subtype.DICTIONARY_VALUE):
+        format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
       return previous.column
 
-    if current.expr_type == format_token.ExprType.IF_TEST_EXPR:
+    if format_token.Subtype.IF_TEST_EXPR in current.subtypes:
       return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
 
     return top_of_stack.indent
