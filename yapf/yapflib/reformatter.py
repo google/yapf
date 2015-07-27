@@ -321,10 +321,6 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
     # Don't add a token we must split but where we aren't splitting.
     return count
 
-  if previous_node.state.next_token.value in pytree_utils.CLOSING_BRACKETS:
-    if _MatchingParenSplitDecision(previous_node) != newline:
-      penalty += style.Get('SPLIT_PENALTY_MATCHING_BRACKET')
-
   node = _StateNode(previous_node.state, newline, previous_node)
   penalty += node.state.AddTokenToState(newline=newline, dry_run=True)
   heapq.heappush(p_queue, _QueueItem(_OrderedPenalty(penalty, count), node))
@@ -348,29 +344,6 @@ def _ReconstructPath(initial_state, current):
 
   for node in path:
     initial_state.AddTokenToState(newline=node.newline, dry_run=False)
-
-
-def _MatchingParenSplitDecision(current):
-  """Returns the splitting decision of the matching token.
-
-  Arguments:
-    current: (_StateNode) The node in the decision graph that is the end point
-      of the path with the least penalty.
-
-  Returns:
-    True if the matching paren split after it, False otherwise.
-  """
-  # FIXME(morbo): This is not ideal, because it backtracks through code.
-  # In the general case, it shouldn't be too bad, but it is technically
-  # O(n^2) behavior, which is never good.
-  matching_bracket = current.state.next_token.matching_bracket
-  newline = current.newline
-  while current.previous:
-    if current.state.next_token.previous_token == matching_bracket:
-      break
-    newline = current.newline
-    current = current.previous
-  return newline or current.state.next_token.is_comment
 
 
 def _FormatFirstToken(first_token, indent_depth, prev_uwline):

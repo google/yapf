@@ -83,11 +83,6 @@ _STYLE_HELP = dict(
     'The penalty for characters over the column limit.',
     SPLIT_PENALTY_LOGICAL_OPERATOR=
     "The penalty of splitting the line around the 'and' and 'or' operators.",
-    SPLIT_PENALTY_MATCHING_BRACKET=textwrap.dedent("""\
-      The penalty for not matching the splitting decision for the matching
-      bracket tokens. For instance, if there is a newline after the opening
-      bracket, we would tend to expect one before the closing bracket, and
-      vice versa."""),
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=
     'The penalty for splitting right after the opening bracket.',
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
@@ -114,7 +109,6 @@ def CreatePEP8Style():
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_EXCESS_CHARACTER=2500,
       SPLIT_PENALTY_LOGICAL_OPERATOR=30,
-      SPLIT_PENALTY_MATCHING_BRACKET=50,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
   )  # yapf: disable
@@ -179,7 +173,6 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
     SPLIT_PENALTY_EXCESS_CHARACTER=int,
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
-    SPLIT_PENALTY_MATCHING_BRACKET=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
 )

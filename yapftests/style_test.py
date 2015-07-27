@@ -117,23 +117,23 @@ class StyleFromFileTest(unittest.TestCase):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = chromium
-        split_penalty_matching_bracket = 33
+        continuation_indent_width = 30
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
-      self.assertEqual(cfg['SPLIT_PENALTY_MATCHING_BRACKET'], 33)
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 30)
 
   def testDefaultBasedOnGoogleStyle(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
-        split_penalty_matching_bracket = 33
+        continuation_indent_width = 20
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
-      self.assertEqual(cfg['SPLIT_PENALTY_MATCHING_BRACKET'], 33)
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):
     cfg = textwrap.dedent('''\
