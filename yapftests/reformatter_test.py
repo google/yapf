@@ -1326,6 +1326,22 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testNoSplittingBeforeEndingSubscriptBracket(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            status = cf.describe_stacks(StackName=stackname)[u'Stacks'][0][u'StackStatus']
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            status = cf.describe_stacks(
+                StackName=stackname)[u'Stacks'][0][u'StackStatus']
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
 class BuganizerFixes(ReformatterTest):
 
   @classmethod

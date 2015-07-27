@@ -137,6 +137,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       if pytree_utils.NodeName(node.children[1]) == 'NAME':
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
+      elif pytree_utils.NodeName(node.children[-1]) == 'RSQB':
+        self._SetStronglyConnected(node.children[-1])
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
     # power ::= atom trailer* ['**' factor]
