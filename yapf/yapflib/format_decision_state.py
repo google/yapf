@@ -149,7 +149,7 @@ class FormatDecisionState(object):
 
       if (next_token and previous_token.value != '(' and
           format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
-              next_token.subtypes and
+          next_token.subtypes and
           next_token.node_split_penalty < split_penalty.UNBREAKABLE):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
