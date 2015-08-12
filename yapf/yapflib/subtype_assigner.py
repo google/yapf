@@ -220,6 +220,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #                     | '*' test (',' argument)* [',' '**' test]
     #                     | '**' test)
     self._ProcessArgLists(node)
+    self._SetDefaultOrNamedAssignArgListSubtype(node)
 
   def Visit_typedargslist(self, node):  # pylint: disable=invalid-name
     # typedargslist ::=
@@ -228,6 +229,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' tname)
     #     | tfpdef ['=' test] (',' tfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
+    self._SetDefaultOrNamedAssignArgListSubtype(node)
 
   def Visit_varargslist(self, node):  # pylint: disable=invalid-name
     # varargslist ::=
@@ -236,6 +238,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' vname)
     #      | vfpdef ['=' test] (',' vfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
+    self._SetDefaultOrNamedAssignArgListSubtype(node)
 
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
@@ -279,9 +282,33 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     pytree_utils.AppendNodeAnnotation(
         node, pytree_utils.Annotation.SUBTYPE, subtype)
 
+  def _GetFirstLeafTokenSubtypes(self, node):
+    if isinstance(node, pytree.Leaf):
+      return pytree_utils.GetNodeAnnotation(
+          node, pytree_utils.Annotation.SUBTYPE, set())
+    return self._GetFirstLeafTokenSubtypes(node.children[0])
+
   def _AppendFirstLeafTokenSubtype(self, node, subtype, force=False):
     """Append the first leaf token's subtypes."""
     if isinstance(node, pytree.Leaf):
       self._AppendTokenSubtype(node, subtype, force=force)
       return
     self._AppendFirstLeafTokenSubtype(node.children[0], subtype, force=force)
+
+  def _SetDefaultOrNamedAssignArgListSubtype(self, node):
+    def HasDefaultOrNamedAssignSubtype(node):
+      if isinstance(node, pytree.Leaf):
+        if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
+            self._GetFirstLeafTokenSubtypes(node)):
+          return True
+        return False
+      has_subtype = False
+      for child in node.children:
+        has_subtype |= HasDefaultOrNamedAssignSubtype(child)
+      return has_subtype
+
+    if HasDefaultOrNamedAssignSubtype(node):
+      for child in node.children:
+        if pytree_utils.NodeName(child) != 'COMMA':
+          self._AppendFirstLeafTokenSubtype(
+              child, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)

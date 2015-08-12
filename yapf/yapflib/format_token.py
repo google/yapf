@@ -48,6 +48,7 @@ class Subtype(object):
   COMP_FOR = 11
   COMP_IF = 12
   IF_TEST_EXPR = 13
+  DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 14
 
 
 class FormatToken(object):

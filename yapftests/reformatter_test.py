@@ -36,9 +36,9 @@ class ReformatterTest(unittest.TestCase):
   def assertCodeEqual(self, expected_code, code):
     if code != expected_code:
       msg = 'Code format mismatch:\n'
-      msg += 'Expected:\n >'
+      msg += 'Expected:\n > '
       msg += '\n > '.join(expected_code.splitlines())
-      msg += '\nActual:\n >'
+      msg += '\nActual:\n > '
       msg += '\n > '.join(code.splitlines())
       # TODO(sbc): maybe using difflib here to produce easy to read deltas?
       self.fail(msg)
@@ -806,7 +806,8 @@ format_token.Subtype.NONE))
           a = 42
 
           # This is a comment.
-          def __init__(self, xxxxxxx,
+          def __init__(self,
+                       xxxxxxx,
                        yyyyy=0,
                        zzzzzzz=None,
                        aaaaaaaaaaaaaaaaaa=False,
@@ -1194,8 +1195,7 @@ format_token.Subtype.NONE))
             if True:
               if True:
                 remote_checksum = self.get_checksum(conn, tmp, dest, inject,
-                                                    not directory_prepended,
-                                                    source=source)
+                                                    not directory_prepended, source)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1296,7 +1296,8 @@ format_token.Subtype.NONE))
 
   def testIfExpressionWithFunctionCall(self):
     code = textwrap.dedent("""\
-      if x or z.y(a, c,
+      if x or z.y(a,
+                  c,
                   aaaaaaaaaaaaaaaaaaaaa=aaaaaaaaaaaaaaaaaa,
                   bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
         pass

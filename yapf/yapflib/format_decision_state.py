@@ -118,7 +118,6 @@ class FormatDecisionState(object):
     """Returns True if the line must split before the next token."""
     current = self.next_token
     previous_token = current.previous_token
-    next_token = current.next_token
 
     if current.must_break_before:
       return True
@@ -147,10 +146,9 @@ class FormatDecisionState(object):
       if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
         return True
 
-      if (next_token and previous_token.value != '(' and
-          format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
-          next_token.subtypes and
-          next_token.node_split_penalty < split_penalty.UNBREAKABLE):
+      if (previous_token.value != '(' and
+          format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
+          current.subtypes):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
       if (previous_token.value in '{[(' and
