@@ -145,6 +145,34 @@ class FormatFileTest(unittest.TestCase):
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
     self.assertCodeEqual(expected_formatted_code, formatted_code)
 
+  def testDisablePartOfMultilineComment(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        # This is a multiline comment that disables YAPF.
+        # yapf: disable
+        if f:    g
+        # yapf: enable
+        # This is a multiline comment that enables YAPF.
+
+        if h:    i
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+        # This is a multiline comment that disables YAPF.
+        # yapf: disable
+        if f:    g
+        # yapf: enable
+        # This is a multiline comment that enables YAPF.
+
+        if h: i
+        """)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
+
   def testFormatFileLinesSelection(self):
     unformatted_code = textwrap.dedent(u"""\
         if a:    b

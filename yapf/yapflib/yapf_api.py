@@ -214,18 +214,26 @@ def _MarkLinesToFormat(uwlines, lines):
   while index < len(uwlines):
     uwline = uwlines[index]
     if uwline.is_comment:
-      if re.search(DISABLE_PATTERN, uwline.first.value.strip(), re.IGNORECASE):
+      if _DisableYAPF(uwline.first.value.strip()):
         while index < len(uwlines):
           uwline = uwlines[index]
           uwline.disable = True
-          if (uwline.is_comment and
-              re.search(ENABLE_PATTERN, uwline.first.value.strip(),
-                        re.IGNORECASE)):
+          if uwline.is_comment and _EnableYAPF(uwline.first.value.strip()):
             break
           index += 1
     elif re.search(DISABLE_PATTERN, uwline.last.value.strip(), re.IGNORECASE):
       uwline.disable = True
     index += 1
+
+
+def _DisableYAPF(line):
+  return (re.search(DISABLE_PATTERN, line.split('\n')[0], re.IGNORECASE) or
+          re.search(DISABLE_PATTERN, line.split('\n')[-1], re.IGNORECASE))
+
+
+def _EnableYAPF(line):
+  return (re.search(ENABLE_PATTERN, line.split('\n')[0], re.IGNORECASE) or
+          re.search(ENABLE_PATTERN, line.split('\n')[-1], re.IGNORECASE))
 
 
 def _GetUnifiedDiff(before, after, filename='code'):
