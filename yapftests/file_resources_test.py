@@ -132,6 +132,12 @@ class IsPythonFileTest(unittest.TestCase):
     file1 = os.path.join(self.test_tmpdir, 'testfile1.py')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
+  def test_with_gyp_extenstion(self):
+    file1 = os.path.join(self.test_tmpdir, 'testfile1.gyp')
+    self.assertTrue(file_resources.IsPythonFile(file1))
+    file1 = os.path.join(self.test_tmpdir, 'testfile1.gypi')
+    self.assertTrue(file_resources.IsPythonFile(file1))
+
   def test_empty_without_py_extension(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
     self.assertFalse(file_resources.IsPythonFile(file1))
