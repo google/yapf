@@ -79,7 +79,7 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('=', {format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
          ('37', {format_token.Subtype.NONE,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
+                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
          (',', {format_token.Subtype.NONE}),
          ('*', {format_token.Subtype.VARARGS_STAR,
                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
