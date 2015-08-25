@@ -1342,6 +1342,28 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testNoSplittingOnSingleArgument(self):
+    unformatted_code = textwrap.dedent("""\
+        xxxxxxxxxxxxxx = (re.search(r'(\d+\.\d+\.\d+\.)\d+',
+                                    aaaaaaa.bbbbbbbbbbbb).group(1) +
+                          re.search(r'\d+\.\d+\.\d+\.(\d+)',
+                                    ccccccc).group(1))
+        xxxxxxxxxxxxxx = (re.search(r'(\d+\.\d+\.\d+\.)\d+',
+                                    aaaaaaa.bbbbbbbbbbbb).group(a.b) +
+                          re.search(r'\d+\.\d+\.\d+\.(\d+)',
+                                    ccccccc).group(c.d))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        xxxxxxxxxxxxxx = (
+            re.search(r'(\d+\.\d+\.\d+\.)\d+', aaaaaaa.bbbbbbbbbbbb).group(1) +
+            re.search(r'\d+\.\d+\.\d+\.(\d+)', ccccccc).group(1))
+        xxxxxxxxxxxxxx = (
+            re.search(r'(\d+\.\d+\.\d+\.)\d+', aaaaaaa.bbbbbbbbbbbb).group(a.b) +
+            re.search(r'\d+\.\d+\.\d+\.(\d+)', ccccccc).group(c.d))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

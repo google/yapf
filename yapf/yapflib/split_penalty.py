@@ -134,10 +134,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
     elif len(node.children) == 3:
-      if pytree_utils.NodeName(node.children[1]) == 'NAME':
+      if (pytree_utils.NodeName(node.children[1]) not in
+          {'arglist', 'argument', 'term'}):
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
       elif pytree_utils.NodeName(node.children[-1]) == 'RSQB':
+        # Don't split the ending bracket of a subscript list.
         self._SetStronglyConnected(node.children[-1])
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
