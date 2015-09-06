@@ -106,4 +106,4 @@ def _CanMergeLineIntoIfStatement(lines, limit):
   if lines[1].last.total_length >= limit:
     # Don't merge lines if the result goes over the column limit.
     return False
-  return True
+  return style.Get('JOIN_MULTIPLE_LINES')

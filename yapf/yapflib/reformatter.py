@@ -64,12 +64,12 @@ def Reformat(uwlines, verify=True):
       if prev_uwline and prev_uwline.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainVerticalSpacing(prev_uwline, uwline)
+        _RetainVerticalSpacing(uwline, prev_uwline)
 
     if (_LineContainsI18n(uwline) or uwline.disable or
         _LineHasContinuationMarkers(uwline)):
       _RetainHorizontalSpacing(uwline)
-      _RetainVerticalSpacing(prev_uwline, uwline)
+      _RetainVerticalSpacing(uwline, prev_uwline)
       _EmitLineUnformatted(state)
     elif _CanPlaceOnSingleLine(uwline):
       # The unwrapped line fits on one line.
@@ -81,7 +81,7 @@ def Reformat(uwlines, verify=True):
         # it as is.
         state = format_decision_state.FormatDecisionState(uwline, indent_amt)
         _RetainHorizontalSpacing(uwline)
-        _RetainVerticalSpacing(prev_uwline, uwline)
+        _RetainVerticalSpacing(uwline, prev_uwline)
         _EmitLineUnformatted(state)
 
     final_lines.append(uwline)
@@ -108,20 +108,27 @@ def _RetainHorizontalSpacing(uwline):
     tok.RetainHorizontalSpacing(uwline.first.column, uwline.depth)
 
 
-def _RetainVerticalSpacing(prev_uwline, cur_uwline):
-  """Retain all vertical spacing between lines."""
-  if not prev_uwline:
-    return
-  if prev_uwline.last.is_string:
-    prev_lineno = prev_uwline.last.lineno + prev_uwline.last.value.count('\n')
-  else:
-    prev_lineno = prev_uwline.last.lineno
-  if cur_uwline.first.is_comment:
-    cur_lineno = cur_uwline.first.lineno - cur_uwline.first.value.count('\n')
-  else:
-    cur_lineno = cur_uwline.first.lineno
-  num_newlines = cur_lineno - prev_lineno
-  cur_uwline.first.AdjustNewlinesBefore(num_newlines)
+def _RetainVerticalSpacing(cur_uwline, prev_uwline):
+  prev_tok = None
+  if prev_uwline is not None:
+    prev_tok = prev_uwline.last
+  cur_lineno = 0
+  prev_lineno = 0
+  for cur_tok in cur_uwline.tokens:
+    if prev_tok is not None:
+      if prev_tok.is_string:
+        prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
+      else:
+        prev_lineno = prev_tok.lineno
+
+      if cur_tok.is_comment:
+        cur_lineno = cur_tok.lineno - cur_tok.value.count('\n')
+      else:
+        cur_lineno = cur_tok.lineno
+
+    num_newlines = cur_lineno - prev_lineno
+    cur_tok.AdjustNewlinesBefore(num_newlines)
+    prev_tok = cur_tok
 
 
 def _EmitLineUnformatted(state):

@@ -69,6 +69,8 @@ _STYLE_HELP = dict(
                          # <------ this blank line
         def method():
           ..."""),
+    JOIN_MULTIPLE_LINES=
+    "Join short lines into one line. E.g., single line 'if' statements.",
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
@@ -102,6 +104,7 @@ def CreatePEP8Style():
       INDENT_WIDTH=4,
       CONTINUATION_INDENT_WIDTH=4,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
+      JOIN_MULTIPLE_LINES=True,
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_BEFORE_LOGICAL_OPERATOR=False,
@@ -130,6 +133,7 @@ def CreateChromiumStyle():
   style = CreateGoogleStyle()
   style['INDENT_IF_EXPR_CONTINUATION'] = 0
   style['INDENT_WIDTH'] = 2
+  style['JOIN_MULTIPLE_LINES'] = False
   return style
 
 
@@ -166,6 +170,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     INDENT_WIDTH=int,
     CONTINUATION_INDENT_WIDTH=int,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
+    JOIN_MULTIPLE_LINES=_BoolConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACES_BEFORE_COMMENT=int,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,

@@ -873,15 +873,6 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
-  def testSingleLineIfStatements(self):
-    code = textwrap.dedent("""\
-        if True: a = 42
-        elif False: b = 42
-        else: c = 42
-        """)
-    uwlines = _ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
-
   def testLineDepthOfSingleLineStatement(self):
     unformatted_code = textwrap.dedent("""\
         while True: continue
@@ -1505,14 +1496,18 @@ class BuganizerFixes(ReformatterTest):
   def testB19372573(self):
     code = textwrap.dedent("""\
         def f():
-          if a: return 42
-          while True:
-            if b: continue
-            if c: break
-          return 0
+            if a: return 42
+            while True:
+                if b: continue
+                if c: break
+            return 0
         """)
     uwlines = _ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testB19353268(self):
     code = textwrap.dedent("""\
@@ -1968,6 +1963,15 @@ class TestsForPEP8Style(ReformatterTest):
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSingleLineIfStatements(self):
+    code = textwrap.dedent("""\
+        if True: a = 42
+        elif False: b = 42
+        else: c = 42
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoBlankBetweenClassAndDef(self):
     unformatted_code = textwrap.dedent("""\

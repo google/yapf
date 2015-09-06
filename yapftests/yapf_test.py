@@ -34,8 +34,7 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code = yapf_api.FormatCode(unformatted_code,
-                                         style_config='chromium')
+    formatted_code = yapf_api.FormatCode(unformatted_code)
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -703,6 +702,44 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '1-10'])
+
+  def testDisableFormattingInDataLiteral(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def horrible():
+          oh_god()
+          why_would_you()
+          [
+             'do',
+
+              'that',
+          ]
+
+        def still_horrible():
+            oh_god()
+            why_would_you()
+            [
+                'do',
+
+                'that',
+            ]
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def horrible():
+            oh_god()
+            why_would_you()
+            [
+               'do',
+
+                'that',
+            ]
+
+        def still_horrible():
+            oh_god()
+            why_would_you()
+            ['do', 'that', ]
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '10-18'])
 
 
 class BadInputTest(unittest.TestCase):
