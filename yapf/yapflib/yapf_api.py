@@ -66,9 +66,9 @@ def FormatFile(filename,
     remaining arguments: see comment at the top of this module.
 
   Returns:
-    Pair of (reformatted_code, encoding). reformatted_code is None if the file
-    is sucessfully written to (having used in_place). reformatted_code is a
-    diff if print_diff is True.
+    Tuple of (reformatted_code, encoding, changed). reformatted_code is None if
+    the file is sucessfully written to (having used in_place). reformatted_code
+    is a diff if print_diff is True.
 
   Raises:
     IOError: raised if there was an error reading the file.
@@ -81,20 +81,20 @@ def FormatFile(filename,
 
   original_source, encoding = ReadFile(filename, logger)
 
-  reformatted_source = FormatCode(original_source,
-                                  style_config=style_config,
-                                  filename=filename,
-                                  lines=lines,
-                                  print_diff=print_diff,
-                                  verify=verify)
+  reformatted_source, changed = FormatCode(original_source,
+                                           style_config=style_config,
+                                           filename=filename,
+                                           lines=lines,
+                                           print_diff=print_diff,
+                                           verify=verify)
   if in_place:
     with py3compat.open_with_encoding(filename,
                                       mode='w',
                                       encoding=encoding) as fd:
       fd.write(reformatted_source)
-      return None, encoding
+      return None, encoding, changed
 
-  return reformatted_source, encoding
+  return reformatted_source, encoding, changed
 
 
 def FormatCode(unformatted_source,
@@ -113,7 +113,8 @@ def FormatCode(unformatted_source,
     remaining arguments: see comment at the top of this module.
 
   Returns:
-    The code reformatted to conform to the desired formatting style.
+    Tuple of (reformatted_source, changed). reformatted_source conforms to the
+    desired formatting style. changed is True if the source changed.
   """
   _CheckPythonVersion()
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
@@ -136,15 +137,15 @@ def FormatCode(unformatted_source,
   reformatted_source = reformatter.Reformat(uwlines, verify)
 
   if unformatted_source == reformatted_source:
-    return '' if print_diff else reformatted_source
+    return '' if print_diff else reformatted_source, False
 
   code_diff = _GetUnifiedDiff(unformatted_source, reformatted_source,
                               filename=filename)
 
   if print_diff:
-    return code_diff
+    return code_diff, code_diff != ''
 
-  return reformatted_source
+  return reformatted_source, True
 
 
 def _CheckPythonVersion():

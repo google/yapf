@@ -34,8 +34,8 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code = yapf_api.FormatCode(unformatted_code,
-                                         style_config='chromium')
+    formatted_code, _ = yapf_api.FormatCode(unformatted_code,
+                                            style_config='chromium')
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -220,7 +220,7 @@ class FormatFileTest(unittest.TestCase):
     unformatted_code = 'True==False\n'
     formatted_code = 'True == False\n'
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
-    result, _ = yapf_api.FormatFile(file1, in_place=True)
+    result, _, _ = yapf_api.FormatFile(file1, in_place=True)
     self.assertEqual(result, None)
     with open(file1) as f:
       self.assertCodeEqual(formatted_code, f.read())

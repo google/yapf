@@ -49,7 +49,7 @@ def main(argv):
       in argv[0]).
 
   Returns:
-    0 if there were no errors, non-zero otherwise.
+    0 if there were no changes, non-zero otherwise.
 
   Raises:
     YapfError: if none of the supplied files were Python files.
@@ -134,24 +134,26 @@ def main(argv):
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
-    sys.stdout.write(yapf_api.FormatCode(
+    reformatted_source, changed = yapf_api.FormatCode(
         py3compat.unicode('\n'.join(original_source) + '\n'),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
-        verify=args.verify))
-    return 0
+        verify=args.verify)
+    sys.stdout.write(reformatted_source)
+    return 1 if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
-  FormatFiles(files, lines,
-              style_config=args.style,
-              no_local_style=args.no_local_style,
-              in_place=args.in_place,
-              print_diff=args.diff,
-              verify=args.verify)
-  return 0
+  changed = FormatFiles(files,
+                        lines,
+                        style_config=args.style,
+                        no_local_style=args.no_local_style,
+                        in_place=args.in_place,
+                        print_diff=args.diff,
+                        verify=args.verify)
+  return 1 if changed else 0
 
 
 def FormatFiles(filenames, lines,
@@ -175,22 +177,28 @@ def FormatFiles(filenames, lines,
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
+
+  Returns:
+    True if the source code changed in any of the files being formatted.
   """
+  changed = False
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     if style_config is None and not no_local_style:
       style_config = (
           file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
     try:
-      reformatted_code, encoding = yapf_api.FormatFile(
+      reformatted_code, encoding, has_change = yapf_api.FormatFile(
           filename, style_config=style_config, lines=lines,
           print_diff=print_diff, verify=verify, logger=logging.warning)
+      changed |= has_change
     except SyntaxError as e:
       e.filename = filename
       raise
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
                                           encoding)
+    return changed
 
 
 def _GetLines(line_strings):
