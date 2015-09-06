@@ -20,9 +20,14 @@ from yapf.yapflib import comment_splicer
 from yapf.yapflib import line_joiner
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
+from yapf.yapflib import style
 
 
 class LineJoinerTest(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
 
   def _ParseAndUnwrap(self, code):
     """Produces unwrapped lines from the given code.

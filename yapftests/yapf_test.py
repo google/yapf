@@ -34,8 +34,7 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code = yapf_api.FormatCode(unformatted_code,
-                                         style_config='chromium')
+    formatted_code = yapf_api.FormatCode(unformatted_code)
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
