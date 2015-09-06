@@ -34,7 +34,8 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code = yapf_api.FormatCode(unformatted_code)
+    formatted_code = yapf_api.FormatCode(unformatted_code,
+                                         style_config='chromium')
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -45,9 +46,11 @@ class FormatCodeTest(unittest.TestCase):
 
   def testNoEndingNewline(self):
     unformatted_code = textwrap.dedent(u"""\
-        if True: pass""")
+        if True:
+          pass""")
     expected_formatted_code = textwrap.dedent(u"""\
-        if True: pass
+        if True:
+          pass
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
