@@ -413,7 +413,7 @@ def _SplitPenalty(prev_token, cur_token):
   if prev_token.value == ',':
     # Breaking after a comma is fine, if need be.
     return 0
-  if prev_token.value == '==':
+  if prev_token.is_binary_op:
     # We would rather not split after an equality operator.
     return 20
   if (format_token.Subtype.VARARGS_STAR in prev_token.subtypes or

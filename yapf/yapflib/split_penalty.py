@@ -25,15 +25,13 @@ UNBREAKABLE = 1000 * 1000
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
 
-OR_TEST = 42
-AND_TEST = 142
 NOT_TEST = 242
-COMPARISON_EXPRESSION = 342
-STAR_EXPRESSION = 442
-EXPR_EXPRESSION = 542
-XOR_EXPRESSION = 642
-AND_EXPRESSION = 742
-SHIFT_EXPRESSION = 842
+STAR_EXPRESSION = 342
+EXPR_EXPRESSION = 442
+XOR_EXPRESSION = 542
+AND_EXPRESSION = 642
+SHIFT_EXPRESSION = 742
+COMPARISON_EXPRESSION = 842
 ARITHMETIC_EXPRESSION = 942
 
 
@@ -218,16 +216,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                                    pytree_utils.Annotation.SPLIT_PENALTY, 0)
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
-
-  def Visit_or_test(self, node):  # pylint: disable=invalid-name
-    # or_test ::= and_test ('or' and_test)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, OR_TEST)
-
-  def Visit_and_test(self, node):  # pylint: disable=invalid-name
-    # and_test ::= not_test ('and' not_test)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, AND_TEST)
 
   def Visit_not_test(self, node):  # pylint: disable=invalid-name
     # not_test ::= 'not' not_test | comparison

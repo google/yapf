@@ -1362,6 +1362,32 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB20016122(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: chromium, SPLIT_BEFORE_LOGICAL_OPERATOR: True}'))
+      code = textwrap.dedent("""\
+          class foo():
+
+            def __eq__(self, other):
+              return (
+                  isinstance(other, type(self)) and self.xxxxxxxxxxx == other.xxxxxxxxxxx
+                  and self.xxxxxxxx == other.xxxxxxxx
+                  and self.aaaaaaaaaaaa == other.aaaaaaaaaaaa
+                  and self.bbbbbbbbbbb == other.bbbbbbbbbbb
+                  and self.ccccccccccccccccc == other.ccccccccccccccccc
+                  and self.ddddddddddddddddddddddd == other.ddddddddddddddddddddddd
+                  and self.eeeeeeeeeeee == other.eeeeeeeeeeee
+                  and self.ffffffffffffff == other.time_completed
+                  and self.gggggg == other.gggggg and self.hhh == other.hhh
+                  and len(self.iiiiiiii) == len(other.iiiiiiii)
+                  and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testB22527411(self):
     unformatted_code = textwrap.dedent("""\
         def f():
