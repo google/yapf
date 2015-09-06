@@ -119,9 +119,12 @@ class FormatToken(object):
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
       self._node.value = ('\n' + spaces_before).join(comment_lines)
 
-    self.whitespace_prefix = (
-        '\n' * (self.newlines or newlines_before) + spaces_before
-    )
+    if not self.whitespace_prefix:
+      self.whitespace_prefix = (
+          '\n' * (self.newlines or newlines_before) + spaces_before
+      )
+    else:
+      self.whitespace_prefix += spaces_before
 
   def AdjustNewlinesBefore(self, newlines_before):
     """Change the number of newlines before this token."""
@@ -141,9 +144,8 @@ class FormatToken(object):
       prev_lineno += previous.value.count('\n')
 
     if cur_lineno != prev_lineno:
-      if not previous.is_continuation:
-        self.spaces_required_before = (
-            self.column - first_column + depth * style.Get('INDENT_WIDTH'))
+      self.spaces_required_before = (
+          self.column - first_column + depth * style.Get('INDENT_WIDTH'))
       return
 
     cur_column = self.node.column
@@ -166,6 +168,8 @@ class FormatToken(object):
 
   @property
   def value(self):
+    if self.is_continuation:
+      return self._node.value.rstrip()
     return self._node.value
 
   @property

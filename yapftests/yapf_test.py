@@ -704,6 +704,44 @@ class CommandLineTest(unittest.TestCase):
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '1-10'])
 
+  def testDisableFormattingInDataLiteral(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def horrible():
+          oh_god()
+          why_would_you()
+          [
+             'do',
+
+              'that',
+          ]
+
+        def still_horrible():
+            oh_god()
+            why_would_you()
+            [
+                'do',
+
+                'that',
+            ]
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def horrible():
+            oh_god()
+            why_would_you()
+            [
+               'do',
+
+                'that',
+            ]
+
+        def still_horrible():
+            oh_god()
+            why_would_you()
+            ['do', 'that', ]
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '10-18'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""
