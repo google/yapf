@@ -151,11 +151,10 @@ class FormatToken(object):
     cur_column = self.node.column
     prev_column = previous.node.column
 
-    if self.spaces_required_before != 2:
-      prev_len = len(previous.value)
-      if previous.is_multiline_string:
-        prev_len = len(previous.value.split('\n')[-1])
-      self.spaces_required_before = cur_column - (prev_column + prev_len)
+    prev_len = len(previous.value)
+    if previous.is_multiline_string:
+      prev_len = len(previous.value.split('\n')[-1])
+    self.spaces_required_before = cur_column - (prev_column + prev_len)
 
   def OpensScope(self):
     return self.value in pytree_utils.OPENING_BRACKETS

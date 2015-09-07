@@ -231,6 +231,18 @@ class FormatFileTest(unittest.TestCase):
   def testNoFile(self):
     self.assertRaises(IOError, yapf_api.FormatFile, 'not_a_file.py')
 
+  def testCommentsUnformatted(self):
+    code = textwrap.dedent("""\
+        foo = [# A list of things
+               # bork
+            'one',
+            # quark
+            'two'] # yapf: disable
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
 
 class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""

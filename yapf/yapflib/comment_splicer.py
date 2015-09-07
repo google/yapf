@@ -54,6 +54,7 @@ def SpliceComments(tree):
           # We have a comment prefix in this child, so splicing is needed.
           comment_prefix = child.prefix
           comment_lineno = child.lineno - comment_prefix.count('\n')
+          comment_column = child.column
 
           # Remember the leading indentation of this prefix and clear it.
           # Mopping up the prefix is important because we may go over this same
@@ -69,9 +70,12 @@ def SpliceComments(tree):
             # result of the way pytrees are organized, this node can be under
             # an inappropriate parent.
             assert prev_leaf[0] is not None
+            comment_column -= len(comment_prefix)
+            comment_column += len(comment_prefix) - len(comment_prefix.lstrip())
             pytree_utils.InsertNodesAfter(
-                _CreateCommentsFromPrefix(comment_prefix, comment_lineno,
-                                          standalone=False), prev_leaf[0])
+                _CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno, comment_column,
+                    standalone=False), prev_leaf[0])
           elif child.type == token.DEDENT:
             # Comment prefixes on DEDENT nodes also deserve special treatment,
             # because their final placement depends on their prefix.
@@ -82,11 +86,11 @@ def SpliceComments(tree):
               # Special case where the comment is inserted in the same
               # indentation level as the DEDENT it was originally attached to.
               pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
-                  comment_prefix, comment_lineno,
+                  comment_prefix, comment_lineno, comment_column,
                   standalone=True), ancestor_at_indent)
             else:
               pytree_utils.InsertNodesAfter(_CreateCommentsFromPrefix(
-                  comment_prefix, comment_lineno,
+                  comment_prefix, comment_lineno, comment_column,
                   standalone=True), ancestor_at_indent)
           else:
             # Otherwise there are two cases.
@@ -112,22 +116,29 @@ def SpliceComments(tree):
                 # _STANDALONE_LINE_NODES for more details.
                 node_with_line_parent = _FindNodeWithStandaloneLineParent(child)
                 pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
-                    comment_prefix, comment_lineno,
+                    comment_prefix, comment_lineno, 0,
                     standalone=True), node_with_line_parent)
                 break
               else:
                 if comment_lineno == prev_leaf[0].lineno:
                   comment_lines = comment_prefix.splitlines()
                   value = comment_lines[0].lstrip()
+                  comment_column = prev_leaf[0].column + 1
+                  comment_column += (
+                      len(comment_lines[0]) - len(comment_lines[0].lstrip()))
                   comment_leaf = pytree.Leaf(type=token.COMMENT,
                                              value=value.rstrip('\n'),
-                                             context=('', (comment_lineno, 0)))
+                                             context=('', (comment_lineno,
+                                                           comment_column)))
                   pytree_utils.InsertNodesAfter([comment_leaf], prev_leaf[0])
                   comment_prefix = '\n'.join(comment_lines[1:])
                   comment_lineno += 1
 
+                comment_column = (
+                    len(comment_prefix) - len(comment_prefix.lstrip()))
                 comments = _CreateCommentsFromPrefix(comment_prefix,
                                                      comment_lineno,
+                                                     comment_column,
                                                      standalone=False)
                 pytree_utils.InsertNodesBefore(comments, child)
                 break
@@ -137,12 +148,14 @@ def SpliceComments(tree):
   _VisitNodeRec(tree)
 
 
-def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, standalone=False):
+def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, comment_column,
+                              standalone=False):
   """Create pytree nodes to represent the given comment prefix.
 
   Args:
     comment_prefix: (unicode) the text of the comment from the node's prefix.
     comment_lineno: (int) the line number for the start of the comment.
+    comment_column: (int) the column for the start of the comment.
     standalone: (bool) determines if the comment is standalone or not.
 
   Returns:
@@ -170,7 +183,7 @@ def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, standalone=False):
       comment_block[-1] = comment_block[-1].rstrip('\n')
       comment_leaf = pytree.Leaf(type=token.COMMENT,
                                  value='\n'.join(comment_block),
-                                 context=('', (new_lineno, new_column)))
+                                 context=('', (new_lineno, comment_column)))
       comment_node = comment_leaf if not standalone else pytree.Node(
           pygram.python_symbols.simple_stmt, [comment_leaf])
       comments.append(comment_node)
