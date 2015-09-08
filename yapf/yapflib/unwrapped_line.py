@@ -379,6 +379,7 @@ def _IsSurroundedByBrackets(tok):
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
+_BITWISE_OPERATORS = frozenset({'&', '|', '^'})
 _TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
 
 
@@ -402,6 +403,19 @@ def _SplitPenalty(prev_token, cur_token):
       return 0
     if cur_token.value in _LOGICAL_OPERATORS:
       return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
+
+  if style.Get('SPLIT_BEFORE_BITWISE_OPERATOR'):
+    # Prefer to split before '&', '|', and '^'.
+    if prev_token.value in _BITWISE_OPERATORS:
+      return style.Get('SPLIT_PENALTY_BITWISE_OPERATOR')
+    if cur_token.value in _BITWISE_OPERATORS:
+      return 0
+  else:
+    # Prefer to split after '&', '|', and '^'.
+    if prev_token.value in _BITWISE_OPERATORS:
+      return 0
+    if cur_token.value in _BITWISE_OPERATORS:
+      return style.Get('SPLIT_PENALTY_BITWISE_OPERATOR')
 
   if (format_token.Subtype.COMP_FOR in cur_token.subtypes or
       format_token.Subtype.COMP_IF in cur_token.subtypes):

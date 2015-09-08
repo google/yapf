@@ -27,9 +27,6 @@ CONTIGUOUS_LIST = 500
 
 NOT_TEST = 242
 STAR_EXPRESSION = 342
-EXPR_EXPRESSION = 442
-XOR_EXPRESSION = 542
-AND_EXPRESSION = 642
 SHIFT_EXPRESSION = 742
 COMPARISON_EXPRESSION = 842
 ARITHMETIC_EXPRESSION = 942
@@ -231,21 +228,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # star_expr ::= '*' expr
     self.DefaultNodeVisit(node)
     self._SetExpressionPenalty(node, STAR_EXPRESSION)
-
-  def Visit_expr(self, node):  # pylint: disable=invalid-name
-    # expr ::= xor_expr ('|' xor_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, EXPR_EXPRESSION)
-
-  def Visit_xor_expr(self, node):  # pylint: disable=invalid-name
-    # xor_expr ::= and_expr ('^' and_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, XOR_EXPRESSION)
-
-  def Visit_and_expr(self, node):  # pylint: disable=invalid-name
-    # and_expr ::= shift_expr ('&' shift_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, AND_EXPRESSION)
 
   def Visit_shift_expr(self, node):  # pylint: disable=invalid-name
     # shift_expr ::= arith_expr ('<<'|'>>' arith_expr)*

@@ -76,6 +76,8 @@ _STYLE_HELP = dict(
       etc."""),
     SPACES_BEFORE_COMMENT=(
         'The number of spaces required before a trailing comment.'),
+    SPLIT_BEFORE_BITWISE_OPERATOR=
+    "Set to True to prefer splitting before '&', '|' or '^' rather than after.",
     SPLIT_BEFORE_LOGICAL_OPERATOR=
     "Set to True to prefer splitting before 'and' or 'or' rather than after.",
     SPLIT_BEFORE_NAMED_ASSIGNS='Split named assignments onto individual lines.',
@@ -83,6 +85,8 @@ _STYLE_HELP = dict(
     'The penalty for splitting the line after a unary operator.',
     SPLIT_PENALTY_EXCESS_CHARACTER=
     'The penalty for characters over the column limit.',
+    SPLIT_PENALTY_BITWISE_OPERATOR=
+    "The penalty of splitting the line around the '&', '|', and '^' operators.",
     SPLIT_PENALTY_LOGICAL_OPERATOR=
     "The penalty of splitting the line around the 'and' and 'or' operators.",
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=
@@ -107,10 +111,12 @@ def CreatePEP8Style():
       JOIN_MULTIPLE_LINES=True,
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_BEFORE_COMMENT=2,
+      SPLIT_BEFORE_BITWISE_OPERATOR=True,
       SPLIT_BEFORE_LOGICAL_OPERATOR=False,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_EXCESS_CHARACTER=2500,
+      SPLIT_PENALTY_BITWISE_OPERATOR=300,
       SPLIT_PENALTY_LOGICAL_OPERATOR=300,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
@@ -173,10 +179,12 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     JOIN_MULTIPLE_LINES=_BoolConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACES_BEFORE_COMMENT=int,
+    SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
     SPLIT_PENALTY_EXCESS_CHARACTER=int,
+    SPLIT_PENALTY_BITWISE_OPERATOR=int,
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
