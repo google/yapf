@@ -81,7 +81,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('foo', UNBREAKABLE),
         ('(', UNBREAKABLE),
         ('x', None),
-        (')', None),
+        (')', STRONGLY_CONNECTED),
         (':', UNBREAKABLE),
         ('pass', None),
     ])  # yapf: disable
@@ -97,7 +97,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('foo', UNBREAKABLE),
         ('(', UNBREAKABLE),
         ('x', None),
-        (')', None),
+        (')', STRONGLY_CONNECTED),
         (':', UNBREAKABLE),
         ('pass', None),
     ])  # yapf: disable

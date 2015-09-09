@@ -1,0 +1,6 @@
+2015-09-09  Bill Wendling  <morbo@google.com>
+
+	* yapf/yapflib/split_penalty.py: Strongly connect closing paren to
+	parameter list.
+	* yapftests/reformatter_test.py: Add testcase.
+	* yapftests/split_penalty_test.py: Update test.
