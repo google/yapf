@@ -145,7 +145,7 @@ class FormatDecisionState(object):
       if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
         return True
 
-      if (previous_token.value != '(' and
+      if (previous_token.value not in '(=' and current.value not in '=,)' and
           format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
           current.subtypes):
         return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
