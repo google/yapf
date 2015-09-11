@@ -64,7 +64,7 @@ def Reformat(uwlines, verify=True):
       if prev_uwline and prev_uwline.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainVerticalSpacing(uwline, prev_uwline)
+        _RetainVerticalSpacingBetweenTokens(uwline.first, prev_uwline.last)
 
     if (_LineContainsI18n(uwline) or uwline.disable or
         _LineHasContinuationMarkers(uwline)):
@@ -115,20 +115,25 @@ def _RetainVerticalSpacing(cur_uwline, prev_uwline):
   cur_lineno = 0
   prev_lineno = 0
   for cur_tok in cur_uwline.tokens:
-    if prev_tok is not None:
-      if prev_tok.is_string:
-        prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
-      else:
-        prev_lineno = prev_tok.lineno
-
-      if cur_tok.is_comment:
-        cur_lineno = cur_tok.lineno - cur_tok.value.count('\n')
-      else:
-        cur_lineno = cur_tok.lineno
-
-    num_newlines = cur_lineno - prev_lineno
-    cur_tok.AdjustNewlinesBefore(num_newlines)
+    _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok)
     prev_tok = cur_tok
+
+
+def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
+  if prev_tok is None:
+    return
+
+  if prev_tok.is_string:
+    prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
+  else:
+    prev_lineno = prev_tok.lineno
+
+  if cur_tok.is_comment:
+    cur_lineno = cur_tok.lineno - cur_tok.value.count('\n')
+  else:
+    cur_lineno = cur_tok.lineno
+
+  cur_tok.AdjustNewlinesBefore(cur_lineno - prev_lineno)
 
 
 def _EmitLineUnformatted(state):

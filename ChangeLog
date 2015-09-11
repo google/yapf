@@ -1,3 +1,9 @@
+2015-09-10  Bill Wendling  <morbo@google.com>
+
+	* yapf/yapflib/reformatter.py: Retain spacing between disabled and
+	enabled lines.
+	* yapftests/yapf_test.py: Add testcase.
+
 2015-09-09  Bill Wendling  <morbo@google.com>
 
 	* yapf/yapflib/format_decision_style.py: Split only at start of named
