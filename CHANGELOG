@@ -1,0 +1,15 @@
+# Change Log
+# All notable changes to this project will be documented in this file.
+# This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [0.2.8] - 2015-09-12
+### Added
+- Return a non-zero exit code if the source was changed.
+- Add bitwise operator splitting penalty and prefer to split before bitwise
+  operators.
+
+### Fixed
+- Retain vertical spacing between disabled and enabled lines.
+- Split only at start of named assign.
+- Retain comment position when formatting is disabled.
+- Honor splitting before or after logical ops.
