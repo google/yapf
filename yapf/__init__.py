@@ -198,7 +198,7 @@ def FormatFiles(filenames, lines,
     if reformatted_code is not None:
       file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
                                           encoding)
-    return changed
+  return changed
 
 
 def _GetLines(line_strings):
