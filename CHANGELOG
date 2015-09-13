@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.2.9] - 2015-09-13
+### Fixed
+- Formatting of multiple files. It was halting after formatting the first file.
+
 ## [0.2.8] - 2015-09-12
 ### Added
 - Return a non-zero exit code if the source was changed.
