@@ -141,7 +141,7 @@ def main(argv):
         lines=lines,
         verify=args.verify)
     sys.stdout.write(reformatted_source)
-    return 1 if changed else 0
+    return 2 if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive)
   if not files:
@@ -153,7 +153,7 @@ def main(argv):
                         in_place=args.in_place,
                         print_diff=args.diff,
                         verify=args.verify)
-  return 1 if changed else 0
+  return 2 if changed else 0
 
 
 def FormatFiles(filenames, lines,
@@ -231,7 +231,7 @@ def run_main():  # pylint: disable=invalid-name
     sys.exit(main(sys.argv))
   except errors.YapfError as e:
     sys.stderr.write('yapf: ' + str(e) + '\n')
-    sys.exit(2)
+    sys.exit(1)
 
 
 if __name__ == '__main__':
