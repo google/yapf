@@ -231,7 +231,7 @@ def run_main():  # pylint: disable=invalid-name
     sys.exit(main(sys.argv))
   except errors.YapfError as e:
     sys.stderr.write('yapf: ' + str(e) + '\n')
-    sys.exit(1)
+    sys.exit(2)
 
 
 if __name__ == '__main__':
