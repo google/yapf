@@ -210,6 +210,8 @@ def _MarkLinesToFormat(uwlines, lines):
           break
         if uwline.lineno >= start:
           uwline.disable = False
+        elif uwline.last.lineno >= start:
+          uwline.disable = False
 
   index = 0
   while index < len(uwlines):

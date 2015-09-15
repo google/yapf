@@ -780,6 +780,30 @@ class CommandLineTest(unittest.TestCase):
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '4-7'])
 
+  def testFormatLinesSpecifiedInMiddleOfExpression(self):
+    unformatted_code = textwrap.dedent(u"""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
+                self.assertEqual(
+                    ('ddddddddddddddddddddddddd',
+             'eeeeeeeeeeeeeeeeeeeeeeeee.%s' %
+                     c.ffffffffffff),
+             gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                iiiii = jjjjjjjjjjjjjj.iiiii
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
+                self.assertEqual(
+                    ('ddddddddddddddddddddddddd', 'eeeeeeeeeeeeeeeeeeeeeeeee.%s' %
+                     c.ffffffffffff), gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                iiiii = jjjjjjjjjjjjjj.iiiii
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '5-6'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""

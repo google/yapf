@@ -177,7 +177,6 @@ def _CreateCommentsFromPrefix(comment_prefix, comment_lineno, comment_column,
       index += 1
 
     if comment_block:
-      new_column = len(comment_block[0]) - len(comment_block[0].lstrip())
       new_lineno = comment_lineno + index - 1
       comment_block[0] = comment_block[0].lstrip()
       comment_block[-1] = comment_block[-1].rstrip('\n')
