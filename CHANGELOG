@@ -2,6 +2,14 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] 2015-09-20
+### Added
+- Return a 2 if the source changed, 1 on error, and 0 for no change.
+
+### Fixed
+- Make sure we format if the "lines" specified are in the middle of a
+  statement.
+
 ## [0.2.9] - 2015-09-13
 ### Fixed
 - Formatting of multiple files. It was halting after formatting the first file.
