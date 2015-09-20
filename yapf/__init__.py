@@ -118,7 +118,7 @@ def main(argv):
   if not args.files:
     # No arguments specified. Read code from stdin.
     if args.in_place or args.diff:
-      parser.error('cannot use --in_place or --diff flags when reading '
+      parser.error('cannot use --in-place or --diff flags when reading '
                    'from stdin')
 
     original_source = []

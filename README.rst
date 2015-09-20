@@ -234,7 +234,7 @@ the diff, the default is ``<unknown>``.
     >>> FormatFile("foo.py")
     ('a == b\n', 'utf-8')
 
-The ``in_place`` argument saves the reformatted code back to the file:
+The ``in-place`` argument saves the reformatted code back to the file:
 
 .. code-block:: python
 
