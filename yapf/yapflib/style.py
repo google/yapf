@@ -69,6 +69,26 @@ _STYLE_HELP = dict(
                          # <------ this blank line
         def method():
           ..."""),
+    DEDENT_CLOSING_BRACKETS=("""\
+      Put closing brackets on a separate line, dedented, if the bracketed
+      expression can't fit in a single line. Applies to all kinds of brackets,
+      including function definitions and calls.
+
+      For example:
+
+      config = {
+        'key1': 'value1',
+        'key2': 'value2',
+      }        # <--- this bracket is dedented and on a separate line
+
+      time_series = self.remote_client.query_entity_counters(
+        entity='dev3246.region1',
+        key='dns.query_latency_tcp',
+        transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+        start_ts=now()-timedelta(days=3),
+        end_ts=now(),
+      )        # <--- this bracket is dedented and on a separate line
+      """),
     JOIN_MULTIPLE_LINES=
     "Join short lines into one line. E.g., single line 'if' statements.",
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
@@ -102,6 +122,7 @@ def CreatePEP8Style():
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       COLUMN_LIMIT=79,
+      DEDENT_CLOSING_BRACKETS=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_IF_EXPR_CONTINUATION=4,
@@ -143,10 +164,23 @@ def CreateChromiumStyle():
   return style
 
 
+def CreateFacebookStyle():
+  style = CreatePEP8Style()
+  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
+  style['COLUMN_LIMIT'] = 80
+  style['DEDENT_CLOSING_BRACKETS'] = True
+  style['JOIN_MULTIPLE_LINES'] = False
+  style['SPACES_BEFORE_COMMENT'] = 2
+  style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
+  style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 30
+  return style
+
+
 _STYLE_NAME_TO_FACTORY = dict(
     pep8=CreatePEP8Style,
     chromium=CreateChromiumStyle,
     google=CreateGoogleStyle,
+    facebook=CreateFacebookStyle,
 )  # yapf: disable
 
 
@@ -170,6 +204,7 @@ def _BoolConverter(s):
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     COLUMN_LIMIT=int,
+    DEDENT_CLOSING_BRACKETS=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_IF_EXPR_CONTINUATION=int,

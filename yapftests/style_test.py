@@ -56,6 +56,12 @@ def _LooksLikePEP8Style(cfg):
           not cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
 
 
+def _LooksLikeFacebookStyle(cfg):
+  return (
+      cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS']
+  )
+
+
 class PredefinedStylesByNameTest(unittest.TestCase):
 
   def testDefault(self):
@@ -72,6 +78,11 @@ class PredefinedStylesByNameTest(unittest.TestCase):
     for pep8_name in ('PEP8', 'pep8', 'Pep8'):
       cfg = style.CreateStyleFromConfig(pep8_name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
+
+  def testFacebookByName(self):
+    for fb_name in ('facebook', 'FACEBOOK', 'Facebook'):
+      cfg = style.CreateStyleFromConfig(fb_name)
+      self.assertTrue(_LooksLikeFacebookStyle(cfg))
 
 
 @contextlib.contextmanager
@@ -133,6 +144,17 @@ class StyleFromFileTest(unittest.TestCase):
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
+
+  def testDefaultBasedOnFacebookStyle(self):
+    cfg = textwrap.dedent('''\
+        [style]
+        based_on_style = facebook
+        continuation_indent_width = 20
+        ''')
+    with _TempFileContents(self.test_tmpdir, cfg) as f:
+      cfg = style.CreateStyleFromConfig(f.name)
+      self.assertTrue(_LooksLikeFacebookStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):

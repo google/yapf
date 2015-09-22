@@ -73,16 +73,15 @@ class UnwrappedLine(object):
           _SpaceRequiredBetween(prev_token, token)):
         token.spaces_required_before = 1
 
+      token.total_length = (
+          prev_length + len(token.value) + token.spaces_required_before)
+
       # The split penalty has to be computed before {must|can}_break_before,
       # because these may use it for their decision.
       token.split_penalty += _SplitPenalty(prev_token, token)
       token.must_break_before = _MustBreakBefore(prev_token, token)
       token.can_break_before = (token.must_break_before or
                                 _CanBreakBefore(prev_token, token))
-
-      token.total_length = (
-          prev_length + len(token.value) + token.spaces_required_before
-      )
 
       prev_length = token.total_length
       prev_token = token
@@ -313,6 +312,16 @@ def _MustBreakBefore(prev_token, cur_token):
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
     return True
+  if style.Get('DEDENT_CLOSING_BRACKETS') and cur_token.ClosesScope():
+    opening = cur_token.matching_bracket
+    trailer_length = cur_token.total_length - opening.total_length
+    if (trailer_length > style.Get('COLUMN_LIMIT') or
+        cur_token.lineno != opening.lineno):
+      # Since we're already dedenting the closing bracket, let's put a newline
+      # after the opening one so that we have more horizontal space for the
+      # trailer.
+      opening.next_token.must_break_before = True
+      return True
   return pytree_utils.GetNodeAnnotation(cur_token.node,
                                         pytree_utils.Annotation.MUST_SPLIT,
                                         default=False)

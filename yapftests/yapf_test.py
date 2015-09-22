@@ -428,6 +428,9 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
         """)
+    # TODO(ambv): the `expected_formatted_code` here is not PEP8 compliant,
+    # raising "E129 visually indented line with same indent as next logical
+    # line" with flake8.
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '1-2'])
 
@@ -823,6 +826,55 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '1-1'])
+  def testDedentClosingBracket(self):
+    # no line-break on the first argument, not dedenting closing brackets
+    unformatted_code = textwrap.dedent(u"""\
+      def overly_long_function_name(first_argument_on_the_same_line,
+      second_argument_makes_the_line_too_long):
+        pass
+    """)
+    expected_formatted_code = textwrap.dedent(u"""\
+      def overly_long_function_name(first_argument_on_the_same_line,
+                                    second_argument_makes_the_line_too_long):
+          pass
+    """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--style=pep8'])
+
+    # TODO(ambv): currently the following produces the closing bracket on a new
+    # line but indented to the opening bracket which is the worst of both
+    # worlds. Expected behaviour would be to format as --style=pep8 does in
+    # this case.
+    # self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    #                          extra_options=['--style=facebook'])
+
+    # line-break before the first argument, dedenting closing brackets if set
+    unformatted_code = textwrap.dedent(u"""\
+      def overly_long_function_name(
+        first_argument_on_the_same_line,
+        second_argument_makes_the_line_too_long):
+        pass
+    """)
+    expected_formatted_pep8_code = textwrap.dedent(u"""\
+      def overly_long_function_name(
+              first_argument_on_the_same_line, \
+second_argument_makes_the_line_too_long):
+          pass
+    """)
+    expected_formatted_fb_code = textwrap.dedent(u"""\
+      def overly_long_function_name(
+          first_argument_on_the_same_line, second_argument_makes_the_line_too_long
+      ):
+          pass
+    """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_fb_code,
+                             extra_options=['--style=facebook'])
+    # TODO(ambv): currently the following produces code that is not PEP8
+    # compliant, raising "E125 continuation line with same indent as next
+    # logical line" with flake8. Expected behaviour for PEP8 would be to use
+    # double-indentation here.
+    # self.assertYapfReformats(unformatted_code, expected_formatted_pep8_code,
+    #                          extra_options=['--style=pep8'])
 
 
 class BadInputTest(unittest.TestCase):

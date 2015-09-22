@@ -1747,7 +1747,7 @@ class BuganizerFixes(ReformatterTest):
             with io.open("/dev/null", "rb"):
               with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc,
                                         DDDDDDDDDDDDDDD,
-                                        "eeeeeeeee ffffffffff",
+                                        "eeeeeeeee ffffffffff"
                                        ), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
@@ -1757,7 +1757,7 @@ class BuganizerFixes(ReformatterTest):
           def bbbbbbbbbb(self):
             with io.open("/dev/null", "rb"):
               with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
-                                        "eeeeeeeee ffffffffff",),
+                                        "eeeeeeeee ffffffffff"),
                            "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
@@ -2146,12 +2146,13 @@ class TestsForPEP8Style(ReformatterTest):
   def testAlignClosingBracketWithVisualIndentation(self):
     unformatted_code = textwrap.dedent("""\
         TEST_LIST = ('foo', 'bar',  # first comment
-                     'baz',  # second comment
+                     'baz'  # second comment
                     )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        TEST_LIST = ('foo', 'bar',  # first comment
-                     'baz',  # second comment
+        TEST_LIST = ('foo',
+                     'bar',  # first comment
+                     'baz'  # second comment
                      )
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2330,6 +2331,149 @@ class TestsForPython3Code(ReformatterTest):
     expected_formatted_code = 'methods.exec(sys.modules[name])\n'
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
+class TestsForFBStyle(ReformatterTest):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreateFacebookStyle())
+
+  def testNoNeedForLineBreaks(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+          just_one_arg, **kwargs):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(just_one_arg, **kwargs):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentClosingBracket(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+          first_argument_on_the_same_line,
+          second_argument_makes_the_line_too_long):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+            first_argument_on_the_same_line, \
+second_argument_makes_the_line_too_long
+        ):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testBreakAfterOpeningBracketIfContentsTooBig(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(a, b, c, d, e, f, g, h, i, j, k, l, m,
+          n, o, p, q, r, s, t, u, v, w, x, y, z):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, \
+v, w, x, y, z
+        ):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentClosingBracketWithComments(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+          # comment about the first argument
+          first_argument_with_a_very_long_name_or_so,
+          # comment about the second argument
+          second_argument_makes_the_line_too_long):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+            # comment about the first argument
+            first_argument_with_a_very_long_name_or_so,
+            # comment about the second argument
+            second_argument_makes_the_line_too_long
+        ):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentImportAsNames(self):
+    unformatted_code = textwrap.dedent("""\
+    from module import (
+        internal_function as function,
+        SOME_CONSTANT_NUMBER1,
+        SOME_CONSTANT_NUMBER2,
+        SOME_CONSTANT_NUMBER3,
+    )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentTestListGexp(self):
+    # TODO(ambv): Arguably _DetermineMustSplitAnnotation shouldn't enforce
+    # breaks only on the basis of a trailing comma if the entire thing fits
+    # in a single line.
+    unformatted_code = textwrap.dedent("""\
+    try:
+        pass
+    except (
+        IOError, OSError, LookupError, RuntimeError, OverflowError
+    ) as exception:
+        pass
+
+    try:
+        pass
+    except (
+        IOError,
+        OSError,
+        LookupError,
+        RuntimeError,
+        OverflowError,
+    ) as exception:
+        pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testBrokenIdempotency(self):
+    # TODO(ambv): The following behaviour should be fixed.
+    pass0_code = textwrap.dedent("""\
+    try:
+        pass
+    except (IOError, OSError, LookupError, RuntimeError, OverflowError\
+) as exception:
+        pass
+    """)
+    pass1_code = textwrap.dedent("""\
+    try:
+        pass
+    except (IOError, OSError, LookupError, RuntimeError, OverflowError
+           ) as exception:
+        pass
+    """)
+    uwlines = _ParseAndUnwrap(pass0_code)
+    self.assertCodeEqual(pass1_code, reformatter.Reformat(uwlines))
+
+    pass2_code = textwrap.dedent("""\
+    try:
+        pass
+    except (
+        IOError, OSError, LookupError, RuntimeError, OverflowError
+    ) as exception:
+        pass
+    """)
+    uwlines = _ParseAndUnwrap(pass1_code)
+    self.assertCodeEqual(pass2_code, reformatter.Reformat(uwlines))
+
 
 
 def _ParseAndUnwrap(code, dumptree=False):
