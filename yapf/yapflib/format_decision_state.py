@@ -203,7 +203,7 @@ class FormatDecisionState(object):
         #     foo = [a,
         #            b,
         #           ]
-        self.stack[-1].closing_scope_indent = previous.column
+        self.stack[-1].closing_scope_indent = self.column - 1
         if style.Get('ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'):
           self.stack[-1].closing_scope_indent += 1
         self.stack[-1].indent = self.column + spaces

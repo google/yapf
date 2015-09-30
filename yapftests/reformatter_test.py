@@ -2178,6 +2178,19 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testIndentSizeChanging(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          runtime_mins = (program_end_time - program_start_time).total_seconds() / 60.0
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+            runtime_mins = (program_end_time - program_start_time
+                            ).total_seconds() / 60.0
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class TestingNotInParameters(unittest.TestCase):
 
