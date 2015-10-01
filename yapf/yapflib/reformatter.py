@@ -112,14 +112,13 @@ def _RetainVerticalSpacing(cur_uwline, prev_uwline):
   prev_tok = None
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
-  cur_lineno = 0
-  prev_lineno = 0
   for cur_tok in cur_uwline.tokens:
     _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok)
     prev_tok = cur_tok
 
 
 def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
+  """Retain vertical spacing between two tokens."""
   if prev_tok is None:
     return
 
