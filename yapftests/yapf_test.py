@@ -804,6 +804,26 @@ class CommandLineTest(unittest.TestCase):
     self.assertYapfReformats(unformatted_code, expected_formatted_code,
                              extra_options=['--lines', '5-6'])
 
+  def testCommentFollowingMultilineString(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo():
+            '''First line.
+            Second line.
+            '''  # comment
+            x = '''hello world'''  # second comment
+            return 42  # another comment
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():
+            '''First line.
+            Second line.
+            '''  # comment
+            x = '''hello world'''  # second comment
+            return 42  # another comment
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+                             extra_options=['--lines', '1-1'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""

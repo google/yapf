@@ -154,6 +154,8 @@ class FormatToken(object):
     prev_len = len(previous.value)
     if previous.is_multiline_string:
       prev_len = len(previous.value.split('\n')[-1])
+      if '\n' in previous.value:
+        prev_column = 0  # Last line starts in column 0.
     self.spaces_required_before = cur_column - (prev_column + prev_len)
 
   def OpensScope(self):
