@@ -184,7 +184,7 @@ share several arguments which are described below:
 .. code-block:: python
 
     >>> from yapf.yapf_api import FormatCode  # reformat a string of code
-    
+
     >>> FormatCode("f ( a = 1, b = 2 )")
     'f(a=1, b=2)\n'
 
@@ -283,6 +283,11 @@ You can also disable formatting for a single literal like this:
         (5, 6, 7, 8),
         (9, 10, 11, 12),
     }  # yapf: disable
+
+To preserve the nice dedented closing brackets, use the
+``dedent_closing_brackets`` in your style. Note that in this case all
+brackets, including function definitions and calls, are going to use
+that style.  This provides consistency across the formatted codebase.
 
 Why Not Improve Existing Tools?
 -------------------------------
