@@ -2,6 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.1] UNRELEASED
+### Fixed
+- Indent the continuation of an if-then statement when it's not distinguished
+  from the body of the if-then.
+
 ## [0.4.0] 2015-10-07
 ### Added
 - Support for dedenting closing brackets, "facebook" style.

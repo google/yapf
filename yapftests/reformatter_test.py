@@ -2192,6 +2192,37 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testHangingIndentCollision(self):
+    unformatted_code = textwrap.dedent("""\
+        if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx or yyyyyyyyyyyyyyyyy):
+            pass
+        elif (xxxxxxxxxxxxxxx(aaaaaaaaaaa, bbbbbbbbbbbbbb, cccccccccccc, dddddddddd=None)):
+            pass
+
+
+        def h():
+            if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx or
+                yyyyyyyyyyyyyyyyy):
+            pass
+        elif (xxxxxxxxxxxxxxx(aaaaaaaaaaa,
+                              bbbbbbbbbbbbbb,
+                              cccccccccccc,
+                              dddddddddd=None)):
+            pass
+
+
+        def h():
+            if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class TestingNotInParameters(unittest.TestCase):
 

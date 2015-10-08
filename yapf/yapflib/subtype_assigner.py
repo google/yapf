@@ -95,10 +95,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_if_stmt(self, node):  # pylint: disable=invalid-name
     # if_stmt ::= 'if' test ':' suite ('elif' test ':' suite)*
     #             ['else' ':' suite]
+    prev_child = None
     for child in node.children:
       self.Visit(child)
-      if pytree_utils.NodeName(child).endswith('test'):
+      if (prev_child and isinstance(prev_child, pytree.Leaf) and
+          prev_child.value in {'if', 'elif'}):
         self._AppendSubtypeRec(child, format_token.Subtype.IF_TEST_EXPR)
+      prev_child = child
 
   def Visit_or_test(self, node):  # pylint: disable=invalid-name
     # or_test ::= and_test ('or' and_test)*

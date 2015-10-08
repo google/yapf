@@ -65,6 +65,7 @@ class FormatDecisionState(object):
     """
     self.next_token = line.first
     self.column = first_indent
+    self.line = line
     self.paren_level = 0
     self.start_of_line_level = 0
     self.lowest_level_on_line = 0
@@ -297,7 +298,10 @@ class FormatDecisionState(object):
       return previous.column
 
     if format_token.Subtype.IF_TEST_EXPR in current.subtypes:
-      return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
+      first_token_indent = (
+          len(self.line.first.whitespace_prefix.split('\n')[-1]))
+      if first_token_indent + style.Get('INDENT_WIDTH') == top_of_stack.indent:
+        return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
 
     return top_of_stack.indent
 
