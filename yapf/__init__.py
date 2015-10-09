@@ -39,7 +39,7 @@ from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 
 def main(argv):
@@ -77,6 +77,11 @@ def main(argv):
   parser.add_argument('--verify',
                       action='store_true',
                       help='try to verify reformatted code for syntax errors')
+  parser.add_argument('-e', '--exclude',
+                      metavar='PATTERN',
+                      action='append',
+                      default=None,
+                      help='patterns for files to exclude from formatting')
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument('-d', '--diff',
                                   action='store_true',
@@ -144,7 +149,8 @@ def main(argv):
     sys.stdout.write(reformatted_source)
     return 2 if changed else 0
 
-  files = file_resources.GetCommandLineFiles(args.files, args.recursive)
+  files = file_resources.GetCommandLineFiles(args.files, args.recursive,
+                                             args.exclude)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
   changed = FormatFiles(files,

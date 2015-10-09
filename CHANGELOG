@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.1] UNRELEASED
+## [0.5.0] UNRELEASED
+### Added
+- Add option to exclude files/directories from formatting.
+
 ### Fixed
 - Indent the continuation of an if-then statement when it's not distinguished
   from the body of the if-then.

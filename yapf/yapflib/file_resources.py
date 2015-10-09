@@ -17,6 +17,7 @@ This module provides functions for interfacing with files: opening, writing, and
 querying.
 """
 
+import fnmatch
 import os
 import re
 
@@ -50,9 +51,9 @@ def GetDefaultStyleForDir(dirname):
   return style.DEFAULT_STYLE
 
 
-def GetCommandLineFiles(command_line_file_list, recursive):
+def GetCommandLineFiles(command_line_file_list, recursive, exclude):
   """Return the list of files specified on the command line."""
-  return _FindPythonFiles(command_line_file_list, recursive)
+  return _FindPythonFiles(command_line_file_list, recursive, exclude)
 
 
 def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
@@ -75,7 +76,7 @@ def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
     py3compat.EncodeAndWriteToStdout(reformatted_code, encoding)
 
 
-def _FindPythonFiles(filenames, recursive):
+def _FindPythonFiles(filenames, recursive, exclude):
   """Find all Python files."""
   python_files = []
   for filename in filenames:
@@ -92,6 +93,10 @@ def _FindPythonFiles(filenames, recursive):
                             if IsPythonFile(os.path.join(filename, f)))
     elif os.path.isfile(filename) and IsPythonFile(filename):
       python_files.append(filename)
+
+  if exclude:
+    return [f for f in python_files
+            if not any(fnmatch.fnmatch(f, p) for p in exclude)]
 
   return python_files
 
