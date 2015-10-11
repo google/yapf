@@ -18,6 +18,7 @@ from lib2to3 import pytree
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
+from yapf.yapflib import style
 
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
@@ -46,6 +47,18 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   Split penalties are attached as annotations to tokens.
   """
+
+  def Visit_import_as_names(self, node):  # pyline: disable=invalid-name
+    # import_as_names ::= import_as_name (',' import_as_name)* [',']
+    self.DefaultNodeVisit(node)
+    prev_child = None
+    for child in node.children:
+      if (prev_child and isinstance(prev_child, pytree.Leaf) and
+          prev_child.value == ','):
+        pytree_utils.SetNodeAnnotation(child,
+                                       pytree_utils.Annotation.SPLIT_PENALTY,
+                                       style.Get('SPLIT_PENALTY_IMPORT_NAMES'))
+      prev_child = child
 
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
     # classdef ::= 'class' NAME ['(' [arglist] ')'] ':' suite

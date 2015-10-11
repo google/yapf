@@ -94,8 +94,8 @@ _STYLE_HELP = dict(
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
-    SPACES_BEFORE_COMMENT=(
-        'The number of spaces required before a trailing comment.'),
+    SPACES_BEFORE_COMMENT=
+    'The number of spaces required before a trailing comment.',
     SPLIT_BEFORE_BITWISE_OPERATOR=
     "Set to True to prefer splitting before '&', '|' or '^' rather than after.",
     SPLIT_BEFORE_LOGICAL_OPERATOR=
@@ -107,6 +107,20 @@ _STYLE_HELP = dict(
     'The penalty for characters over the column limit.',
     SPLIT_PENALTY_BITWISE_OPERATOR=
     "The penalty of splitting the line around the '&', '|', and '^' operators.",
+    SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
+    The penalty of splitting a list of "import as" names.
+
+    For example:
+
+      from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
+                                                                long_argument_2,
+                                                                long_argument_3)
+
+    would reformat to something like:
+
+      from a_very_long_or_indented_module_name_yada_yad import (
+          long_argument_1, long_argument_2, long_argument_3)
+    """),
     SPLIT_PENALTY_LOGICAL_OPERATOR=
     "The penalty of splitting the line around the 'and' and 'or' operators.",
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=
@@ -138,6 +152,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_EXCESS_CHARACTER=2500,
       SPLIT_PENALTY_BITWISE_OPERATOR=300,
+      SPLIT_PENALTY_IMPORT_NAMES=0,
       SPLIT_PENALTY_LOGICAL_OPERATOR=300,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
@@ -220,6 +235,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
     SPLIT_PENALTY_EXCESS_CHARACTER=int,
     SPLIT_PENALTY_BITWISE_OPERATOR=int,
+    SPLIT_PENALTY_IMPORT_NAMES=int,
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,

@@ -5,6 +5,7 @@
 ## [0.5.0] UNRELEASED
 ### Added
 - Add option to exclude files/directories from formatting.
+- Add a knob to control whether import names are split after the first '('.
 
 ### Fixed
 - Indent the continuation of an if-then statement when it's not distinguished

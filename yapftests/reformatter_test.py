@@ -2240,6 +2240,23 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testB20016122(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, SPLIT_PENALTY_IMPORT_NAMES: 35}'))
+      unformatted_code = textwrap.dedent("""\
+          from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
+                                                                     long_argument_2)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          from a_very_long_or_indented_module_name_yada_yada import (
+              long_argument_1, long_argument_2)
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 class TestingNotInParameters(unittest.TestCase):
 
