@@ -151,7 +151,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       #   atom tr1 tr2
       # The last token of tr1 and the first token of tr2 comprise an unbreakable
       # region. For example: foo.bar.baz(1)
-      # We can't put breaks between either of the '.' or the '(' and the names
+      # We can't put breaks between either of the '.', '(', or '[' and the names
       # *preceding* them.
       prev_trailer_idx = 1
       while prev_trailer_idx < len(node.children) - 1:
@@ -178,7 +178,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for trailer in node.children[1:]:
       if pytree_utils.NodeName(trailer) != 'trailer':
         break
-      if trailer.children[0].value == '(':
+      if trailer.children[0].value in '([':
         if len(trailer.children) > 2:
           self._SetUnbreakable(trailer.children[-1])
           if _FirstChildNode(trailer).lineno == _LastChildNode(trailer).lineno:

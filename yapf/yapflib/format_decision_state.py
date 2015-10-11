@@ -29,6 +29,7 @@ through the code to commit the whitespace formatting.
 import copy
 
 from yapf.yapflib import format_token
+from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 
 
@@ -128,7 +129,7 @@ class FormatDecisionState(object):
         current.value in ']}'):
       # Split if we need to split before the closing bracket and the next
       # token is a closing bracket.
-      return True
+      return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if previous_token:
       length = _GetLengthToMatchingParen(previous_token)

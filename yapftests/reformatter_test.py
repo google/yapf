@@ -1093,8 +1093,8 @@ format_token.Subtype.NONE))
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
-                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]
-                    } + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[
+                         42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
@@ -1203,8 +1203,7 @@ format_token.Subtype.NONE))
                   if True:
                     if row[4] is None or row[5] is None:
                       bbbbbbbbbbbbb['..............'] = row[
-                          5
-                      ] if row[5] is not None else 5
+                          5] if row[5] is not None else 5
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1352,6 +1351,24 @@ format_token.Subtype.NONE))
         xxxxxxxxxxxxxx = (
             re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+', aaaaaaa.bbbbbbbbbbbb).group(a.b) +
             re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)', ccccccc).group(c.d))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingArraysSensibly(self):
+    unformatted_code = textwrap.dedent("""\
+        while True:
+          while True:
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list['bbbbbbbbbbbbbbbbbbbbbbbbb'].split(',')
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list('bbbbbbbbbbbbbbbbbbbbbbbbb').split(',')
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        while True:
+          while True:
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list[
+                'bbbbbbbbbbbbbbbbbbbbbbbbb'].split(',')
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list(
+                'bbbbbbbbbbbbbbbbbbbbbbbbb').split(',')
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1819,8 +1836,9 @@ class BuganizerFixes(ReformatterTest):
         def foo(self):
 
           def bar(my_dict_name):
-            self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
-                'foo_bar_baz_boo')
+            self.my_dict_name[
+                'foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
+                    'foo_bar_baz_boo')
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1866,8 +1884,7 @@ class BuganizerFixes(ReformatterTest):
           bad_slice = map(math.sqrt,
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
           a_long_name_slicing = an_array_with_an_exceedingly_long_name[:
-                                                                       ARBITRARY_CONSTANT_A
-                                                                      ]
+                                                                       ARBITRARY_CONSTANT_A]
           bad_slice = ("I am a crazy, no good, string whats too long, etc." +
                        " no really ")[:ARBITRARY_CONSTANT_A]
         """)
