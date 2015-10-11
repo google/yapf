@@ -258,11 +258,15 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if node.children[0].value == '(':
       if node.children[0].lineno == node.children[-1].lineno:
         self._SetExpressionPenalty(node, CONTIGUOUS_LIST)
-      if (pytree_utils.NodeName(node.parent) == 'if_stmt' and
-          node.children[-1].value == ')'):
-        pytree_utils.SetNodeAnnotation(node.children[-1],
-                                       pytree_utils.Annotation.SPLIT_PENALTY,
-                                       UNBREAKABLE)
+      if node.children[-1].value == ')':
+        if pytree_utils.NodeName(node.parent) == 'if_stmt':
+          pytree_utils.SetNodeAnnotation(node.children[-1],
+                                         pytree_utils.Annotation.SPLIT_PENALTY,
+                                         UNBREAKABLE)
+        else:
+          pytree_utils.SetNodeAnnotation(node.children[-1],
+                                         pytree_utils.Annotation.SPLIT_PENALTY,
+                                         STRONGLY_CONNECTED)
     elif node.children[0].value in '[{':
       # Keep empty containers together if we can.
       if len(node.children) == 2:

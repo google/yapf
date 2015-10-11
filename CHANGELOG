@@ -11,6 +11,8 @@
 - Indent the continuation of an if-then statement when it's not distinguished
   from the body of the if-then.
 - Allow for sensible splitting of array indices where appropriate.
+- Prefer to not split before the ending bracket of an atom. This produces
+  better code in most cases.
 
 ## [0.4.0] 2015-10-07
 ### Added

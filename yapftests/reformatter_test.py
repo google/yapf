@@ -714,9 +714,9 @@ format_token.Subtype.NONE))
         def f():
 
           def g():
-            while (xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                   xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
-                  ):
+            while (
+                xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
               pass
         ''')
     uwlines = _ParseAndUnwrap(code)
@@ -1379,6 +1379,21 @@ class BuganizerFixes(ReformatterTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB20551180(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return (struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return (
+                struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB23944849(self):
     unformatted_code = textwrap.dedent("""\
@@ -2187,10 +2202,9 @@ class TestsForPEP8Style(ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         def f():
             def g():
-                while (
-                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
-                ):
+                while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                       xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
+                       'bbbbbbb'):
                     pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2203,8 +2217,8 @@ class TestsForPEP8Style(ReformatterTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
-            runtime_mins = (program_end_time - program_start_time
-                            ).total_seconds() / 60.0
+            runtime_mins = (
+                program_end_time - program_start_time).total_seconds() / 60.0
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -2521,8 +2535,8 @@ v, w, x, y, z
     pass1_code = textwrap.dedent("""\
     try:
         pass
-    except (IOError, OSError, LookupError, RuntimeError, OverflowError
-           ) as exception:
+    except (IOError, OSError, LookupError, RuntimeError,
+            OverflowError) as exception:
         pass
     """)
     uwlines = _ParseAndUnwrap(pass0_code)
