@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.1] UNRELEASED
+### Fixed
+- When determining if we should split a dictionary's value to a new line, use
+  the longest entry instead of the total dictionary's length. This allows the
+  formatter to reformat the dictionary in a more consistent manner.
+
 ## [0.5.0] 2015-10-11
 ### Added
 - Add option to exclude files/directories from formatting.
