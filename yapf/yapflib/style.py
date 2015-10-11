@@ -54,7 +54,7 @@ _STYLE_HELP = dict(
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
       away from the i18n comment."""),
-    INDENT_IF_EXPR_CONTINUATION=("""\
+    INDENT_IF_EXPR_CONTINUATION=textwrap.dedent("""\
       Prevents an if statement's conditional expression from aligning to the
       body of the if statement."""),
     INDENT_WIDTH='The number of columns to use for indentation.',
@@ -69,7 +69,7 @@ _STYLE_HELP = dict(
                          # <------ this blank line
         def method():
           ..."""),
-    DEDENT_CLOSING_BRACKETS=("""\
+    DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, dedented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
       including function definitions and calls.
