@@ -1380,6 +1380,38 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB23943842(self):
+    unformatted_code = textwrap.dedent("""\
+        class F():
+          def f():
+            self.assertDictEqual(
+                accounts, {
+                    'foo':
+                    {'account': 'foo',
+                     'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
+                    'bar': {'account': 'bar',
+                            'lines': 'l5\\nl6\\nl7'},
+                    'wiz': {'account': 'wiz',
+                            'lines': 'l8'}
+                })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class F():
+
+          def f():
+            self.assertDictEqual(
+                accounts, {
+                    'foo': {'account': 'foo',
+                            'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
+                    'bar': {'account': 'bar',
+                            'lines': 'l5\\nl6\\nl7'},
+                    'wiz': {'account': 'wiz',
+                            'lines': 'l8'}
+                })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB20551180(self):
     unformatted_code = textwrap.dedent("""\
         def foo():

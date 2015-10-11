@@ -132,9 +132,11 @@ class FormatDecisionState(object):
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if previous_token:
-      length = _GetLengthToMatchingParen(previous_token)
+      length = _GetLongestDictionaryEntry(previous_token)
       if (previous_token.value == '{' and  # TODO(morbo): List initializers?
           length + self.column > style.Get('COLUMN_LIMIT')):
+        print('current: {}'.format(current))
+        print('length: {}'.format(length))
         return True
 
       # TODO(morbo): This should be controlled with a knob.
@@ -361,22 +363,19 @@ class FormatDecisionState(object):
     return penalty
 
 
-def _GetLengthToMatchingParen(token):
-  """Returns the length from one bracket to the matching bracket.
-
-  Arguments:
-    token: (FormatToken) The opening bracket token.
-
-  Returns:
-    The length to the closing paren or up to the first point where we can split
-    the line. The length includes the brackets.
-  """
+def _GetLongestDictionaryEntry(token):
+  """Returns the length of the longest dictionary entry."""
   if not token.matching_bracket:
     return 0
-  end = token.matching_bracket
-  while end.next_token and not end.next_token.can_break_before:
-    end = end.next_token
-  return end.total_length - token.total_length + 1
+  longest = -1
+  start = token
+  current_size = 0
+  current = token.matching_bracket
+  while current.next_token and not current.next_token.can_break_before:
+    if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
+      longest = max(longest, current.total_length - start.total_length + 1)
+    current = current.next_token
+  return longest
 
 
 class _ParenState(object):
