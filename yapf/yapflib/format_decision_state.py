@@ -280,7 +280,7 @@ class FormatDecisionState(object):
     previous = current.previous_token
     top_of_stack = self.stack[-1]
 
-    if current.spaces_required_before > 2:
+    if current.spaces_required_before > 2 or self.line.disable:
       return current.spaces_required_before
 
     if current.OpensScope():

@@ -13,6 +13,7 @@
 - Allow for sensible splitting of array indices where appropriate.
 - Prefer to not split before the ending bracket of an atom. This produces
   better code in most cases.
+- Corrected how horizontal spaces were presevered in a disabled region.
 
 ## [0.4.0] 2015-10-07
 ### Added
