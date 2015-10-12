@@ -9,6 +9,8 @@
   formatter to reformat the dictionary in a more consistent manner.
 - Improve how list comprehensions are formatted. Make splitting dependent upon
   whether the "comp_for" or "comp_if" goes over the column limit.
+- Don't over indent if expression hanging indents if we expect to dedent the
+  closing bracket.
 
 ## [0.5.0] 2015-10-11
 ### Added

@@ -308,9 +308,11 @@ class FormatDecisionState(object):
       return previous.column
 
     if format_token.Subtype.IF_TEST_EXPR in current.subtypes:
-      first_token_indent = (
-          len(self.line.first.whitespace_prefix.split('\n')[-1]))
-      if first_token_indent + style.Get('INDENT_WIDTH') == top_of_stack.indent:
+      token_indent = (
+          len(self.line.first.whitespace_prefix.split('\n')[-1]) +
+          style.Get('INDENT_WIDTH'))
+      if (token_indent == top_of_stack.indent and not
+          style.Get('DEDENT_CLOSING_BRACKETS')):
         return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
 
     return top_of_stack.indent

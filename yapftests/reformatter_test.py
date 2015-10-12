@@ -2602,6 +2602,29 @@ v, w, x, y, z
     uwlines = _ParseAndUnwrap(pass1_code)
     self.assertCodeEqual(pass2_code, reformatter.Reformat(uwlines))
 
+  def testIfExprHangingIndent(self):
+    unformatted_code = textwrap.dedent("""\
+    if True:
+        if True:
+            if True:
+                if not self.frobbies and (
+                   self.foobars.counters['db.cheeses'] != 1 or
+                   self.foobars.counters['db.marshmellow_skins'] != 1):
+                    pass
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    if True:
+        if True:
+            if True:
+                if not self.frobbies and (
+                    self.foobars.counters['db.cheeses'] != 1 or
+                    self.foobars.counters['db.marshmellow_skins'] != 1
+                ):
+                    pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 
 def _ParseAndUnwrap(code, dumptree=False):
