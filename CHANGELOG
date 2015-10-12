@@ -7,6 +7,8 @@
 - When determining if we should split a dictionary's value to a new line, use
   the longest entry instead of the total dictionary's length. This allows the
   formatter to reformat the dictionary in a more consistent manner.
+- Improve how list comprehensions are formatted. Make splitting dependent upon
+  whether the "comp_for" or "comp_if" goes over the column limit.
 
 ## [0.5.0] 2015-10-11
 ### Added

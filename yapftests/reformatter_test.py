@@ -1373,6 +1373,23 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testComprehensionForAndIf(self):
+    unformatted_code = textwrap.dedent("""\
+        class f:
+
+          def __repr__(self):
+            tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class f:
+
+          def __repr__(self):
+            tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value)
+                                    for tok in self._tokens])
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

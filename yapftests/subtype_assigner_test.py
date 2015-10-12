@@ -141,9 +141,9 @@ class SubtypeAssignerTest(unittest.TestCase):
          (')', [format_token.Subtype.NONE]),
          ('for', {format_token.Subtype.DICT_SET_GENERATOR,
                   format_token.Subtype.COMP_FOR}),
-         ('s', [format_token.Subtype.NONE]),
-         ('in', [format_token.Subtype.NONE]),
-         ('strs', [format_token.Subtype.NONE]),
+         ('s', {format_token.Subtype.COMP_FOR}),
+         ('in', {format_token.Subtype.COMP_FOR}),
+         ('strs', {format_token.Subtype.COMP_FOR}),
          ('}', [format_token.Subtype.NONE])]
     ])  # yapf: disable
 
