@@ -108,12 +108,7 @@ class FormatDecisionState(object):
 
   def CanSplit(self):
     """Returns True if the line can be split before the next token."""
-    current = self.next_token
-
-    if not current.can_break_before:
-      return False
-
-    return True
+    return self.next_token.can_break_before
 
   def MustSplit(self):
     """Returns True if the line must split before the next token."""
@@ -156,6 +151,18 @@ class FormatDecisionState(object):
           current.lineno != previous_token.lineno):
         self.stack[-1].split_before_closing_bracket = True
         return True
+
+      if (format_token.Subtype.COMP_FOR in current.subtypes and
+          format_token.Subtype.COMP_FOR not in previous_token.subtypes):
+        length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR)
+        if length + self.column > style.Get('COLUMN_LIMIT'):
+          return True
+
+      if (format_token.Subtype.COMP_IF in current.subtypes and
+          format_token.Subtype.COMP_IF not in previous_token.subtypes):
+        length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
+        if length + self.column > style.Get('COLUMN_LIMIT'):
+          return True
 
     return False
 
@@ -374,6 +381,13 @@ def _GetLongestDictionaryEntry(token):
       longest = max(longest, current.total_length - start.total_length + 1)
     current = current.next_token
   return longest
+
+
+def _GetLengthOfSubtype(token, subtype):
+  current = token
+  while current.next_token and subtype in current.subtypes:
+    current = current.next_token
+  return current.total_length - token.total_length + 1
 
 
 class _ParenState(object):

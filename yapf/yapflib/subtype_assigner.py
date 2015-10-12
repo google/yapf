@@ -245,12 +245,12 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
-    self._AppendFirstLeafTokenSubtype(node, format_token.Subtype.COMP_FOR)
+    self._AppendSubtypeRec(node, format_token.Subtype.COMP_FOR)
     self.DefaultNodeVisit(node)
 
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
-    self._AppendFirstLeafTokenSubtype(node, format_token.Subtype.COMP_IF)
+    self._AppendSubtypeRec(node, format_token.Subtype.COMP_IF)
     self.DefaultNodeVisit(node)
 
   def _ProcessArgLists(self, node):
