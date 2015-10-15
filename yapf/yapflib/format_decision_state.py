@@ -29,6 +29,7 @@ through the code to commit the whitespace formatting.
 import copy
 
 from yapf.yapflib import format_token
+from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 
@@ -126,44 +127,59 @@ class FormatDecisionState(object):
       # token is a closing bracket.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
-    if previous_token:
-      length = _GetLongestDictionaryEntry(previous_token)
-      if (previous_token.value == '{' and  # TODO(morbo): List initializers?
-          length + self.column > style.Get('COLUMN_LIMIT')):
-        print('current: {}'.format(current))
-        print('length: {}'.format(length))
+    if not previous_token:
+      return False
+
+    length = _GetLongestDictionaryEntry(previous_token)
+    if (previous_token.value == '{' and  # TODO(morbo): List initializers?
+        length + self.column > style.Get('COLUMN_LIMIT')):
+      return True
+
+    # TODO(morbo): This should be controlled with a knob.
+    if (format_token.Subtype.DICTIONARY_KEY in current.subtypes and
+        not current.is_comment):
+      # Place each dictionary entry on its own line.
+      return True
+
+    # TODO(morbo): This should be controlled with a knob.
+    if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
+      return True
+
+    if (previous_token.value not in '(=' and current.value not in '=,)' and
+        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
+        current.subtypes):
+      return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
+
+    if (previous_token.value in '{[' and
+        current.lineno != previous_token.lineno):
+      self.stack[-1].split_before_closing_bracket = True
+      return True
+
+    if (format_token.Subtype.COMP_FOR in current.subtypes and
+        format_token.Subtype.COMP_FOR not in previous_token.subtypes):
+      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR)
+      if length + self.column > style.Get('COLUMN_LIMIT'):
         return True
 
-      # TODO(morbo): This should be controlled with a knob.
-      if (format_token.Subtype.DICTIONARY_KEY in current.subtypes and
-          not current.is_comment):
-        # Place each dictionary entry on its own line.
+    if (format_token.Subtype.COMP_IF in current.subtypes and
+        format_token.Subtype.COMP_IF not in previous_token.subtypes):
+      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
+      if length + self.column > style.Get('COLUMN_LIMIT'):
         return True
 
-      # TODO(morbo): This should be controlled with a knob.
-      if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
-        return True
-
-      if (previous_token.value not in '(=' and current.value not in '=,)' and
-          format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
-          current.subtypes):
-        return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
-
-      if (previous_token.value in '{[(' and
-          current.lineno != previous_token.lineno):
-        self.stack[-1].split_before_closing_bracket = True
-        return True
-
-      if (format_token.Subtype.COMP_FOR in current.subtypes and
-          format_token.Subtype.COMP_FOR not in previous_token.subtypes):
-        length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR)
-        if length + self.column > style.Get('COLUMN_LIMIT'):
-          return True
-
-      if (format_token.Subtype.COMP_IF in current.subtypes and
-          format_token.Subtype.COMP_IF not in previous_token.subtypes):
-        length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
-        if length + self.column > style.Get('COLUMN_LIMIT'):
+    previous_previous_token = previous_token.previous_token
+    if (previous_previous_token and previous_previous_token.name == 'NAME' and
+        not previous_previous_token.is_keyword and
+        previous_token.value == '(' and _IsFunctionCallWithArguments(current)):
+      sibling = previous_token.node.next_sibling
+      if pytree_utils.NodeName(sibling) == 'arglist':
+        arglist = previous_token.node.next_sibling
+        if len(arglist.children) > 2:
+          # There is a function call, with more than 1 argument, where the first
+          # argument is itself a function call with arguments. In this specific
+          # case, if we split after the first argument's opening '(', then the
+          # formatting will look bad for the rest of the arguments. Instead,
+          # enforce a split before that argument to keep things looking good.
           return True
 
     return False
@@ -385,6 +401,17 @@ def _GetLongestDictionaryEntry(token):
       longest = max(longest, current.total_length - start.total_length + 1)
     current = current.next_token
   return longest
+
+
+def _IsFunctionCallWithArguments(token):
+  while token:
+    if token.value == '(':
+      token = token.next_token
+      return token and token.value != ')'
+    elif token.name not in {'NAME', 'DOT'}:
+      return False
+    token = token.next_token
+  return False
 
 
 def _GetLengthOfSubtype(token, subtype):

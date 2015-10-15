@@ -11,6 +11,10 @@
   whether the "comp_for" or "comp_if" goes over the column limit.
 - Don't over indent if expression hanging indents if we expect to dedent the
   closing bracket.
+- Improve splitting heuristic when the first argument to a function call is
+  itself a function call with arguments. In cases like this, the remaining
+  arguments to the function call would look badly aligned, even though they are
+  techincally correct (the best kind of correct!).
 
 ## [0.5.0] 2015-10-11
 ### Added

@@ -673,11 +673,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             """Common method for processing argument lists."""
             for child in node.children:
               if isinstance(child, pytree.Leaf):
-                self._SetTokenSubtype(
-                    child,
-                    subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
-                        child.value, \
-format_token.Subtype.NONE))
+                self._SetTokenSubtype(child,
+                                      subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
+                                          child.value, format_token.Subtype.NONE))
         ''')
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1132,8 +1130,8 @@ format_token.Subtype.NONE))
 
   def testNoSplittingAroundTermOperators(self):
     code = textwrap.dedent("""\
-        a_very_long_function_call_yada_yada_etc_etc_etc(
-            long_arg1, long_arg2 / long_arg3)
+        a_very_long_function_call_yada_yada_etc_etc_etc(long_arg1,
+                                                        long_arg2 / long_arg3)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1390,6 +1388,34 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testFunctionCallArguments(self):
+    unformatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+                comment_prefix, comment_lineno, comment_column,
+                standalone=True), ancestor_at_indent)
+            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+                comment_prefix, comment_lineno, comment_column,
+                standalone=True))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            pytree_utils.InsertNodesBefore(
+                _CreateCommentsFromPrefix(comment_prefix,
+                                          comment_lineno,
+                                          comment_column,
+                                          standalone=True),
+                ancestor_at_indent)
+            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(comment_prefix,
+                                                                     comment_lineno,
+                                                                     comment_column,
+                                                                     standalone=True))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -1416,15 +1442,14 @@ class BuganizerFixes(ReformatterTest):
         class F():
 
           def f():
-            self.assertDictEqual(
-                accounts, {
-                    'foo': {'account': 'foo',
-                            'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
-                    'bar': {'account': 'bar',
-                            'lines': 'l5\\nl6\\nl7'},
-                    'wiz': {'account': 'wiz',
-                            'lines': 'l8'}
-                })
+            self.assertDictEqual(accounts, {
+                'foo': {'account': 'foo',
+                        'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
+                'bar': {'account': 'bar',
+                        'lines': 'l5\\nl6\\nl7'},
+                'wiz': {'account': 'wiz',
+                        'lines': 'l8'}
+            })
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1484,9 +1509,10 @@ class BuganizerFixes(ReformatterTest):
     code = textwrap.dedent("""\
         def f():
           if True:
-            return ((m.fffff(m.rrr(
-                'xxxxxxxxxxxxxxxx',
-                'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'), mmmmmmmm)
+            return ((m.fffff(
+                m.rrr('xxxxxxxxxxxxxxxx',
+                      'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'),
+                mmmmmmmm)
                      | m.wwwwww(m.rrrr(self.tttttttttt, self.mmmmmmmmmmmmmmmmmmmmm))
                      | m.ggggggg(self.gggggggg, m.sss()), m.fffff('aaaaaaaaaaaaaaaa')
                      | m.wwwwww(m.ddddd(self.tttttttttt, self.mmmmmmmmmmmmmmmmmmmmm))
@@ -1504,18 +1530,18 @@ class BuganizerFixes(ReformatterTest):
           class foo():
 
             def __eq__(self, other):
-              return (
-                  isinstance(other, type(self)) and self.xxxxxxxxxxx == other.xxxxxxxxxxx
-                  and self.xxxxxxxx == other.xxxxxxxx
-                  and self.aaaaaaaaaaaa == other.aaaaaaaaaaaa
-                  and self.bbbbbbbbbbb == other.bbbbbbbbbbb
-                  and self.ccccccccccccccccc == other.ccccccccccccccccc
-                  and self.ddddddddddddddddddddddd == other.ddddddddddddddddddddddd
-                  and self.eeeeeeeeeeee == other.eeeeeeeeeeee
-                  and self.ffffffffffffff == other.time_completed
-                  and self.gggggg == other.gggggg and self.hhh == other.hhh
-                  and len(self.iiiiiiii) == len(other.iiiiiiii)
-                  and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
+              return (isinstance(other, type(self))
+                      and self.xxxxxxxxxxx == other.xxxxxxxxxxx
+                      and self.xxxxxxxx == other.xxxxxxxx
+                      and self.aaaaaaaaaaaa == other.aaaaaaaaaaaa
+                      and self.bbbbbbbbbbb == other.bbbbbbbbbbb
+                      and self.ccccccccccccccccc == other.ccccccccccccccccc
+                      and self.ddddddddddddddddddddddd == other.ddddddddddddddddddddddd
+                      and self.eeeeeeeeeeee == other.eeeeeeeeeeee
+                      and self.ffffffffffffff == other.time_completed
+                      and self.gggggg == other.gggggg and self.hhh == other.hhh
+                      and len(self.iiiiiiii) == len(other.iiiiiiii)
+                      and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
           """)
       uwlines = _ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1721,10 +1747,9 @@ class BuganizerFixes(ReformatterTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
-                {  # Inline comment about why fnord has the value 6.
-                    'fnord': 6
-                }))
+            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
+                'fnord': 6
+            }))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1733,9 +1758,8 @@ class BuganizerFixes(ReformatterTest):
     code = textwrap.dedent("""\
         if True:
           if True:
-            self._Test(
-                aaaa, bbbbbbb.cccccccccc, dddddddd, eeeeeeeeeee,
-                [ffff, ggggggggggg, hhhhhhhhhhhh, iiiiii, jjjj])
+            self._Test(aaaa, bbbbbbb.cccccccccc, dddddddd, eeeeeeeeeee,
+                       [ffff, ggggggggggg, hhhhhhhhhhhh, iiiiii, jjjj])
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1796,8 +1820,8 @@ class BuganizerFixes(ReformatterTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
-          self.assertLess(abs(time.time() - aaaa.bbbbbbbbbbb(
-              datetime.datetime.now())), 1)
+          self.assertLess(
+              abs(time.time() - aaaa.bbbbbbbbbbb(datetime.datetime.now())), 1)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1837,9 +1861,9 @@ class BuganizerFixes(ReformatterTest):
 
           def bbbbbbbbbb(self):
             with io.open("/dev/null", "rb"):
-              with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
-                                        "eeeeeeeee ffffffffff"),
-                           "rb") as gggggggggggggggggggg:
+              with io.open(
+                  os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
+                               "eeeeeeeee ffffffffff"), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2405,14 +2429,14 @@ class TestVerifyNoVerify(ReformatterTest):
         class Foo(object):
 
             def bar(self):
-                if self.solo_generator is None and len(
+                if self.solo_generator_that_is_long is None and len(
                         self.generators + self.next_batch) == 1:
                     pass
         """)
     expected_formatted_code = textwrap.dedent("""\
         class Foo(object):
             def bar(self):
-                if self.solo_generator is None and len(
+                if self.solo_generator_that_is_long is None and len(
                         self.generators + self.next_batch) == 1:
                     pass
         """)
