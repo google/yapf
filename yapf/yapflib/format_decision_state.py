@@ -327,11 +327,11 @@ class FormatDecisionState(object):
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
-        format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
+        _IsDictionaryValue(current)):
       return previous.column
 
     if style.Get('INDENT_DICTIONARY_VALUE'):
-      if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
+      if _IsDictionaryValue(current):
         if previous and previous.value == ':':
           return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
@@ -423,6 +423,14 @@ def _IsFunctionCallWithArguments(token):
     elif token.name not in {'NAME', 'DOT'}:
       return False
     token = token.next_token
+  return False
+
+
+def _IsDictionaryValue(token):
+  while token:
+    if format_token.Subtype.DICTIONARY_VALUE in token.subtypes:
+      return True
+    token = token.previous_token
   return False
 
 

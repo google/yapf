@@ -77,9 +77,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             if pytree_utils.NodeName(child) == 'power':
               self._AppendSubtypeRec(child, format_token.Subtype.NONE)
             else:
-              self._AppendSubtypeRec(child,
-                                     format_token.Subtype.DICTIONARY_VALUE,
-                                     force=False)
+              self._AppendFirstLeafTokenSubtype(
+                  child, format_token.Subtype.DICTIONARY_VALUE)
         last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
         last_was_colon = isinstance(child, pytree.Leaf) and child.value == ':'
       self.Visit(child)
