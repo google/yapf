@@ -1423,6 +1423,27 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB20559654(self):
+    unformatted_code = textwrap.dedent("""\
+      class A(object):
+
+        def foo(self):
+          unused_error, result = server.Query(
+              ['AA BBBB CCC DDD EEEEEEEE X YY ZZZZ FFF EEE AAAAAAAA'],
+              aaaaaaaaaaa=True, bbbbbbbb=None)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      class A(object):
+
+        def foo(self):
+          unused_error, result = server.Query(
+              ['AA BBBB CCC DDD EEEEEEEE X YY ZZZZ FFF EEE AAAAAAAA'],
+              aaaaaaaaaaa=True,
+              bbbbbbbb=None)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB23943842(self):
     unformatted_code = textwrap.dedent("""\
         class F():

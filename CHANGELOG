@@ -18,6 +18,9 @@
   itself a function call with arguments. In cases like this, the remaining
   arguments to the function call would look badly aligned, even though they are
   techincally correct (the best kind of correct!).
+- Improve splitting heuristic more so that if the first argument to a function
+  call is a data literal that will go over the column limit, then we want to
+  split before it.
 
 ## [0.5.0] 2015-10-11
 ### Added

@@ -115,6 +115,7 @@ class FormatDecisionState(object):
     """Returns True if the line must split before the next token."""
     current = self.next_token
     previous_token = current.previous_token
+    column_limit = style.Get('COLUMN_LIMIT')
 
     if current.must_break_before:
       return True
@@ -132,7 +133,7 @@ class FormatDecisionState(object):
 
     length = _GetLongestDictionaryEntry(previous_token)
     if (previous_token.value == '{' and  # TODO(morbo): List initializers?
-        length + self.column > style.Get('COLUMN_LIMIT')):
+        length + self.column > column_limit):
       return True
 
     # TODO(morbo): This should be controlled with a knob.
@@ -158,29 +159,36 @@ class FormatDecisionState(object):
     if (format_token.Subtype.COMP_FOR in current.subtypes and
         format_token.Subtype.COMP_FOR not in previous_token.subtypes):
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR)
-      if length + self.column > style.Get('COLUMN_LIMIT'):
+      if length + self.column > column_limit:
         return True
 
     if (format_token.Subtype.COMP_IF in current.subtypes and
         format_token.Subtype.COMP_IF not in previous_token.subtypes):
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
-      if length + self.column > style.Get('COLUMN_LIMIT'):
+      if length + self.column > column_limit:
         return True
 
     previous_previous_token = previous_token.previous_token
     if (previous_previous_token and previous_previous_token.name == 'NAME' and
-        not previous_previous_token.is_keyword and
-        previous_token.value == '(' and _IsFunctionCallWithArguments(current)):
+        not previous_previous_token.is_keyword and previous_token.value == '('):
       sibling = previous_token.node.next_sibling
       if pytree_utils.NodeName(sibling) == 'arglist':
         arglist = previous_token.node.next_sibling
         if len(arglist.children) > 2:
-          # There is a function call, with more than 1 argument, where the first
-          # argument is itself a function call with arguments. In this specific
-          # case, if we split after the first argument's opening '(', then the
-          # formatting will look bad for the rest of the arguments. Instead,
-          # enforce a split before that argument to keep things looking good.
-          return True
+          if _IsFunctionCallWithArguments(current):
+            # There is a function call, with more than 1 argument, where
+            # the first argument is itself a function call with arguments.
+            # In this specific case, if we split after the first argument's
+            # opening '(', then the formatting will look bad for the rest
+            # of the arguments. Instead, enforce a split before that
+            # argument to keep things looking good.
+            return True
+          elif (current.OpensScope() and
+                current.matching_bracket.total_length + self.column >
+                column_limit):
+            # There is a data literal that will need to be split and could mess
+            # up the formatting.
+            return True
 
     return False
 
