@@ -1253,11 +1253,11 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         def testSomething(self):
           expected = {
               ('aaaaaaaaaaaaa', 'bbbb'):
-              'ccccccccccccccccccccccccccccccccccccccccccc',
+                  'ccccccccccccccccccccccccccccccccccccccccccc',
               ('aaaaaaaaaaaaa', 'bbbb'):
-              'ccccccccccccccccccccccccccccccccccccccccccc',
+                  'ccccccccccccccccccccccccccccccccccccccccccc',
               ('aaaaaaaaaaaaa', 'bbbb'):
-              'ccccccccccccccccccccccccccccccccccccccccccc',
+                  'ccccccccccccccccccccccccccccccccccccccccccc',
           }
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -1569,7 +1569,7 @@ class BuganizerFixes(ReformatterTest):
           if True:
             aaaaaaaa = {
                 'xxx':
-                '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
+                    '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
     uwlines = _ParseAndUnwrap(code)

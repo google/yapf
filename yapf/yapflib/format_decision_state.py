@@ -236,8 +236,7 @@ class FormatDecisionState(object):
         self.stack[-1].indent = self.column + spaces
       else:
         self.stack[-1].closing_scope_indent = (
-            self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH')
-        )
+            self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
 
     self.column += spaces
 
@@ -309,19 +308,24 @@ class FormatDecisionState(object):
       return current.spaces_required_before
 
     if current.OpensScope():
-      return self.first_indent if not self.paren_level else top_of_stack.indent
+      return top_of_stack.indent if self.paren_level else self.first_indent
 
     if current.ClosesScope():
       if (previous.OpensScope() or
           (previous.is_comment and previous.previous_token is not None and
            previous.previous_token.OpensScope())):
         return max(
-            0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+            0, top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
         format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
       return previous.column
+
+    if style.Get('INDENT_DICTIONARY_VALUE'):
+      if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
+        if previous and previous.value == ':':
+          return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     if format_token.Subtype.IF_TEST_EXPR in current.subtypes:
       token_indent = (

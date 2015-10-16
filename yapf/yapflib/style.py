@@ -54,6 +54,18 @@ _STYLE_HELP = dict(
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
       away from the i18n comment."""),
+    INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
+      Indent the dictionary value if it cannot fit on the same line as the
+      dictionary key.
+
+      For example:
+
+      config = {
+          'key1':
+              'value1',
+          'key2': value1 +
+                  value2,
+      }"""),
     INDENT_IF_EXPR_CONTINUATION=textwrap.dedent("""\
       Prevents an if statement's conditional expression from aligning to the
       body of the if statement."""),
@@ -77,8 +89,8 @@ _STYLE_HELP = dict(
       For example:
 
       config = {
-        'key1': 'value1',
-        'key2': 'value2',
+          'key1': 'value1',
+          'key2': 'value2',
       }        # <--- this bracket is dedented and on a separate line
 
       time_series = self.remote_client.query_entity_counters(
@@ -139,6 +151,7 @@ def CreatePEP8Style():
       DEDENT_CLOSING_BRACKETS=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
+      INDENT_DICTIONARY_VALUE=False,
       INDENT_IF_EXPR_CONTINUATION=4,
       INDENT_WIDTH=4,
       CONTINUATION_INDENT_WIDTH=4,
@@ -173,6 +186,7 @@ def CreateGoogleStyle():
 
 def CreateChromiumStyle():
   style = CreateGoogleStyle()
+  style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_IF_EXPR_CONTINUATION'] = 0
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
@@ -222,6 +236,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
+    INDENT_DICTIONARY_VALUE=_BoolConverter,
     INDENT_IF_EXPR_CONTINUATION=int,
     INDENT_WIDTH=int,
     CONTINUATION_INDENT_WIDTH=int,

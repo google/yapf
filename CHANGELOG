@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.5.1] UNRELEASED
+## [0.6.0] UNRELEASED
+### Added
+- Add knob to indent the dictionary value if there is a split before it.
+
 ### Fixed
 - When determining if we should split a dictionary's value to a new line, use
   the longest entry instead of the total dictionary's length. This allows the
