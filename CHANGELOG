@@ -22,6 +22,7 @@
   call is a data literal that will go over the column limit, then we want to
   split before it.
 - Remove spaces around '**' operator.
+- Retain formatting of comments in the middle of an expression.
 
 ## [0.5.0] 2015-10-11
 ### Added

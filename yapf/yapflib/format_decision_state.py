@@ -195,6 +195,13 @@ class FormatDecisionState(object):
             # up the formatting.
             return True
 
+    if (current.is_comment and
+        previous_token.lineno < current.lineno - current.value.count('\n')):
+      # If a comment comes in the middle of an unwrapped line (like an if
+      # conditional with comments interspersed), then we want to split if the
+      # original comments were on a separate line.
+      return True
+
     return False
 
   def AddTokenToState(self, newline, dry_run, must_split=False):

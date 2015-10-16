@@ -1426,6 +1426,19 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testBinaryOperators(self):
+    code = textwrap.dedent("""\
+      def f():
+        if True:
+          if (self.stack[-1].split_before_closing_bracket and
+              # FIXME(morbo): Use the 'matching_bracket' instead of this.
+              # FIXME(morbo): Don't forget about tuples!
+              current.value in ']}'):
+            pass
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
