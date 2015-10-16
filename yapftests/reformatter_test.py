@@ -1091,8 +1091,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
-                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[
-                         42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy':
+                         baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
@@ -1433,6 +1433,33 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB23445244(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return xxxxxxxxxxxxxxxx(
+                command,
+                extra_env={
+                    "OOOOOOOOOOOOOOOOOOOOO": FLAGS.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz,
+                    "PPPPPPPPPPPPPPPPPPPPP":
+                        FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
+                })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return xxxxxxxxxxxxxxxx(
+                command,
+                extra_env={
+                    "OOOOOOOOOOOOOOOOOOOOO":
+                        FLAGS.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz,
+                    "PPPPPPPPPPPPPPPPPPPPP": FLAGS.aaaaaaaaaaaaaa +
+                                             FLAGS.bbbbbbbbbbbbbbbbbbb,
+                })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB20559654(self):
     unformatted_code = textwrap.dedent("""\
       class A(object):
@@ -1599,8 +1626,8 @@ class BuganizerFixes(ReformatterTest):
         def main(unused_argv):
           if True:
             aaaaaaaa = {
-                'xxx':
-                    '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
+                'xxx': '%s/cccccc/ddddddddddddddddddd.jar' %
+                       (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
     uwlines = _ParseAndUnwrap(code)
@@ -1777,8 +1804,8 @@ class BuganizerFixes(ReformatterTest):
             }))
         """)
     expected_formatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({'aa':
+            'context!'}).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
                 'fnord': 6
             }))
         """)

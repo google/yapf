@@ -257,3 +257,7 @@ class FormatToken(object):
   @property
   def is_docstring(self):
     return self.is_multiline_string and not self.node.prev_sibling
+
+  @property
+  def is_pseudo_paren(self):
+    return hasattr(self._node, 'is_pseudo') and self._node.is_pseudo

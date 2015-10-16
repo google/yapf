@@ -189,6 +189,9 @@ def _IsUnaryOperator(tok):
 
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
+  if left.is_pseudo_paren or right.is_pseudo_paren:
+    # The pseudo-parens shouldn't affect spacing.
+    return False
   if left.is_continuation or right.is_continuation:
     # The continuation node's value has all of the spaces it needs.
     return False

@@ -109,7 +109,12 @@ class FormatDecisionState(object):
 
   def CanSplit(self):
     """Returns True if the line can be split before the next token."""
-    return self.next_token.can_break_before
+    current = self.next_token
+
+    if current.is_pseudo_paren:
+      return False
+
+    return current.can_break_before
 
   def MustSplit(self):
     """Returns True if the line must split before the next token."""
@@ -332,7 +337,7 @@ class FormatDecisionState(object):
 
     if style.Get('INDENT_DICTIONARY_VALUE'):
       if _IsDictionaryValue(current):
-        if previous and previous.value == ':':
+        if previous and (previous.value == ':' or previous.is_pseudo_paren):
           return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     if format_token.Subtype.IF_TEST_EXPR in current.subtypes:

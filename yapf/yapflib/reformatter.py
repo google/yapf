@@ -93,8 +93,13 @@ def Reformat(uwlines, verify=True):
     for tok in line.tokens:
       if tok.name in pytree_utils.NONSEMANTIC_TOKENS:
         continue
-      formatted_line.append(tok.whitespace_prefix)
-      formatted_line.append(tok.value)
+      if not tok.is_pseudo_paren:
+        formatted_line.append(tok.whitespace_prefix)
+        formatted_line.append(tok.value)
+      else:
+        if (tok.previous_token.value == ':' and
+            not tok.next_token.whitespace_prefix.startswith('\n')):
+          formatted_line.append(' ')
     formatted_code.append(''.join(formatted_line))
     if verify:
       verifier.VerifyCode(formatted_code[-1])

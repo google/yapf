@@ -26,10 +26,13 @@ Annotations:
 """
 
 from lib2to3 import pytree
+from lib2to3.pgen2 import token
+from lib2to3.pygram import python_symbols as syms
 
 from yapf.yapflib import format_token
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
+from yapf.yapflib import style
 
 
 def AssignSubtypes(tree):
@@ -79,6 +82,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             else:
               self._AppendFirstLeafTokenSubtype(
                   child, format_token.Subtype.DICTIONARY_VALUE)
+            if style.Get('INDENT_DICTIONARY_VALUE'):
+              _InsertPseudoParentheses(child)
         last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
         last_was_colon = isinstance(child, pytree.Leaf) and child.value == ':'
       self.Visit(child)
@@ -314,3 +319,17 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         if pytree_utils.NodeName(child) != 'COMMA':
           self._AppendFirstLeafTokenSubtype(
               child, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+
+
+def _InsertPseudoParentheses(node):
+    lparen = pytree.Leaf(token.LPAR, u"(")
+    rparen = pytree.Leaf(token.RPAR, u")")
+    lparen.is_pseudo = True
+    rparen.is_pseudo = True
+
+    if isinstance(node, pytree.Node):
+      node.insert_child(0, lparen)
+      node.append_child(rparen)
+    else:
+      new_node = pytree.Node(syms.atom, [lparen, node.clone(), rparen])
+      node.replace(new_node)
