@@ -2411,7 +2411,8 @@ class TestsForPEP8Style(ReformatterTest):
               long_argument_1, long_argument_2)
           """)
       uwlines = _ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
@@ -2719,7 +2720,6 @@ v, w, x, y, z
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
 
 
 def _ParseAndUnwrap(code, dumptree=False):

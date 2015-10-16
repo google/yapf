@@ -222,7 +222,6 @@ def _BoolConverter(s):
   """Option value converter for a boolean."""
   return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
 
-
 # Different style options need to have their values interpreted differently when
 # read from the config file. This dict maps an option name to a "converter"
 # function that accepts the string read for the option's value from the file and
@@ -253,8 +252,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_IMPORT_NAMES=int,
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
-)
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,)
 
 
 def CreateStyleFromConfig(style_config):
@@ -290,8 +288,8 @@ def CreateStyleFromConfig(style_config):
 def _CreateConfigParserFromConfigString(config_string):
   """Given a config string from the command line, return a config parser."""
   if config_string[0] != '{' or config_string[-1] != '}':
-    raise StyleConfigError(
-        "Invalid style dict syntax: '{}'.".format(config_string))
+    raise StyleConfigError("Invalid style dict syntax: '{}'.".format(
+        config_string))
   config = py3compat.ConfigParser()
   config.add_section('style')
   for key, value in re.findall(r'([a-zA-Z0-9_]+)\s*[:=]\s*([a-zA-Z0-9_]+)',
@@ -304,14 +302,14 @@ def _CreateConfigParserFromConfigFile(config_filename):
   """Read the file and return a ConfigParser object."""
   if not os.path.exists(config_filename):
     # Provide a more meaningful error here.
-    raise StyleConfigError(
-        '"{0}" is not a valid style or file path'.format(config_filename))
+    raise StyleConfigError('"{0}" is not a valid style or file path'.format(
+        config_filename))
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
     if not config.has_section('style'):
-      raise StyleConfigError(
-          'Unable to find section [style] in {0}'.format(config_filename))
+      raise StyleConfigError('Unable to find section [style] in {0}'.format(
+          config_filename))
     return config
 
 
@@ -345,10 +343,9 @@ def _CreateStyleFromConfigParser(config):
     try:
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     except ValueError:
-      raise StyleConfigError(
-          "'{}' is not a valid setting for {}.".format(value, option))
+      raise StyleConfigError("'{}' is not a valid setting for {}.".format(
+          value, option))
   return base_style
-
 
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.

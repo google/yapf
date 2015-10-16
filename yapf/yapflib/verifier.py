@@ -71,8 +71,8 @@ def _NormalizeCode(code):
   elif re.match(r'(elif|else)\b', code):
     try:
       try_code = 'if True:\n    pass\n' + code + '\n    pass'
-      ast.parse(textwrap.dedent(try_code.lstrip('\n')).lstrip(), '<string>',
-                'exec')
+      ast.parse(
+          textwrap.dedent(try_code.lstrip('\n')).lstrip(), '<string>', 'exec')
       code = try_code
     except SyntaxError:
       # The assumption here is that the code is on a single line.

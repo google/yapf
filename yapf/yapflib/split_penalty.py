@@ -140,8 +140,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
     elif len(node.children) == 3:
-      if (pytree_utils.NodeName(node.children[1]) not in
-          {'arglist', 'argument', 'term'}):
+      if (pytree_utils.NodeName(node.children[1]) not in {'arglist', 'argument',
+                                                          'term'}):
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
       elif pytree_utils.NodeName(node.children[-1]) == 'RSQB':
@@ -303,12 +303,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         if node.value in {'(', 'for', 'if'}:
           return
         penalty_annotation = pytree_utils.GetNodeAnnotation(
-            node, pytree_utils.Annotation.SPLIT_PENALTY,
+            node,
+            pytree_utils.Annotation.SPLIT_PENALTY,
             default=0)
         if penalty_annotation < penalty:
-          pytree_utils.SetNodeAnnotation(node,
-                                         pytree_utils.Annotation.SPLIT_PENALTY,
-                                         penalty)
+          pytree_utils.SetNodeAnnotation(
+              node, pytree_utils.Annotation.SPLIT_PENALTY, penalty)
       else:
         for child in node.children:
           RecArithmeticExpression(child, first_child_leaf)
@@ -330,7 +330,8 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
   for child in tree.children:
     _RecAnnotate(child, annotate_name, annotate_value)
   if isinstance(tree, pytree.Leaf):
-    cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name,
+    cur_annotate = pytree_utils.GetNodeAnnotation(tree,
+                                                  annotate_name,
                                                   default=0)
     if cur_annotate < annotate_value:
       pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
@@ -338,6 +339,7 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
 
 def _AllowBuilderStyleCalls(node):
   """Allow splitting before '.' if it's a builder style function call."""
+
   def RecGetLeaves(node):
     if isinstance(node, pytree.Leaf):
       return [node]
@@ -351,8 +353,8 @@ def _AllowBuilderStyleCalls(node):
   for child in list_of_children:
     if child.value == '.':
       if prev_child.lineno != child.lineno:
-        pytree_utils.SetNodeAnnotation(
-            child, pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        pytree_utils.SetNodeAnnotation(child,
+                                       pytree_utils.Annotation.SPLIT_PENALTY, 0)
     prev_child = child
 
 

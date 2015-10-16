@@ -284,9 +284,8 @@ def _AdjustSplitPenalty(uwline):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
-  if not (_ContainsComments(node) or
-          (isinstance(node.children[-1], pytree.Leaf) and
-           node.children[-1].value == ',')):
+  if not (_ContainsComments(node) or (isinstance(node.children[-1], pytree.Leaf)
+                                      and node.children[-1].value == ',')):
     return
   num_children = len(node.children)
   index = 0
@@ -321,5 +320,5 @@ def _SetMustSplitOnFirstLeaf(node):
 
     return FindFirstLeaf(node.children[0])
 
-  pytree_utils.SetNodeAnnotation(FindFirstLeaf(node),
-                                 pytree_utils.Annotation.MUST_SPLIT, True)
+  pytree_utils.SetNodeAnnotation(
+      FindFirstLeaf(node), pytree_utils.Annotation.MUST_SPLIT, True)

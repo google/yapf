@@ -139,7 +139,8 @@ def FormatCode(unformatted_source,
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
 
-  code_diff = _GetUnifiedDiff(unformatted_source, reformatted_source,
+  code_diff = _GetUnifiedDiff(unformatted_source,
+                              reformatted_source,
                               filename=filename)
 
   if print_diff:
@@ -184,7 +185,8 @@ def ReadFile(filename, logger=None):
     raise
 
   try:
-    with py3compat.open_with_encoding(filename, mode='r',
+    with py3compat.open_with_encoding(filename,
+                                      mode='r',
                                       encoding=encoding) as fd:
       source = fd.read()
     return source, encoding
@@ -252,6 +254,10 @@ def _GetUnifiedDiff(before, after, filename='code'):
   """
   before = before.splitlines()
   after = after.splitlines()
-  return '\n'.join(difflib.unified_diff(before, after, filename, filename,
-                                        '(original)', '(reformatted)',
+  return '\n'.join(difflib.unified_diff(before,
+                                        after,
+                                        filename,
+                                        filename,
+                                        '(original)',
+                                        '(reformatted)',
                                         lineterm='')) + '\n'

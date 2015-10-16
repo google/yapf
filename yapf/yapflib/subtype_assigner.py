@@ -44,7 +44,6 @@ def AssignSubtypes(tree):
   subtype_assigner = _SubtypeAssigner()
   subtype_assigner.Visit(tree)
 
-
 # Map tokens in argument lists to their respective subtype.
 _ARGLIST_TOKEN_TO_SUBTYPE = {
     '=': format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
@@ -63,8 +62,9 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # dictsetmaker ::= (test ':' test (comp_for |
     #                                   (',' test ':' test)* [','])) |
     #                  (test (comp_for | (',' test)* [',']))
-    dict_maker = (len(node.children) > 1 and isinstance(
-        node.children[1], pytree.Leaf) and node.children[1].value == ':')
+    dict_maker = (len(node.children) > 1 and isinstance(node.children[1],
+                                                        pytree.Leaf) and
+                  node.children[1].value == ':')
     last_was_comma = False
     last_was_colon = False
     for child in node.children:
@@ -286,8 +286,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
   def _AppendTokenSubtype(self, node, subtype, force=True):
     """Append the token's subtype only if it's not already set."""
-    pytree_utils.AppendNodeAnnotation(
-        node, pytree_utils.Annotation.SUBTYPE, subtype)
+    pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
+                                      subtype)
 
   def _GetFirstLeafTokenSubtypes(self, node):
     if isinstance(node, pytree.Leaf):
@@ -303,6 +303,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     self._AppendFirstLeafTokenSubtype(node.children[0], subtype, force=force)
 
   def _SetDefaultOrNamedAssignArgListSubtype(self, node):
+
     def HasDefaultOrNamedAssignSubtype(node):
       if isinstance(node, pytree.Leaf):
         if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
@@ -322,14 +323,14 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
 
 def _InsertPseudoParentheses(node):
-    lparen = pytree.Leaf(token.LPAR, u"(")
-    rparen = pytree.Leaf(token.RPAR, u")")
-    lparen.is_pseudo = True
-    rparen.is_pseudo = True
+  lparen = pytree.Leaf(token.LPAR, u"(")
+  rparen = pytree.Leaf(token.RPAR, u")")
+  lparen.is_pseudo = True
+  rparen.is_pseudo = True
 
-    if isinstance(node, pytree.Node):
-      node.insert_child(0, lparen)
-      node.append_child(rparen)
-    else:
-      new_node = pytree.Node(syms.atom, [lparen, node.clone(), rparen])
-      node.replace(new_node)
+  if isinstance(node, pytree.Node):
+    node.insert_child(0, lparen)
+    node.append_child(rparen)
+  else:
+    new_node = pytree.Node(syms.atom, [lparen, node.clone(), rparen])
+    node.replace(new_node)

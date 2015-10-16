@@ -96,8 +96,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
 
   def testInsertNodesBefore(self):
     # Insert before simple_stmt and make sure it went to the right place
-    pytree_utils.InsertNodesBefore([self._MakeNewNodeRPAR()],
-                                   self._simple_tree.children[2])
+    pytree_utils.InsertNodesBefore(
+        [self._MakeNewNodeRPAR()], self._simple_tree.children[2])
     self.assertEqual(4, len(self._simple_tree.children))
     self.assertEqual('RPAR',
                      pytree_utils.NodeName(self._simple_tree.children[2]))
@@ -116,8 +116,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
 
   def testInsertNodesAfter(self):
     # Insert after and make sure it went to the right place
-    pytree_utils.InsertNodesAfter([self._MakeNewNodeRPAR()],
-                                  self._simple_tree.children[2])
+    pytree_utils.InsertNodesAfter(
+        [self._MakeNewNodeRPAR()], self._simple_tree.children[2])
     self.assertEqual(4, len(self._simple_tree.children))
     self.assertEqual('simple_stmt',
                      pytree_utils.NodeName(self._simple_tree.children[2]))
@@ -137,8 +137,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
   def testInsertNodesWhichHasParent(self):
     # Try to insert an existing tree node into another place and fail.
     with self.assertRaises(RuntimeError):
-      pytree_utils.InsertNodesAfter([self._simple_tree.children[1]],
-                                    self._simple_tree.children[0])
+      pytree_utils.InsertNodesAfter(
+          [self._simple_tree.children[1]], self._simple_tree.children[0])
 
 
 class AnnotationsTest(unittest.TestCase):

@@ -87,14 +87,18 @@ class GetCommandLineFilesTest(unittest.TestCase):
     file2 = os.path.join(tdir2, 'testfile2.py')
     _touch_files([file1, file2])
 
-    self.assertEqual(file_resources.GetCommandLineFiles([file1, file2],
-                                                        recursive=False,
-                                                        exclude=None),
-                     [file1, file2])
-    self.assertEqual(file_resources.GetCommandLineFiles([file1, file2],
-                                                        recursive=True,
-                                                        exclude=None),
-                     [file1, file2])
+    self.assertEqual(
+        file_resources.GetCommandLineFiles(
+            [file1, file2],
+            recursive=False,
+            exclude=None),
+        [file1, file2])
+    self.assertEqual(
+        file_resources.GetCommandLineFiles(
+            [file1, file2],
+            recursive=True,
+            exclude=None),
+        [file1, file2])
 
   def test_nonrecursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
@@ -103,10 +107,12 @@ class GetCommandLineFilesTest(unittest.TestCase):
     file2 = os.path.join(tdir2, 'testfile2.py')
     _touch_files([file1, file2])
 
-    self.assertEqual(file_resources.GetCommandLineFiles([tdir1],
-                                                        recursive=False,
-                                                        exclude=None),
-                     [file1])
+    self.assertEqual(
+        file_resources.GetCommandLineFiles(
+            [tdir1],
+            recursive=False,
+            exclude=None),
+        [file1])
 
   def test_recursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
@@ -118,9 +124,10 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     self.assertEqual(
-        sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
-                                                  recursive=True,
-                                                  exclude=None)),
+        sorted(file_resources.GetCommandLineFiles(
+            [self.test_tmpdir],
+            recursive=True,
+            exclude=None)),
         sorted(files))
 
   def test_recursive_find_in_dir_with_exclude(self):
@@ -133,11 +140,12 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     self.assertEqual(
-        sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
-                                                  recursive=True,
-                                                  exclude=['*test*3.py'])),
-        sorted([os.path.join(tdir1, 'testfile1.py'),
-                os.path.join(tdir2, 'testfile2.py')]))
+        sorted(file_resources.GetCommandLineFiles(
+            [self.test_tmpdir],
+            recursive=True,
+            exclude=['*test*3.py'])),
+        sorted([os.path.join(tdir1, 'testfile1.py'), os.path.join(
+            tdir2, 'testfile2.py')]))
 
 
 class IsPythonFileTest(unittest.TestCase):
@@ -209,7 +217,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
   def test_write_to_file(self):
     s = u'foobar'
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir) as testfile:
-      file_resources.WriteReformattedCode(testfile.name, s,
+      file_resources.WriteReformattedCode(testfile.name,
+                                          s,
                                           in_place=True,
                                           encoding='utf-8')
       testfile.flush()
@@ -221,7 +230,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
     s = u'foobar'
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
-      file_resources.WriteReformattedCode(None, s,
+      file_resources.WriteReformattedCode(None,
+                                          s,
                                           in_place=False,
                                           encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
@@ -230,7 +240,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
     s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with stdout_redirector(stream):
-      file_resources.WriteReformattedCode(None, s,
+      file_resources.WriteReformattedCode(None,
+                                          s,
                                           in_place=False,
                                           encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)

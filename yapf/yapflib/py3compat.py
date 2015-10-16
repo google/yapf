@@ -18,7 +18,6 @@ import sys
 
 PY3 = sys.version_info[0] == 3
 
-
 if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
@@ -81,5 +80,6 @@ def unicode(s):
 # fix this - now read_file works across all Python versions we care about.
 class ConfigParser(configparser.ConfigParser):
   if not PY3:
+
     def read_file(self, fp, source=None):
       self.readfp(fp, filename=source)

@@ -69,7 +69,8 @@ def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
     encoding: (unicode) The encoding of the file.
   """
   if in_place:
-    with py3compat.open_with_encoding(filename, mode='w',
+    with py3compat.open_with_encoding(filename,
+                                      mode='w',
                                       encoding=encoding) as fd:
       fd.write(reformatted_code)
   else:
@@ -95,7 +96,8 @@ def _FindPythonFiles(filenames, recursive, exclude):
       python_files.append(filename)
 
   if exclude:
-    return [f for f in python_files
+    return [f
+            for f in python_files
             if not any(fnmatch.fnmatch(f, p) for p in exclude)]
 
   return python_files
@@ -122,7 +124,8 @@ def IsPythonFile(filename):
     return False
 
   try:
-    with py3compat.open_with_encoding(filename, mode='r',
+    with py3compat.open_with_encoding(filename,
+                                      mode='r',
                                       encoding=encoding) as fd:
       first_line = fd.readlines()[0]
   except (IOError, IndexError):

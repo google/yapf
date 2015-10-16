@@ -29,8 +29,8 @@ class UtilsTest(unittest.TestCase):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('foo,bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('  foo'), ['foo'])
-    self.assertEqual(style._StringListConverter('joe  ,foo,  bar'),
-                     ['joe', 'foo', 'bar'])
+    self.assertEqual(
+        style._StringListConverter('joe  ,foo,  bar'), ['joe', 'foo', 'bar'])
 
   def testBoolConverter(self):
     self.assertEqual(style._BoolConverter('true'), True)
@@ -40,15 +40,13 @@ class UtilsTest(unittest.TestCase):
 
 
 def _LooksLikeChromiumStyle(cfg):
-  return (
-      cfg['INDENT_WIDTH'] == 2 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
-  )
+  return (cfg['INDENT_WIDTH'] == 2 and
+          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
 
 
 def _LooksLikeGoogleStyle(cfg):
-  return (
-      cfg['INDENT_WIDTH'] == 4 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
-  )
+  return (cfg['INDENT_WIDTH'] == 4 and
+          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
 
 
 def _LooksLikePEP8Style(cfg):
@@ -57,9 +55,7 @@ def _LooksLikePEP8Style(cfg):
 
 
 def _LooksLikeFacebookStyle(cfg):
-  return (
-      cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS']
-  )
+  return (cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS'])
 
 
 class PredefinedStylesByNameTest(unittest.TestCase):

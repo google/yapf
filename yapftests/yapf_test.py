@@ -192,7 +192,8 @@ class FormatFileTest(unittest.TestCase):
 
         if h:    i
         """)
-    formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
+    formatted_code = yapf_api.FormatFile(file1,
+                                         style_config='pep8',
                                          lines=[(1, 2)])[0]
     self.assertCodeEqual(expected_formatted_code_lines1and2, formatted_code)
 
@@ -203,7 +204,8 @@ class FormatFileTest(unittest.TestCase):
 
         if h:    i
         """)
-    formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
+    formatted_code = yapf_api.FormatFile(file1,
+                                         style_config='pep8',
                                          lines=[(3, 3)])[0]
     self.assertCodeEqual(expected_formatted_code_lines3, formatted_code)
 
@@ -225,8 +227,11 @@ class FormatFileTest(unittest.TestCase):
     with open(file1) as f:
       self.assertCodeEqual(formatted_code, f.read())
 
-    self.assertRaises(ValueError, yapf_api.FormatFile, file1,
-                      in_place=True, print_diff=True)
+    self.assertRaises(ValueError,
+                      yapf_api.FormatFile,
+                      file1,
+                      in_place=True,
+                      print_diff=True)
 
   def testNoFile(self):
     self.assertRaises(IOError, yapf_api.FormatFile, 'not_a_file.py')
@@ -369,7 +374,8 @@ class CommandLineTest(unittest.TestCase):
         def foo():  # trail
           x = 37
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--style=chromium'])
 
   def testSetCustomStyleBasedOnChromium(self):
@@ -389,7 +395,8 @@ class CommandLineTest(unittest.TestCase):
           SPACES_BEFORE_COMMENT = 4
           '''))
       f.flush()
-      self.assertYapfReformats(unformatted_code, expected_formatted_code,
+      self.assertYapfReformats(unformatted_code,
+                               expected_formatted_code,
                                extra_options=['--style={0}'.format(f.name)])
 
   def testReadSingleLineCodeFromStdin(self):
@@ -442,7 +449,8 @@ class CommandLineTest(unittest.TestCase):
     # TODO(ambv): the `expected_formatted_code` here is not PEP8 compliant,
     # raising "E129 visually indented line with same indent as next logical
     # line" with flake8.
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '1-2'])
 
   def testReformattingSkippingLines(self):
@@ -613,7 +621,8 @@ class CommandLineTest(unittest.TestCase):
 
                 pass
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '1-2'])
 
     unformatted_code = textwrap.dedent(u"""\
@@ -648,9 +657,10 @@ class CommandLineTest(unittest.TestCase):
 
         #   trailing whitespace
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '3-3',
-                                            '--lines', '13-13'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '3-3', '--lines', '13-13'])
 
     unformatted_code = textwrap.dedent(u"""\
         '''
@@ -661,7 +671,8 @@ class CommandLineTest(unittest.TestCase):
         import blah
         """)
 
-    self.assertYapfReformats(unformatted_code, unformatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             unformatted_code,
                              extra_options=['--lines', '2-2'])
 
   def testRetainingSemicolonsWhenSpecifyingLines(self):
@@ -677,7 +688,8 @@ class CommandLineTest(unittest.TestCase):
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '1-1'])
 
   def testDisabledMultilineStrings(self):
@@ -701,7 +713,8 @@ class CommandLineTest(unittest.TestCase):
         </body>
         </html>"""
         ''')
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '1-1'])
 
   def testDisableWhenSpecifyingLines(self):
@@ -729,7 +742,8 @@ class CommandLineTest(unittest.TestCase):
             'world',
         ])  # yapf: disable
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '1-10'])
 
   def testDisableFormattingInDataLiteral(self):
@@ -767,7 +781,8 @@ class CommandLineTest(unittest.TestCase):
             why_would_you()
             ['do', 'that', ]
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '10-18'])
 
   def testRetainVerticalFormattingBetweenDisabledAndEnabledLines(self):
@@ -791,7 +806,8 @@ class CommandLineTest(unittest.TestCase):
                      c.ffffffffffff), gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '4-7'])
 
   def testFormatLinesSpecifiedInMiddleOfExpression(self):
@@ -815,7 +831,8 @@ class CommandLineTest(unittest.TestCase):
                      c.ffffffffffff), gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '5-6'])
 
   def testCommentFollowingMultilineString(self):
@@ -835,8 +852,10 @@ class CommandLineTest(unittest.TestCase):
             x = '''hello world'''  # second comment
             return 42  # another comment
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--lines', '1-1'])
+
   def testDedentClosingBracket(self):
     # no line-break on the first argument, not dedenting closing brackets
     unformatted_code = textwrap.dedent(u"""\
@@ -849,7 +868,8 @@ class CommandLineTest(unittest.TestCase):
                                     second_argument_makes_the_line_too_long):
           pass
     """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
                              extra_options=['--style=pep8'])
 
     # TODO(ambv): currently the following produces the closing bracket on a new
@@ -878,7 +898,8 @@ second_argument_makes_the_line_too_long):
       ):
           pass
     """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_fb_code,
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_fb_code,
                              extra_options=['--style=facebook'])
     # TODO(ambv): currently the following produces code that is not PEP8
     # compliant, raising "E125 continuation line with same indent as next

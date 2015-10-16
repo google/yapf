@@ -182,9 +182,8 @@ def _LineContainsI18n(uwline):
   Returns:
     True if the line contains i18n comments or function calls. False otherwise.
   """
-  if (style.Get('I18N_COMMENT') and any(re.search(style.Get('I18N_COMMENT'),
-                                                  tok.value)
-                                        for tok in uwline.tokens)):
+  if (style.Get('I18N_COMMENT') and any(re.search(
+      style.Get('I18N_COMMENT'), tok.value) for tok in uwline.tokens)):
     # Contains an i18n comment.
     return True
 
@@ -375,10 +374,9 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline):
     prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
   """
-  first_token.AddWhitespacePrefix(_CalculateNumberOfNewlines(first_token,
-                                                             indent_depth,
-                                                             prev_uwline),
-                                  indent_level=indent_depth)
+  first_token.AddWhitespacePrefix(
+      _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline),
+      indent_level=indent_depth)
 
 
 NO_BLANK_LINES = 1
@@ -484,10 +482,9 @@ def _SingleOrMergedLines(uwlines):
         if uwlines[index].lineno != uwline.lineno:
           break
         if uwline.last.value != ':':
-          leaf = pytree.Leaf(
-              type=token.SEMI,
-              value=';',
-              context=('', (uwline.lineno, column)))
+          leaf = pytree.Leaf(type=token.SEMI,
+                             value=';',
+                             context=('', (uwline.lineno, column)))
           uwline.AppendToken(format_token.FormatToken(leaf))
         for tok in uwlines[index].tokens:
           uwline.AppendToken(tok)

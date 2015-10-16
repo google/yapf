@@ -38,7 +38,6 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-
 __version__ = '0.6.0'
 
 
@@ -70,34 +69,39 @@ def main(argv):
             'default is pep8 unless a %s file located in one of the parent '
             'directories of the source file (or current directory for '
             'stdin)' % style.LOCAL_STYLE))
-  parser.add_argument('--no-local-style',
-                      action='store_true',
-                      help=('Do not search for local style defintion (%s)' %
-                            style.LOCAL_STYLE))
+  parser.add_argument(
+      '--no-local-style',
+      action='store_true',
+      help=('Do not search for local style defintion (%s)' % style.LOCAL_STYLE))
   parser.add_argument('--verify',
                       action='store_true',
                       help='try to verify reformatted code for syntax errors')
-  parser.add_argument('-e', '--exclude',
+  parser.add_argument('-e',
+                      '--exclude',
                       metavar='PATTERN',
                       action='append',
                       default=None,
                       help='patterns for files to exclude from formatting')
   diff_inplace_group = parser.add_mutually_exclusive_group()
-  diff_inplace_group.add_argument('-d', '--diff',
+  diff_inplace_group.add_argument('-d',
+                                  '--diff',
                                   action='store_true',
                                   help='print the diff for the fixed source')
-  diff_inplace_group.add_argument('-i', '--in-place',
+  diff_inplace_group.add_argument('-i',
+                                  '--in-place',
                                   action='store_true',
                                   help='make changes to files in place')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
   lines_recursive_group.add_argument(
-      '-l', '--lines',
+      '-l',
+      '--lines',
       metavar='START-END',
       action='append',
       default=None,
       help='range of lines to reformat, one-based')
-  lines_recursive_group.add_argument('-r', '--recursive',
+  lines_recursive_group.add_argument('-r',
+                                     '--recursive',
                                      action='store_true',
                                      help='run recursively over directories')
 
@@ -163,7 +167,8 @@ def main(argv):
   return 2 if changed else 0
 
 
-def FormatFiles(filenames, lines,
+def FormatFiles(filenames,
+                lines,
                 style_config=None,
                 no_local_style=False,
                 in_place=False,
@@ -196,8 +201,12 @@ def FormatFiles(filenames, lines,
           file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
     try:
       reformatted_code, encoding, has_change = yapf_api.FormatFile(
-          filename, style_config=style_config, lines=lines,
-          print_diff=print_diff, verify=verify, logger=logging.warning)
+          filename,
+          style_config=style_config,
+          lines=lines,
+          print_diff=print_diff,
+          verify=verify,
+          logger=logging.warning)
       changed |= has_change
     except SyntaxError as e:
       e.filename = filename

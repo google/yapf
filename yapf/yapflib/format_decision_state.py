@@ -91,9 +91,9 @@ class FormatDecisionState(object):
             self.column == other.column and
             self.paren_level == other.paren_level and
             self.start_of_line_level == other.start_of_line_level and
-            self.lowest_level_on_line == other.lowest_level_on_line and
-            (self.ignore_stack_for_comparison or
-             other.ignore_stack_for_comparison or self.stack == other.stack))
+            self.lowest_level_on_line == other.lowest_level_on_line and (
+                self.ignore_stack_for_comparison or
+                other.ignore_stack_for_comparison or self.stack == other.stack))
 
   def __ne__(self, other):
     return not self == other
@@ -308,9 +308,8 @@ class FormatDecisionState(object):
 
     # Add a penalty for each increasing newline we add.
     last = self.stack[-1]
-    penalty += (
-        style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') * last.num_line_splits
-    )
+    penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
+                last.num_line_splits)
     if not must_split and current.value not in {'if', 'for'}:
       # Don't penalize for a must split or for splitting before an
       # if-expression or list comprehension.
@@ -334,8 +333,8 @@ class FormatDecisionState(object):
       if (previous.OpensScope() or
           (previous.is_comment and previous.previous_token is not None and
            previous.previous_token.OpensScope())):
-        return max(
-            0, top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+        return max(0,
+                   top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
@@ -348,11 +347,10 @@ class FormatDecisionState(object):
           return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     if format_token.Subtype.IF_TEST_EXPR in current.subtypes:
-      token_indent = (
-          len(self.line.first.whitespace_prefix.split('\n')[-1]) +
-          style.Get('INDENT_WIDTH'))
-      if (token_indent == top_of_stack.indent and not
-          style.Get('DEDENT_CLOSING_BRACKETS')):
+      token_indent = (len(self.line.first.whitespace_prefix.split('\n')[-1]) +
+                      style.Get('INDENT_WIDTH'))
+      if (token_indent == top_of_stack.indent and
+          not style.Get('DEDENT_CLOSING_BRACKETS')):
         return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
 
     return top_of_stack.indent

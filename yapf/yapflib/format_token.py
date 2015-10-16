@@ -112,8 +112,7 @@ class FormatToken(object):
       indent_level: (int) The indentation level.
     """
     spaces_before = (
-        ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces
-    )
+        ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
@@ -121,16 +120,14 @@ class FormatToken(object):
 
     if not self.whitespace_prefix:
       self.whitespace_prefix = (
-          '\n' * (self.newlines or newlines_before) + spaces_before
-      )
+          '\n' * (self.newlines or newlines_before) + spaces_before)
     else:
       self.whitespace_prefix += spaces_before
 
   def AdjustNewlinesBefore(self, newlines_before):
     """Change the number of newlines before this token."""
     self.whitespace_prefix = (
-        '\n' * newlines_before + self.whitespace_prefix.lstrip('\n')
-    )
+        '\n' * newlines_before + self.whitespace_prefix.lstrip('\n'))
 
   def RetainHorizontalSpacing(self, first_column, depth):
     """Retains a token's horizontal spacing."""
