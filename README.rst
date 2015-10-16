@@ -173,7 +173,7 @@ and reformat it into:
 
 
     def f(a):
-        return 37 + -+a[42 - x:y ** 3]
+        return 37 + -+a[42 - x:y**3]
 
 Example as a module
 ===================

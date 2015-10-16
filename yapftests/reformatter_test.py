@@ -172,7 +172,7 @@ class BasicReformatterTest(ReformatterTest):
 
 
         def f(a):
-          return 37 + -+a[42 - x:y ** 3]
+          return 37 + -+a[42 - x:y**3]
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1412,6 +1412,16 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                                                                      comment_lineno,
                                                                      comment_column,
                                                                      standalone=True))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testBinaryOperators(self):
+    unformatted_code = textwrap.dedent("""\
+        a = b ** 37
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a = b**37
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
