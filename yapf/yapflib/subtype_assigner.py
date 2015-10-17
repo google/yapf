@@ -289,12 +289,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                       subtype)
 
-  def _GetFirstLeafTokenSubtypes(self, node):
-    if isinstance(node, pytree.Leaf):
-      return pytree_utils.GetNodeAnnotation(
-          node, pytree_utils.Annotation.SUBTYPE, set())
-    return self._GetFirstLeafTokenSubtypes(node.children[0])
-
   def _AppendFirstLeafTokenSubtype(self, node, subtype, force=False):
     """Append the first leaf token's subtypes."""
     if isinstance(node, pytree.Leaf):
@@ -307,7 +301,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     def HasDefaultOrNamedAssignSubtype(node):
       if isinstance(node, pytree.Leaf):
         if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
-            self._GetFirstLeafTokenSubtypes(node)):
+            pytree_utils.GetNodeAnnotation(
+                node, pytree_utils.Annotation.SUBTYPE, set())):
           return True
         return False
       has_subtype = False
