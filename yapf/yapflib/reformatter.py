@@ -91,8 +91,6 @@ def Reformat(uwlines, verify=True):
   for line in final_lines:
     formatted_line = []
     for tok in line.tokens:
-      if tok.name in pytree_utils.NONSEMANTIC_TOKENS:
-        continue
       if not tok.is_pseudo_paren:
         formatted_line.append(tok.whitespace_prefix)
         formatted_line.append(tok.value)
