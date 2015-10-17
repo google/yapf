@@ -6,6 +6,12 @@
 ### Added
 - Add knob to indent the dictionary value if there is a split before it.
 
+### Changed
+- No longer check that a file is a "Python" file unless the '--recursive' flag
+  is specified.
+- No longer allow the user to specify a directory unless the '--recursive' flag
+  is specified.
+
 ### Fixed
 - When determining if we should split a dictionary's value to a new line, use
   the longest entry instead of the total dictionary's length. This allows the

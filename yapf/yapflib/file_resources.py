@@ -23,6 +23,7 @@ import re
 
 from lib2to3.pgen2 import tokenize
 
+from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 
@@ -89,10 +90,9 @@ def _FindPythonFiles(filenames, recursive, exclude):
             for dirpath, _, filelist in os.walk(filename) for f in filelist
             if IsPythonFile(os.path.join(dirpath, f)))
       else:
-        python_files.extend(os.path.join(filename, f)
-                            for f in os.listdir(filename)
-                            if IsPythonFile(os.path.join(filename, f)))
-    elif os.path.isfile(filename) and IsPythonFile(filename):
+        raise errors.YapfError(
+            "directory specified without '--recursive' flag: %s" % filename)
+    elif os.path.isfile(filename):
       python_files.append(filename)
 
   if exclude:

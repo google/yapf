@@ -100,20 +100,6 @@ class GetCommandLineFilesTest(unittest.TestCase):
             exclude=None),
         [file1, file2])
 
-  def test_nonrecursive_find_in_dir(self):
-    tdir1 = self._make_test_dir('test1')
-    tdir2 = self._make_test_dir('test1/foo')
-    file1 = os.path.join(tdir1, 'testfile1.py')
-    file2 = os.path.join(tdir2, 'testfile2.py')
-    _touch_files([file1, file2])
-
-    self.assertEqual(
-        file_resources.GetCommandLineFiles(
-            [tdir1],
-            recursive=False,
-            exclude=None),
-        [file1])
-
   def test_recursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
     tdir2 = self._make_test_dir('test2/testinner/')
