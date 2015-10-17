@@ -259,6 +259,15 @@ class FormatFileTest(unittest.TestCase):
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
     self.assertCodeEqual(code, formatted_code)
 
+  def testDisabledSemiColonSeparatedStatements(self):
+    code = textwrap.dedent("""\
+        # yapf: disable
+        if True: a ; b
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
 
 class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""
