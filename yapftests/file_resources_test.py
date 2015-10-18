@@ -21,6 +21,7 @@ import sys
 import tempfile
 import unittest
 
+from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 
@@ -99,6 +100,19 @@ class GetCommandLineFilesTest(unittest.TestCase):
             recursive=True,
             exclude=None),
         [file1, file2])
+
+  def test_nonrecursive_find_in_dir(self):
+    tdir1 = self._make_test_dir('test1')
+    tdir2 = self._make_test_dir('test1/foo')
+    file1 = os.path.join(tdir1, 'testfile1.py')
+    file2 = os.path.join(tdir2, 'testfile2.py')
+    _touch_files([file1, file2])
+
+    self.assertRaises(errors.YapfError,
+                      file_resources.GetCommandLineFiles,
+                      command_line_file_list=[tdir1],
+                      recursive=False,
+                      exclude=None)
 
   def test_recursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')

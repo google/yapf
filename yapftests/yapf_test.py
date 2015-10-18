@@ -15,6 +15,7 @@
 """Tests for yapf.yapf."""
 
 import io
+import logging
 import os
 import shutil
 import subprocess
@@ -23,6 +24,7 @@ import tempfile
 import textwrap
 import unittest
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
@@ -234,7 +236,16 @@ class FormatFileTest(unittest.TestCase):
                       print_diff=True)
 
   def testNoFile(self):
-    self.assertRaises(IOError, yapf_api.FormatFile, 'not_a_file.py')
+    stream = py3compat.StringIO()
+    handler = logging.StreamHandler(stream)
+    logger = logging.getLogger('mylogger')
+    logger.addHandler(handler)
+    self.assertRaises(IOError,
+                      yapf_api.FormatFile,
+                      'not_a_file.py',
+                      logger=logger.error)
+    self.assertEqual(stream.getvalue(),
+                     "[Errno 2] No such file or directory: 'not_a_file.py'\n")
 
   def testCommentsUnformatted(self):
     code = textwrap.dedent("""\
@@ -792,7 +803,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code,
                              expected_formatted_code,
-                             extra_options=['--lines', '10-18'])
+                             extra_options=['--lines', '14-15'])
 
   def testRetainVerticalFormattingBetweenDisabledAndEnabledLines(self):
     unformatted_code = textwrap.dedent(u"""\
