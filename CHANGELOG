@@ -29,6 +29,7 @@
   split before it.
 - Remove spaces around '**' operator.
 - Retain formatting of comments in the middle of an expression.
+- Don't add a newline to an empty file.
 
 ## [0.5.0] 2015-10-11
 ### Added

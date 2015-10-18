@@ -202,6 +202,7 @@ def FormatFiles(filenames,
     try:
       reformatted_code, encoding, has_change = yapf_api.FormatFile(
           filename,
+          in_place=in_place,
           style_config=style_config,
           lines=lines,
           print_diff=print_diff,

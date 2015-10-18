@@ -41,6 +41,7 @@ from lib2to3.pgen2 import tokenize
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
+from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -88,11 +89,10 @@ def FormatFile(filename,
                                            print_diff=print_diff,
                                            verify=verify)
   if in_place:
-    with py3compat.open_with_encoding(filename,
-                                      mode='w',
-                                      encoding=encoding) as fd:
-      fd.write(reformatted_source)
-      return None, encoding, changed
+    if original_source:
+      file_resources.WriteReformattedCode(filename, reformatted_source,
+                                          in_place, encoding)
+    return None, encoding, changed
 
   return reformatted_source, encoding, changed
 
