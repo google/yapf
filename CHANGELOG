@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.6.0] UNRELEASED
+## [0.6.0] 2015-10-18
 ### Added
 - Add knob to indent the dictionary value if there is a split before it.
 
@@ -30,6 +30,8 @@
 - Remove spaces around '**' operator.
 - Retain formatting of comments in the middle of an expression.
 - Don't add a newline to an empty file.
+- Over indent a function's parameter list if it's not distinguished from the
+  body of the function.
 
 ## [0.5.0] 2015-10-11
 ### Added

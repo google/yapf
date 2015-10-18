@@ -238,6 +238,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     self._ProcessArgLists(node)
     self._SetDefaultOrNamedAssignArgListSubtype(node)
 
+    for child in node.children:
+      if pytree_utils.NodeName(child) != 'COMMA':
+        self._AppendFirstLeafTokenSubtype(child, format_token.Subtype.PARAMETER)
+
   def Visit_varargslist(self, node):  # pylint: disable=invalid-name
     # varargslist ::=
     #     ((vfpdef ['=' test] ',')*
@@ -318,8 +322,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
 
 def _InsertPseudoParentheses(node):
-  lparen = pytree.Leaf(token.LPAR, u"(")
-  rparen = pytree.Leaf(token.RPAR, u")")
+  lparen = pytree.Leaf(token.LPAR, u'(')
+  rparen = pytree.Leaf(token.RPAR, u')')
   lparen.is_pseudo = True
   rparen.is_pseudo = True
 

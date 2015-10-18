@@ -346,7 +346,8 @@ class FormatDecisionState(object):
         if previous and (previous.value == ':' or previous.is_pseudo_paren):
           return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
-    if format_token.Subtype.IF_TEST_EXPR in current.subtypes:
+    if (format_token.Subtype.IF_TEST_EXPR in current.subtypes or
+        format_token.Subtype.PARAMETER in current.subtypes):
       token_indent = (len(self.line.first.whitespace_prefix.split('\n')[-1]) +
                       style.Get('INDENT_WIDTH'))
       if (token_indent == top_of_stack.indent and
