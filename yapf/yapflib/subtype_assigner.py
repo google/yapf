@@ -96,17 +96,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == '=':
         self._AppendTokenSubtype(child, format_token.Subtype.ASSIGN_OPERATOR)
 
-  def Visit_if_stmt(self, node):  # pylint: disable=invalid-name
-    # if_stmt ::= 'if' test ':' suite ('elif' test ':' suite)*
-    #             ['else' ':' suite]
-    prev_child = None
-    for child in node.children:
-      self.Visit(child)
-      if (prev_child and isinstance(prev_child, pytree.Leaf) and
-          prev_child.value in {'if', 'elif'}):
-        self._AppendSubtypeRec(child, format_token.Subtype.IF_TEST_EXPR)
-      prev_child = child
-
   def Visit_or_test(self, node):  # pylint: disable=invalid-name
     # or_test ::= and_test ('or' and_test)*
     for child in node.children:
@@ -238,10 +227,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     self._ProcessArgLists(node)
     self._SetDefaultOrNamedAssignArgListSubtype(node)
 
-    for child in node.children:
-      if pytree_utils.NodeName(child) != 'COMMA':
-        self._AppendFirstLeafTokenSubtype(child, format_token.Subtype.PARAMETER)
-
   def Visit_varargslist(self, node):  # pylint: disable=invalid-name
     # varargslist ::=
     #     ((vfpdef ['=' test] ',')*
@@ -263,7 +248,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
-    self._RemoveSubtypeRec(node, format_token.Subtype.IF_TEST_EXPR)
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf):
@@ -271,14 +255,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                                  subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
                                      child.value, format_token.Subtype.NONE),
                                  force=False)
-
-  def _RemoveSubtypeRec(self, node, value):
-    """Remove the value from the subtypes recursively."""
-    if isinstance(node, pytree.Leaf):
-      pytree_utils.RemoveSubtypeAnnotation(node, value)
-      return
-    for child in node.children:
-      self._RemoveSubtypeRec(child, value)
 
   def _AppendSubtypeRec(self, node, subtype, force=True):
     """Append the leafs in the node to the given subtype."""

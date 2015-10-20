@@ -2409,6 +2409,9 @@ class TestsForPEP8Style(ReformatterTest):
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
+
+            for connection in itertools.chain(branch.contact, branch.address, morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
+                dosomething(connection)
         """)
     expected_formatted_code = textwrap.dedent("""\
         if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx or
@@ -2425,6 +2428,11 @@ class TestsForPEP8Style(ReformatterTest):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
                     xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
+
+            for connection in itertools.chain(
+                    branch.contact, branch.address,
+                    morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
+                dosomething(connection)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

@@ -66,9 +66,6 @@ _STYLE_HELP = dict(
           'key2': value1 +
                   value2,
       }"""),
-    INDENT_IF_EXPR_CONTINUATION=textwrap.dedent("""\
-      Prevents an if statement's conditional expression from aligning to the
-      body of the if statement."""),
     INDENT_WIDTH='The number of columns to use for indentation.',
     CONTINUATION_INDENT_WIDTH='Indent width used for line continuations.',
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
@@ -152,7 +149,6 @@ def CreatePEP8Style():
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
-      INDENT_IF_EXPR_CONTINUATION=4,
       INDENT_WIDTH=4,
       CONTINUATION_INDENT_WIDTH=4,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
@@ -187,7 +183,6 @@ def CreateGoogleStyle():
 def CreateChromiumStyle():
   style = CreateGoogleStyle()
   style['INDENT_DICTIONARY_VALUE'] = True
-  style['INDENT_IF_EXPR_CONTINUATION'] = 0
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
   return style
@@ -236,7 +231,6 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
-    INDENT_IF_EXPR_CONTINUATION=int,
     INDENT_WIDTH=int,
     CONTINUATION_INDENT_WIDTH=int,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,

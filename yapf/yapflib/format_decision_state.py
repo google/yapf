@@ -33,6 +33,9 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 
+_COMPOUND_STMTS = frozenset({'for', 'while', 'if', 'elif', 'with', 'except',
+                             'def', 'class'})
+
 
 class FormatDecisionState(object):
   """The current state when indenting an unwrapped line.
@@ -119,7 +122,7 @@ class FormatDecisionState(object):
   def MustSplit(self):
     """Returns True if the line must split before the next token."""
     current = self.next_token
-    previous_token = current.previous_token
+    previous = current.previous_token
     column_limit = style.Get('COLUMN_LIMIT')
 
     if current.must_break_before:
@@ -133,13 +136,8 @@ class FormatDecisionState(object):
       # token is a closing bracket.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
-    if not previous_token:
+    if not previous:
       return False
-
-    length = _GetLongestDictionaryEntry(previous_token)
-    if (previous_token.value == '{' and  # TODO(morbo): List initializers?
-        length + self.column > column_limit):
-      return True
 
     # TODO(morbo): This should be controlled with a knob.
     if (format_token.Subtype.DICTIONARY_KEY in current.subtypes and
@@ -151,34 +149,33 @@ class FormatDecisionState(object):
     if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
       return True
 
-    if (previous_token.value not in '(=' and current.value not in '=,)' and
+    if (previous.value not in '(=' and current.value not in '=,)' and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
       return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
-    if (previous_token.value in '{[' and
-        current.lineno != previous_token.lineno):
+    if previous.value in '{[' and current.lineno != previous.lineno:
       self.stack[-1].split_before_closing_bracket = True
       return True
 
     if (format_token.Subtype.COMP_FOR in current.subtypes and
-        format_token.Subtype.COMP_FOR not in previous_token.subtypes):
+        format_token.Subtype.COMP_FOR not in previous.subtypes):
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR)
       if length + self.column > column_limit:
         return True
 
     if (format_token.Subtype.COMP_IF in current.subtypes and
-        format_token.Subtype.COMP_IF not in previous_token.subtypes):
+        format_token.Subtype.COMP_IF not in previous.subtypes):
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
       if length + self.column > column_limit:
         return True
 
-    previous_previous_token = previous_token.previous_token
+    previous_previous_token = previous.previous_token
     if (previous_previous_token and previous_previous_token.name == 'NAME' and
-        not previous_previous_token.is_keyword and previous_token.value == '('):
-      sibling = previous_token.node.next_sibling
+        not previous_previous_token.is_keyword and previous.value == '('):
+      sibling = previous.node.next_sibling
       if pytree_utils.NodeName(sibling) == 'arglist':
-        arglist = previous_token.node.next_sibling
+        arglist = previous.node.next_sibling
         if len(arglist.children) > 2:
           if _IsFunctionCallWithArguments(current):
             # There is a function call, with more than 1 argument, where
@@ -196,7 +193,7 @@ class FormatDecisionState(object):
             return True
 
     if (current.is_comment and
-        previous_token.lineno < current.lineno - current.value.count('\n')):
+        previous.lineno < current.lineno - current.value.count('\n')):
       # If a comment comes in the middle of an unwrapped line (like an if
       # conditional with comments interspersed), then we want to split if the
       # original comments were on a separate line.
@@ -346,13 +343,12 @@ class FormatDecisionState(object):
         if previous and (previous.value == ':' or previous.is_pseudo_paren):
           return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
-    if (format_token.Subtype.IF_TEST_EXPR in current.subtypes or
-        format_token.Subtype.PARAMETER in current.subtypes):
+    if (self.line.first.value in _COMPOUND_STMTS and
+        not style.Get('DEDENT_CLOSING_BRACKETS')):
       token_indent = (len(self.line.first.whitespace_prefix.split('\n')[-1]) +
                       style.Get('INDENT_WIDTH'))
-      if (token_indent == top_of_stack.indent and
-          not style.Get('DEDENT_CLOSING_BRACKETS')):
-        return top_of_stack.indent + style.Get('INDENT_IF_EXPR_CONTINUATION')
+      if token_indent == top_of_stack.indent:
+        return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     return top_of_stack.indent
 
@@ -411,28 +407,13 @@ class FormatDecisionState(object):
     return penalty
 
 
-def _GetLongestDictionaryEntry(token):
-  """Returns the length of the longest dictionary entry."""
-  if not token.matching_bracket:
-    return 0
-  longest = -1
-  start = token
-  current_size = 0
-  current = token.matching_bracket
-  while current.next_token and not current.next_token.can_break_before:
-    if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
-      longest = max(longest, current.total_length - start.total_length + 1)
-    current = current.next_token
-  return longest
-
-
 def _IsFunctionCallWithArguments(token):
   while token:
     if token.value == '(':
       token = token.next_token
       return token and token.value != ')'
     elif token.name not in {'NAME', 'DOT'}:
-      return False
+      break
     token = token.next_token
   return False
 

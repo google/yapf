@@ -27,8 +27,6 @@ STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
 
 NOT_TEST = 242
-STAR_EXPRESSION = 342
-SHIFT_EXPRESSION = 742
 COMPARISON_EXPRESSION = 842
 ARITHMETIC_EXPRESSION = 942
 
@@ -144,7 +142,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                                                           'term'}):
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
-      elif pytree_utils.NodeName(node.children[-1]) == 'RSQB':
+      if pytree_utils.NodeName(node.children[-1]) == 'RSQB':
         # Don't split the ending bracket of a subscript list.
         self._SetStronglyConnected(node.children[-1])
 
@@ -234,16 +232,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # comparison ::= expr (comp_op expr)*
     self.DefaultNodeVisit(node)
     self._SetExpressionPenalty(node, COMPARISON_EXPRESSION)
-
-  def Visit_star_expr(self, node):  # pylint: disable=invalid-name
-    # star_expr ::= '*' expr
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, STAR_EXPRESSION)
-
-  def Visit_shift_expr(self, node):  # pylint: disable=invalid-name
-    # shift_expr ::= arith_expr ('<<'|'>>' arith_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, SHIFT_EXPRESSION)
 
   def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
     # arith_expr ::= term (('+'|'-') term)*

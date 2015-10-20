@@ -177,20 +177,18 @@ class AnnotationsTest(unittest.TestCase):
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO5), 5)
 
   def testSubtype(self):
-    pytree_utils.AppendNodeAnnotation(
-        self._leaf, pytree_utils.Annotation.SUBTYPE, _FOO)
+    pytree_utils.AppendNodeAnnotation(self._leaf,
+                                      pytree_utils.Annotation.SUBTYPE, _FOO)
 
     self.assertSetEqual(
-        pytree_utils.GetNodeAnnotation(
-            self._leaf, pytree_utils.Annotation.SUBTYPE),
-        {_FOO})
+        pytree_utils.GetNodeAnnotation(self._leaf,
+                                       pytree_utils.Annotation.SUBTYPE), {_FOO})
 
     pytree_utils.RemoveSubtypeAnnotation(self._leaf, _FOO)
 
     self.assertSetEqual(
         pytree_utils.GetNodeAnnotation(self._leaf,
-                                       pytree_utils.Annotation.SUBTYPE),
-        set())
+                                       pytree_utils.Annotation.SUBTYPE), set())
 
   def testSetOnNode(self):
     pytree_utils.SetNodeAnnotation(self._node, _FOO, 20)
