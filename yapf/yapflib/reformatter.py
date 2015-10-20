@@ -180,10 +180,11 @@ def _LineContainsI18n(uwline):
   Returns:
     True if the line contains i18n comments or function calls. False otherwise.
   """
-  if (style.Get('I18N_COMMENT') and any(re.search(
-      style.Get('I18N_COMMENT'), tok.value) for tok in uwline.tokens)):
-    # Contains an i18n comment.
-    return True
+  if style.Get('I18N_COMMENT'):
+    for tok in uwline.tokens:
+      if tok.is_comment and re.match(style.Get('I18N_COMMENT'), tok.value):
+        # Contains an i18n comment.
+        return True
 
   if style.Get('I18N_FUNCTION_CALL'):
     length = len(uwline.tokens)

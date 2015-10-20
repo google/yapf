@@ -707,6 +707,20 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testI18nCommentsInDataLiteral(self):
+    code = textwrap.dedent("""\
+        def f():
+          return collections.OrderedDict({
+              #. First i18n comment.
+              'bork': 'foo',
+
+              #. Second i18n comment.
+              'snork': 'bar#.*=\\\\0',
+          })
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testClosingBracketIndent(self):
     code = textwrap.dedent('''\
         def f():
