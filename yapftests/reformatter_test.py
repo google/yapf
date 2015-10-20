@@ -2456,6 +2456,7 @@ class TestsForPEP8Style(ReformatterTest):
       style.SetGlobalStyle(style.CreatePEP8Style())
 
 
+
 class TestingNotInParameters(unittest.TestCase):
 
   def testNotInParams(self):
