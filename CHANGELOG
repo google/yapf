@@ -6,6 +6,7 @@
 ### Fixed
 - Make sure to align comments in data literals correctly. Also make sure we
   don't count a "#." in a string as an i18n comment.
+- Retain proper vertical spacing before comments in a data literal.
 
 ## [0.6.0] 2015-10-18
 ### Added

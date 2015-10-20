@@ -238,6 +238,23 @@ class BasicReformatterTest(ReformatterTest):
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testCommentsInDataLiteral(self):
+    code = textwrap.dedent("""\
+        def f():
+          return collections.OrderedDict({
+              # First comment.
+              'fnord': 37,
+
+              # Second comment.
+              # Continuation of second comment.
+              'bork': 42,
+
+              # Ending comment.
+          })
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testEndingWhitespaceAfterSimpleStatement(self):
     code = textwrap.dedent("""\
         import foo as bar

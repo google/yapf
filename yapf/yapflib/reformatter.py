@@ -65,6 +65,8 @@ def Reformat(uwlines, verify=True):
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
         _RetainVerticalSpacingBetweenTokens(uwline.first, prev_uwline.last)
+      if any(tok.is_comment for tok in uwline.tokens):
+        _RetainVerticalSpacingBeforeComments(uwline)
 
     if (_LineContainsI18n(uwline) or uwline.disable or
         _LineHasContinuationMarkers(uwline)):
@@ -136,6 +138,17 @@ def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
     cur_lineno = cur_tok.lineno
 
   cur_tok.AdjustNewlinesBefore(cur_lineno - prev_lineno)
+
+
+def _RetainVerticalSpacingBeforeComments(uwline):
+  """Retain vertical spacing before comments."""
+  prev_token = None
+  for tok in uwline.tokens:
+    if tok.is_comment and prev_token:
+      if tok.lineno - tok.value.count('\n') - prev_token.lineno > 1:
+        tok.AdjustNewlinesBefore(ONE_BLANK_LINE)
+
+    prev_token = tok
 
 
 def _EmitLineUnformatted(state):
@@ -456,8 +469,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
 
   if first_token_lineno - prev_last_token.lineno > 1:
     return ONE_BLANK_LINE
-  else:
-    return NO_BLANK_LINES
+
+  return NO_BLANK_LINES
 
 
 def _SingleOrMergedLines(uwlines):
