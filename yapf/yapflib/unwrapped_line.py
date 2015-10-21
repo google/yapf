@@ -465,6 +465,9 @@ def _SplitPenalty(prev_token, cur_token):
   if cur_token.value == '==':
     # We would rather not split before an equality operator.
     return split_penalty.STRONGLY_CONNECTED
+  if cur_token.ClosesScope():
+    # Give a slight penalty for splitting before the closing scope.
+    return 100
   if prev_token.value in _TERM_OPERATORS or cur_token.value in _TERM_OPERATORS:
     return 50
   return 0

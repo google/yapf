@@ -10,6 +10,7 @@
 - Make sure that continuations from a compound statement are distinguished from
   the succeeding line.
 - Ignore preceding comments when calculating what is a "dictonary maker".
+- Add a small penalty for splitting before a closing bracket.
 
 ## [0.6.0] 2015-10-18
 ### Added
