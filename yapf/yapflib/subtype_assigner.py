@@ -62,9 +62,16 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # dictsetmaker ::= (test ':' test (comp_for |
     #                                   (',' test ':' test)* [','])) |
     #                  (test (comp_for | (',' test)* [',']))
-    dict_maker = (len(node.children) > 1 and isinstance(node.children[1],
-                                                        pytree.Leaf) and
-                  node.children[1].value == ':')
+    dict_maker = False
+    if len(node.children) > 1:
+      index = 0
+      while index < len(node.children):
+        if pytree_utils.NodeName(node.children[index]) != 'COMMENT':
+          break
+        index += 1
+      if index < len(node.children):
+        child = node.children[index + 1]
+        dict_maker = isinstance(child, pytree.Leaf) and child.value == ':'
     last_was_comma = False
     last_was_colon = False
     for child in node.children:

@@ -1477,6 +1477,26 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB25136820(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          return collections.OrderedDict({
+              # Preceding comment.
+              'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa':
+              '$bbbbbbbbbbbbbbbbbbbbbbbb',
+          })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+          return collections.OrderedDict({
+              # Preceding comment.
+              'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa':
+                  '$bbbbbbbbbbbbbbbbbbbbbbbb',
+          })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB25131481(self):
     unformatted_code = textwrap.dedent("""\
         APPARENT_ACTIONS = ('command_type', {
