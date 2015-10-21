@@ -298,8 +298,17 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
 
 def _InsertPseudoParentheses(node):
-  lparen = pytree.Leaf(token.LPAR, u'(')
-  rparen = pytree.Leaf(token.RPAR, u')')
+  first = _GetFirstLeafNode(node)
+  last = _GetLastLeafNode(node)
+
+  lparen = pytree.Leaf(token.LPAR,
+                       u'(',
+                       context=('', (node.get_lineno(), first.column - 1)))
+  rparen = pytree.Leaf(token.RPAR,
+                       u')',
+                       context=('', (node.get_lineno(),
+                                     last.column + len(last.value) + 1)))
+
   lparen.is_pseudo = True
   rparen.is_pseudo = True
 
@@ -309,3 +318,15 @@ def _InsertPseudoParentheses(node):
   else:
     new_node = pytree.Node(syms.atom, [lparen, node.clone(), rparen])
     node.replace(new_node)
+
+
+def _GetFirstLeafNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return _GetFirstLeafNode(node.children[0])
+
+
+def _GetLastLeafNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return _GetLastLeafNode(node.children[-1])
