@@ -268,7 +268,7 @@ Knobs
 
     For example:
 
-    .. code-block::
+.. code-block:: python
 
         class Foo:
                            # <------ this blank line
@@ -288,7 +288,7 @@ Knobs
 
     For example:
 
-    .. code-block::
+.. code-block:: python
 
         config = {
             'key1': 'value1',
@@ -319,7 +319,7 @@ Knobs
 
     For example:
 
-    .. code-block::
+.. code-block:: python
 
         config = {
             'key1':
@@ -374,7 +374,7 @@ Knobs
 
     For example:
 
-    .. code-block::
+.. code-block:: python
 
       from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
                                                                 long_argument_2,
@@ -382,7 +382,7 @@ Knobs
 
     would reformat to something like:
 
-    .. code-block::
+.. code-block:: python
 
       from a_very_long_or_indented_module_name_yada_yad import (
           long_argument_1, long_argument_2, long_argument_3)
