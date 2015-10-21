@@ -341,7 +341,7 @@ class FormatDecisionState(object):
     if style.Get('INDENT_DICTIONARY_VALUE'):
       if _IsDictionaryValue(current):
         if previous and (previous.value == ':' or previous.is_pseudo_paren):
-          return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
+          return top_of_stack.indent
 
     if (self.line.first.value in _COMPOUND_STMTS and
         not style.Get('DEDENT_CLOSING_BRACKETS')):

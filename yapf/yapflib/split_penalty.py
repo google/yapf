@@ -277,7 +277,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     """Set an UNBREAKABLE penalty annotation on children of node."""
     for child in node.children:
       self.Visit(child)
-    for i in py3compat.range(1, len(node.children)):
+    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
+    for i in py3compat.range(start, len(node.children)):
       self._SetUnbreakable(node.children[i])
 
   def _SetExpressionPenalty(self, node, penalty):

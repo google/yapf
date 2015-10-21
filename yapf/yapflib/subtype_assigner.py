@@ -298,6 +298,12 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
 
 def _InsertPseudoParentheses(node):
+  comment_node = None
+  if isinstance(node, pytree.Node):
+    if pytree_utils.NodeName(node.children[-1]) == 'COMMENT':
+      comment_node = node.children[-1].clone()
+      node.children[-1].remove()
+
   first = _GetFirstLeafNode(node)
   last = _GetLastLeafNode(node)
 
@@ -315,6 +321,8 @@ def _InsertPseudoParentheses(node):
   if isinstance(node, pytree.Node):
     node.insert_child(0, lparen)
     node.append_child(rparen)
+    if comment_node:
+      node.append_child(comment_node)
   else:
     new_node = pytree.Node(syms.atom, [lparen, node.clone(), rparen])
     node.replace(new_node)
