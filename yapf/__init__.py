@@ -55,33 +55,11 @@ def main(argv):
     YapfError: if none of the supplied files were Python files.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
-  parser.add_argument('--version',
+  parser.add_argument('-v',
+                      '--version',
                       action='store_true',
                       help='show version number and exit')
-  parser.add_argument('--style-help',
-                      action='store_true',
-                      help='show style settings and exit')
-  parser.add_argument(
-      '--style',
-      action='store',
-      help=('specify formatting style: either a style name (for example "pep8" '
-            'or "google"), or the name of a file with style settings. The '
-            'default is pep8 unless a %s file located in one of the parent '
-            'directories of the source file (or current directory for '
-            'stdin)' % style.LOCAL_STYLE))
-  parser.add_argument(
-      '--no-local-style',
-      action='store_true',
-      help=('Do not search for local style defintion (%s)' % style.LOCAL_STYLE))
-  parser.add_argument('--verify',
-                      action='store_true',
-                      help='try to verify reformatted code for syntax errors')
-  parser.add_argument('-e',
-                      '--exclude',
-                      metavar='PATTERN',
-                      action='append',
-                      default=None,
-                      help='patterns for files to exclude from formatting')
+
   diff_inplace_group = parser.add_mutually_exclusive_group()
   diff_inplace_group.add_argument('-d',
                                   '--diff',
@@ -93,6 +71,10 @@ def main(argv):
                                   help='make changes to files in place')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
+  lines_recursive_group.add_argument('-r',
+                                     '--recursive',
+                                     action='store_true',
+                                     help='run recursively over directories')
   lines_recursive_group.add_argument(
       '-l',
       '--lines',
@@ -100,10 +82,31 @@ def main(argv):
       action='append',
       default=None,
       help='range of lines to reformat, one-based')
-  lines_recursive_group.add_argument('-r',
-                                     '--recursive',
-                                     action='store_true',
-                                     help='run recursively over directories')
+
+  parser.add_argument('-e',
+                      '--exclude',
+                      metavar='PATTERN',
+                      action='append',
+                      default=None,
+                      help='patterns for files to exclude from formatting')
+  parser.add_argument(
+      '--style',
+      action='store',
+      help=('specify formatting style: either a style name (for example "pep8" '
+            'or "google"), or the name of a file with style settings. The '
+            'default is pep8 unless a %s file located in one of the parent '
+            'directories of the source file (or current directory for '
+            'stdin)' % style.LOCAL_STYLE))
+  parser.add_argument('--style-help',
+                      action='store_true',
+                      help='show style settings and exit')
+  parser.add_argument(
+      '--no-local-style',
+      action='store_true',
+      help=("don't search for local style definition (%s)" % style.LOCAL_STYLE))
+  parser.add_argument('--verify',
+                      action='store_true',
+                      help='try to verify reformatted code for syntax errors')
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
