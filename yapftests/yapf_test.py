@@ -261,7 +261,7 @@ class FormatFileTest(unittest.TestCase):
 
   def testDisabledHorizontalFormattingOnNewLine(self):
     code = textwrap.dedent("""\
-        # yapf: disable 
+        # yapf: disable
         a = [
         1]
         # yapf: enable
