@@ -11,6 +11,8 @@
   the succeeding line.
 - Ignore preceding comments when calculating what is a "dictonary maker".
 - Add a small penalty for splitting before a closing bracket.
+- Ensure that a space is enforced after we remove a pseudo-paren that's between
+  two names, keywords, numbers, etc.
 
 ## [0.6.0] 2015-10-18
 ### Added

@@ -189,6 +189,10 @@ def _IsUnaryOperator(tok):
 
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
+  if (left.is_pseudo_paren and _IsIdNumberStringToken(right) and
+      left.previous_token and _IsIdNumberStringToken(left.previous_token)):
+    # Space between keyword... tokens and pseudo parens.
+    return True
   if left.is_pseudo_paren or right.is_pseudo_paren:
     # The pseudo-parens shouldn't affect spacing.
     return False
