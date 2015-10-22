@@ -303,6 +303,10 @@ class FormatDecisionState(object):
     # Calculate the split penalty.
     penalty = current.split_penalty
 
+    if previous.is_pseudo_paren and previous.value == '(':
+      # Small penalty for splitting after a pseudo paren.
+      penalty += 50
+
     # Add a penalty for each increasing newline we add.
     last = self.stack[-1]
     penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *

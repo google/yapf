@@ -1122,8 +1122,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
-                     'yyyyyyyyyyyyyyyyyyyyyyyyyy':
-                         baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]
+                    } + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
@@ -1476,6 +1476,18 @@ class BuganizerFixes(ReformatterTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB25136704(self):
+    code = textwrap.dedent("""\
+        class f:
+
+          def test(self):
+            self.bbbbbbb[0][
+                'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                {'xxxxxx': 'yyyyyy'}] = cccccc.ddd('1m', '10x1+1')
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB25165602(self):
     code = textwrap.dedent("""\
@@ -1905,8 +1917,8 @@ class BuganizerFixes(ReformatterTest):
             }))
         """)
     expected_formatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({'aa':
-            'context!'}).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
+            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
                 'fnord': 6
             }))
         """)

@@ -218,7 +218,9 @@ class FormatToken(object):
     return pytree_utils.NodeName(self._node)
 
   def __repr__(self):
-    return 'FormatToken(name={0}, value={1})'.format(self.name, self.value)
+    msg = 'FormatToken(name={0}, value={1}'.format(self.name, self.value)
+    msg += ', pseudo)' if self.is_pseudo_paren else ')'
+    return msg
 
   @property
   def is_comment(self):

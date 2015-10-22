@@ -13,6 +13,8 @@
 - Add a small penalty for splitting before a closing bracket.
 - Ensure that a space is enforced after we remove a pseudo-paren that's between
   two names, keywords, numbers, etc.
+- Increase the penalty for splitting after a pseudo-paren. This could lead to
+  less readable code in some circumstances.
 
 ## [0.6.0] 2015-10-18
 ### Added
