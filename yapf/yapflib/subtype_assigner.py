@@ -316,10 +316,10 @@ def _InsertPseudoParentheses(node):
 
   lparen = pytree.Leaf(token.LPAR,
                        u'(',
-                       context=('', (node.get_lineno(), first.column - 1)))
+                       context=('', (first.get_lineno(), first.column - 1)))
   rparen = pytree.Leaf(token.RPAR,
                        u')',
-                       context=('', (node.get_lineno(),
+                       context=('', (last.get_lineno(),
                                      last.column + len(last.value) + 1)))
 
   lparen.is_pseudo = True
