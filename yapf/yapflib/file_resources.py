@@ -31,7 +31,7 @@ from yapf.yapflib import style
 def GetDefaultStyleForDir(dirname):
   """Return default style name for a given directory.
 
-  Looks for .style.yapf in the parent directories.
+  Looks for .style.yapf or setup.cfg in the parent directories.
 
   Arguments:
     dirname: (unicode) The name of the directory.
@@ -41,9 +41,20 @@ def GetDefaultStyleForDir(dirname):
   """
   dirname = os.path.abspath(dirname)
   while True:
+    # See if we have a .style.yapf file.
     style_file = os.path.join(dirname, style.LOCAL_STYLE)
     if os.path.exists(style_file):
       return style_file
+
+    # See if we have a setup.cfg file with a '[yapf]' section.
+    config_file = os.path.join(dirname, style.SETUP_CONFIG)
+    if os.path.exists(config_file):
+      with open(config_file) as fd:
+        config = py3compat.ConfigParser()
+        config.read_file(fd)
+        if config.has_section('yapf'):
+          return config_file
+
     dirname = os.path.dirname(dirname)
     if (not dirname or not os.path.basename(dirname) or
         dirname == os.path.abspath(os.path.sep)):

@@ -301,9 +301,14 @@ def _CreateConfigParserFromConfigFile(config_filename):
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
-    if not config.has_section('style'):
-      raise StyleConfigError('Unable to find section [style] in {0}'.format(
-          config_filename))
+    if config_filename.endswith(SETUP_CONFIG):
+      if not config.has_section('yapf'):
+        raise StyleConfigError('Unable to find section [yapf] in {0}'.format(
+            config_filename))
+    else:
+      if not config.has_section('style'):
+        raise StyleConfigError('Unable to find section [style] in {0}'.format(
+            config_filename))
     return config
 
 
@@ -320,13 +325,19 @@ def _CreateStyleFromConfigParser(config):
     StyleConfigError: if an unknown style option was encountered.
   """
   # Initialize the base style.
+  section = 'style'
   if config.has_option('style', 'based_on_style'):
     based_on = config.get('style', 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
+  elif config.has_option('yapf', 'based_on_style'):
+    based_on = config.get('yapf', 'based_on_style').lower()
+    base_style = _STYLE_NAME_TO_FACTORY[based_on]()
+    section = 'yapf'
   else:
     base_style = DEFAULT_STYLE_FACTORY()
+
   # Read all options specified in the file and update the style.
-  for option, value in config.items('style'):
+  for option, value in config.items(section):
     if option.lower() == 'based_on_style':
       # Now skip this one - we've already handled it and it's not one of the
       # recognized style options.
@@ -346,8 +357,11 @@ def _CreateStyleFromConfigParser(config):
 DEFAULT_STYLE = 'pep8'
 DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
-# The name of the file to use for directory-local style defintion.
+# The name of the file to use for directory-local style definition.
 LOCAL_STYLE = '.style.yapf'
+
+# The name of the config file for directory-local style definition.
+SETUP_CONFIG = 'setup.cfg'
 
 # TODO(eliben): For now we're preserving the global presence of a style dict.
 # Refactor this so that the style is passed around through yapf rather than

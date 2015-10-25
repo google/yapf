@@ -47,7 +47,9 @@ some of the drudgery of maintaining your code.
 Installation
 ============
 
-To install YAPF from PyPI::
+To install YAPF from PyPI:
+
+.. code-block:: shell
 
     $ pip install yapf
 
@@ -58,7 +60,9 @@ is to clone this repository.
 Note that if you intend to use YAPF as a command-line tool rather than as a
 library, installation is not necessary. YAPF supports being run as a directory
 by the Python interpreter. If you cloned/unzipped YAPF into ``DIR``, it's
-possible to run::
+possible to run:
+
+.. code-block:: shell
 
     $ PYTHONPATH=DIR python DIR/yapf [options] ...
 
@@ -101,9 +105,9 @@ Options::
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
                             with style settings. The default is pep8 unless a
-                            .style.yapf file located in one of the parent
-                            directories of the source file (or current directory
-                            for stdin)
+                            .style.yapf or setup.cfg file located in one of the
+                            parent directories of the source file (or current
+                            directory for stdin)
       --style-help          show style settings and exit
       --no-local-style      don't search for local style definition (.style.yapf)
       --verify              try to verify reformatted code for syntax errors
@@ -121,7 +125,9 @@ the predefined styles (e.g., ``pep8`` or ``google``), a path to a configuration
 file that specifies the desired style, or a dictionary of key/value pairs.
 
 The config file is a simple listing of (case-insensitive) ``key = value`` pairs
-with a ``[style]`` heading. For example::
+with a ``[style]`` heading. For example:
+
+.. code-block:: guess
 
     [style]
     based_on_style = pep8
@@ -132,7 +138,9 @@ The ``based_on_style`` setting determines which of the predefined styles this
 custom style is based on (think of it like subclassing).
 
 It's also possible to do the same on the command line with a dictionary. For
-example::
+example:
+
+.. code-block:: guess
 
     --style='{based_on_style: chromium, indent_width: 4}'
 

@@ -3,6 +3,10 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.6.2] UNRELEASED
+### Changed
+- Look at the 'setup.cfg' file to see if it contains style information for
+  YAPF.
+
 ### Fixed
 - Make lists that can fit on one line more likely to stay together.
 
