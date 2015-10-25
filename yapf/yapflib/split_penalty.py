@@ -257,8 +257,14 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                                          STRONGLY_CONNECTED)
     elif node.children[0].value in '[{':
       # Keep empty containers together if we can.
+      lbracket = node.children[0]
+      rbracket = node.children[-1]
       if len(node.children) == 2:
         self._SetUnbreakable(node.children[-1])
+      elif (rbracket.value in ']}' and
+            lbracket.get_lineno() == rbracket.get_lineno() and
+            rbracket.column - lbracket.column < style.Get('COLUMN_LIMIT')):
+        self._SetExpressionPenalty(node, CONTIGUOUS_LIST)
 
   ############################################################################
   # Helper methods that set the annotations.

@@ -1470,6 +1470,14 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testContiguousList(self):
+    code = textwrap.dedent("""\
+      [retval1, retval2] = a_very_long_function(argument_1, argument2, argument_3,
+                                                argument_4)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

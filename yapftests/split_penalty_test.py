@@ -187,7 +187,7 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('[', None),
-        ('a', None),
+        ('a', CONTIGUOUS_LIST),
         ('for', None),
         ('a', STRONGLY_CONNECTED),
         ('in', STRONGLY_CONNECTED),
@@ -198,7 +198,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('x', UNBREAKABLE),
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
-        (']', None),
+        (']', CONTIGUOUS_LIST),
     ])  # yapf: disable
 
   def testFuncCalls(self):
