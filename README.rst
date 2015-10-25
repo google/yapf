@@ -147,6 +147,17 @@ example:
 This will take the ``chromium`` base style and modify it to have four space
 indentations.
 
+YAPF will search for the formatting style in the following manner:
+
+1. Specified on the command line
+2. In the `[style]` section of a `.yapf.style` file in either the current
+   directory or one of its parent directories.
+3. In the `[yapf]` secionf of a `setup.cfg` file in either the current
+   directory or one of its parent directories.
+4. In the `~/.config/yapf/style` file in your home directory.
+
+If none of those files are found, the default style is used (PEP8).
+
 
 Example
 =======

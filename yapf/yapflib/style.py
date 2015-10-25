@@ -305,6 +305,10 @@ def _CreateConfigParserFromConfigFile(config_filename):
       if not config.has_section('yapf'):
         raise StyleConfigError('Unable to find section [yapf] in {0}'.format(
             config_filename))
+    elif config_filename.endswith(LOCAL_STYLE):
+      if not config.has_section('style'):
+        raise StyleConfigError('Unable to find section [style] in {0}'.format(
+            config_filename))
     else:
       if not config.has_section('style'):
         raise StyleConfigError('Unable to find section [style] in {0}'.format(
@@ -357,10 +361,15 @@ def _CreateStyleFromConfigParser(config):
 DEFAULT_STYLE = 'pep8'
 DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
+# The name of the file to use for global style definition.
+GLOBAL_STYLE = (os.path.join(os.getenv('XDG_CONFIG_HOME') or
+                os.path.expanduser('~/.config'), 'yapf', 'style'))
+
 # The name of the file to use for directory-local style definition.
 LOCAL_STYLE = '.style.yapf'
 
-# The name of the config file for directory-local style definition.
+# Alternative place for directory-local style definition. Style should be
+# specified in the '[yapf]' section.
 SETUP_CONFIG = 'setup.cfg'
 
 # TODO(eliben): For now we're preserving the global presence of a style dict.

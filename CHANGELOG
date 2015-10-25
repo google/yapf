@@ -6,6 +6,8 @@
 ### Changed
 - Look at the 'setup.cfg' file to see if it contains style information for
   YAPF.
+- Look at the '~/.config/yapf/style' file to see if it contains global style
+  information for YAPF.
 
 ### Fixed
 - Make lists that can fit on one line more likely to stay together.

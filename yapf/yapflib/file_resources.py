@@ -60,6 +60,10 @@ def GetDefaultStyleForDir(dirname):
         dirname == os.path.abspath(os.path.sep)):
       break
 
+  global_file = os.path.expanduser(style.GLOBAL_STYLE)
+  if os.path.exists(global_file):
+    return global_file
+
   return style.DEFAULT_STYLE
 
 
