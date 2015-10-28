@@ -945,6 +945,22 @@ second_argument_makes_the_line_too_long):
     # self.assertYapfReformats(unformatted_code, expected_formatted_pep8_code,
     #                          extra_options=['--style=pep8'])
 
+  def testPseudoParenSpaces(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo():
+          def bar():
+            return {msg_id: author for author, msg_id in reader}
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():
+          def bar():
+            return {msg_id: author for author, msg_id in reader}
+        """)
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
+                             extra_options=['--lines', '1-1',
+                                            '--style', 'chromium'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""

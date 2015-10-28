@@ -97,9 +97,12 @@ def Reformat(uwlines, verify=True):
         formatted_line.append(tok.whitespace_prefix)
         formatted_line.append(tok.value)
       else:
-        if (tok.previous_token.value == ':' and
-            not tok.next_token.whitespace_prefix.startswith('\n')):
-          formatted_line.append(' ')
+        if (not tok.next_token.whitespace_prefix.startswith('\n') and
+            not tok.next_token.whitespace_prefix.startswith(' ')):
+          if (tok.previous_token.value == ':' or
+              tok.next_token.value not in ',}])'):
+            formatted_line.append(' ')
+
     formatted_code.append(''.join(formatted_line))
     if verify:
       verifier.VerifyCode(formatted_code[-1])
