@@ -11,6 +11,8 @@
 
 ### Fixed
 - Make lists that can fit on one line more likely to stay together.
+- Correct formatting of '*args' and '**kwargs' when there are default values in
+  the argument list.
 
 ## [0.6.1] 2015-10-24
 ### Fixed

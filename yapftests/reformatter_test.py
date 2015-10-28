@@ -1478,6 +1478,17 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testArgsAndKwargsFormatting(self):
+    code = textwrap.dedent("""\
+      a(a=aaaaaaaaaaaaaaaaaaaaa,
+        b=aaaaaaaaaaaaaaaaaaaaaaaa,
+        c=aaaaaaaaaaaaaaaaaa,
+        *d,
+        **e)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
