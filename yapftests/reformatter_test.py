@@ -1489,6 +1489,19 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testCommentColumnLimitOverflow(self):
+    code = textwrap.dedent("""\
+      def f():
+        if True:
+          TaskManager.get_tags = MagicMock(
+              name='get_tags_mock',
+              return_value=[157031694470475],
+              # side_effect=[(157031694470475), (157031694470475),],
+          )
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -1928,21 +1941,15 @@ class BuganizerFixes(ReformatterTest):
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19073499(self):
-    unformatted_code = textwrap.dedent("""\
+    code = textwrap.dedent("""\
         instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
             {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
-            {  # Inline comment about why fnord has the value 6.
-                'fnord': 6
-            }))
+                {  # Inline comment about why fnord has the value 6.
+                    'fnord': 6
+                }))
         """)
-    expected_formatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
-                'fnord': 6
-            }))
-        """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB18257115(self):
     code = textwrap.dedent("""\
@@ -2271,7 +2278,8 @@ parameter_5, parameter_6): pass
 
     code = textwrap.dedent("""\
         aaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccc(
-            DC_1, (CL - 50, CL), AAAAAAAA, BBBBBBBBBBBBBBBB, 98.0, CCCCCCC).ddddddddd(  # Look! A comment is here.
+            DC_1, (CL - 50, CL), AAAAAAAA, BBBBBBBBBBBBBBBB, 98.0,
+            CCCCCCC).ddddddddd(  # Look! A comment is here.
                 AAAAAAAA - (20 * 60 - 5))
         """)
     uwlines = _ParseAndUnwrap(code)
