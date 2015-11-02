@@ -188,7 +188,7 @@ class SplitPenaltyTest(unittest.TestCase):
     self._CheckPenalties(tree, [
         ('[', None),
         ('a', CONTIGUOUS_LIST),
-        ('for', None),
+        ('for', 0),
         ('a', STRONGLY_CONNECTED),
         ('in', STRONGLY_CONNECTED),
         ('foo', STRONGLY_CONNECTED),
