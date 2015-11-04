@@ -329,14 +329,13 @@ def _CreateStyleFromConfigParser(config):
     StyleConfigError: if an unknown style option was encountered.
   """
   # Initialize the base style.
-  section = 'style'
+  section = 'yapf' if config.has_section('yapf') else 'style'
   if config.has_option('style', 'based_on_style'):
     based_on = config.get('style', 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
   elif config.has_option('yapf', 'based_on_style'):
     based_on = config.get('yapf', 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
-    section = 'yapf'
   else:
     base_style = DEFAULT_STYLE_FACTORY()
 
