@@ -393,7 +393,7 @@ class FormatDecisionState(object):
     if is_multiline_string:
       # This is a multiline string. Only look at the first line.
       self.column += len(current.value.split('\n')[0])
-    else:
+    elif not current.is_pseudo_paren or current.value == '(':
       self.column += len(current.value)
 
     self.next_token = self.next_token.next_token
