@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.3] UNRELEASED
+### Fixed
+- Fix spacing of multiline comments when formatting is disabled.
+
 ## [0.6.2] 2015-11-01
 ### Changed
 - Look at the 'setup.cfg' file to see if it contains style information for

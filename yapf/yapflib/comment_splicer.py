@@ -148,7 +148,8 @@ def SpliceComments(tree):
                 rindex = (0 if '\n' not in comment_prefix.rstrip() else
                           comment_prefix.rstrip().rindex('\n') + 1)
                 comment_column = (
-                    len(comment_prefix[rindex:]) - len(comment_prefix.lstrip()))
+                    len(comment_prefix[rindex:]) -
+                    len(comment_prefix[rindex:].lstrip()))
                 comments = _CreateCommentsFromPrefix(comment_prefix,
                                                      comment_lineno,
                                                      comment_column,

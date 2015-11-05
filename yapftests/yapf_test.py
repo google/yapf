@@ -961,6 +961,34 @@ second_argument_makes_the_line_too_long):
                              extra_options=['--lines', '1-1',
                                             '--style', 'chromium'])
 
+  def testMultilineCommentFormattingDisabled(self):
+    unformatted_code = textwrap.dedent(u"""\
+        # This is a comment
+        FOO = {
+            aaaaaaaa.ZZZ: [
+                bbbbbbbbbb.Pop(),
+                # Multiline comment.
+                # Line two.
+                bbbbbbbbbb.Pop(),
+            ],
+        }
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        # This is a comment
+        FOO = {
+            aaaaaaaa.ZZZ: [
+                bbbbbbbbbb.Pop(),
+                # Multiline comment.
+                # Line two.
+                bbbbbbbbbb.Pop(),
+            ],
+        }
+        """)
+    self.assertYapfReformats(unformatted_code,
+                             expected_formatted_code,
+                             extra_options=['--lines', '1-1',
+                                            '--style', 'chromium'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""
