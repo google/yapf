@@ -632,7 +632,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
-  def testREtainingVerticalWhitespace(self):
+  def testRetainingVerticalWhitespace(self):
     unformatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
@@ -971,6 +971,8 @@ second_argument_makes_the_line_too_long):
                 # Line two.
                 bbbbbbbbbb.Pop(),
             ],
+            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
+                ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
         }
         """)
     expected_formatted_code = textwrap.dedent(u"""\
@@ -982,6 +984,8 @@ second_argument_makes_the_line_too_long):
                 # Line two.
                 bbbbbbbbbb.Pop(),
             ],
+            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
+                ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
         }
         """)
     self.assertYapfReformats(unformatted_code,
