@@ -214,6 +214,7 @@ class CommandLineTest(unittest.TestCase):
                          stdout=subprocess.PIPE,
                          stdin=subprocess.PIPE,
                          stderr=subprocess.PIPE)
+    # TODO: need to make some change here
     reformatted_code, stderrdata = p.communicate(unformatted.encode(encoding))
     self.assertEqual(stderrdata, b'')
     self.assertEqual(reformatted_code.decode(encoding), expected)

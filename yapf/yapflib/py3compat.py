@@ -64,7 +64,11 @@ def EncodeAndWriteToStdout(s, encoding):
     encoding: (string) The encoding of the string.
   """
   if PY3:
-    sys.stdout.buffer.write(codecs.encode(s, encoding))
+    if hasattr(sys.stdout, "buffer"):
+      sys.stdout.buffer.write(codecs.encode(s, encoding))
+    else:
+      sys.stdout.write(s)
+      #  sys.stdout.write(codecs.encode(s, encoding))
   else:
     sys.stdout.write(s.encode(encoding))
 
@@ -78,13 +82,15 @@ def unicode(s):
 
 
 def stdin():
-    """sys.stdin convert, return locale encoding and converted stdin"""
-    _, encoding = locale.getdefaultlocale()
-    if PY3:
-        return encoding, codecs.getreader(encoding)(sys.stdin.detach())
+  """sys.stdin convert, return locale encoding and converted stdin"""
+  _, encoding = locale.getdefaultlocale()
+  if PY3:
+    if hasattr(sys.stdin, "buffer"):
+      return encoding, codecs.getreader(encoding)(sys.stdin)
     else:
-        return encoding, codecs.getreader(encoding)(sys.stdin)
-
+      return encoding, codecs.getreader(encoding)(sys.stdin.detach())
+  else:
+    return encoding, codecs.getreader(encoding)(sys.stdin)
 
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
