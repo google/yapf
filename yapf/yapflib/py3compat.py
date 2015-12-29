@@ -85,7 +85,7 @@ def stdin():
   _, encoding = locale.getdefaultlocale()
   if PY3:
     if sys.stdin.buffer.closed:
-        return encoding, io.open(0)
+      return encoding, io.open(0)
     return encoding, io.TextIOWrapper(sys.stdin.buffer, encoding=encoding)
   else:
     return encoding, codecs.getreader(encoding)(sys.stdin)
