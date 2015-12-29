@@ -68,7 +68,6 @@ def EncodeAndWriteToStdout(s, encoding):
       sys.stdout.buffer.write(codecs.encode(s, encoding))
     else:
       sys.stdout.write(s)
-      #  sys.stdout.write(codecs.encode(s, encoding))
   else:
     sys.stdout.write(s.encode(encoding))
 
@@ -85,12 +84,9 @@ def stdin():
   """sys.stdin convert, return locale encoding and converted stdin"""
   _, encoding = locale.getdefaultlocale()
   if PY3:
-    if hasattr(sys.stdin, "buffer"):
-      if sys.stdin.buffer.closed:
-          return encoding, io.open(0)
-      return encoding, io.TextIOWrapper(sys.stdin.buffer, encoding=encoding)
-    else:
-      return encoding, codecs.getreader(encoding)(sys.stdin.detach())
+    if sys.stdin.buffer.closed:
+        return encoding, io.open(0)
+    return encoding, io.TextIOWrapper(sys.stdin.buffer, encoding=encoding)
   else:
     return encoding, codecs.getreader(encoding)(sys.stdin)
 
