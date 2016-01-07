@@ -295,7 +295,7 @@ Knobs
                 pass
 
 ``COLUMN_LIMIT``
-    The column limit.
+    The column limit (or max line-length)
 
 ``CONTINUATION_INDENT_WIDTH``
     Indent width used for line continuations.
