@@ -148,8 +148,12 @@ class FormatToken(object):
 
     cur_column = self.node.column
     prev_column = previous.node.column
-
     prev_len = len(previous.value)
+
+    if previous.is_pseudo_paren and previous.value == ')':
+      prev_column -= 1
+      prev_len = 0
+
     if previous.is_multiline_string:
       prev_len = len(previous.value.split('\n')[-1])
       if '\n' in previous.value:

@@ -973,6 +973,7 @@ second_argument_makes_the_line_too_long):
             ],
             'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
                 ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
+            '#': lambda x: x  # do nothing
         }
         """)
     expected_formatted_code = textwrap.dedent(u"""\
@@ -986,6 +987,7 @@ second_argument_makes_the_line_too_long):
             ],
             'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
                 ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
+            '#': lambda x: x  # do nothing
         }
         """)
     self.assertYapfReformats(unformatted_code,
