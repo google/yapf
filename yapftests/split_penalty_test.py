@@ -24,6 +24,7 @@ from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
 
 UNBREAKABLE = split_penalty.UNBREAKABLE
+DOTTED_NAME = split_penalty.DOTTED_NAME
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
 CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
 
@@ -195,7 +196,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('if', 0),
         ('a', STRONGLY_CONNECTED),
         ('.', UNBREAKABLE),
-        ('x', UNBREAKABLE),
+        ('x', DOTTED_NAME),
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
         (']', CONTIGUOUS_LIST),

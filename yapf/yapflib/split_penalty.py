@@ -23,6 +23,7 @@ from yapf.yapflib import style
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
+DOTTED_NAME = 2500
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
 
@@ -134,6 +135,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
       self._SetUnbreakableOnChildren(node)
+      pytree_utils.SetNodeAnnotation(
+          node.children[1], pytree_utils.Annotation.SPLIT_PENALTY,
+          DOTTED_NAME)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
