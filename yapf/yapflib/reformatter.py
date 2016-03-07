@@ -431,7 +431,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
 
   prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
-    if not indent_depth and first_token.value in {'class', 'def'}:
+    if not indent_depth and first_token.value in {'class', 'def', 'async'}:
       # Separate a class or function from the module-level docstring with two
       # blank lines.
       return TWO_BLANK_LINES

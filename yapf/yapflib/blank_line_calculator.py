@@ -24,6 +24,7 @@ Annotations:
 
 from lib2to3 import pytree
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
@@ -87,6 +88,13 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
+    if (py3compat.PY3 and node.prev_sibling and
+        pytree_utils.NodeName(node.prev_sibling) == 'ASYNC'):
+      # Move the number of blank lines to the async keyword.
+      num_newlines = pytree_utils.GetNodeAnnotation(
+          node.children[0], pytree_utils.Annotation.NEWLINES)
+      self._SetNumNewlines(node.prev_sibling, num_newlines)
+      self._SetNumNewlines(node.children[0], None)
     self.last_was_decorator = False
     self.function_level += 1
     for child in node.children[index:]:

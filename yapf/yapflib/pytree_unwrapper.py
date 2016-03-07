@@ -121,7 +121,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     # TODO(eliben): add more relevant compound statements here.
     single_stmt_suite = (node.parent and pytree_utils.NodeName(node.parent) in {
         'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'expect_clause',
-        'with_stmt', 'funcdef', 'classdef'
+        'with_stmt', 'funcdef', 'classdef',
     })
     is_comment_stmt = pytree_utils.NodeName(node.children[0]) == 'COMMENT'
     if single_stmt_suite and not is_comment_stmt:
@@ -173,6 +173,12 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
 
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
     self._VisitCompoundStatement(node, {'class'})
+
+  def Visit_async_stmt(self, node):  # pylint: disable=invalid-name
+    self._StartNewLine()
+    self.Visit(node.children[0])
+    for child in node.children[1].children:
+      self.Visit(child)
 
   def Visit_decorators(self, node):  # pylint: disable=invalid-name
     for child in node.children:

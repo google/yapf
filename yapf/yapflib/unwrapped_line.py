@@ -22,6 +22,7 @@ parser to perform the wrapping required to comply with the style guide.
 from lib2to3 import pytree
 
 from yapf.yapflib import format_token
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
@@ -339,6 +340,14 @@ def _MustBreakBefore(prev_token, cur_token):
 
 def _CanBreakBefore(prev_token, cur_token):
   """Return True if a line break may occur before the current token."""
+  if py3compat.PY3:
+    if prev_token.value == 'yield' and cur_token.value == 'from':
+      # Don't break before a yield argument.
+      return False
+    if (prev_token.value in {'async', 'await'} and
+        cur_token.value in {'def', 'with', 'for'}):
+      # Don't break after sync keywords.
+      return False
   if cur_token.split_penalty >= split_penalty.UNBREAKABLE:
     return False
   if prev_token.value == '@':
