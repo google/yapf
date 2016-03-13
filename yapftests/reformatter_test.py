@@ -1122,8 +1122,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
-                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]
-                    } + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} +
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
@@ -1283,12 +1283,12 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
         def testSomething(self):
           expected = {
-              ('aaaaaaaaaaaaa', 'bbbb'):
-                  'ccccccccccccccccccccccccccccccccccccccccccc',
-              ('aaaaaaaaaaaaa', 'bbbb'):
-                  'ccccccccccccccccccccccccccccccccccccccccccc',
-              ('aaaaaaaaaaaaa', 'bbbb'):
-                  'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa',
+               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa',
+               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa',
+               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
           }
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -1508,6 +1508,30 @@ class BuganizerFixes(ReformatterTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB27590179(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            self.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
+                { True:
+                     self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee),
+                 False:
+                     self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
+                })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            self.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = ({
+                True:
+                    self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee),
+                False:
+                    self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
+            })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB27266946(self):
     unformatted_code = textwrap.dedent("""\

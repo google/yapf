@@ -164,11 +164,11 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('a', None), ('=', None), ('{', None),
-        ("'x'", STRONGLY_CONNECTED),
+        ("'x'", None),
         (':', STRONGLY_CONNECTED),
         ('42', None),
         (',', None),
-        ('y', STRONGLY_CONNECTED),
+        ('y', None),
         ('(', UNBREAKABLE),
         ('lambda', STRONGLY_CONNECTED),
         ('a', UNBREAKABLE),

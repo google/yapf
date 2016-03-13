@@ -185,6 +185,7 @@ def CreateChromiumStyle():
   style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
+  style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 0
   return style
 
 

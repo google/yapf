@@ -127,7 +127,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       if pytree_utils.NodeName(child) == 'COLON':
         # This is a key to a dictionary. We don't want to split the key if at
         # all possible.
-        self._SetStronglyConnected(prev_child, child)
+        self._SetStronglyConnected(child)
       prev_child = child
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
