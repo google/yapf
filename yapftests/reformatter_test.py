@@ -1502,6 +1502,38 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testMultilineLambdas(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: chromium, allow_multiline_lambdas: true}'))
+      unformatted_code = textwrap.dedent("""\
+          class SomeClass(object):
+            do_something = True
+
+            def succeeded(self, dddddddddddddd):
+              d = defer.succeed(None)
+
+              if self.do_something:
+                d.addCallback(lambda _: self.aaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccccc(dddddddddddddd))
+              return d
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          class SomeClass(object):
+            do_something = True
+
+            def succeeded(self, dddddddddddddd):
+              d = defer.succeed(None)
+
+              if self.do_something:
+                d.addCallback(lambda _: self.aaaaaa.bbbbbbbbbbbbbbbb.
+                              cccccccccccccccccccccccccccccccc(dddddddddddddd))
+              return d
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 class BuganizerFixes(ReformatterTest):
 

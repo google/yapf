@@ -91,7 +91,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_lambdef(self, node):  # pylint: disable=invalid-name
     # lambdef ::= 'lambda' [varargslist] ':' test
     # Loop over the lambda up to and including the colon.
-    self._SetUnbreakableOnChildren(node)
+    if style.Get('ALLOW_MULTILINE_LAMBDAS'):
+      self._SetStronglyConnected(node)
+    else:
+      self._SetUnbreakableOnChildren(node)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'
@@ -292,6 +295,14 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
     for i in py3compat.range(start, len(node.children)):
       self._SetUnbreakable(node.children[i])
+
+  def _SetStronglyConnectedOnChildren(self, *nodes):
+    """Set a STRONGLY_CONNECTED penalty annotation on children of node."""
+    for child in node.children:
+      self.Visit(child)
+    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
+    for i in py3compat.range(start, len(node.children)):
+      self._SetStronglyConnected(node.children[i])
 
   def _SetExpressionPenalty(self, node, penalty):
     """Set an ARITHMETIC_EXPRESSION penalty annotation children nodes."""

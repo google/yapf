@@ -45,6 +45,8 @@ def SetGlobalStyle(style):
 _STYLE_HELP = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=
     'Align closing bracket with visual indentation.',
+    ALLOW_MULTILINE_LAMBDAS=
+    'Allow lambdas to be formatted on more than one line.',
     COLUMN_LIMIT='The column limit.',
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
@@ -144,6 +146,7 @@ _STYLE_HELP = dict(
 def CreatePEP8Style():
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
+      ALLOW_MULTILINE_LAMBDAS=False,
       COLUMN_LIMIT=79,
       DEDENT_CLOSING_BRACKETS=False,
       I18N_COMMENT='',
@@ -227,6 +230,7 @@ def _BoolConverter(s):
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
+    ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     COLUMN_LIMIT=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
     I18N_COMMENT=str,

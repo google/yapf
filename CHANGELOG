@@ -4,7 +4,9 @@
 
 ## [0.7.0] UNRELEASED
 ### Added
-- Support for 3.5.
+- Support for Python 3.5.
+- Add 'ALLOW_MULTILINE_LAMBDAS' which allows lambdas to be formatted onto
+  multiple lines.
 
 ### Fixed
 - Lessen penalty for splitting before a dictionary keyword.
