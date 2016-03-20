@@ -13,6 +13,7 @@
 # limitations under the License.
 """Tests for yapf.reformatter."""
 
+import difflib
 import sys
 import textwrap
 import unittest
@@ -35,13 +36,26 @@ class ReformatterTest(unittest.TestCase):
 
   def assertCodeEqual(self, expected_code, code):
     if code != expected_code:
-      msg = 'Code format mismatch:\n'
-      msg += 'Expected:\n > '
-      msg += '\n > '.join(expected_code.splitlines())
-      msg += '\nActual:\n > '
-      msg += '\n > '.join(code.splitlines())
-      # TODO(sbc): maybe using difflib here to produce easy to read deltas?
-      self.fail(msg)
+      msg = ['Code format mismatch:', 'Expected:']
+      linelen = style.Get('COLUMN_LIMIT')
+      for l in expected_code.splitlines():
+        if len(l) > linelen:
+          msg.append('!> %s' % l)
+        else:
+          msg.append(' > %s' % l)
+      msg.append('Actual:')
+      for l in code.splitlines():
+        if len(l) > linelen:
+          msg.append('!> %s' % l)
+        else:
+          msg.append(' > %s' % l)
+      msg.append('Diff:')
+      msg.extend(difflib.unified_diff(code.splitlines(),
+                                      expected_code.splitlines(),
+                                      fromfile='actual',
+                                      tofile='expected',
+                                      lineterm=''))
+      self.fail('\n'.join(msg))
 
 
 class BasicReformatterTest(ReformatterTest):

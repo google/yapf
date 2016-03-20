@@ -267,7 +267,7 @@ def DumpNodeToString(node):
   if isinstance(node, pytree.Leaf):
     fmt = '{name}({value}) [lineno={lineno}, column={column}, prefix={prefix}]'
     return fmt.format(name=NodeName(node),
-                      value=repr(node),
+                      value=_PytreeNodeRepr(node),
                       lineno=node.lineno,
                       column=node.column,
                       prefix=repr(node.prefix))
@@ -276,6 +276,19 @@ def DumpNodeToString(node):
     return fmt.format(node=NodeName(node),
                       len=len(node.children),
                       indent=GetNodeAnnotation(node, Annotation.CHILD_INDENT))
+
+
+def _PytreeNodeRepr(node):
+  """Like pytree.Node.__repr__, but names instead of numbers for tokens."""
+  if isinstance(node, pytree.Node):
+    return '%s(%s, %r)' % (node.__class__.__name__,
+                           NodeName(node),
+                           [_PytreeNodeRepr(c) for c in node.children])
+  if isinstance(node, pytree.Leaf):
+    return '%s(%s, %r)' % (node.__class__.__name__,
+                           NodeName(node), node.value)
+  # Throw an exception if it's not an expected type:
+  assert isinstance(node, (pytree.Node, pytree.Leaf)), type(node)
 
 
 def IsCommentStatement(node):

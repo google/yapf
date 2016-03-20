@@ -99,8 +99,8 @@ class PytreeVisitorTest(unittest.TestCase):
 
     dump_output = stream.getvalue()
     self.assertIn('file_input [3 children]', dump_output)
-    self.assertIn("NAME(Leaf(1, 'foo'))", dump_output)
-    self.assertIn("EQUAL(Leaf(22, '='))", dump_output)
+    self.assertIn("NAME(Leaf(NAME, 'foo'))", dump_output)
+    self.assertIn("EQUAL(Leaf(EQUAL, '='))", dump_output)
 
   def testDumpPyTree(self):
     # Similar sanity checking for the convenience wrapper DumpPyTree
@@ -110,8 +110,8 @@ class PytreeVisitorTest(unittest.TestCase):
 
     dump_output = stream.getvalue()
     self.assertIn('file_input [3 children]', dump_output)
-    self.assertIn("NAME(Leaf(1, 'foo'))", dump_output)
-    self.assertIn("EQUAL(Leaf(22, '='))", dump_output)
+    self.assertIn("NAME(Leaf(NAME, 'foo'))", dump_output)
+    self.assertIn("EQUAL(Leaf(EQUAL, '='))", dump_output)
 
 
 if __name__ == '__main__':
