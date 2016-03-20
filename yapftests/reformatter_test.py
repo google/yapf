@@ -1544,7 +1544,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               return d
           """)
       uwlines = _ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
@@ -2798,20 +2799,6 @@ class TestsForPython3Code(ReformatterTest):
     expected_formatted_code = 'methods.exec(sys.modules[name])\n'
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
-  # TODO: This needs to be uncommented. When run with setup.py, it fails with
-  #       an EOF.
-  #def testAsynchronization(self):
-  #  unformatted_code = textwrap.dedent("""\
-  #      async def foo(a, b):
-  #        return a+b
-  #      """)
-  #  expected_formatted_code = textwrap.dedent("""\
-  #      async def foo(a, b):
-  #          return a + b
-  #      """)
-  #  uwlines = _ParseAndUnwrap(unformatted_code)
-  #  self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
 class TestsForFBStyle(ReformatterTest):

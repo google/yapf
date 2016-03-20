@@ -124,14 +124,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # dictsetmaker ::= ( (test ':' test
     #                      (comp_for | (',' test ':' test)* [','])) |
     #                    (test (comp_for | (',' test)* [','])) )
-    prev_child = None
     for child in node.children:
       self.Visit(child)
       if pytree_utils.NodeName(child) == 'COLON':
         # This is a key to a dictionary. We don't want to split the key if at
         # all possible.
         self._SetStronglyConnected(child)
-      prev_child = child
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
@@ -295,14 +293,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
     for i in py3compat.range(start, len(node.children)):
       self._SetUnbreakable(node.children[i])
-
-  def _SetStronglyConnectedOnChildren(self, *nodes):
-    """Set a STRONGLY_CONNECTED penalty annotation on children of node."""
-    for child in node.children:
-      self.Visit(child)
-    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
-    for i in py3compat.range(start, len(node.children)):
-      self._SetStronglyConnected(node.children[i])
 
   def _SetExpressionPenalty(self, node, penalty):
     """Set an ARITHMETIC_EXPRESSION penalty annotation children nodes."""
