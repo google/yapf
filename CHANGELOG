@@ -11,6 +11,7 @@
 ### Fixed
 - Lessen penalty for splitting before a dictionary keyword.
 - Formatting of trailing comments on disabled formatting lines.
+- Disable / enable formatting at end of multi-line comment.
 
 ## [0.6.3] 2016-03-06
 ### Changed

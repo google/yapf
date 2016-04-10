@@ -177,6 +177,22 @@ class FormatFileTest(unittest.TestCase):
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
     self.assertCodeEqual(expected_formatted_code, formatted_code)
 
+    code = textwrap.dedent("""\
+      def foo_function():
+          # some comment
+          # yapf: disable
+
+          foo(
+          bar,
+          baz
+          )
+
+          # yapf: enable
+      """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
   def testFormatFileLinesSelection(self):
     unformatted_code = textwrap.dedent(u"""\
         if a:    b
