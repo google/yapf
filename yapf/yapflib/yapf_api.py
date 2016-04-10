@@ -81,7 +81,6 @@ def FormatFile(filename,
     raise ValueError('Cannot pass both in_place and print_diff.')
 
   original_source, encoding = ReadFile(filename, logger)
-
   reformatted_source, changed = FormatCode(original_source,
                                            style_config=style_config,
                                            filename=filename,
@@ -89,7 +88,7 @@ def FormatFile(filename,
                                            print_diff=print_diff,
                                            verify=verify)
   if in_place:
-    if original_source:
+    if original_source and original_source != reformatted_source:
       file_resources.WriteReformattedCode(filename, reformatted_source,
                                           in_place, encoding)
     return None, encoding, changed
