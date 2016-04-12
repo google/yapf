@@ -5,6 +5,7 @@
 ## [0.7.1] UNRELEASED
 ### Fixed
 - Don't rewrite the file if there are no changes.
+- Ensure the proper number of blank lines before an async function.
 
 ## [0.7.0] 2016-04-09
 ### Added

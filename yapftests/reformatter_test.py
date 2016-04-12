@@ -2800,6 +2800,25 @@ class TestsForPython3Code(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testAsyncFunctions(self):
+    if sys.version_info[1] < 5:
+      return
+    code = textwrap.dedent("""\
+        import asyncio
+        import time
+
+
+        async def slow_operation():
+            await asyncio.sleep(1)
+            # print("Slow operation {} complete".format(n))
+
+
+        async def main():
+            start = time.time()
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
+
 
 class TestsForFBStyle(ReformatterTest):
 

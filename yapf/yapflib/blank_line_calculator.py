@@ -88,8 +88,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
-    if (py3compat.PY3 and node.prev_sibling and
-        pytree_utils.NodeName(node.prev_sibling) == 'ASYNC'):
+    if _AsyncFunction(node):
       # Move the number of blank lines to the async keyword.
       num_newlines = pytree_utils.GetNodeAnnotation(
           node.children[0], pytree_utils.Annotation.NEWLINES)
@@ -162,7 +161,17 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
   def _IsTopLevel(self, node):
     return (not (self.class_level or self.function_level) and
-            _GetFirstChildLeaf(node).column == 0)
+            _StartsInZerothColumn(node))
+
+
+def _StartsInZerothColumn(node):
+  return (_GetFirstChildLeaf(node).column == 0 or
+          (_AsyncFunction(node) and node.prev_sibling.column == 0))
+
+
+def _AsyncFunction(node):
+  return (py3compat.PY3 and node.prev_sibling and
+          pytree_utils.NodeName(node.prev_sibling) == 'ASYNC')
 
 
 def _GetFirstChildLeaf(node):
