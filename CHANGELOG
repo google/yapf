@@ -7,6 +7,8 @@
 - Don't rewrite the file if there are no changes.
 - Ensure the proper number of blank lines before an async function.
 - Split after a bitwise operator when in PEP 8 mode.
+- Retain the splitting within a dictionary data literal between the key and
+  value.
 
 ## [0.7.0] 2016-04-09
 ### Added

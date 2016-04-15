@@ -961,7 +961,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplitListWithInterspersedComments(self):
-    unformatted_code = textwrap.dedent("""\
+    code = textwrap.dedent("""\
         FOO = ['bar',  # bar
                'baz',  # baz
                'mux',  # mux
@@ -975,22 +975,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                lambda a, b: 37  # lambda
               ]
         """)
-    expected_formatted_code = textwrap.dedent("""\
-        FOO = ['bar',  # bar
-               'baz',  # baz
-               'mux',  # mux
-               'qux',  # qux
-               'quux',  # quux
-               'quuux',  # quuux
-               'quuuux',  # quuuux
-               'quuuuux',  # quuuuux
-               'quuuuuux',  # quuuuuux
-               'quuuuuuux',  # quuuuuuux
-               lambda a, b: 37  # lambda
-              ]
-        """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testRelativeImportStatements(self):
     code = textwrap.dedent("""\
@@ -1546,6 +1532,33 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       uwlines = _ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testStableDictionaryFormatting(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, indent_width: 2, '
+          'continuation_indent_width: 4, indent_dictionary_value: True}'))
+      code = textwrap.dedent("""\
+          class A(object):
+            def method(self):
+              filters = {
+                  'expressions': [
+                      {'field': {
+                          'search_field':
+                              {'user_field': 'latest_party__number_of_guests'},
+                      }}
+                  ]
+              }
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      uwlines = _ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 

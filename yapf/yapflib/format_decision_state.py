@@ -156,7 +156,11 @@ class FormatDecisionState(object):
       return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
 
     if previous.value in '{[' and current.lineno != previous.lineno:
-      self.stack[-1].split_before_closing_bracket = True
+      return True
+
+    if (previous.value == ':' and _IsDictionaryValue(current) and
+        current.lineno != previous.lineno):
+      # Retain the split between the dictionary key and value.
       return True
 
     if (format_token.Subtype.COMP_FOR in current.subtypes and
@@ -402,7 +406,7 @@ class FormatDecisionState(object):
     penalty = 0
     if self.column > style.Get('COLUMN_LIMIT'):
       excess_characters = self.column - style.Get('COLUMN_LIMIT')
-      penalty = style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
+      penalty += style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
 
     if is_multiline_string:
       # If this is a multiline string, the column is actually the
