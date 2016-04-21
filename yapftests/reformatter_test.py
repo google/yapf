@@ -1569,6 +1569,29 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB27616132(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          query.fetch_page.assert_has_calls([
+              mock.call(100,
+                        start_cursor=None),
+              mock.call(100,
+                        start_cursor=cursor_1),
+              mock.call(100,
+                        start_cursor=cursor_2),
+          ])
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          query.fetch_page.assert_has_calls([
+              mock.call(100, start_cursor=None),
+              mock.call(100, start_cursor=cursor_1),
+              mock.call(100, start_cursor=cursor_2),
+          ])
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB27590179(self):
     unformatted_code = textwrap.dedent("""\
         if True:
@@ -2226,8 +2249,7 @@ class BuganizerFixes(ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         if True:
           with aaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccc(
-              ddddddddddddd,
-              eeeeeeeee=self.fffffffffffff) as gggg:
+              ddddddddddddd, eeeeeeeee=self.fffffffffffff) as gggg:
             pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)

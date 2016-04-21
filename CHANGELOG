@@ -9,6 +9,8 @@
 - Split after a bitwise operator when in PEP 8 mode.
 - Retain the splitting within a dictionary data literal between the key and
   value.
+- Try to keep short function calls all on one line even if they're part of a
+  larger series of tokens. This stops us from splitting too much.
 
 ## [0.7.0] 2016-04-09
 ### Added

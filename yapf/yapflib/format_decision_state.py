@@ -149,11 +149,17 @@ class FormatDecisionState(object):
     if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
       return True
 
-    if (previous.value not in {'(', '=', '*', '**'} and
-        current.value not in '=,)' and
+    if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
-      return style.Get('SPLIT_BEFORE_NAMED_ASSIGNS')
+      if (previous.value not in {'(', '=', '*', '**'} and
+          current.value not in '=,)'): 
+        opening = _GetOpeningParen(current)
+        if opening:
+          arglist_length = (
+              opening.matching_bracket.total_length - opening.total_length +
+              self.column)
+          return arglist_length > column_limit
 
     if previous.value in '{[' and current.lineno != previous.lineno:
       return True
@@ -440,6 +446,15 @@ def _GetLengthOfSubtype(token, subtype):
   while current.next_token and subtype in current.subtypes:
     current = current.next_token
   return current.total_length - token.total_length + 1
+
+
+def _GetOpeningParen(current):
+  previous = current
+  while previous is not None and previous.matching_bracket is None:
+    previous = previous.previous_token
+    if previous.ClosesScope():
+      previous = previous.matching_bracket.previous_token
+  return previous
 
 
 class _ParenState(object):
