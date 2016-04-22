@@ -146,7 +146,10 @@ def FormatCode(unformatted_source,
   _MarkLinesToFormat(uwlines, lines)
   reformatted_source = reformatter.Reformat(uwlines, verify)
   if indent_match:
-    reformatted_source = indent(reformatted_source, indent_match.group(0))
+    original_indent = indent_match.group(0)
+    offset = len(original_indent) % 4
+    probable_indent = original_indent[:-offset]
+    reformatted_source = indent(reformatted_source, probable_indent)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
