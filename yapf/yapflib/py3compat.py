@@ -83,3 +83,7 @@ class ConfigParser(configparser.ConfigParser):
 
     def read_file(self, fp, source=None):
       self.readfp(fp, filename=source)
+
+
+def indent(text, indent):
+    return '\n'.join(indent + l for l in text.split('\n')[:-1])

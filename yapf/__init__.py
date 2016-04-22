@@ -30,7 +30,12 @@ from __future__ import print_function
 import argparse
 import logging
 import os
-import sys
+from re import match
+
+try:
+    from textwrap import dedent, indent
+except ImportError:
+    from py3compat import indent
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
@@ -38,8 +43,10 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.7.1'
+__version__ = '0.6.3'
 
+
+import sys
 
 def main(argv):
   """Main program.
@@ -143,16 +150,26 @@ def main(argv):
         original_source.append(py3compat.raw_input())
       except EOFError:
         break
+
+    original_source.append('')
+    text_to_format = '\n'.join(original_source)
+    indent_match = match('^(\s+)', original_source[0])
+    if indent_match:
+        text_to_format = dedent(text_to_format)
+
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
     reformatted_source, changed = yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(original_source) + '\n'),
+        py3compat.unicode(text_to_format),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    sys.stdout.write(reformatted_source)
+    out = reformatted_source
+    if indent_match:
+        out = indent(out, indent_match.group(0))
+    sys.stdout.write(out)
     return 2 if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
@@ -210,13 +227,13 @@ def FormatFiles(filenames,
           print_diff=print_diff,
           verify=verify,
           logger=logging.warning)
-      if has_change and reformatted_code is not None:
-        file_resources.WriteReformattedCode(filename, reformatted_code,
-                                            in_place, encoding)
       changed |= has_change
     except SyntaxError as e:
       e.filename = filename
       raise
+    if reformatted_code is not None:
+      file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
+                                          encoding)
   return changed
 
 
