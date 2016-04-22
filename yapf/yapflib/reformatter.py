@@ -51,7 +51,7 @@ def Reformat(uwlines, verify=True):
 
   for uwline in _SingleOrMergedLines(uwlines):
     first_token = uwline.first
-    _FormatFirstToken(first_token, uwline.depth, prev_uwline)
+    _FormatFirstToken(first_token, uwline.depth, prev_uwline, final_lines)
 
     indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
@@ -378,7 +378,7 @@ def _ReconstructPath(initial_state, current):
     initial_state.AddTokenToState(newline=node.newline, dry_run=False)
 
 
-def _FormatFirstToken(first_token, indent_depth, prev_uwline):
+def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
   """Format the first token in the unwrapped line.
 
   Add a newline and the required indent before the first token of the unwrapped
@@ -390,9 +390,12 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline):
     indent_depth: (int) The line's indentation depth.
     prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
+    final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
+      that have already been processed.
   """
   first_token.AddWhitespacePrefix(
-      _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline),
+      _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
+                                 final_lines),
       indent_level=indent_depth)
 
 
@@ -401,7 +404,8 @@ ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
-def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
+                               final_lines):
   """Calculate the number of newlines we need to add.
 
   Arguments:
@@ -410,6 +414,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
     indent_depth: (int) The line's indentation depth.
     prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
+    final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
+      that have already been processed.
 
   Returns:
     The number of newlines needed before the first token.
@@ -453,7 +459,15 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
                                            prev_last_token):
           # Assume that the comment is "attached" to the current line.
           # Therefore, we want two blank lines before the comment.
-          prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
+          index = len(final_lines) - 1
+          while index > 0:
+            if not final_lines[index - 1].is_comment:
+              break
+            index -= 1
+          if final_lines[index - 1].first.value == '@':
+            final_lines[index].first.AdjustNewlinesBefore(NO_BLANK_LINES)
+          else:
+            prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
           if first_token.newlines is not None:
             pytree_utils.SetNodeAnnotation(first_token.GetPytreeNode(),
                                            pytree_utils.Annotation.NEWLINES,
