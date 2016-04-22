@@ -30,12 +30,6 @@ from __future__ import print_function
 import argparse
 import logging
 import os
-from re import match
-
-try:
-    from textwrap import dedent, indent
-except ImportError:
-    from py3compat import indent
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
@@ -152,24 +146,17 @@ def main(argv):
         break
 
     original_source.append('')
-    text_to_format = '\n'.join(original_source)
-    indent_match = match('^(\s+)', original_source[0])
-    if indent_match:
-        text_to_format = dedent(text_to_format)
-
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
     reformatted_source, changed = yapf_api.FormatCode(
-        py3compat.unicode(text_to_format),
+        py3compat.unicode('\n'.join(original_source)),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
         verify=args.verify)
     out = reformatted_source
-    if indent_match:
-        out = indent(out, indent_match.group(0))
-    sys.stdout.write(out)
+    sys.stdout.write(reformatted_source)
     return 2 if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,

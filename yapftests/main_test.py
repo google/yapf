@@ -98,7 +98,6 @@ class MainTest(unittest.TestCase):
     bad_syntax = "  a = 1\n"
     with patched_input(bad_syntax):
       with captured_output() as (out, err):
-        with self.assertRaisesRegexp(SyntaxError, "unexpected indent"):
           ret = yapf.main([])
 
   def testHelp(self):
