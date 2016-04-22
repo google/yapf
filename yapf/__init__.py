@@ -41,7 +41,6 @@ from yapf.yapflib import yapf_api
 __version__ = '0.7.1'
 
 
-
 def main(argv):
   """Main program.
 
