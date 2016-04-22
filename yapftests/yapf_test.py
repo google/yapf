@@ -1041,11 +1041,16 @@ class BadInputTest(unittest.TestCase):
     code = '  a = 1\n'
     yapf_api.FormatCode(code)
 
-def test_wrong_indent():
-  num_of_spaces = 5
+
+@pytest.mark.parametrize('num_of_spaces, correct_num_of_spaces', (
+  (5, 4),
+  (4, 4)
+))
+def test_wrong_indent(num_of_spaces, correct_num_of_spaces):
   stmt = 'a = 1\n'
   code = ' ' * num_of_spaces + stmt
-  assert len(match('^(\s+)', yapf_api.FormatCode(code)[0]).group(0)) == 4
+  spaces = len(match('^(\s+)', yapf_api.FormatCode(code)[0]).group(0)) 
+  assert spaces == correct_num_of_spaces
 
 
 if __name__ == '__main__':
