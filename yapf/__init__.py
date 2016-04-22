@@ -30,6 +30,7 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import sys
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
@@ -40,7 +41,6 @@ from yapf.yapflib import yapf_api
 __version__ = '0.7.1'
 
 
-import sys
 
 def main(argv):
   """Main program.
@@ -155,7 +155,6 @@ def main(argv):
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    out = reformatted_source
     sys.stdout.write(reformatted_source)
     return 2 if changed else 0
 
