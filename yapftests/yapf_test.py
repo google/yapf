@@ -58,6 +58,16 @@ class FormatCodeTest(unittest.TestCase):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
+  def testWrongIndent(self):
+    code = (
+      u'    very_long_variable_name = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)'
+    ) 
+    correct_code = u"""\
+    very_long_variable_name = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                               15, 16)"""
+    formatted_code, _ = yapf_api.FormatCode(code, style_config='pep8')
+    self.assertEqual(correct_code, formatted_code)
+
 
 class FormatFileTest(unittest.TestCase):
 
