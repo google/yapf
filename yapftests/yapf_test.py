@@ -15,6 +15,7 @@
 """Tests for yapf.yapf."""
 
 import io
+from re import match
 import logging
 import os
 import shutil
@@ -23,6 +24,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+import pytest
 
 from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
@@ -1037,7 +1039,13 @@ class BadInputTest(unittest.TestCase):
 
   def testBadSyntax(self):
     code = '  a = 1\n'
-    yapf_api.FormatCode, code
+    yapf_api.FormatCode(code)
+
+def test_wrong_indent():
+  num_of_spaces = 5
+  stmt = 'a = 1\n'
+  code = ' ' * num_of_spaces + stmt
+  assert len(match('^(\s+)', yapf_api.FormatCode(code)[0]).group(0)) == 4
 
 
 if __name__ == '__main__':
