@@ -65,7 +65,7 @@ class RunMainTest(unittest.TestCase):
     sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
       with self.assertRaises(SystemExit):
-       ret = yapf.run_main()
+        ret = yapf.run_main()
       self.assertEqual(out.getvalue(), '')
       self.assertEqual(err.getvalue(), expected_message)
 
