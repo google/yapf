@@ -65,7 +65,7 @@ class RunMainTest(unittest.TestCase):
     sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
       with self.assertRaises(SystemExit):
-        ret = yapf.run_main()
+       ret = yapf.run_main()
       self.assertEqual(out.getvalue(), '')
       self.assertEqual(err.getvalue(), expected_message)
 
@@ -98,7 +98,7 @@ class MainTest(unittest.TestCase):
     bad_syntax = "  a = 1\n"
     with patched_input(bad_syntax):
       with captured_output() as (out, err):
-          ret = yapf.main([])
+        ret = yapf.main([])
 
   def testHelp(self):
     with captured_output() as (out, err):

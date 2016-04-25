@@ -212,13 +212,13 @@ def FormatFiles(filenames,
           print_diff=print_diff,
           verify=verify,
           logger=logging.warning)
+      if reformatted_code is not None:
+        file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
+                                            encoding)
       changed |= has_change
     except SyntaxError as e:
       e.filename = filename
       raise
-    if reformatted_code is not None:
-      file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
-                                          encoding)
   return changed
 
 
