@@ -132,7 +132,7 @@ def FormatCode(unformatted_source,
     unformatted_source = dedent(unformatted_source)
     original_indent = indent_match.group(0)
     original_len = len(original_indent)
-    offset = original_len - original_len % 4
+    offset = original_len - original_len % st['INDENT_WIDTH']
     probable_indent = original_indent[:offset]
     st['COLUMN_LIMIT'] -= len(probable_indent)
   style.SetGlobalStyle(st)
@@ -152,10 +152,6 @@ def FormatCode(unformatted_source,
   _MarkLinesToFormat(uwlines, lines)
   reformatted_source = reformatter.Reformat(uwlines, verify)
   if indent_match:
-    original_indent = indent_match.group(0)
-    original_len = len(original_indent)
-    offset = original_len - original_len % 4
-    probable_indent = original_indent[:offset]
     reformatted_source = indent(reformatted_source, probable_indent)
 
   if unformatted_source == reformatted_source:
