@@ -86,4 +86,4 @@ class ConfigParser(configparser.ConfigParser):
 
 
 def indent(text, indent):
-    return ('\n' + indent).join(l for l in text.split('\n')[:-1])
+    return '\n'.join(indent + l for l in text.split('\n')[:-1])
