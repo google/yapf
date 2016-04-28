@@ -203,6 +203,10 @@ class FormatDecisionState(object):
             # up the formatting.
             return True
 
+    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and
+        current.value in '&|' and previous.lineno < current.lineno):
+      return True
+
     if (current.is_comment and
         previous.lineno < current.lineno - current.value.count('\n')):
       # If a comment comes in the middle of an unwrapped line (like an if
