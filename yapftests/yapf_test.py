@@ -15,6 +15,7 @@
 """Tests for yapf.yapf."""
 
 import io
+from re import match
 import logging
 import os
 import shutil
@@ -23,6 +24,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+import pytest
 
 from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
@@ -55,6 +57,16 @@ class FormatCodeTest(unittest.TestCase):
           pass
         """)
     self._Check(unformatted_code, expected_formatted_code)
+
+def test_wrong_indent():
+    code = (
+      u'    very_long_variable_name = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)'
+    ) 
+    correct_code = u"""\
+    very_long_variable_name = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                               15, 16)"""
+    formatted_code, _ = yapf_api.FormatCode(code, style_config='pep8')
+    assert correct_code == formatted_code
 
 
 class FormatFileTest(unittest.TestCase):
@@ -1037,7 +1049,19 @@ class BadInputTest(unittest.TestCase):
 
   def testBadSyntax(self):
     code = '  a = 1\n'
-    self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
+    yapf_api.FormatCode(code)
+
+
+@pytest.mark.parametrize('num_of_spaces, correct_num_of_spaces', (
+  (5, 4),
+  (4, 4),
+))
+def test_wrong_indent(num_of_spaces, correct_num_of_spaces):
+  stmt = 'a = 1\n'
+  code = ' ' * num_of_spaces + stmt
+  formatted_code, _ = yapf_api.FormatCode(code, style_config='pep8')
+  spaces = len(match('^(\s+)', formatted_code).group(0)
+  assert spaces == correct_num_of_spaces
 
 
 if __name__ == '__main__':

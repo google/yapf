@@ -50,6 +50,11 @@ from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
+try:
+    from textwrap import dedent, indent
+except ImportError:
+    indent = py3compat.indent
+
 
 def FormatFile(filename,
                style_config=None,
@@ -116,9 +121,21 @@ def FormatCode(unformatted_source,
     desired formatting style. changed is True if the source changed.
   """
   _CheckPythonVersion()
-  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
   if not unformatted_source.endswith('\n'):
     unformatted_source += '\n'
+
+  fst_newline = unformatted_source.find('\n')
+
+  indent_match = re.match('^(\s+)', unformatted_source[:fst_newline])
+  st = style.CreateStyleFromConfig(style_config)
+  if indent_match:
+    unformatted_source = dedent(unformatted_source)
+    original_indent = indent_match.group(0)
+    original_len = len(original_indent)
+    offset = original_len - original_len % st['INDENT_WIDTH']
+    probable_indent = original_indent[:offset]
+    st['COLUMN_LIMIT'] -= len(probable_indent)
+  style.SetGlobalStyle(st)
   tree = pytree_utils.ParseCodeToTree(unformatted_source)
 
   # Run passes on the tree, modifying it in place.
@@ -134,6 +151,8 @@ def FormatCode(unformatted_source,
 
   _MarkLinesToFormat(uwlines, lines)
   reformatted_source = reformatter.Reformat(uwlines, verify)
+  if indent_match:
+    reformatted_source = indent(reformatted_source, probable_indent)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False

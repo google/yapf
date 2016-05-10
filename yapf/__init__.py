@@ -143,11 +143,13 @@ def main(argv):
         original_source.append(py3compat.raw_input())
       except EOFError:
         break
+
+    original_source.append('')
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
     reformatted_source, changed = yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(original_source) + '\n'),
+        py3compat.unicode('\n'.join(original_source)),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
@@ -210,9 +212,9 @@ def FormatFiles(filenames,
           print_diff=print_diff,
           verify=verify,
           logger=logging.warning)
-      if has_change and reformatted_code is not None:
-        file_resources.WriteReformattedCode(filename, reformatted_code,
-                                            in_place, encoding)
+      if reformatted_code is not None:
+        file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
+                                            encoding)
       changed |= has_change
     except SyntaxError as e:
       e.filename = filename
