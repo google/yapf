@@ -112,8 +112,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     while index < len(node.children) - 1:
       next_child = node.children[index + 1]
       if isinstance(next_child, pytree.Leaf) and next_child.value == '=':
-        self._SetStronglyConnected(node.children[index + 1],
-                                   node.children[index + 2])
+        self._SetUnbreakable(_FirstChildNode(node.children[index + 1]))
+        self._SetUnbreakable(_FirstChildNode(node.children[index + 2]))
       index += 1
 
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name

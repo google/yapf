@@ -153,7 +153,7 @@ class FormatDecisionState(object):
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
       if (previous.value not in {'(', '=', '*', '**'} and
-          current.value not in '=,)'): 
+          current.value not in '=,)'):
         opening = _GetOpeningParen(current)
         if opening:
           arglist_length = (

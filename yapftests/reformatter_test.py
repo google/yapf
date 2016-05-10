@@ -1562,6 +1562,15 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testDontSplitKeywordValueArguments(self):
+    code = textwrap.dedent("""\
+      def mark_game_scored(gid):
+        _connect.execute(_games.update().where(_games.c.gid == gid).values(
+            scored=True))
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -2149,15 +2158,15 @@ class BuganizerFixes(ReformatterTest):
         class Foo(object):
 
           def Bar(self):
-            aaaaa.bbbbbbb(
-                ccc='ddddddddddddddd',
-                eeee='ffffffffffffffffffffff-%s-%s' % (gggg, int(time.time())),
-                hhhhhh={
-                    'iiiiiiiiiii': iiiiiiiiiii,
-                    'jjjj': jjjj.jjjjj(),
-                    'kkkkkkkkkkkk': kkkkkkkkkkkk,
-                },
-                llllllllll=mmmmmm.nnnnnnnnnnnnnnnn)
+            aaaaa.bbbbbbb(ccc='ddddddddddddddd',
+                          eeee='ffffffffffffffffffffff-%s-%s' %
+                          (gggg, int(time.time())),
+                          hhhhhh={
+                              'iiiiiiiiiii': iiiiiiiiiii,
+                              'jjjj': jjjj.jjjjj(),
+                              'kkkkkkkkkkkk': kkkkkkkkkkkk,
+                          },
+                          llllllllll=mmmmmm.nnnnnnnnnnnnnnnn)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -2412,11 +2421,11 @@ class BuganizerFixes(ReformatterTest):
           if (aaaaaa.bbbbb.ccccccccccccc != ddddddd.eeeeeeeeee.fffffffffffff or
               eeeeee.fffff.ggggggggggggggggggggggggggg() !=
               hhhhhhh.iiiiiiiiii.jjjjjjjjjjjj):
-            aaaaaaaa.bbbbbbbbbbbb(
-                aaaaaa.bbbbb.cc,
-                dddddddddddd=eeeeeeeeeeeeeeeeeee.fffffffffffffffff(
-                    gggggg.hh, iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk, lllll.mm),
-                nnnnnnnnnn=ooooooo.pppppppppp)
+            aaaaaaaa.bbbbbbbbbbbb(aaaaaa.bbbbb.cc,
+                                  dddddddddddd=eeeeeeeeeeeeeeeeeee.fffffffffffffffff(
+                                      gggggg.hh, iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk,
+                                      lllll.mm),
+                                  nnnnnnnnnn=ooooooo.pppppppppp)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
