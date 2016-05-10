@@ -240,8 +240,8 @@ def _SpaceRequiredBetween(left, right):
     return False
   if left.is_binary_op or right.is_binary_op:
     if left.value == '**' or right.value == '**':
-      # Don't add a space around the "power" operator.
-      return False
+      # Space around the "power" operator.
+      return style.Get('SPACES_AROUND_POWER_OPERATOR')
     # Enforce spaces around binary operators.
     return True
   if (_IsUnaryOperator(left) and left.value != 'not' and

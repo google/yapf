@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.7.2] UNRELEASED
+## [0.8.0] UNRELEASED
+### Added
+- Add a knob to allow adding spaces around the power operator.
+
 ### Fixed
 - There shouldn't be a space between a decorator and an intervening comment.
 - If we split before a bitwise operator, then we assume that the programmer

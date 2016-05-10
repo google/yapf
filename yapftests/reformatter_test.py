@@ -2892,6 +2892,22 @@ class TestsForPython3Code(ReformatterTest):
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
+  def testNoSpacesAroundPowerOparator(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, SPACES_AROUND_POWER_OPERATOR: True}'))
+      unformatted_code = textwrap.dedent("""\
+          a**b
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a ** b
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 class TestsForFBStyle(ReformatterTest):
 

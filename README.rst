@@ -357,6 +357,9 @@ Knobs
     Insert a space between the ending comma and closing bracket of a list,
     etc.
 
+``SPACES_AROUND_POWER_OPERATOR``
+    Set to ``True`` to prefer using spaces around ``**``.
+
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
 

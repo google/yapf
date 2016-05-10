@@ -105,6 +105,8 @@ _STYLE_HELP = dict(
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
+    SPACES_AROUND_POWER_OPERATOR=
+    'Use spaces around the power operator.',
     SPACES_BEFORE_COMMENT=
     'The number of spaces required before a trailing comment.',
     SPLIT_BEFORE_BITWISE_OPERATOR=
@@ -157,6 +159,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
       JOIN_MULTIPLE_LINES=True,
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
+      SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_BEFORE_BITWISE_OPERATOR=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=False,
@@ -242,6 +245,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     JOIN_MULTIPLE_LINES=_BoolConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
+    SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_BEFORE_COMMENT=int,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
