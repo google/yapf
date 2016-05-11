@@ -171,7 +171,8 @@ class FormatDecisionState(object):
 
     if (format_token.Subtype.COMP_FOR in current.subtypes and
         format_token.Subtype.COMP_FOR not in previous.subtypes):
-      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR)
+      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR,
+                                   format_token.Subtype.COMP_IF)
       if length + self.column > column_limit:
         return True
 
@@ -445,9 +446,10 @@ def _IsDictionaryValue(token):
   return False
 
 
-def _GetLengthOfSubtype(token, subtype):
+def _GetLengthOfSubtype(token, subtype, exclude=None):
   current = token
-  while current.next_token and subtype in current.subtypes:
+  while (current.next_token and subtype in current.subtypes and
+         (exclude is None or exclude not in current.subtypes)):
     current = current.next_token
   return current.total_length - token.total_length + 1
 

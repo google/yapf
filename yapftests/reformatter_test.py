@@ -1581,6 +1581,19 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testFormattingListComprehensions(self):
+    code = textwrap.dedent("""\
+      def a():
+        if True:
+          if True:
+            if True:
+              columns = [x for x, y in self._heap_this_is_very_long
+                         if x.route[0] == choice]
+              self._heap = [x for x in self._heap if x.route and x.route[0] == choice]
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

@@ -13,6 +13,8 @@
   operator if one exists in the original program.
 - Strengthen the bond between a keyword and value argument.
 - Don't add a blank line after a multiline string.
+- If the "for" part of a list comprehension can exist on the starting line
+  without going over the column limit, then let it remain there.
 
 ## [0.7.1] 2016-04-21
 ### Fixed
