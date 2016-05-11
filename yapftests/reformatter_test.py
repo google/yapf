@@ -1571,6 +1571,16 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testDontAddBlankLineAfterMultilineString(self):
+    code = textwrap.dedent("""\
+      query = '''SELECT id 
+      FROM table 
+      WHERE day in {}'''
+      days = ",".join(days)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 

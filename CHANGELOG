@@ -12,6 +12,7 @@
   knows what they're doing, more or less, and so we enforce a split before said
   operator if one exists in the original program.
 - Strengthen the bond between a keyword and value argument.
+- Don't add a blank line after a multiline string.
 
 ## [0.7.1] 2016-04-21
 ### Fixed

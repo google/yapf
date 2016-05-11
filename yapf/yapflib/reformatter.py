@@ -486,7 +486,11 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
   else:
     first_token_lineno = first_token.lineno
 
-  if first_token_lineno - prev_last_token.lineno > 1:
+  prev_last_token_lineno = prev_last_token.lineno
+  if prev_last_token.is_multiline_string:
+    prev_last_token_lineno += prev_last_token.value.count('\n')
+
+  if first_token_lineno - prev_last_token_lineno > 1:
     return ONE_BLANK_LINE
 
   return NO_BLANK_LINES
