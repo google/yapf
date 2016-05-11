@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.8.0] UNRELEASED
+## [0.8.0] 2016-05-10
 ### Added
 - Add a knob to allow adding spaces around the power operator.
 
