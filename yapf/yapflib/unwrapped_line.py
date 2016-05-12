@@ -332,6 +332,11 @@ def _MustBreakBefore(prev_token, cur_token):
       # after the opening one so that we have more horizontal space for the
       # trailer.
       opening.next_token.must_break_before = True
+      if (style.Get('NO_SPLIT_WHEN_BIN_PACKING') and
+          opening.previous_token and opening.previous_token.is_name and
+          (not opening.previous_token.previous_token or
+           opening.previous_token.previous_token.value != 'def')):
+        return prev_token.value == ','
       return True
   return pytree_utils.GetNodeAnnotation(cur_token.node,
                                         pytree_utils.Annotation.MUST_SPLIT,

@@ -1594,6 +1594,35 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testNoSplittingWhenBinPacking(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, indent_width: 2, '
+          'continuation_indent_width: 4, indent_dictionary_value: True, '
+          'dedent_closing_brackets: True, no_split_when_bin_packing: True, '
+          'split_before_named_assigns: False}'))
+      code = textwrap.dedent("""\
+          a_very_long_function_name(
+              long_argument_name_1=1,
+              long_argument_name_2=2,
+              long_argument_name_3=3,
+              long_argument_name_4=4,
+          )
+
+          a_very_long_function_name(
+              long_argument_name_1=1, long_argument_name_2=2, long_argument_name_3=3,
+              long_argument_name_4=4)
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      uwlines = _ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 class BuganizerFixes(ReformatterTest):
 

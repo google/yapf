@@ -2,9 +2,16 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.0] UNRELEASED
+### Added
+- Add a knob, 'NO_SPLIT_WHEN_BIN_PACKING', that prevents splitting before the
+  closing bracket of a function call if the arguments are bin packed. This is
+  used in conjunction with 'DEDENT_CLOSING_BRACKETS'.
+
 ## [0.8.0] 2016-05-10
 ### Added
-- Add a knob to allow adding spaces around the power operator.
+- Add a knob, 'SPACES_AROUND_POWER_OPERATOR', to allow adding spaces around the
+  power operator.
 
 ### Fixed
 - There shouldn't be a space between a decorator and an intervening comment.

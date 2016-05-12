@@ -322,6 +322,11 @@ Knobs
           end_ts=now(),
         )        # <--- this bracket is dedented and on a separate line
 
+``NO_SPLIT_WHEN_BIN_PACKING``
+    Used in conjuction with ``DEDENT_CLOSING_BRACKETS``, it doesn't split
+    before the closing bracket of a function call if the arguments are bin
+    packed.
+
 ``I18N_COMMENT``
     The regex for an internationalization comment. The presence of this comment
     stops reformatting of that line, because the comments are required to be
