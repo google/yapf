@@ -143,8 +143,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
     elif len(node.children) == 3:
-      if (pytree_utils.NodeName(node.children[1]) not in {'arglist', 'argument',
-                                                          'term'}):
+      if (pytree_utils.NodeName(node.children[1]) not in {
+              'arglist', 'argument', 'term', 'or_test', 'and_test'
+          }):
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
       if pytree_utils.NodeName(node.children[-1]) == 'RSQB':

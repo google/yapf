@@ -8,6 +8,10 @@
   closing bracket of a function call if the arguments are bin packed. This is
   used in conjunction with 'DEDENT_CLOSING_BRACKETS'.
 
+### Fixed
+- 'SPLIT_BEFORE_LOGICAL_OPERATOR' wasn't working correctly. The penalty was
+  being set incorrectly when it was part of a larger construct.
+
 ## [0.8.0] 2016-05-10
 ### Added
 - Add a knob, 'SPACES_AROUND_POWER_OPERATOR', to allow adding spaces around the

@@ -2794,6 +2794,38 @@ class TestsForPEP8Style(ReformatterTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testSplittingBeforeLogicalOperator(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, split_before_logical_operator: True}'))
+      unformatted_code = textwrap.dedent("""\
+          def foo():
+              return bool(update.message.new_chat_member or update.message.left_chat_member or
+                          update.message.new_chat_title or update.message.new_chat_photo or
+                          update.message.delete_chat_photo or update.message.group_chat_created or
+                          update.message.supergroup_chat_created or update.message.channel_chat_created
+                          or update.message.migrate_to_chat_id or update.message.migrate_from_chat_id or
+                          update.message.pinned_message)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          def foo():
+              return bool(
+                  update.message.new_chat_member or update.message.left_chat_member
+                  or update.message.new_chat_title or update.message.new_chat_photo
+                  or update.message.delete_chat_photo
+                  or update.message.group_chat_created
+                  or update.message.supergroup_chat_created
+                  or update.message.channel_chat_created
+                  or update.message.migrate_to_chat_id
+                  or update.message.migrate_from_chat_id
+                  or update.message.pinned_message)
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 class TestingNotInParameters(unittest.TestCase):
 
