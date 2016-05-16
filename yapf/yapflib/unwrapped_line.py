@@ -309,6 +309,9 @@ def _SpaceRequiredBetween(left, right):
   if right.value == ';':
     # Avoid spaces before a semicolon. (Why is there a semicolon?!)
     return False
+  if right.is_keyword and left.value == '(':
+    # Don't separate a keyword, like "await", from a paren.
+    return False
   return True
 
 

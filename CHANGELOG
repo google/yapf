@@ -11,6 +11,7 @@
 ### Fixed
 - 'SPLIT_BEFORE_LOGICAL_OPERATOR' wasn't working correctly. The penalty was
   being set incorrectly when it was part of a larger construct.
+- Don't separate a keyword, like "await", from a left paren.
 
 ## [0.8.0] 2016-05-10
 ### Added
