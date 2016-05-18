@@ -96,10 +96,10 @@ class SubtypeAssignerTest(unittest.TestCase):
         [('return', [format_token.Subtype.NONE]),
          ('-', {format_token.Subtype.UNARY_OPERATOR}),
          ('x', [format_token.Subtype.NONE]),
-         ('[', [format_token.Subtype.NONE]),
+         ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
          (':', {format_token.Subtype.SUBSCRIPT_COLON}),
          ('42', [format_token.Subtype.NONE]),
-         (']', [format_token.Subtype.NONE])]
+         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})]
     ])  # yapf: disable
 
   def testFuncCallWithDefaultAssign(self):
@@ -192,13 +192,13 @@ class SubtypeAssignerTest(unittest.TestCase):
     uwlines = self._ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('x', [format_token.Subtype.NONE]),
-         ('[', [format_token.Subtype.NONE]),
+         ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
          ('0', [format_token.Subtype.NONE]),
          (':', {format_token.Subtype.SUBSCRIPT_COLON}),
          ('42', [format_token.Subtype.NONE]),
          (':', {format_token.Subtype.SUBSCRIPT_COLON}),
          ('1', [format_token.Subtype.NONE]),
-         (']', [format_token.Subtype.NONE])]
+         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})]
     ])  # yapf: disable
 
   def testFunctionCallWithStarExpression(self):

@@ -197,7 +197,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         break
       if trailer.children[0].value in '([':
         if len(trailer.children) > 2:
-          self._SetUnbreakable(trailer.children[-1])
+          if not style.Get('DEDENT_CLOSING_BRACKETS'):
+            self._SetUnbreakable(trailer.children[-1])
           if _FirstChildNode(trailer).lineno == _LastChildNode(trailer).lineno:
             # If the trailer was originally on one line, then try to keep it
             # like that.

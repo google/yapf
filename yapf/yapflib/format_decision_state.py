@@ -128,6 +128,29 @@ class FormatDecisionState(object):
     if current.must_break_before:
       return True
 
+    if style.Get('DEDENT_CLOSING_BRACKETS'):
+      bracket = current if current.ClosesScope() else previous
+      if ((bracket.OpensScope() or bracket.ClosesScope()) and
+          format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes):
+        if previous and previous.OpensScope():
+          length = (previous.matching_bracket.total_length -
+                    previous.total_length)
+          if _IsLastScopeInLine(previous.matching_bracket):
+            last_token = _LastTokenInLine(previous.matching_bracket)
+            length = last_token.total_length - previous.total_length
+
+          if length + previous.column >= column_limit:
+            return True
+        elif current.ClosesScope():
+          opening = current.matching_bracket
+          length = current.total_length - opening.total_length
+          if _IsLastScopeInLine(current):
+            last_token = _LastTokenInLine(current)
+            length = last_token.total_length - opening.total_length
+
+          if length + opening.column >= column_limit:
+            return True
+
     if (self.stack[-1].split_before_closing_bracket and
         # FIXME(morbo): Use the 'matching_bracket' instead of this.
         # FIXME(morbo): Don't forget about tuples!
@@ -461,6 +484,20 @@ def _GetOpeningParen(current):
     if previous.ClosesScope():
       previous = previous.matching_bracket.previous_token
   return previous
+
+
+def _LastTokenInLine(current):
+  while current.next_token:
+    current = current.next_token
+  return current
+
+
+def _IsLastScopeInLine(current):
+  while current:
+    current = current.next_token
+    if current and (current.OpensScope() or current.ClosesScope()):
+      return False
+  return True
 
 
 class _ParenState(object):

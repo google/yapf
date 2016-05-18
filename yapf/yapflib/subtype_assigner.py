@@ -198,6 +198,12 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == '**':
         self._AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
 
+  def Visit_trailer(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
+      if isinstance(child, pytree.Leaf) and child.value in '[]':
+        self._AppendTokenSubtype(child, format_token.Subtype.SUBSCRIPT_BRACKET)
+
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]
     for child in node.children:

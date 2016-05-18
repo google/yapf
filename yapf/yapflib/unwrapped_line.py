@@ -326,21 +326,6 @@ def _MustBreakBefore(prev_token, cur_token):
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
     return True
-  if style.Get('DEDENT_CLOSING_BRACKETS') and cur_token.ClosesScope():
-    opening = cur_token.matching_bracket
-    trailer_length = cur_token.total_length - opening.total_length
-    if (trailer_length > style.Get('COLUMN_LIMIT') or
-        cur_token.lineno != opening.lineno):
-      # Since we're already dedenting the closing bracket, let's put a newline
-      # after the opening one so that we have more horizontal space for the
-      # trailer.
-      opening.next_token.must_break_before = True
-      if (style.Get('NO_SPLIT_WHEN_BIN_PACKING') and
-          opening.previous_token and opening.previous_token.is_name and
-          (not opening.previous_token.previous_token or
-           opening.previous_token.previous_token.value != 'def')):
-        return prev_token.value == ','
-      return True
   return pytree_utils.GetNodeAnnotation(cur_token.node,
                                         pytree_utils.Annotation.MUST_SPLIT,
                                         default=False)

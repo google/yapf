@@ -100,10 +100,6 @@ _STYLE_HELP = dict(
         end_ts=now(),
       )        # <--- this bracket is dedented and on a separate line
       """),
-    NO_SPLIT_WHEN_BIN_PACKING=textwrap.dedent("""\
-      Used in conjuction with DEDENT_CLOSING_BRACKETS, it doesn't split before
-      the closing bracket of a function call if the arguments are bin packed.
-      """),
     JOIN_MULTIPLE_LINES=
     "Join short lines into one line. E.g., single line 'if' statements.",
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
@@ -155,7 +151,6 @@ def CreatePEP8Style():
       ALLOW_MULTILINE_LAMBDAS=False,
       COLUMN_LIMIT=79,
       DEDENT_CLOSING_BRACKETS=False,
-      NO_SPLIT_WHEN_BIN_PACKING=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
@@ -242,7 +237,6 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     COLUMN_LIMIT=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
-    NO_SPLIT_WHEN_BIN_PACKING=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,

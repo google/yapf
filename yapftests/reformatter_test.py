@@ -1599,8 +1599,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       style.SetGlobalStyle(style.CreateStyleFromConfig(
           '{based_on_style: pep8, indent_width: 2, '
           'continuation_indent_width: 4, indent_dictionary_value: True, '
-          'dedent_closing_brackets: True, no_split_when_bin_packing: True, '
-          'split_before_named_assigns: False}'))
+          'dedent_closing_brackets: True, split_before_named_assigns: False}'))
       code = textwrap.dedent("""\
           a_very_long_function_name(
               long_argument_name_1=1,
@@ -1611,7 +1610,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
           a_very_long_function_name(
               long_argument_name_1=1, long_argument_name_2=2, long_argument_name_3=3,
-              long_argument_name_4=4)
+              long_argument_name_4=4
+          )
           """)
       uwlines = _ParseAndUnwrap(code)
       reformatted_code = reformatter.Reformat(uwlines)
@@ -3118,15 +3118,15 @@ v, w, x, y, z
     pass0_code = textwrap.dedent("""\
     try:
         pass
-    except (IOError, OSError, LookupError, RuntimeError, OverflowError\
-) as exception:
+    except (IOError, OSError, LookupError, RuntimeError, OverflowError) as exception:
         pass
     """)
     pass1_code = textwrap.dedent("""\
     try:
         pass
-    except (IOError, OSError, LookupError, RuntimeError,
-            OverflowError) as exception:
+    except (
+        IOError, OSError, LookupError, RuntimeError, OverflowError
+    ) as exception:
         pass
     """)
     uwlines = _ParseAndUnwrap(pass0_code)
@@ -3162,6 +3162,43 @@ v, w, x, y, z
                     self.foobars.counters['db.marshmellow_skins'] != 1
                 ):
                     pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSimpleDedenting(self):
+    unformatted_code = textwrap.dedent("""\
+    if True:
+        self.assertEqual(result.reason_not_added, "current preflight is still running")
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    if True:
+        self.assertEqual(
+            result.reason_not_added, "current preflight is still running"
+        )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingWithSubscripts(self):
+    unformatted_code = textwrap.dedent("""\
+    class Foo:
+        class Bar:
+            @classmethod
+            def baz(cls, clues_list, effect, constraints, constraint_manager):
+                if clues_lists:
+                   return cls.single_constraint_not(clues_lists, effect, constraints[0], constraint_manager)
+
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    class Foo:
+        class Bar:
+            @classmethod
+            def baz(cls, clues_list, effect, constraints, constraint_manager):
+                if clues_lists:
+                    return cls.single_constraint_not(
+                        clues_lists, effect, constraints[0], constraint_manager
+                    )
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
