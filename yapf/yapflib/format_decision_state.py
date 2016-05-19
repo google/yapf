@@ -184,7 +184,8 @@ class FormatDecisionState(object):
               self.column)
           return arglist_length > column_limit
 
-    if previous.value in '{[' and current.lineno != previous.lineno:
+    if (previous.value in '{[' and current.lineno != previous.lineno and
+        format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
       return True
 
     if (previous.value == ':' and _IsDictionaryValue(current) and

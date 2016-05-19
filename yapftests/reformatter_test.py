@@ -1231,8 +1231,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 if True:
                   if True:
                     if row[4] is None or row[5] is None:
-                      bbbbbbbbbbbbb['..............'] = row[
-                          5] if row[5] is not None else 5
+                      bbbbbbbbbbbbb['..............'] = row[5] if row[
+                          5] is not None else 5
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1732,9 +1732,8 @@ class BuganizerFixes(ReformatterTest):
         class f:
 
           def test(self):
-            self.bbbbbbb[0][
-                'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                {'xxxxxx': 'yyyyyy'}] = cccccc.ddd('1m', '10x1+1')
+            self.bbbbbbb[0]['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                            {'xxxxxx': 'yyyyyy'}] = cccccc.ddd('1m', '10x1+1')
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
