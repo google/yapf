@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.8.1] UNRELEASED
+## [0.8.1] 2016-05-18
 ### Fixed
 - 'SPLIT_BEFORE_LOGICAL_OPERATOR' wasn't working correctly. The penalty was
   being set incorrectly when it was part of a larger construct.
