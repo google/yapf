@@ -7,6 +7,8 @@
 - Prefer not to split after the opening of a subscript.
 - Don't add space before the 'await' keyword if it's preceded by an opening
   paren.
+- When we're setting the split penalty for a continuous list, we don't want to
+  mistake a comment at the end of that list as part of the list.
 
 ## [0.8.1] 2016-05-18
 ### Fixed

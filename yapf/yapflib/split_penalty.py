@@ -202,9 +202,13 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
           if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
             self._SetStronglyConnected(_FirstChildNode(trailer.children[1]))
 
+          last_child_node = _LastChildNode(trailer)
+          if last_child_node.value.strip().startswith('#'):
+            last_child_node = last_child_node.prev_sibling
           if not style.Get('DEDENT_CLOSING_BRACKETS'):
-            self._SetUnbreakable(trailer.children[-1])
-          if _FirstChildNode(trailer).lineno == _LastChildNode(trailer).lineno:
+            self._SetUnbreakable(last_child_node)
+
+          if _FirstChildNode(trailer).lineno == last_child_node.lineno:
             # If the trailer was originally on one line, then try to keep it
             # like that.
             self._SetExpressionPenalty(trailer, CONTIGUOUS_LIST)

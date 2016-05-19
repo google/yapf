@@ -2839,6 +2839,21 @@ class TestsForPEP8Style(ReformatterTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testContiguousListEndingWithComment(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+            if True:
+                keys.append(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+            if True:
+                keys.append(
+                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class TestingNotInParameters(unittest.TestCase):
 
