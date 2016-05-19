@@ -15,6 +15,7 @@
 
 from lib2to3 import pytree
 
+from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
@@ -143,9 +144,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
     elif len(node.children) == 3:
-      if (pytree_utils.NodeName(node.children[1]) not in {
-              'arglist', 'argument', 'term', 'or_test', 'and_test'
-          }):
+      if (pytree_utils.NodeName(node.children[1]) not in
+          {'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison'}):
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
       if pytree_utils.NodeName(node.children[-1]) == 'RSQB':
@@ -197,6 +197,11 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         break
       if trailer.children[0].value in '([':
         if len(trailer.children) > 2:
+          subtypes = pytree_utils.GetNodeAnnotation(
+              trailer.children[0], pytree_utils.Annotation.SUBTYPE)
+          if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
+            self._SetStronglyConnected(_FirstChildNode(trailer.children[1]))
+
           if not style.Get('DEDENT_CLOSING_BRACKETS'):
             self._SetUnbreakable(trailer.children[-1])
           if _FirstChildNode(trailer).lineno == _LastChildNode(trailer).lineno:
