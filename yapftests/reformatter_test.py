@@ -2994,6 +2994,8 @@ class TestsForPython3Code(ReformatterTest):
 
         async def main():
             start = time.time()
+            if (await get_html()):
+                pass
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
