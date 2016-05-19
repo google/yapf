@@ -364,7 +364,9 @@ def _CanBreakBefore(prev_token, cur_token):
   if cur_token.is_comment and prev_token.lineno == cur_token.lineno:
     # Don't break a comment at the end of the line.
     return False
-  # TODO(morbo): There may be more to add here.
+  if format_token.Subtype.UNARY_OPERATOR in prev_token.subtypes:
+    # Don't break after a unary token.
+    return False
   return True
 
 
