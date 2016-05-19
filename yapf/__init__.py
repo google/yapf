@@ -105,7 +105,8 @@ def main(argv):
                       help="don't search for local style definition")
   parser.add_argument('--verify',
                       action='store_true',
-                      help='try to verify reformatted code for syntax errors')
+                      help=('try to verify reformatted code for syntax errors. '
+                            'This option is for debugging purposes only.'))
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
