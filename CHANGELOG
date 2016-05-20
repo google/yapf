@@ -9,6 +9,8 @@
   paren.
 - When we're setting the split penalty for a continuous list, we don't want to
   mistake a comment at the end of that list as part of the list.
+- When calculating blank lines, don't assume the last seen object was a class
+  or function when we're in a class or function.
 
 ## [0.8.1] 2016-05-18
 ### Fixed
