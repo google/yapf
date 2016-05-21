@@ -139,11 +139,11 @@ class FormatDecisionState(object):
             last_token = _LastTokenInLine(previous.matching_bracket)
             length = last_token.total_length - previous.total_length
 
-          if length + previous.column >= column_limit:
+          if length + self.column >= column_limit:
             return True
         elif current.ClosesScope():
           opening = current.matching_bracket
-          length = current.total_length - opening.total_length
+          length = 0
           if _IsLastScopeInLine(current):
             last_token = _LastTokenInLine(current)
             length = last_token.total_length - opening.total_length
@@ -207,7 +207,8 @@ class FormatDecisionState(object):
         return True
 
     previous_previous_token = previous.previous_token
-    if (previous_previous_token and previous_previous_token.name == 'NAME' and
+    if (current.name == 'NAME' and
+        previous_previous_token and previous_previous_token.name == 'NAME' and
         not previous_previous_token.is_keyword and previous.value == '('):
       sibling = previous.node.next_sibling
       if pytree_utils.NodeName(sibling) == 'arglist':

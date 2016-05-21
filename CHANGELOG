@@ -2,6 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.8.3] UNRELEASED
+### Fixed
+- Don't split before a first element list argument as we would before a first
+  element function call.
+
 ## [0.8.2] 2016-05-21
 ### Fixed
 - Prefer not to split after the opening of a subscript.

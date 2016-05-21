@@ -1788,9 +1788,8 @@ class BuganizerFixes(ReformatterTest):
   def testB25157123(self):
     code = textwrap.dedent("""\
         def ListArgs():
-          FairlyLongMethodName(
-              [relatively_long_identifier_for_a_list],
-              another_argument_with_a_long_identifier)
+          FairlyLongMethodName([relatively_long_identifier_for_a_list],
+                               another_argument_with_a_long_identifier)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -3257,6 +3256,17 @@ v, w, x, y, z
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingCallsWithInnerLists(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            cls.effect_clues = {
+                'effect': Clue((cls.effect_time, 'apache_host'), effect_line, 40)
+            }
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
 
 
 def _ParseAndUnwrap(code, dumptree=False):

@@ -854,9 +854,9 @@ class CommandLineTest(unittest.TestCase):
         class A(object):
             def aaaaaaaaaaaaa(self):
                 c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
-                self.assertEqual(
-                    ('ddddddddddddddddddddddddd', 'eeeeeeeeeeeeeeeeeeeeeeeee.%s' %
-                     c.ffffffffffff), gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                self.assertEqual(('ddddddddddddddddddddddddd',
+                                  'eeeeeeeeeeeeeeeeeeeeeeeee.%s' % c.ffffffffffff),
+                                 gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
         """)
     self.assertYapfReformats(unformatted_code,
@@ -879,9 +879,9 @@ class CommandLineTest(unittest.TestCase):
         class A(object):
             def aaaaaaaaaaaaa(self):
                 c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
-                self.assertEqual(
-                    ('ddddddddddddddddddddddddd', 'eeeeeeeeeeeeeeeeeeeeeeeee.%s' %
-                     c.ffffffffffff), gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                self.assertEqual(('ddddddddddddddddddddddddd',
+                                  'eeeeeeeeeeeeeeeeeeeeeeeee.%s' % c.ffffffffffff),
+                                 gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
         """)
     self.assertYapfReformats(unformatted_code,
