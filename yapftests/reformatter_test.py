@@ -1623,6 +1623,31 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testDedentingInnerScope(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, column_limit: 100, '
+          'dedent_closing_brackets: True}'))
+      code = textwrap.dedent("""\
+          class Foo():
+              @classmethod
+              def _pack_results_for_constraint_or(cls, combination, constraints):
+                  return cls._create_investigation_result(
+                      (
+                          clue for clue in combination if not clue == Verifier.UNMATCHED
+                      ), constraints, InvestigationResult.OR
+                  )
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      uwlines = _ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testNotSplittingAfterSubscript(self):
     unformatted_code = textwrap.dedent("""\
         if not aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.b(c == d[

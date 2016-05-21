@@ -11,6 +11,8 @@
   mistake a comment at the end of that list as part of the list.
 - When calculating blank lines, don't assume the last seen object was a class
   or function when we're in a class or function.
+- Don't count the closing scope when determining if the current scope is the
+  last scope on the line.
 
 ## [0.8.1] 2016-05-18
 ### Fixed

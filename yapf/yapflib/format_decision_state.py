@@ -496,7 +496,7 @@ def _LastTokenInLine(current):
 def _IsLastScopeInLine(current):
   while current:
     current = current.next_token
-    if current and (current.OpensScope() or current.ClosesScope()):
+    if current and current.OpensScope():
       return False
   return True
 
