@@ -3301,6 +3301,11 @@ v, w, x, y, z
                 [self.cause1, self.cause2, self.cause1, self.cause2], self.effect, constraints1,
                 Rule.LINKAGE_AND
             )
+
+            assert sorted(log_type.files_to_parse) == [
+                ('localhost', os.path.join(path, 'node_1.log'), super_parser),
+                ('localhost', os.path.join(path, 'node_2.log'), super_parser)
+            ]
     """)
     expected_formatted_code = textwrap.dedent("""\
     class Foo():
@@ -3332,6 +3337,11 @@ v, w, x, y, z
                 [self.cause1, self.cause2, self.cause1, self.cause2], self.effect,
                 constraints1, Rule.LINKAGE_AND
             )
+
+            assert sorted(log_type.files_to_parse) == [
+                ('localhost', os.path.join(path, 'node_1.log'), super_parser),
+                ('localhost', os.path.join(path, 'node_2.log'), super_parser)
+            ]
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

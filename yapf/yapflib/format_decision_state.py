@@ -133,12 +133,14 @@ class FormatDecisionState(object):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if previous and previous.OpensScope():
-          if unwrapped_line.IsSurroundedByBrackets(bracket):
+          if (unwrapped_line.IsSurroundedByBrackets(bracket) or
+              not _IsLastScopeInLine(bracket)):
             last_token = bracket.matching_bracket
           else:
             last_token = _LastTokenInLine(bracket.matching_bracket)
 
           length = last_token.total_length - bracket.total_length
+
           if length + self.column >= column_limit:
             bracket.matching_bracket.must_break_before = True
             return True
