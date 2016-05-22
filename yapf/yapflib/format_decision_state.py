@@ -140,7 +140,6 @@ class FormatDecisionState(object):
             last_token = _LastTokenInLine(bracket.matching_bracket)
 
           length = last_token.total_length - bracket.total_length
-
           if length + self.column >= column_limit:
             bracket.matching_bracket.must_break_before = True
             return True

@@ -3346,6 +3346,19 @@ v, w, x, y, z
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testMustSplitDedenting(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            effect_line = FrontInput(
+                effect_line_offset,
+                line_content,
+                LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
+            )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
 
 def _ParseAndUnwrap(code, dumptree=False):
   """Produces unwrapped lines from the given code.

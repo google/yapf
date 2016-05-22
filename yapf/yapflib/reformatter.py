@@ -349,12 +349,14 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
   if newline and not previous_node.state.CanSplit():
     # Don't add a newline if the token cannot be split.
     return count
-  if not newline and previous_node.state.MustSplit():
+  must_split = previous_node.state.MustSplit()
+  if not newline and must_split:
     # Don't add a token we must split but where we aren't splitting.
     return count
 
   node = _StateNode(previous_node.state, newline, previous_node)
-  penalty += node.state.AddTokenToState(newline=newline, dry_run=True)
+  penalty += node.state.AddTokenToState(
+      newline=newline, dry_run=True, must_split=must_split)
   heapq.heappush(p_queue, _QueueItem(_OrderedPenalty(penalty, count), node))
   return count + 1
 
