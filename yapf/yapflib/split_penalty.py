@@ -103,7 +103,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
     # Can't break before the opening paren of a parameter list.
     self._SetUnbreakable(node.children[0])
-    self._SetStronglyConnected(node.children[-1])
+    if not style.Get('DEDENT_CLOSING_BRACKETS'):
+      self._SetStronglyConnected(node.children[-1])
 
   def Visit_argument(self, node):  # pylint: disable=invalid-name
     # argument ::= test [comp_for] | test '=' test  # Really [keyword '='] test

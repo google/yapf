@@ -3084,8 +3084,7 @@ class TestsForFBStyle(ReformatterTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def overly_long_function_name(
-            first_argument_on_the_same_line, \
-second_argument_makes_the_line_too_long
+            first_argument_on_the_same_line, second_argument_makes_the_line_too_long
         ):
             pass
         """)
@@ -3351,9 +3350,38 @@ v, w, x, y, z
     class _():
         def _():
             effect_line = FrontInput(
-                effect_line_offset,
-                line_content,
+                effect_line_offset, line_content,
                 LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
+            )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentIfConditional(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            if True:
+                if not self.frobbies and (
+                    self.foobars.counters['db.cheeses'] != 1 or
+                    self.foobars.counters['db.marshmellow_skins'] != 1
+                ):
+                    pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentSet(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            assert set(self.constraint_links.get_links()) == set(
+                [
+                    (2, 10, 100),
+                    (2, 10, 200),
+                    (2, 20, 100),
+                    (2, 20, 200),
+                ]
             )
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
