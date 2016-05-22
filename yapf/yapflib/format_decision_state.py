@@ -350,11 +350,11 @@ class FormatDecisionState(object):
 
     # Add a penalty for each increasing newline we add.
     last = self.stack[-1]
-    penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
-                last.num_line_splits)
     if not must_split and current.value not in {'if', 'for'}:
       # Don't penalize for a must split or for splitting before an
       # if-expression or list comprehension.
+      penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
+                  last.num_line_splits)
       last.num_line_splits += 1
 
     return penalty + 10

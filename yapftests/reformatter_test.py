@@ -3268,6 +3268,27 @@ v, w, x, y, z
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
 
+  def testDedentingListComprehension(self):
+    unformatted_code = textwrap.dedent("""\
+    class Foo():
+        def _pack_results_for_constraint_or():
+            self.param_groups = dict(
+                (
+                    key + 1, ParamGroup(groups[key], default_converter)
+                ) for key in six.moves.range(len(groups))
+            )
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    class Foo():
+        def _pack_results_for_constraint_or():
+            self.param_groups = dict(
+                (key + 1, ParamGroup(groups[key], default_converter))
+                for key in six.moves.range(len(groups))
+            )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 def _ParseAndUnwrap(code, dumptree=False):
   """Produces unwrapped lines from the given code.
