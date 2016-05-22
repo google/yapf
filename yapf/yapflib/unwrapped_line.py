@@ -321,7 +321,7 @@ def _MustBreakBefore(prev_token, cur_token):
   if prev_token.is_comment:
     # Must break if the previous token was a comment.
     return True
-  if (_IsSurroundedByBrackets(cur_token) and cur_token.is_string and
+  if (IsSurroundedByBrackets(cur_token) and cur_token.is_string and
       prev_token.is_string):
     # We want consecutive strings to be on separate lines. This is a
     # reasonable assumption, because otherwise they should have written them
@@ -371,7 +371,7 @@ def _CanBreakBefore(prev_token, cur_token):
   return True
 
 
-def _IsSurroundedByBrackets(tok):
+def IsSurroundedByBrackets(tok):
   """Return True if the token is surrounded by brackets."""
   paren_count = 0
   brace_count = 0

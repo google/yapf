@@ -1628,14 +1628,14 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       style.SetGlobalStyle(style.CreateStyleFromConfig(
           '{based_on_style: pep8, column_limit: 100, '
           'dedent_closing_brackets: True}'))
+      # FIXME(morbo): The "if" conditional shouldn't be on a separate line.
       code = textwrap.dedent("""\
           class Foo():
               @classmethod
               def _pack_results_for_constraint_or(cls, combination, constraints):
                   return cls._create_investigation_result(
-                      (
-                          clue for clue in combination if not clue == Verifier.UNMATCHED
-                      ), constraints, InvestigationResult.OR
+                      (clue for clue in combination
+                       if not clue == Verifier.UNMATCHED), constraints, InvestigationResult.OR
                   )
           """)
       uwlines = _ParseAndUnwrap(code)
@@ -3277,6 +3277,30 @@ v, w, x, y, z
                     key + 1, ParamGroup(groups[key], default_converter)
                 ) for key in six.moves.range(len(groups))
             )
+
+            for combination in cls._clues_combinations(clues_lists):
+                if all(
+                    cls._verify_constraint(combination, effect, constraint)
+                    for constraint in constraints
+                ):
+                    pass
+
+            guessed_dict = dict(
+                (
+                    key, guessed_pattern_matches[key]
+                ) for key in six.moves.range(len(guessed_pattern_matches))
+            )
+
+            content = "".join(
+                itertools.chain(
+                    (first_line_fragment, ), lines_between, (last_line_fragment, )
+                )
+            )
+
+            rule = Rule(
+                [self.cause1, self.cause2, self.cause1, self.cause2], self.effect, constraints1,
+                Rule.LINKAGE_AND
+            )
     """)
     expected_formatted_code = textwrap.dedent("""\
     class Foo():
@@ -3284,6 +3308,29 @@ v, w, x, y, z
             self.param_groups = dict(
                 (key + 1, ParamGroup(groups[key], default_converter))
                 for key in six.moves.range(len(groups))
+            )
+
+            for combination in cls._clues_combinations(clues_lists):
+                if all(
+                    cls._verify_constraint(combination, effect, constraint)
+                    for constraint in constraints
+                ):
+                    pass
+
+            guessed_dict = dict(
+                (key, guessed_pattern_matches[key])
+                for key in six.moves.range(len(guessed_pattern_matches))
+            )
+
+            content = "".join(
+                itertools.chain(
+                    (first_line_fragment, ), lines_between, (last_line_fragment, )
+                )
+            )
+
+            rule = Rule(
+                [self.cause1, self.cause2, self.cause1, self.cause2], self.effect,
+                constraints1, Rule.LINKAGE_AND
             )
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)

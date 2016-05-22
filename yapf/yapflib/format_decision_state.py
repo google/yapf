@@ -32,6 +32,7 @@ from yapf.yapflib import format_token
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
+from yapf.yapflib import unwrapped_line
 
 _COMPOUND_STMTS = frozenset({'for', 'while', 'if', 'elif', 'with', 'except',
                              'def', 'class'})
@@ -130,26 +131,19 @@ class FormatDecisionState(object):
 
     if style.Get('DEDENT_CLOSING_BRACKETS'):
       bracket = current if current.ClosesScope() else previous
-      if ((bracket.OpensScope() or bracket.ClosesScope()) and
-          format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes):
+      if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if previous and previous.OpensScope():
-          length = (previous.matching_bracket.total_length -
-                    previous.total_length)
-          if _IsLastScopeInLine(previous.matching_bracket):
-            last_token = _LastTokenInLine(previous.matching_bracket)
-            length = last_token.total_length - previous.total_length
+          if unwrapped_line.IsSurroundedByBrackets(bracket):
+            last_token = bracket.matching_bracket
+          else:
+            last_token = _LastTokenInLine(bracket.matching_bracket)
 
+          length = last_token.total_length - bracket.total_length
           if length + self.column >= column_limit:
+            bracket.matching_bracket.must_break_before = True
             return True
-        elif current.ClosesScope():
-          opening = current.matching_bracket
-          length = 0
-          if _IsLastScopeInLine(current):
-            last_token = _LastTokenInLine(current)
-            length = last_token.total_length - opening.total_length
-
-          if length + opening.column >= column_limit:
-            return True
+          else:
+            bracket.matching_bracket.must_break_before = False
 
     if (self.stack[-1].split_before_closing_bracket and
         # FIXME(morbo): Use the 'matching_bracket' instead of this.
@@ -353,9 +347,9 @@ class FormatDecisionState(object):
     if not must_split and current.value not in {'if', 'for'}:
       # Don't penalize for a must split or for splitting before an
       # if-expression or list comprehension.
+      last.num_line_splits += 1
       penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
                   last.num_line_splits)
-      last.num_line_splits += 1
 
     return penalty + 10
 
@@ -489,7 +483,7 @@ def _GetOpeningParen(current):
 
 
 def _LastTokenInLine(current):
-  while current.next_token:
+  while not current.is_comment and current.next_token:
     current = current.next_token
   return current
 
