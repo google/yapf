@@ -129,10 +129,10 @@ class FormatDecisionState(object):
     if current.must_break_before:
       return True
 
-    if style.Get('DEDENT_CLOSING_BRACKETS'):
+    if previous and style.Get('DEDENT_CLOSING_BRACKETS'):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
-        if previous and previous.OpensScope():
+        if previous.OpensScope():
           if (unwrapped_line.IsSurroundedByBrackets(bracket) or
               not _IsLastScopeInLine(bracket)):
             last_token = bracket.matching_bracket
@@ -339,15 +339,18 @@ class FormatDecisionState(object):
     # Calculate the split penalty.
     penalty = current.split_penalty
 
+    if must_split:
+      # Don't penalize for a must split.
+      return penalty
+
     if previous.is_pseudo_paren and previous.value == '(':
       # Small penalty for splitting after a pseudo paren.
       penalty += 50
 
-    # Add a penalty for each increasing newline we add.
-    last = self.stack[-1]
+    # Add a penalty for each increasing newline we add, but don't penalize for
+    # splitting before an if-expression or list comprehension.
     if not must_split and current.value not in {'if', 'for'}:
-      # Don't penalize for a must split or for splitting before an
-      # if-expression or list comprehension.
+      last = self.stack[-1]
       last.num_line_splits += 1
       penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
                   last.num_line_splits)

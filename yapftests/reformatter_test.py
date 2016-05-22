@@ -2223,11 +2223,11 @@ class BuganizerFixes(ReformatterTest):
 
   def testB19073499(self):
     code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
-                {  # Inline comment about why fnord has the value 6.
-                    'fnord': 6
-                }))
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
+            'aa': 'context!'
+        }).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
+            'fnord': 6
+        }))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
