@@ -1623,31 +1623,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
-  def testDedentingInnerScope(self):
-    try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, column_limit: 100, '
-          'dedent_closing_brackets: True}'))
-      # FIXME(morbo): The "if" conditional shouldn't be on a separate line.
-      code = textwrap.dedent("""\
-          class Foo():
-              @classmethod
-              def _pack_results_for_constraint_or(cls, combination, constraints):
-                  return cls._create_investigation_result(
-                      (clue for clue in combination
-                       if not clue == Verifier.UNMATCHED), constraints, InvestigationResult.OR
-                  )
-          """)
-      uwlines = _ParseAndUnwrap(code)
-      reformatted_code = reformatter.Reformat(uwlines)
-      self.assertCodeEqual(code, reformatted_code)
-
-      uwlines = _ParseAndUnwrap(reformatted_code)
-      reformatted_code = reformatter.Reformat(uwlines)
-      self.assertCodeEqual(code, reformatted_code)
-    finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
-
   def testNotSplittingAfterSubscript(self):
     unformatted_code = textwrap.dedent("""\
         if not aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.b(c == d[
@@ -3386,6 +3361,24 @@ v, w, x, y, z
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingInnerScope(self):
+    code = textwrap.dedent("""\
+        class Foo():
+            @classmethod
+            def _pack_results_for_constraint_or(cls, combination, constraints):
+                return cls._create_investigation_result(
+                    (clue for clue in combination if not clue == Verifier.UNMATCHED),
+                    constraints, InvestigationResult.OR
+                )
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(code, reformatted_code)
+
+    uwlines = _ParseAndUnwrap(reformatted_code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(code, reformatted_code)
 
 
 def _ParseAndUnwrap(code, dumptree=False):

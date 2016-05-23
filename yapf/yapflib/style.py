@@ -141,6 +141,8 @@ _STYLE_HELP = dict(
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the unwrapped line. The
       more line splits added the higher the penalty."""),
+    SPLIT_PENALTY_BEFORE_IF_EXPR=
+    'The penalty for splitting right before an if expression.',
     # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
@@ -171,6 +173,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_LOGICAL_OPERATOR=300,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
+      SPLIT_PENALTY_BEFORE_IF_EXPR=0,
   )  # yapf: disable
 
 
@@ -205,6 +208,7 @@ def CreateFacebookStyle():
   style['SPACES_BEFORE_COMMENT'] = 2
   style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
   style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 30
+  style['SPLIT_PENALTY_BEFORE_IF_EXPR'] = 30
   return style
 
 
@@ -256,7 +260,9 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_IMPORT_NAMES=int,
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,)
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
+    SPLIT_PENALTY_BEFORE_IF_EXPR=int,
+)
 
 
 def CreateStyleFromConfig(style_config):

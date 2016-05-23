@@ -412,6 +412,8 @@ Knobs
 ``SPLIT_PENALTY_LOGICAL_OPERATOR``
     The penalty of splitting the line around the ``and`` and ``or`` operators.
 
+``SPLIT_PENALTY_BEFORE_IF_EXPR``
+    The penalty for splitting right before an ``if`` expression.
 
 (Potentially) Frequently Asked Questions
 ========================================

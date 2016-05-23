@@ -237,8 +237,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
-    pytree_utils.SetNodeAnnotation(node.children[0],
-                                   pytree_utils.Annotation.SPLIT_PENALTY, 0)
+    pytree_utils.SetNodeAnnotation(
+        node.children[0], pytree_utils.Annotation.SPLIT_PENALTY,
+        style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
