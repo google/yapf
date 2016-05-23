@@ -1413,8 +1413,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         class f:
 
           def __repr__(self):
-            tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value)
-                                    for tok in self._tokens])
+            tokens_repr = ','.join(
+                ['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1633,6 +1633,29 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         if not aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.b(
             c == d['eeeeee']).ffffff():
           pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingOneArgumentList(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          if True:
+            if True:
+              if True:
+                if True:
+                  if True:
+                    boxes[id_] = np.concatenate((points.min(axis=0), qoints.max(axis=0)))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+          if True:
+            if True:
+              if True:
+                if True:
+                  if True:
+                    boxes[id_] = np.concatenate(
+                        (points.min(axis=0), qoints.max(axis=0)))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -2291,8 +2314,8 @@ class BuganizerFixes(ReformatterTest):
         def f():
           if True:
             if True:
-              return aaaa.bbbbbbbbb(
-                  ccccccc=dddddddddddddd({('eeee', 'ffffffff'): str(j)}))
+              return aaaa.bbbbbbbbb(ccccccc=dddddddddddddd(
+                  {('eeee', 'ffffffff'): str(j)}))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

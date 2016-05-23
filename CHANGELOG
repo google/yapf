@@ -11,6 +11,7 @@
 - Don't split before a first element list argument as we would before a first
   element function call.
 - Don't penalize when we must split a line.
+- Allow splitting before the single argument in a function call.
 
 ## [0.8.2] 2016-05-21
 ### Fixed

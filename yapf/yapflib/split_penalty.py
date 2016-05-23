@@ -138,15 +138,17 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
       self._SetUnbreakableOnChildren(node)
-      pytree_utils.SetNodeAnnotation(
-          node.children[1], pytree_utils.Annotation.SPLIT_PENALTY,
-          DOTTED_NAME)
+      pytree_utils.SetNodeAnnotation(node.children[1],
+                                     pytree_utils.Annotation.SPLIT_PENALTY,
+                                     DOTTED_NAME)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
     elif len(node.children) == 3:
-      if (pytree_utils.NodeName(node.children[1]) not in
-          {'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison'}):
+      if pytree_utils.NodeName(node.children[1]) not in {
+          'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison',
+          'atom'
+      }:
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
       if pytree_utils.NodeName(node.children[-1]) == 'RSQB':
@@ -230,16 +232,16 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
-    pytree_utils.SetNodeAnnotation(_FirstChildNode(node),
-                                   pytree_utils.Annotation.SPLIT_PENALTY, 0)
+    pytree_utils.SetNodeAnnotation(
+        _FirstChildNode(node), pytree_utils.Annotation.SPLIT_PENALTY, 0)
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
-    pytree_utils.SetNodeAnnotation(
-        node.children[0], pytree_utils.Annotation.SPLIT_PENALTY,
-        style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
+    pytree_utils.SetNodeAnnotation(node.children[0],
+                                   pytree_utils.Annotation.SPLIT_PENALTY,
+                                   style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
@@ -274,7 +276,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         else:
           pytree_utils.SetNodeAnnotation(node.children[-1],
                                          pytree_utils.Annotation.SPLIT_PENALTY,
-                                         STRONGLY_CONNECTED)
+                                         COMPARISON_EXPRESSION)
     elif node.children[0].value in '[{':
       # Keep empty containers together if we can.
       lbracket = node.children[0]
@@ -284,7 +286,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       elif (rbracket.value in ']}' and
             lbracket.get_lineno() == rbracket.get_lineno() and
             rbracket.column - lbracket.column < style.Get('COLUMN_LIMIT')):
-        self._SetExpressionPenalty(node, CONTIGUOUS_LIST)
+        self._SetStronglyConnected(*node.children[1:])
 
   ############################################################################
   # Helper methods that set the annotations.
@@ -318,12 +320,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         if node.value in {'(', 'for', 'if'}:
           return
         penalty_annotation = pytree_utils.GetNodeAnnotation(
-            node,
-            pytree_utils.Annotation.SPLIT_PENALTY,
+            node, pytree_utils.Annotation.SPLIT_PENALTY,
             default=0)
         if penalty_annotation < penalty:
-          pytree_utils.SetNodeAnnotation(
-              node, pytree_utils.Annotation.SPLIT_PENALTY, penalty)
+          pytree_utils.SetNodeAnnotation(node,
+                                         pytree_utils.Annotation.SPLIT_PENALTY,
+                                         penalty)
       else:
         for child in node.children:
           RecArithmeticExpression(child, first_child_leaf)
