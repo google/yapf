@@ -2876,6 +2876,27 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSplittingBeforeFirstArgument(self):
+    try:
+      style.SetGlobalStyle(style.CreateStyleFromConfig(
+          '{based_on_style: pep8, split_before_first_argument: True}'))
+      unformatted_code = textwrap.dedent("""\
+          a_very_long_function_name(long_argument_name_1=1, long_argument_name_2=2,
+                                    long_argument_name_3=3, long_argument_name_4=4)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a_very_long_function_name(
+              long_argument_name_1=1,
+              long_argument_name_2=2,
+              long_argument_name_3=3,
+              long_argument_name_4=4)
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 class TestingNotInParameters(unittest.TestCase):
 

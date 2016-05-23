@@ -111,6 +111,10 @@ _STYLE_HELP = dict(
     'The number of spaces required before a trailing comment.',
     SPLIT_BEFORE_BITWISE_OPERATOR=
     "Set to True to prefer splitting before '&', '|' or '^' rather than after.",
+    SPLIT_BEFORE_FIRST_ARGUMENT="""\
+    If an argument / parameter list is going to be split, then split before the
+    first argument.
+    """,
     SPLIT_BEFORE_LOGICAL_OPERATOR=
     "Set to True to prefer splitting before 'and' or 'or' rather than after.",
     SPLIT_BEFORE_NAMED_ASSIGNS='Split named assignments onto individual lines.',
@@ -164,6 +168,7 @@ def CreatePEP8Style():
       SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_BEFORE_BITWISE_OPERATOR=False,
+      SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=False,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
@@ -252,6 +257,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_BEFORE_COMMENT=int,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
+    SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,

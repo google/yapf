@@ -4,8 +4,12 @@
 
 ## [0.9.0] UNRELEASED
 ### Added
-- Added a knob to adjust the split penalty before an if expression. This allows
-  the user to place a list comprehension all on one line.
+- Added a knob (SPLIT_PENALTY_BEFORE_IF_EXPR) to adjust the split penalty
+  before an if expression. This allows the user to place a list comprehension
+  all on one line.
+- Added a knob (SPLIT_BEFORE_FIRST_ARGUMENT) that encourages splitting before
+  the first element of a list of arguments or parameters if they are going to
+  be split anyway.
 
 ### Fixed
 - Don't split before a first element list argument as we would before a first

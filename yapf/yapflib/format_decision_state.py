@@ -129,7 +129,9 @@ class FormatDecisionState(object):
     if current.must_break_before:
       return True
 
-    if previous and style.Get('DEDENT_CLOSING_BRACKETS'):
+    if (previous and
+        (style.Get('DEDENT_CLOSING_BRACKETS') or
+         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if bracket.OpensScope():
@@ -143,7 +145,7 @@ class FormatDecisionState(object):
           if length + self.column >= column_limit:
             return True
 
-        elif current.ClosesScope():
+        elif style.Get('DEDENT_CLOSING_BRACKETS') and current.ClosesScope():
           opening = bracket.matching_bracket
           if (unwrapped_line.IsSurroundedByBrackets(opening) or
               not _IsLastScopeInLine(bracket) or
@@ -397,7 +399,8 @@ class FormatDecisionState(object):
           return top_of_stack.indent
 
     if (self.line.first.value in _COMPOUND_STMTS and
-        not style.Get('DEDENT_CLOSING_BRACKETS')):
+        (not style.Get('DEDENT_CLOSING_BRACKETS') or
+         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
       token_indent = (len(self.line.first.whitespace_prefix.split('\n')[-1]) +
                       style.Get('INDENT_WIDTH'))
       if token_indent == top_of_stack.indent:
