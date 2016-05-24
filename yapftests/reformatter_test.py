@@ -1702,7 +1702,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           function_name(
               argument_name_1=1,
               argument_name_2=2,
-              argument_name_3=3,)
+              argument_name_3=3,
+          )
 
           a_very_long_function_name(long_argument_name_1=1,
                                     long_argument_name_2=2,
@@ -1713,7 +1714,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               long_argument_name_1,
               long_argument_name_2,
               long_argument_name_3,
-              long_argument_name_4,)
+              long_argument_name_4,
+          )
           """)
       uwlines = _ParseAndUnwrap(code)
       reformatted_code = reformatter.Reformat(uwlines)
