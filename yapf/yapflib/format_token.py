@@ -198,6 +198,12 @@ class FormatToken(object):
                                           pytree_utils.Annotation.NEWLINES)
 
   @property
+  def must_split(self):
+    """Return true if the token requires a split before it."""
+    return pytree_utils.GetNodeAnnotation(self._node,
+                                          pytree_utils.Annotation.MUST_SPLIT)
+
+  @property
   def column(self):
     """The original column number of the node in the source."""
     return self._node.column

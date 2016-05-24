@@ -188,6 +188,15 @@ class FormatDecisionState(object):
                             opening.total_length + self.column)
           return arglist_length > column_limit
 
+    if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
+      # Split before arguments in a function call or definition if the
+      # arguments are terminated by a comma.
+      opening = _GetOpeningParen(current)
+      if opening and opening.previous_token and opening.previous_token.is_name:
+        if previous.value in '(,':
+          if opening.matching_bracket.previous_token.value == ',':
+            return True
+
     if (previous.value in '{[' and current.lineno != previous.lineno and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
       return True
@@ -491,6 +500,8 @@ def _GetOpeningParen(current):
   previous = current
   while previous is not None and previous.matching_bracket is None:
     previous = previous.previous_token
+    if not previous:
+      break
     if previous.ClosesScope():
       previous = previous.matching_bracket.previous_token
   return previous
