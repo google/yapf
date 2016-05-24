@@ -10,6 +10,8 @@
 - Added a knob (SPLIT_BEFORE_FIRST_ARGUMENT) that encourages splitting before
   the first element of a list of arguments or parameters if they are going to
   be split anyway.
+- Added a knob (SPLIT_ARGUEMNTS_WHEN_COMMA_TERMINATED) splits arguments to a
+  function if the list is terminated by a comma.
 
 ### Fixed
 - Don't split before a first element list argument as we would before a first

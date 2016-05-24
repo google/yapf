@@ -363,6 +363,9 @@ Knobs
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
 
+``SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED``
+    Split before arguments if the argument list is terminated by a comma.
+
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
     than after.

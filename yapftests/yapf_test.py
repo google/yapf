@@ -816,7 +816,7 @@ class CommandLineTest(unittest.TestCase):
             [
                 'do',
 
-                'that',
+                'that'
             ]
         """)
     expected_formatted_code = textwrap.dedent(u"""\
@@ -832,7 +832,7 @@ class CommandLineTest(unittest.TestCase):
         def still_horrible():
             oh_god()
             why_would_you()
-            ['do', 'that', ]
+            ['do', 'that']
         """)
     self.assertYapfReformats(unformatted_code,
                              expected_formatted_code,
