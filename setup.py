@@ -38,6 +38,7 @@ class RunTests(Command):
     results = runner.run(tests)
     sys.exit(0 if results.wasSuccessful() else 1)
 
+
 with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(name='yapf',
         version=yapf.__version__,

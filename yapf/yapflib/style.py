@@ -43,10 +43,8 @@ def SetGlobalStyle(style):
 
 
 _STYLE_HELP = dict(
-    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=
-    'Align closing bracket with visual indentation.',
-    ALLOW_MULTILINE_LAMBDAS=
-    'Allow lambdas to be formatted on more than one line.',
+    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT='Align closing bracket with visual indentation.',
+    ALLOW_MULTILINE_LAMBDAS='Allow lambdas to be formatted on more than one line.',
     COLUMN_LIMIT='The column limit.',
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
@@ -100,30 +98,22 @@ _STYLE_HELP = dict(
         end_ts=now(),
       )        # <--- this bracket is dedented and on a separate line
       """),
-    JOIN_MULTIPLE_LINES=
-    "Join short lines into one line. E.g., single line 'if' statements.",
+    JOIN_MULTIPLE_LINES="Join short lines into one line. E.g., single line 'if' statements.",
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
-    SPACES_AROUND_POWER_OPERATOR=
-    'Use spaces around the power operator.',
-    SPACES_BEFORE_COMMENT=
-    'The number of spaces required before a trailing comment.',
-    SPLIT_BEFORE_BITWISE_OPERATOR=
-    "Set to True to prefer splitting before '&', '|' or '^' rather than after.",
+    SPACES_AROUND_POWER_OPERATOR='Use spaces around the power operator.',
+    SPACES_BEFORE_COMMENT='The number of spaces required before a trailing comment.',
+    SPLIT_BEFORE_BITWISE_OPERATOR="Set to True to prefer splitting before '&', '|' or '^' rather than after.",
     SPLIT_BEFORE_FIRST_ARGUMENT="""\
     If an argument / parameter list is going to be split, then split before the
     first argument.
     """,
-    SPLIT_BEFORE_LOGICAL_OPERATOR=
-    "Set to True to prefer splitting before 'and' or 'or' rather than after.",
+    SPLIT_BEFORE_LOGICAL_OPERATOR="Set to True to prefer splitting before 'and' or 'or' rather than after.",
     SPLIT_BEFORE_NAMED_ASSIGNS='Split named assignments onto individual lines.',
-    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=
-    'The penalty for splitting the line after a unary operator.',
-    SPLIT_PENALTY_EXCESS_CHARACTER=
-    'The penalty for characters over the column limit.',
-    SPLIT_PENALTY_BITWISE_OPERATOR=
-    "The penalty of splitting the line around the '&', '|', and '^' operators.",
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR='The penalty for splitting the line after a unary operator.',
+    SPLIT_PENALTY_EXCESS_CHARACTER='The penalty for characters over the column limit.',
+    SPLIT_PENALTY_BITWISE_OPERATOR="The penalty of splitting the line around the '&', '|', and '^' operators.",
     SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
     The penalty of splitting a list of "import as" names.
 
@@ -138,15 +128,12 @@ _STYLE_HELP = dict(
       from a_very_long_or_indented_module_name_yada_yad import (
           long_argument_1, long_argument_2, long_argument_3)
     """),
-    SPLIT_PENALTY_LOGICAL_OPERATOR=
-    "The penalty of splitting the line around the 'and' and 'or' operators.",
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET=
-    'The penalty for splitting right after the opening bracket.',
+    SPLIT_PENALTY_LOGICAL_OPERATOR="The penalty of splitting the line around the 'and' and 'or' operators.",
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET='The penalty for splitting right after the opening bracket.',
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the unwrapped line. The
       more line splits added the higher the penalty."""),
-    SPLIT_PENALTY_BEFORE_IF_EXPR=
-    'The penalty for splitting right before an if expression.',
+    SPLIT_PENALTY_BEFORE_IF_EXPR='The penalty for splitting right before an if expression.',
     # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
@@ -267,8 +254,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
-    SPLIT_PENALTY_BEFORE_IF_EXPR=int,
-)
+    SPLIT_PENALTY_BEFORE_IF_EXPR=int,)
 
 
 def CreateStyleFromConfig(style_config):
@@ -383,8 +369,9 @@ DEFAULT_STYLE = 'pep8'
 DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
 # The name of the file to use for global style definition.
-GLOBAL_STYLE = (os.path.join(os.getenv('XDG_CONFIG_HOME') or
-                os.path.expanduser('~/.config'), 'yapf', 'style'))
+GLOBAL_STYLE = (os.path.join(
+    os.getenv('XDG_CONFIG_HOME') or os.path.expanduser('~/.config'), 'yapf',
+    'style'))
 
 # The name of the file to use for directory-local style definition.
 LOCAL_STYLE = '.style.yapf'

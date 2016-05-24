@@ -46,16 +46,16 @@ class UnwrappedLineBasicTest(unittest.TestCase):
     self.assertEqual(['DOT', 'VBAR'], [tok.name for tok in uwl.tokens])
 
   def testFirstLast(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.'), (token.LPAR, '('), (
-        token.VBAR, '|')])
+    toks = _MakeFormatTokenList([(token.DOT, '.'), (token.LPAR, '('),
+                                 (token.VBAR, '|')])
     uwl = unwrapped_line.UnwrappedLine(20, toks)
     self.assertEqual(20, uwl.depth)
     self.assertEqual('DOT', uwl.first.name)
     self.assertEqual('VBAR', uwl.last.name)
 
   def testAsCode(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.'), (token.LPAR, '('), (
-        token.VBAR, '|')])
+    toks = _MakeFormatTokenList([(token.DOT, '.'), (token.LPAR, '('),
+                                 (token.VBAR, '|')])
     uwl = unwrapped_line.UnwrappedLine(2, toks)
     self.assertEqual('    . ( |', uwl.AsCode())
 
@@ -83,8 +83,7 @@ class UnwrappedLineFormattingInformationTest(unittest.TestCase):
     uwlines = pytree_unwrapper.UnwrapPyTree(tree)
     for i, uwline in enumerate(uwlines):
       uwlines[i] = unwrapped_line.UnwrappedLine(
-          uwline.depth, [ft
-                         for ft in uwline.tokens
+          uwline.depth, [ft for ft in uwline.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS])
     return uwlines
 

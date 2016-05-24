@@ -89,17 +89,13 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files([file1, file2])
 
     self.assertEqual(
-        file_resources.GetCommandLineFiles(
-            [file1, file2],
-            recursive=False,
-            exclude=None),
-        [file1, file2])
+        file_resources.GetCommandLineFiles([file1, file2],
+                                           recursive=False,
+                                           exclude=None), [file1, file2])
     self.assertEqual(
-        file_resources.GetCommandLineFiles(
-            [file1, file2],
-            recursive=True,
-            exclude=None),
-        [file1, file2])
+        file_resources.GetCommandLineFiles([file1, file2],
+                                           recursive=True,
+                                           exclude=None), [file1, file2])
 
   def test_nonrecursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
@@ -124,10 +120,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     self.assertEqual(
-        sorted(file_resources.GetCommandLineFiles(
-            [self.test_tmpdir],
-            recursive=True,
-            exclude=None)),
+        sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                                  recursive=True,
+                                                  exclude=None)),
         sorted(files))
 
   def test_recursive_find_in_dir_with_exclude(self):
@@ -140,12 +135,11 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     self.assertEqual(
-        sorted(file_resources.GetCommandLineFiles(
-            [self.test_tmpdir],
-            recursive=True,
-            exclude=['*test*3.py'])),
-        sorted([os.path.join(tdir1, 'testfile1.py'), os.path.join(
-            tdir2, 'testfile2.py')]))
+        sorted(file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                                  recursive=True,
+                                                  exclude=['*test*3.py'])),
+        sorted([os.path.join(tdir1, 'testfile1.py'),
+                os.path.join(tdir2, 'testfile2.py')]))
 
 
 class IsPythonFileTest(unittest.TestCase):

@@ -95,9 +95,9 @@ class FormatDecisionState(object):
             self.column == other.column and
             self.paren_level == other.paren_level and
             self.start_of_line_level == other.start_of_line_level and
-            self.lowest_level_on_line == other.lowest_level_on_line and (
-                self.ignore_stack_for_comparison or
-                other.ignore_stack_for_comparison or self.stack == other.stack))
+            self.lowest_level_on_line == other.lowest_level_on_line and
+            (self.ignore_stack_for_comparison or
+             other.ignore_stack_for_comparison or self.stack == other.stack))
 
   def __ne__(self, other):
     return not self == other
@@ -129,9 +129,8 @@ class FormatDecisionState(object):
     if current.must_break_before:
       return True
 
-    if (previous and
-        (style.Get('DEDENT_CLOSING_BRACKETS') or
-         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
+    if (previous and (style.Get('DEDENT_CLOSING_BRACKETS') or
+                      style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if bracket.OpensScope():
@@ -148,8 +147,7 @@ class FormatDecisionState(object):
         elif style.Get('DEDENT_CLOSING_BRACKETS') and current.ClosesScope():
           opening = bracket.matching_bracket
           if (unwrapped_line.IsSurroundedByBrackets(opening) or
-              not _IsLastScopeInLine(bracket) or
-              bracket.next_token is None):
+              not _IsLastScopeInLine(bracket) or bracket.next_token is None):
             last_token = bracket
           else:
             last_token = _LastTokenInLine(bracket.next_token)
@@ -186,9 +184,8 @@ class FormatDecisionState(object):
           current.value not in '=,)'):
         opening = _GetOpeningParen(current)
         if opening:
-          arglist_length = (
-              opening.matching_bracket.total_length - opening.total_length +
-              self.column)
+          arglist_length = (opening.matching_bracket.total_length -
+                            opening.total_length + self.column)
           return arglist_length > column_limit
 
     if (previous.value in '{[' and current.lineno != previous.lineno and
@@ -214,8 +211,8 @@ class FormatDecisionState(object):
         return True
 
     previous_previous_token = previous.previous_token
-    if (current.name == 'NAME' and
-        previous_previous_token and previous_previous_token.name == 'NAME' and
+    if (current.name == 'NAME' and previous_previous_token and
+        previous_previous_token.name == 'NAME' and
         not previous_previous_token.is_keyword and previous.value == '('):
       sibling = previous.node.next_sibling
       if pytree_utils.NodeName(sibling) == 'arglist':
@@ -236,8 +233,8 @@ class FormatDecisionState(object):
             # up the formatting.
             return True
 
-    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and
-        current.value in '&|' and previous.lineno < current.lineno):
+    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and current.value in '&|' and
+        previous.lineno < current.lineno):
       return True
 
     if (current.is_comment and
@@ -341,9 +338,9 @@ class FormatDecisionState(object):
         not current.is_binary_op and not previous.OpensScope()):
       self.stack[-1].split_before_parameter = True
 
-    if (previous.OpensScope() or
-        (previous.is_comment and previous.previous_token is not None and
-         previous.previous_token.OpensScope())):
+    if (previous.OpensScope() or (previous.is_comment and
+                                  previous.previous_token is not None and
+                                  previous.previous_token.OpensScope())):
       self.stack[-1].closing_scope_indent = max(
           0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       self.stack[-1].split_before_closing_bracket = True
@@ -382,9 +379,9 @@ class FormatDecisionState(object):
       return top_of_stack.indent if self.paren_level else self.first_indent
 
     if current.ClosesScope():
-      if (previous.OpensScope() or
-          (previous.is_comment and previous.previous_token is not None and
-           previous.previous_token.OpensScope())):
+      if (previous.OpensScope() or (previous.is_comment and
+                                    previous.previous_token is not None and
+                                    previous.previous_token.OpensScope())):
         return max(0,
                    top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent

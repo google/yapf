@@ -281,12 +281,10 @@ def DumpNodeToString(node):
 def _PytreeNodeRepr(node):
   """Like pytree.Node.__repr__, but names instead of numbers for tokens."""
   if isinstance(node, pytree.Node):
-    return '%s(%s, %r)' % (node.__class__.__name__,
-                           NodeName(node),
+    return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node),
                            [_PytreeNodeRepr(c) for c in node.children])
   if isinstance(node, pytree.Leaf):
-    return '%s(%s, %r)' % (node.__class__.__name__,
-                           NodeName(node), node.value)
+    return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node), node.value)
   # Throw an exception if it's not an expected type:
   assert isinstance(node, (pytree.Node, pytree.Leaf)), type(node)
 

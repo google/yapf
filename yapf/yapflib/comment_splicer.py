@@ -147,9 +147,8 @@ def SpliceComments(tree):
 
                 rindex = (0 if '\n' not in comment_prefix.rstrip() else
                           comment_prefix.rstrip().rindex('\n') + 1)
-                comment_column = (
-                    len(comment_prefix[rindex:]) -
-                    len(comment_prefix[rindex:].lstrip()))
+                comment_column = (len(comment_prefix[rindex:]) -
+                                  len(comment_prefix[rindex:].lstrip()))
                 comments = _CreateCommentsFromPrefix(comment_prefix,
                                                      comment_lineno,
                                                      comment_column,
@@ -219,9 +218,10 @@ def _CreateCommentsFromPrefix(comment_prefix,
 # line, not on the same line with other code), it's important to insert it into
 # an appropriate parent of the node it's attached to. An appropriate parent
 # is the first "standaline line node" in the parent chain of a node.
-_STANDALONE_LINE_NODES = frozenset(
-    ['suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
-     'funcdef', 'classdef', 'decorated', 'file_input'])
+_STANDALONE_LINE_NODES = frozenset(['suite', 'if_stmt', 'while_stmt',
+                                    'for_stmt', 'try_stmt', 'with_stmt',
+                                    'funcdef', 'classdef', 'decorated',
+                                    'file_input'])
 
 
 def _FindNodeWithStandaloneLineParent(node):
