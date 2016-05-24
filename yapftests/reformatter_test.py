@@ -1660,6 +1660,35 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSplittingBeforeFirstElementListArgument(self):
+    unformatted_code = textwrap.dedent("""\
+        class _():
+          @classmethod
+          def _pack_results_for_constraint_or(cls, combination, constraints):
+            if True:
+              if True:
+                if True:
+                  return cls._create_investigation_result(
+                          (
+                                  clue for clue in combination if not clue == Verifier.UNMATCHED
+                          ), constraints, InvestigationResult.OR
+                  )
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class _():
+
+          @classmethod
+          def _pack_results_for_constraint_or(cls, combination, constraints):
+            if True:
+              if True:
+                if True:
+                  return cls._create_investigation_result(
+                      (clue for clue in combination if not clue == Verifier.UNMATCHED),
+                      constraints, InvestigationResult.OR)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -1964,24 +1993,25 @@ class BuganizerFixes(ReformatterTest):
   def testB28414371(self):
     code = textwrap.dedent("""\
         def _():
-          return ((m.fffff(
-              m.rrr('mmmmmmmmmmmmmmmm', 'ssssssssssssssssssssssssss'), ffffffffffffffff)
-                   | m.wwwwww(m.ddddd('1h'))
-                   | m.ggggggg(bbbbbbbbbbbbbbb)
-                   | m.ppppp(
-                       (1 - m.ffffffffffffffff(llllllllllllllllllllll * 1000000, m.vvv))
-                       * m.ddddddddddddddddd(m.vvv)),
-                   m.fffff(
+          return (
+              (m.fffff(
+                  m.rrr('mmmmmmmmmmmmmmmm', 'ssssssssssssssssssssssssss'),
+                  ffffffffffffffff)
+               | m.wwwwww(m.ddddd('1h'))
+               | m.ggggggg(bbbbbbbbbbbbbbb)
+               | m.ppppp(
+                   (1 - m.ffffffffffffffff(llllllllllllllllllllll * 1000000, m.vvv)) *
+                   m.ddddddddddddddddd(m.vvv)), m.fffff(
                        m.rrr('mmmmmmmmmmmmmmmm', 'sssssssssssssssssssssss'),
                        dict(ffffffffffffffff,
                             **{
                                 'mmmmmm:ssssss': m.rrrrrrrrrrr('|'.join(iiiiiiiiiiiiii),
                                                                iiiiii=True)
                             }))
-                   | m.wwwwww(m.rrrr('1h'))
-                   | m.ggggggg(bbbbbbbbbbbbbbb))
-                  | m.jjjj()
-                  | m.ppppp(m.vvv[0] + m.vvv[1]))
+               | m.wwwwww(m.rrrr('1h'))
+               | m.ggggggg(bbbbbbbbbbbbbbb))
+              | m.jjjj()
+              | m.ppppp(m.vvv[0] + m.vvv[1]))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

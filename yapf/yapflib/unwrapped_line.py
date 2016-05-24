@@ -458,7 +458,7 @@ def _SplitPenalty(prev_token, cur_token):
       format_token.Subtype.KWARGS_STAR_STAR in prev_token.subtypes):
     # Don't split after a varargs * or kwargs **.
     return split_penalty.UNBREAKABLE
-  if prev_token.value in pytree_utils.OPENING_BRACKETS:
+  if prev_token.OpensScope() and cur_token.value != '(':
     # Slightly prefer
     return style.Get('SPLIT_PENALTY_AFTER_OPENING_BRACKET')
   if cur_token.value == ':':
