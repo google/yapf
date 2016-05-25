@@ -498,6 +498,8 @@ def _GetLengthOfSubtype(token, subtype, exclude=None):
 
 def _GetOpeningParen(current):
   previous = current
+  if previous and previous.matching_bracket:
+    return previous.matching_bracket
   while previous is not None and previous.matching_bracket is None:
     previous = previous.previous_token
     if not previous:
