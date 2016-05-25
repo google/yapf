@@ -142,19 +142,11 @@ class FormatDecisionState(object):
 
           length = last_token.total_length - bracket.total_length
           if length + self.column >= column_limit:
+            self.stack[-1].split_before_closing_bracket = True
             return True
 
         elif style.Get('DEDENT_CLOSING_BRACKETS') and current.ClosesScope():
-          opening = bracket.matching_bracket
-          if (unwrapped_line.IsSurroundedByBrackets(opening) or
-              not _IsLastScopeInLine(bracket) or bracket.next_token is None):
-            last_token = bracket
-          else:
-            last_token = _LastTokenInLine(bracket.next_token)
-
-          length = last_token.total_length - opening.total_length
-          if length + opening.column >= column_limit:
-            return True
+          return self.stack[-1].split_before_closing_bracket
 
     if (self.stack[-1].split_before_closing_bracket and
         # FIXME(morbo): Use the 'matching_bracket' instead of this.
