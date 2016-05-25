@@ -436,7 +436,7 @@ class FormatDecisionState(object):
       new_indent = style.Get('CONTINUATION_INDENT_WIDTH') + last.last_space
 
       self.stack.append(_ParenState(new_indent, self.stack[-1].last_space))
-      self.stack[-1].break_before_paremeter = False
+      self.stack[-1].split_before_parameter = False
       self.paren_level += 1
 
     # If we encounter a closing bracket, we can remove a level from our
