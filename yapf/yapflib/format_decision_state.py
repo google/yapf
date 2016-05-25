@@ -148,12 +148,8 @@ class FormatDecisionState(object):
         elif style.Get('DEDENT_CLOSING_BRACKETS') and current.ClosesScope():
           return self.stack[-1].split_before_closing_bracket
 
-    if (self.stack[-1].split_before_closing_bracket and
-        # FIXME(morbo): Use the 'matching_bracket' instead of this.
-        # FIXME(morbo): Don't forget about tuples!
-        current.value in ']}'):
-      # Split if we need to split before the closing bracket and the next
-      # token is a closing bracket.
+    if self.stack[-1].split_before_closing_bracket and current.value in '}]':
+      # Split if we need to split before the closing bracket.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if not previous:
@@ -191,6 +187,7 @@ class FormatDecisionState(object):
 
     if (previous.value in '{[' and current.lineno != previous.lineno and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
+      # Retain the split after the container opening.
       return True
 
     if (previous.value == ':' and _IsDictionaryValue(current) and
@@ -200,6 +197,7 @@ class FormatDecisionState(object):
 
     if (format_token.Subtype.COMP_FOR in current.subtypes and
         format_token.Subtype.COMP_FOR not in previous.subtypes):
+      # Split at the beginning of a list comprehension.
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR,
                                    format_token.Subtype.COMP_IF)
       if length + self.column > column_limit:
@@ -207,14 +205,14 @@ class FormatDecisionState(object):
 
     if (format_token.Subtype.COMP_IF in current.subtypes and
         format_token.Subtype.COMP_IF not in previous.subtypes):
+      # Split at the beginning of an if expression.
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
       if length + self.column > column_limit:
         return True
 
     previous_previous_token = previous.previous_token
-    if (current.name == 'NAME' and previous_previous_token and
-        previous_previous_token.name == 'NAME' and
-        not previous_previous_token.is_keyword and previous.value == '('):
+    if (current.is_name and previous_previous_token and
+        previous_previous_token.is_name and previous.value == '('):
       sibling = previous.node.next_sibling
       if pytree_utils.NodeName(sibling) == 'arglist':
         arglist = previous.node.next_sibling
@@ -236,6 +234,7 @@ class FormatDecisionState(object):
 
     if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and current.value in '&|' and
         previous.lineno < current.lineno):
+      # Retain the split before a bitwise operator.
       return True
 
     if (current.is_comment and
@@ -428,7 +427,6 @@ class FormatDecisionState(object):
       new_indent = style.Get('CONTINUATION_INDENT_WIDTH') + last.last_space
 
       self.stack.append(_ParenState(new_indent, self.stack[-1].last_space))
-      self.stack[-1].split_before_parameter = False
       self.paren_level += 1
 
     # If we encounter a closing bracket, we can remove a level from our
