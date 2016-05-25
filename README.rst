@@ -84,7 +84,6 @@ Options::
 
     usage: yapf [-h] [-v] [-d | -i] [-r | -l START-END] [-e PATTERN]
                 [--style STYLE] [--style-help] [--no-local-style]
-                [--verify]
                 [files [files ...]]
 
     Formatter for Python code.
@@ -110,7 +109,6 @@ Options::
                             directory for stdin)
       --style-help          show style settings and exit
       --no-local-style      don't search for local style definition (.style.yapf)
-      --verify              try to verify reformatted code for syntax errors
 
 
 Formatting style
