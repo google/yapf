@@ -280,12 +280,12 @@ Knobs
     Align closing bracket with visual indentation.
 
 ``BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF``
-    Insert a blank line before a 'def' or 'class' immediately nested
-    within another 'def' or 'class'.
+    Insert a blank line before a ``def`` or ``class`` immediately nested within
+    another ``def`` or ``class``.
 
     For example:
 
-.. code-block:: python
+    .. code-block:: python
 
         class Foo:
                            # <------ this blank line
@@ -301,24 +301,22 @@ Knobs
 ``DEDENT_CLOSING_BRACKETS``
     Put closing brackets on a separate line, dedented, if the bracketed
     expression can't fit in a single line. Applies to all kinds of brackets,
-    including function definitions and calls.
+    including function definitions and calls. For example:
 
-    For example:
-
-.. code-block:: python
+    .. code-block:: python
 
         config = {
             'key1': 'value1',
             'key2': 'value2',
-        }        # <--- this bracket is dedented and on a separate line
+        }  # <--- this bracket is dedented and on a separate line
 
         time_series = self.remote_client.query_entity_counters(
-          entity='dev3246.region1',
-          key='dns.query_latency_tcp',
-          transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
-          start_ts=now()-timedelta(days=3),
-          end_ts=now(),
-        )        # <--- this bracket is dedented and on a separate line
+            entity='dev3246.region1',
+            key='dns.query_latency_tcp',
+            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+            start_ts=now()-timedelta(days=3),
+            end_ts=now(),
+        )  # <--- this bracket is dedented and on a separate line
 
 ``I18N_COMMENT``
     The regex for an internationalization comment. The presence of this comment
@@ -326,17 +324,15 @@ Knobs
     next to the string they translate.
 
 ``I18N_FUNCTION_CALL``
-    The internationalization function call names. The presence of this
-    function stops reformattting on that line, because the string it has
-    cannot be moved away from the i18n comment.
+    The internationalization function call names. The presence of this function
+    stops reformattting on that line, because the string it has cannot be moved
+    away from the i18n comment.
 
 ``INDENT_DICTIONARY_VALUE``
     Indent the dictionary value if it cannot fit on the same line as the
-    dictionary key.
+    dictionary key. For example:
 
-    For example:
-
-.. code-block:: python
+    .. code-block:: python
 
         config = {
             'key1':
@@ -352,8 +348,7 @@ Knobs
     Join short lines into one line. E.g., single line ``if`` statements.
 
 ``SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET``
-    Insert a space between the ending comma and closing bracket of a list,
-    etc.
+    Insert a space between the ending comma and closing bracket of a list, etc.
 
 ``SPACES_AROUND_POWER_OPERATOR``
     Set to ``True`` to prefer using spaces around ``**``.
@@ -389,15 +384,13 @@ Knobs
     The penalty for characters over the column limit.
 
 ``SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT``
-    The penalty incurred by adding a line split to the unwrapped line. The
-    more line splits added the higher the penalty.
+    The penalty incurred by adding a line split to the unwrapped line. The more
+    line splits added the higher the penalty.
 
 ``SPLIT_PENALTY_IMPORT_NAMES``
-    The penalty of splitting a list of ``import as`` names.
+    The penalty of splitting a list of ``import as`` names. For example:
 
-    For example:
-
-.. code-block:: python
+    .. code-block:: python
 
       from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
                                                                 long_argument_2,
@@ -405,7 +398,7 @@ Knobs
 
     would reformat to something like:
 
-.. code-block:: python
+    .. code-block:: python
 
       from a_very_long_or_indented_module_name_yada_yad import (
           long_argument_1, long_argument_2, long_argument_3)
