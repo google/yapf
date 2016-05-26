@@ -84,7 +84,7 @@ class FormatDecisionState(object):
 
   def Clone(self):
     new = copy.copy(self)
-    new.stack = copy.deepcopy(self.stack)
+    new.stack = [copy.copy(state) for state in self.stack]
     return new
 
   def __eq__(self, other):

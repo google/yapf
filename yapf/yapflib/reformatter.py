@@ -73,8 +73,8 @@ def Reformat(uwlines, verify=True):
       _RetainHorizontalSpacing(uwline)
       _RetainVerticalSpacing(uwline, prev_uwline)
       _EmitLineUnformatted(state)
-    elif (_CanPlaceOnSingleLine(uwline) and
-          not any(tok.must_split for tok in uwline.tokens)):
+    elif (_CanPlaceOnSingleLine(uwline) and not any(tok.must_split
+                                                    for tok in uwline.tokens)):
       # The unwrapped line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
@@ -89,26 +89,7 @@ def Reformat(uwlines, verify=True):
 
     final_lines.append(uwline)
     prev_uwline = uwline
-
-  formatted_code = []
-  for line in final_lines:
-    formatted_line = []
-    for tok in line.tokens:
-      if not tok.is_pseudo_paren:
-        formatted_line.append(tok.whitespace_prefix)
-        formatted_line.append(tok.value)
-      else:
-        if (not tok.next_token.whitespace_prefix.startswith('\n') and
-            not tok.next_token.whitespace_prefix.startswith(' ')):
-          if (tok.previous_token.value == ':' or
-              tok.next_token.value not in ',}])'):
-            formatted_line.append(' ')
-
-    formatted_code.append(''.join(formatted_line))
-    if verify:
-      verifier.VerifyCode(formatted_code[-1])
-
-  return ''.join(formatted_code) + '\n'
+  return _FormatFinalLines(final_lines, verify)
 
 
 def _RetainHorizontalSpacing(uwline):
@@ -234,6 +215,28 @@ def _CanPlaceOnSingleLine(uwline):
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
   return (uwline.last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
           not any(tok.is_comment for tok in uwline.tokens[:-1]))
+
+
+def _FormatFinalLines(final_lines, verify):
+  formatted_code = []
+  for line in final_lines:
+    formatted_line = []
+    for tok in line.tokens:
+      if not tok.is_pseudo_paren:
+        formatted_line.append(tok.whitespace_prefix)
+        formatted_line.append(tok.value)
+      else:
+        if (not tok.next_token.whitespace_prefix.startswith('\n') and
+            not tok.next_token.whitespace_prefix.startswith(' ')):
+          if (tok.previous_token.value == ':' or
+              tok.next_token.value not in ',}])'):
+            formatted_line.append(' ')
+
+    formatted_code.append(''.join(formatted_line))
+    if verify:
+      verifier.VerifyCode(formatted_code[-1])
+
+  return ''.join(formatted_code) + '\n'
 
 
 class _StateNode(object):
