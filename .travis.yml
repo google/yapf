@@ -1,9 +1,14 @@
 language: python
 
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
+  - 2.7
+  - 3.4
+  - 3.5
+  - nightly
+
+matrix:
+  allow_failures:
+    - python: nightly
 
 install:
   - pip install --quiet coveralls
