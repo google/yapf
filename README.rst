@@ -279,11 +279,12 @@ Knobs
 ``ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT``
     Align closing bracket with visual indentation.
 
+``ALLOW_MULTILINE_LAMBDAS``
+    Allow lambdas to be formatted on more than one line.
+
 ``BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF``
     Insert a blank line before a ``def`` or ``class`` immediately nested within
-    another ``def`` or ``class``.
-
-    For example:
+    another ``def`` or ``class``. For example:
 
     .. code-block:: python
 
@@ -347,14 +348,14 @@ Knobs
 ``JOIN_MULTIPLE_LINES``
     Join short lines into one line. E.g., single line ``if`` statements.
 
-``SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET``
-    Insert a space between the ending comma and closing bracket of a list, etc.
-
 ``SPACES_AROUND_POWER_OPERATOR``
     Set to ``True`` to prefer using spaces around ``**``.
 
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
+
+``SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET``
+    Insert a space between the ending comma and closing bracket of a list, etc.
 
 ``SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED``
     Split before arguments if the argument list is terminated by a comma.
@@ -362,6 +363,10 @@ Knobs
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
     than after.
+
+``SPLIT_BEFORE_FIRST_ARGUMENT``
+    If an argument / parameter list is going to be split, then split before the
+    first argument.
 
 ``SPLIT_BEFORE_LOGICAL_OPERATOR``
     Set to ``True`` to prefer splitting before ``and`` or ``or`` rather than
@@ -375,6 +380,9 @@ Knobs
 
 ``SPLIT_PENALTY_AFTER_UNARY_OPERATOR``
     The penalty for splitting the line after a unary operator.
+
+``SPLIT_PENALTY_BEFORE_IF_EXPR``
+    The penalty for splitting right before an ``if`` expression.
 
 ``SPLIT_PENALTY_BITWISE_OPERATOR``
     The penalty of splitting the line around the ``&``, ``|``, and ``^``
@@ -405,9 +413,6 @@ Knobs
 
 ``SPLIT_PENALTY_LOGICAL_OPERATOR``
     The penalty of splitting the line around the ``and`` and ``or`` operators.
-
-``SPLIT_PENALTY_BEFORE_IF_EXPR``
-    The penalty for splitting right before an ``if`` expression.
 
 (Potentially) Frequently Asked Questions
 ========================================

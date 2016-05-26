@@ -43,9 +43,39 @@ def SetGlobalStyle(style):
 
 
 _STYLE_HELP = dict(
-    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT='Align closing bracket with visual indentation.',
-    ALLOW_MULTILINE_LAMBDAS='Allow lambdas to be formatted on more than one line.',
-    COLUMN_LIMIT='The column limit.',
+    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
+      Align closing bracket with visual indentation."""),
+    ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
+      Allow lambdas to be formatted on more than one line."""),
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
+      Insert a blank line before a 'def' or 'class' immediately nested
+      within another 'def' or 'class'. For example:
+
+        class Foo:
+                           # <------ this blank line
+          def method():
+            ..."""),
+    COLUMN_LIMIT=textwrap.dedent("""\
+      The column limit."""),
+    CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
+      Indent width used for line continuations."""),
+    DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
+      Put closing brackets on a separate line, dedented, if the bracketed
+      expression can't fit in a single line. Applies to all kinds of brackets,
+      including function definitions and calls. For example:
+
+        config = {
+            'key1': 'value1',
+            'key2': 'value2',
+        }        # <--- this bracket is dedented and on a separate line
+
+        time_series = self.remote_client.query_entity_counters(
+            entity='dev3246.region1',
+            key='dns.query_latency_tcp',
+            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+            start_ts=now()-timedelta(days=3),
+            end_ts=now(),
+        )        # <--- this bracket is dedented and on a separate line"""),
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
@@ -56,87 +86,68 @@ _STYLE_HELP = dict(
       away from the i18n comment."""),
     INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
       Indent the dictionary value if it cannot fit on the same line as the
-      dictionary key.
+      dictionary key. For example:
 
-      For example:
-
-      config = {
-          'key1':
-              'value1',
-          'key2': value1 +
-                  value2,
-      }"""),
-    INDENT_WIDTH='The number of columns to use for indentation.',
-    CONTINUATION_INDENT_WIDTH='Indent width used for line continuations.',
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
-      Insert a blank line before a 'def' or 'class' immediately nested
-      within another 'def' or 'class'.
-
-      For example:
-
-      class Foo:
-                         # <------ this blank line
-        def method():
-          ..."""),
-    DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
-      Put closing brackets on a separate line, dedented, if the bracketed
-      expression can't fit in a single line. Applies to all kinds of brackets,
-      including function definitions and calls.
-
-      For example:
-
-      config = {
-          'key1': 'value1',
-          'key2': 'value2',
-      }        # <--- this bracket is dedented and on a separate line
-
-      time_series = self.remote_client.query_entity_counters(
-        entity='dev3246.region1',
-        key='dns.query_latency_tcp',
-        transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
-        start_ts=now()-timedelta(days=3),
-        end_ts=now(),
-      )        # <--- this bracket is dedented and on a separate line
-      """),
-    JOIN_MULTIPLE_LINES="Join short lines into one line. E.g., single line 'if' statements.",
+        config = {
+            'key1':
+                'value1',
+            'key2': value1 +
+                    value2,
+        }"""),
+    INDENT_WIDTH=textwrap.dedent("""\
+      The number of columns to use for indentation."""),
+    JOIN_MULTIPLE_LINES=textwrap.dedent("""\
+      Join short lines into one line. E.g., single line 'if' statements."""),
+    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
+      Use spaces around the power operator."""),
+    SPACES_BEFORE_COMMENT=textwrap.dedent("""\
+      The number of spaces required before a trailing comment."""),
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
-    SPACES_AROUND_POWER_OPERATOR='Use spaces around the power operator.',
-    SPACES_BEFORE_COMMENT='The number of spaces required before a trailing comment.',
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
-    Split before arguments if the argument list is terminated by a comma.
-    """),
-    SPLIT_BEFORE_BITWISE_OPERATOR="Set to True to prefer splitting before '&', '|' or '^' rather than after.",
-    SPLIT_BEFORE_FIRST_ARGUMENT="""\
-    If an argument / parameter list is going to be split, then split before the
-    first argument.
-    """,
-    SPLIT_BEFORE_LOGICAL_OPERATOR="Set to True to prefer splitting before 'and' or 'or' rather than after.",
-    SPLIT_BEFORE_NAMED_ASSIGNS='Split named assignments onto individual lines.',
-    SPLIT_PENALTY_AFTER_UNARY_OPERATOR='The penalty for splitting the line after a unary operator.',
-    SPLIT_PENALTY_EXCESS_CHARACTER='The penalty for characters over the column limit.',
-    SPLIT_PENALTY_BITWISE_OPERATOR="The penalty of splitting the line around the '&', '|', and '^' operators.",
-    SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
-    The penalty of splitting a list of "import as" names.
-
-    For example:
-
-      from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
-                                                                long_argument_2,
-                                                                long_argument_3)
-
-    would reformat to something like:
-
-      from a_very_long_or_indented_module_name_yada_yad import (
-          long_argument_1, long_argument_2, long_argument_3)
-    """),
-    SPLIT_PENALTY_LOGICAL_OPERATOR="The penalty of splitting the line around the 'and' and 'or' operators.",
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET='The penalty for splitting right after the opening bracket.',
+      Split before arguments if the argument list is terminated by a
+      comma."""),
+    SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
+      Set to True to prefer splitting before '&', '|' or '^' rather than
+      after."""),
+    SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
+      If an argument / parameter list is going to be split, then split before
+      the first argument."""),
+    SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent("""\
+      Set to True to prefer splitting before 'and' or 'or' rather than
+      after."""),
+    SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
+      Split named assignments onto individual lines."""),
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
+      The penalty for splitting right after the opening bracket."""),
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
+      The penalty for splitting the line after a unary operator."""),
+    SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent("""\
+      The penalty for splitting right before an if expression."""),
+    SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
+      The penalty of splitting the line around the '&', '|', and '^'
+      operators."""),
+    SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
+      The penalty for characters over the column limit."""),
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the unwrapped line. The
       more line splits added the higher the penalty."""),
-    SPLIT_PENALTY_BEFORE_IF_EXPR='The penalty for splitting right before an if expression.',
+    SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
+      The penalty of splitting a list of "import as" names. For example:
+
+        from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
+                                                                  long_argument_2,
+                                                                  long_argument_3)
+
+      would reformat to something like:
+
+        from a_very_long_or_indented_module_name_yada_yad import (
+            long_argument_1, long_argument_2, long_argument_3)
+      """),
+    SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
+      The penalty of splitting the line around the 'and' and 'or'
+      operators."""),
     # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
@@ -259,7 +270,8 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
-    SPLIT_PENALTY_BEFORE_IF_EXPR=int,)
+    SPLIT_PENALTY_BEFORE_IF_EXPR=int,
+)  # yapf: disable
 
 
 def CreateStyleFromConfig(style_config):

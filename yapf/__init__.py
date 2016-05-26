@@ -103,9 +103,7 @@ def main(argv):
   parser.add_argument('--no-local-style',
                       action='store_true',
                       help="don't search for local style definition")
-  parser.add_argument('--verify',
-                      action='store_true',
-                      help=argparse.SUPPRESS)
+  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
