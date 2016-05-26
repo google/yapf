@@ -76,6 +76,7 @@ _GRAMMAR_FOR_PY3 = pygram.python_grammar_no_print_statement.copy()
 del _GRAMMAR_FOR_PY3.keywords['exec']
 
 _GRAMMAR_FOR_PY2 = pygram.python_grammar.copy()
+del _GRAMMAR_FOR_PY2.keywords['nonlocal']
 
 
 def ParseCodeToTree(code):
