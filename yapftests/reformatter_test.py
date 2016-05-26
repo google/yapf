@@ -3111,6 +3111,7 @@ class TestsForPython3Code(ReformatterTest):
         import time
 
 
+        @print_args
         async def slow_operation():
             await asyncio.sleep(1)
             # print("Slow operation {} complete".format(n))

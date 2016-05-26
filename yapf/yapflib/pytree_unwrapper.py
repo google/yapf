@@ -177,6 +177,12 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
     self._VisitCompoundStatement(node, {'def'})
 
+  def Visit_async_funcdef(self, node):  # pylint: disable=invalid-name
+    self._StartNewLine()
+    self.Visit(node.children[0])
+    for child in node.children[1].children:
+      self.Visit(child)
+
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
     self._VisitCompoundStatement(node, {'class'})
 
