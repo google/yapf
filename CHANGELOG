@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.1] UNRELEASED
+### Changed
+- Performance enhancements.
+
 ## [0.9.0] 2016-05-29
 ### Added
 - Added a knob (SPLIT_PENALTY_BEFORE_IF_EXPR) to adjust the split penalty

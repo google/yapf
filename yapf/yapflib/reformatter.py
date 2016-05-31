@@ -48,12 +48,13 @@ def Reformat(uwlines, verify=True):
   """
   final_lines = []
   prev_uwline = None  # The previous line.
+  indent_width = style.Get('INDENT_WIDTH')
 
   for uwline in _SingleOrMergedLines(uwlines):
     first_token = uwline.first
     _FormatFirstToken(first_token, uwline.depth, prev_uwline, final_lines)
 
-    indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
+    indent_amt = indent_width * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
 
     if not uwline.disable:
@@ -79,7 +80,7 @@ def Reformat(uwlines, verify=True):
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
     else:
-      if not _AnalyzeSolutionSpace(state, dry_run=False):
+      if not _AnalyzeSolutionSpace(state):
         # Failsafe mode. If there isn't a solution to the line, then just emit
         # it as is.
         state = format_decision_state.FormatDecisionState(uwline, indent_amt)
@@ -229,7 +230,7 @@ def _FormatFinalLines(final_lines, verify):
         if (not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
           if (tok.previous_token.value == ':' or
-              tok.next_token.value not in ',}])'):
+              tok.next_token.value not in frozenset(',}])')):
             formatted_line.append(' ')
 
     formatted_code.append(''.join(formatted_line))
@@ -273,7 +274,7 @@ _QueueItem = collections.namedtuple('QueueItem', ['ordered_penalty',
                                                   'state_node'])
 
 
-def _AnalyzeSolutionSpace(initial_state, dry_run=False):
+def _AnalyzeSolutionSpace(initial_state):
   """Analyze the entire solution space starting from initial_state.
 
   This implements a variant of Dijkstra's algorithm on the graph that spans
@@ -284,7 +285,6 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
   Arguments:
     initial_state: (format_decision_state.FormatDecisionState) The initial state
       to start the search from.
-    dry_run: (bool) Don't commit changes if True.
 
   Returns:
     True if a formatting solution was found. False otherwise.
@@ -313,9 +313,7 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
     if node.state in seen:
       continue
 
-    assert penalty >= prev_penalty
     prev_penalty = penalty
-
     seen.add(node.state)
 
     # FIXME(morbo): Add a 'decision' element?
@@ -327,9 +325,7 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
     # We weren't able to find a solution. Do nothing.
     return False
 
-  if not dry_run:
-    _ReconstructPath(initial_state, heapq.heappop(p_queue).state_node)
-
+  _ReconstructPath(initial_state, heapq.heappop(p_queue).state_node)
   return True
 
 
@@ -433,7 +429,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     # The first line in the file. Don't add blank lines.
     # FIXME(morbo): Is this correct?
     if first_token.newlines is not None:
-      pytree_utils.SetNodeAnnotation(first_token.GetPytreeNode(),
+      pytree_utils.SetNodeAnnotation(first_token.node,
                                      pytree_utils.Annotation.NEWLINES, None)
     return 0
 
@@ -444,7 +440,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
 
   prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
-    if not indent_depth and first_token.value in {'class', 'def', 'async'}:
+    if (not indent_depth and
+        first_token.value in frozenset({'class', 'def', 'async'})):
       # Separate a class or function from the module-level docstring with two
       # blank lines.
       return TWO_BLANK_LINES
@@ -454,7 +451,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     else:
       return ONE_BLANK_LINE
 
-  if first_token.value in {'class', 'def', '@'}:
+  if first_token.value in frozenset({'class', 'def', '@'}):
     # TODO(morbo): This can go once the blank line calculator is more
     # sophisticated.
     if not indent_depth:
@@ -476,11 +473,11 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
           else:
             prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
           if first_token.newlines is not None:
-            pytree_utils.SetNodeAnnotation(first_token.GetPytreeNode(),
+            pytree_utils.SetNodeAnnotation(first_token.node,
                                            pytree_utils.Annotation.NEWLINES,
                                            None)
           return NO_BLANK_LINES
-    elif prev_uwline.first.value in {'class', 'def'}:
+    elif prev_uwline.first.value in frozenset({'class', 'def'}):
       if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)

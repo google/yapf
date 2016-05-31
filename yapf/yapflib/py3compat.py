@@ -25,6 +25,9 @@ if PY3:
   import codecs
   open_with_encoding = codecs.open
 
+  import functools
+  lru_cache = functools.lru_cache
+
   range = range
   ifilter = filter
   raw_input = input
@@ -40,6 +43,14 @@ else:
   StringIO = BytesIO = cStringIO.StringIO
 
   open_with_encoding = io.open
+
+  # Python 2.7 doesn't have a native LRU cache, so do nothing.
+  def lru_cache(maxsize=128, typed=False):
+
+    def fake_wrapper(user_function):
+      return user_function
+
+    return fake_wrapper
 
   range = xrange
 
