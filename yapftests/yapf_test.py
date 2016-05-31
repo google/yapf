@@ -1060,7 +1060,7 @@ def test_wrong_indent(num_of_spaces, correct_num_of_spaces):
   stmt = 'a = 1\n'
   code = ' ' * num_of_spaces + stmt
   formatted_code, _ = yapf_api.FormatCode(code, style_config='pep8')
-  spaces = len(match('^(\s+)', formatted_code).group(0)
+  spaces = len(match('^(\s+)', formatted_code).group(0))
   assert spaces == correct_num_of_spaces
 
 
