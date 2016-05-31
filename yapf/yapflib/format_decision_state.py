@@ -387,12 +387,12 @@ class FormatDecisionState(object):
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
-        _IsDictionaryValue(current)):
+        format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
       return previous.column
 
     if style.Get('INDENT_DICTIONARY_VALUE'):
-      if _IsDictionaryValue(current):
-        if previous and (previous.value == ':' or previous.is_pseudo_paren):
+      if previous and (previous.value == ':' or previous.is_pseudo_paren):
+        if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
           return top_of_stack.indent
 
     if (self.line.first.value in _COMPOUND_STMTS and
