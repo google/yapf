@@ -134,8 +134,8 @@ class FormatDecisionState(object):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if bracket.OpensScope():
-          if (unwrapped_line.IsSurroundedByBrackets(bracket) or
-              not _IsLastScopeInLine(bracket)):
+          if (not _IsLastScopeInLine(bracket) or
+              unwrapped_line.IsSurroundedByBrackets(bracket)):
             last_token = bracket.matching_bracket
           else:
             last_token = _LastTokenInLine(bracket.matching_bracket)
@@ -329,15 +329,6 @@ class FormatDecisionState(object):
     self.start_of_line_level = self.paren_level
     self.lowest_level_on_line = self.paren_level
 
-    # Any break on this level means that the parent level has been broken and we
-    # need to avoid bin packing there.
-    for paren_state in self.stack:
-      paren_state.split_before_parameter = True
-
-    if (previous.value != ',' and not previous.is_binary_op and
-        not current.is_binary_op and not previous.OpensScope()):
-      self.stack[-1].split_before_parameter = True
-
     if (previous.OpensScope() or (previous.is_comment and
                                   previous.previous_token is not None and
                                   previous.previous_token.OpensScope())):
@@ -526,7 +517,6 @@ class _ParenState(object):
     split_before_closing_bracket: Whether a newline needs to be inserted before
       the closing bracket. We only want to insert a newline before the closing
       bracket if there also was a newline after the beginning left bracket.
-    split_before_parameter: Split the line after the next comma.
     num_line_splits: Number of line splits this _ParenState contains already.
       Each subsequent line split gets an increasing penalty.
   """
@@ -538,8 +528,14 @@ class _ParenState(object):
     self.last_space = last_space
     self.closing_scope_indent = 0
     self.split_before_closing_bracket = False
-    self.split_before_parameter = False
     self.num_line_splits = 0
+
+  def __copy__(self):
+    state = _ParenState(self.indent, self.last_space)
+    state.closing_scope_indent = self.closing_scope_indent
+    state.split_before_closing_bracket = self.split_before_closing_bracket
+    self.num_line_splits = self.num_line_splits
+    return state
 
   def __repr__(self):
     return '[indent::%d, last_space::%d, closing_scope_indent::%d]' % (

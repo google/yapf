@@ -286,10 +286,8 @@ def _PytreeNodeRepr(node):
                            [_PytreeNodeRepr(c) for c in node.children])
   if isinstance(node, pytree.Leaf):
     return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node), node.value)
-  # Throw an exception if it's not an expected type:
-  assert isinstance(node, (pytree.Node, pytree.Leaf)), type(node)
 
 
 def IsCommentStatement(node):
   return (NodeName(node) == 'simple_stmt' and
-          NodeName(node.children[0]) == 'COMMENT')
+          node.children[0].type == token.COMMENT)

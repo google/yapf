@@ -69,7 +69,6 @@ def SpliceComments(tree):
             # We can't just insert it before the NEWLINE node, because as a
             # result of the way pytrees are organized, this node can be under
             # an inappropriate parent.
-            assert prev_leaf[0] is not None
             comment_column -= len(comment_prefix)
             comment_column += len(comment_prefix) - len(comment_prefix.lstrip())
             pytree_utils.InsertNodesAfter(

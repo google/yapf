@@ -22,6 +22,7 @@ import re
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 
@@ -85,8 +86,7 @@ class FormatToken(object):
     Arguments:
       node: (pytree.Leaf) The node that's being wrapped.
     """
-    assert isinstance(node, pytree.Leaf)
-    self._node = node
+    self.node = node
     self.next_token = None
     self.previous_token = None
     self.matching_bracket = None
@@ -116,7 +116,7 @@ class FormatToken(object):
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
-      self._node.value = ('\n' + spaces_before).join(comment_lines)
+      self.node.value = ('\n' + spaces_before).join(comment_lines)
 
     if not self.whitespace_prefix:
       self.whitespace_prefix = (
@@ -167,108 +167,106 @@ class FormatToken(object):
   def ClosesScope(self):
     return self.value in pytree_utils.CLOSING_BRACKETS
 
-  def GetPytreeNode(self):
-    return self._node
-
-  @property
-  def value(self):
-    if self.is_continuation:
-      return self._node.value.rstrip()
-    return self._node.value
-
-  @property
-  def node(self):
-    return self._node
-
-  @property
-  def node_split_penalty(self):
-    """Split penalty attached to the pytree node of this token.
-
-    Returns:
-      The penalty, or None if no annotation is attached.
-    """
-    return pytree_utils.GetNodeAnnotation(self._node,
-                                          pytree_utils.Annotation.SPLIT_PENALTY,
-                                          default=0)
-
-  @property
-  def newlines(self):
-    """The number of newlines needed before this token."""
-    return pytree_utils.GetNodeAnnotation(self._node,
-                                          pytree_utils.Annotation.NEWLINES)
-
-  @property
-  def must_split(self):
-    """Return true if the token requires a split before it."""
-    return pytree_utils.GetNodeAnnotation(self._node,
-                                          pytree_utils.Annotation.MUST_SPLIT)
-
-  @property
-  def column(self):
-    """The original column number of the node in the source."""
-    return self._node.column
-
-  @property
-  def lineno(self):
-    """The original line number of the node in the source."""
-    return self._node.lineno
-
-  @property
-  def subtypes(self):
-    """Extra type information for directing formatting."""
-    value = pytree_utils.GetNodeAnnotation(self._node,
-                                           pytree_utils.Annotation.SUBTYPE)
-    return [Subtype.NONE] if value is None else value
-
-  @property
-  def is_binary_op(self):
-    """Token is a binary operator."""
-    return Subtype.BINARY_OPERATOR in self.subtypes
-
-  @property
-  def name(self):
-    """A string representation of the node's name."""
-    return pytree_utils.NodeName(self._node)
-
   def __repr__(self):
     msg = 'FormatToken(name={0}, value={1}'.format(self.name, self.value)
     msg += ', pseudo)' if self.is_pseudo_paren else ')'
     return msg
 
   @property
+  def value(self):
+    if self.is_continuation:
+      return self.node.value.rstrip()
+    return self.node.value
+
+  @property
+  @py3compat.lru_cache()
+  def node_split_penalty(self):
+    """Split penalty attached to the pytree node of this token."""
+    return pytree_utils.GetNodeAnnotation(self.node,
+                                          pytree_utils.Annotation.SPLIT_PENALTY,
+                                          default=0)
+
+  @property
+  def newlines(self):
+    """The number of newlines needed before this token."""
+    return pytree_utils.GetNodeAnnotation(self.node,
+                                          pytree_utils.Annotation.NEWLINES)
+
+  @property
+  def must_split(self):
+    """Return true if the token requires a split before it."""
+    return pytree_utils.GetNodeAnnotation(self.node,
+                                          pytree_utils.Annotation.MUST_SPLIT)
+
+  @property
+  def column(self):
+    """The original column number of the node in the source."""
+    return self.node.column
+
+  @property
+  def lineno(self):
+    """The original line number of the node in the source."""
+    return self.node.lineno
+
+  @property
+  @py3compat.lru_cache()
+  def subtypes(self):
+    """Extra type information for directing formatting."""
+    value = pytree_utils.GetNodeAnnotation(self.node,
+                                           pytree_utils.Annotation.SUBTYPE)
+    return [Subtype.NONE] if value is None else value
+
+  @property
+  @py3compat.lru_cache()
+  def is_binary_op(self):
+    """Token is a binary operator."""
+    return Subtype.BINARY_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def name(self):
+    """A string representation of the node's name."""
+    return pytree_utils.NodeName(self.node)
+
+  @property
   def is_comment(self):
-    return self._node.type == token.COMMENT
+    return self.node.type == token.COMMENT
 
   @property
   def is_continuation(self):
-    return self._node.type == CONTINUATION
+    return self.node.type == CONTINUATION
 
   @property
+  @py3compat.lru_cache()
   def is_keyword(self):
     return keyword.iskeyword(self.value)
 
   @property
+  @py3compat.lru_cache()
   def is_name(self):
-    return self._node.type == token.NAME and not self.is_keyword
+    return self.node.type == token.NAME and not self.is_keyword
 
   @property
   def is_number(self):
-    return self._node.type == token.NUMBER
+    return self.node.type == token.NUMBER
 
   @property
   def is_string(self):
-    return self._node.type == token.STRING
+    return self.node.type == token.STRING
 
   @property
+  @py3compat.lru_cache()
   def is_multiline_string(self):
     return (self.is_string and
             re.match(r'^[uUbB]?[rR]?(?P<delim>"""|\'\'\').*(?P=delim)$',
                      self.value, re.DOTALL) is not None)
 
   @property
+  @py3compat.lru_cache()
   def is_docstring(self):
     return self.is_multiline_string and not self.node.prev_sibling
 
   @property
+  @py3compat.lru_cache()
   def is_pseudo_paren(self):
-    return hasattr(self._node, 'is_pseudo') and self._node.is_pseudo
+    return hasattr(self.node, 'is_pseudo') and self.node.is_pseudo

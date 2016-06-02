@@ -66,7 +66,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     if len(node.children) > 1:
       index = 0
       while index < len(node.children):
-        if pytree_utils.NodeName(node.children[index]) != 'COMMENT':
+        if node.children[index].type != token.COMMENT:
           break
         index += 1
       if index < len(node.children):
@@ -313,7 +313,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 def _InsertPseudoParentheses(node):
   comment_node = None
   if isinstance(node, pytree.Node):
-    if pytree_utils.NodeName(node.children[-1]) == 'COMMENT':
+    if node.children[-1].type == token.COMMENT:
       comment_node = node.children[-1].clone()
       node.children[-1].remove()
 

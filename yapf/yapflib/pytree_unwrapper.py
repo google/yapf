@@ -107,6 +107,17 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       _AdjustSplitPenalty(self._cur_unwrapped_line)
     self._cur_unwrapped_line = unwrapped_line.UnwrappedLine(self._cur_depth)
 
+  _STMT_TYPES = frozenset({
+      'if_stmt',
+      'while_stmt',
+      'for_stmt',
+      'try_stmt',
+      'expect_clause',
+      'with_stmt',
+      'funcdef',
+      'classdef',
+  })
+
   # pylint: disable=invalid-name,missing-docstring
   def Visit_simple_stmt(self, node):
     # A 'simple_stmt' conveniently represents a non-compound Python statement,
@@ -119,17 +130,9 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     # standalone comment and in the case of it coming directly after the
     # funcdef, it is a "top" comment for the whole function.
     # TODO(eliben): add more relevant compound statements here.
-    single_stmt_suite = (node.parent and pytree_utils.NodeName(node.parent) in {
-        'if_stmt',
-        'while_stmt',
-        'for_stmt',
-        'try_stmt',
-        'expect_clause',
-        'with_stmt',
-        'funcdef',
-        'classdef',
-    })
-    is_comment_stmt = pytree_utils.NodeName(node.children[0]) == 'COMMENT'
+    single_stmt_suite = (node.parent and
+                         pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
+    is_comment_stmt = pytree_utils.IsCommentStatement(node)
     if single_stmt_suite and not is_comment_stmt:
       self._cur_depth += 1
     self._StartNewLine()
@@ -159,23 +162,35 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
         self._StartNewLine()
       self.Visit(child)
 
+  _IF_STMT_ELEMS = frozenset({'if', 'else', 'elif'})
+
   def Visit_if_stmt(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'if', 'else', 'elif'})
+    self._VisitCompoundStatement(node, self._IF_STMT_ELEMS)
+
+  _WHILE_STMT_ELEMS = frozenset({'while', 'else'})
 
   def Visit_while_stmt(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'while', 'else'})
+    self._VisitCompoundStatement(node, self._WHILE_STMT_ELEMS)
+
+  _FOR_STMT_ELEMS = frozenset({'for', 'else'})
 
   def Visit_for_stmt(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'for', 'else'})
+    self._VisitCompoundStatement(node, self._FOR_STMT_ELEMS)
+
+  _TRY_STMT_ELEMS = frozenset({'try', 'except', 'else', 'finally'})
 
   def Visit_try_stmt(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'try', 'except', 'else', 'finally'})
+    self._VisitCompoundStatement(node, self._TRY_STMT_ELEMS)
+
+  _EXCEPT_STMT_ELEMS = frozenset({'except'})
 
   def Visit_except_clause(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'except'})
+    self._VisitCompoundStatement(node, self._EXCEPT_STMT_ELEMS)
+
+  _FUNC_DEF_ELEMS = frozenset({'def'})
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'def'})
+    self._VisitCompoundStatement(node, self._FUNC_DEF_ELEMS)
 
   def Visit_async_funcdef(self, node):  # pylint: disable=invalid-name
     self._StartNewLine()
@@ -183,8 +198,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children[1].children:
       self.Visit(child)
 
+  _CLASS_DEF_ELEMS = frozenset({'class'})
+
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'class'})
+    self._VisitCompoundStatement(node, self._CLASS_DEF_ELEMS)
 
   def Visit_async_stmt(self, node):  # pylint: disable=invalid-name
     self._StartNewLine()
@@ -202,8 +219,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       self._StartNewLine()
       self.Visit(child)
 
+  _WITH_STMT_ELEMS = frozenset({'with'})
+
   def Visit_with_stmt(self, node):  # pylint: disable=invalid-name
-    self._VisitCompoundStatement(node, {'with'})
+    self._VisitCompoundStatement(node, self._WITH_STMT_ELEMS)
 
   def Visit_suite(self, node):  # pylint: disable=invalid-name
     # A 'suite' starts a new indentation level in Python.
@@ -273,7 +292,6 @@ def _MatchBrackets(uwline):
     if token.value in pytree_utils.OPENING_BRACKETS:
       bracket_stack.append(token)
     elif token.value in pytree_utils.CLOSING_BRACKETS:
-      assert _BRACKET_MATCH[token.value] == bracket_stack[-1].value
       bracket_stack[-1].matching_bracket = token
       token.matching_bracket = bracket_stack[-1]
       bracket_stack.pop()
@@ -291,7 +309,7 @@ def _AdjustSplitPenalty(uwline):
   bracket_level = 0
   for index, token in enumerate(uwline.tokens):
     if index and not bracket_level:
-      pytree_utils.SetNodeAnnotation(token.GetPytreeNode(),
+      pytree_utils.SetNodeAnnotation(token.node,
                                      pytree_utils.Annotation.SPLIT_PENALTY,
                                      split_penalty.UNBREAKABLE)
     if token.value in pytree_utils.OPENING_BRACKETS:
@@ -311,7 +329,7 @@ def _DetermineMustSplitAnnotation(node):
     child = node.children[index]
     if isinstance(child, pytree.Leaf) and child.value == ',':
       next_child = node.children[index + 1]
-      if pytree_utils.NodeName(next_child) == 'COMMENT':
+      if next_child.type == grammar_token.COMMENT:
         index += 1
         if index >= num_children - 1:
           break
@@ -322,11 +340,11 @@ def _DetermineMustSplitAnnotation(node):
 def _ContainsComments(node):
   """Return True if the list has a comment in it."""
   if isinstance(node, pytree.Leaf):
-    return pytree_utils.NodeName(node) == 'COMMENT'
-  contains_comments = False
+    return node.type == grammar_token.COMMENT
   for child in node.children:
-    contains_comments = contains_comments or _ContainsComments(child)
-  return contains_comments
+    if _ContainsComments(child):
+      return True
+  return False
 
 
 def _SetMustSplitOnFirstLeaf(node):
@@ -335,7 +353,6 @@ def _SetMustSplitOnFirstLeaf(node):
   def FindFirstLeaf(node):
     if isinstance(node, pytree.Leaf):
       return node
-
     return FindFirstLeaf(node.children[0])
 
   pytree_utils.SetNodeAnnotation(
