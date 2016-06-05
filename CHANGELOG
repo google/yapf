@@ -6,6 +6,9 @@
 ### Changed
 - Performance enhancements.
 
+## Fixed
+- Don't split an import list if it's not surrounded by parentheses.
+
 ## [0.9.0] 2016-05-29
 ### Added
 - Added a knob (SPLIT_PENALTY_BEFORE_IF_EXPR) to adjust the split penalty

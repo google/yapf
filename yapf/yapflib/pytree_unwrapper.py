@@ -240,7 +240,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
 
   def Visit_import_as_names(self, node):  # pylint: disable=invalid-name
-    _DetermineMustSplitAnnotation(node)
+    if node.prev_sibling.value == '(':
+      _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
   def Visit_testlist_gexp(self, node):  # pylint: disable=invalid-name
@@ -320,9 +321,10 @@ def _AdjustSplitPenalty(uwline):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
-  if not (_ContainsComments(node) or (isinstance(node.children[-1], pytree.Leaf)
-                                      and node.children[-1].value == ',')):
-    return
+  if not _ContainsComments(node):
+    if (not isinstance(node.children[-1], pytree.Leaf) or
+        node.children[-1].value != ','):
+      return
   num_children = len(node.children)
   index = 0
   while index < num_children - 1:

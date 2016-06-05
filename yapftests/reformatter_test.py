@@ -1727,6 +1727,15 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testImportAsList(self):
+    code = textwrap.dedent("""\
+        from toto import titi, tata, tutu  # noqa
+        from toto import titi, tata, tutu
+        from toto import (titi, tata, tutu)
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
