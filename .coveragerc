@@ -1,4 +1,5 @@
 [report]
 # Verifier is used for testing only.
 omit =
+  */__main__.py
   */verifier.py

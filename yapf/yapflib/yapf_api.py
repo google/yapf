@@ -148,7 +148,7 @@ def FormatCode(unformatted_source,
   return reformatted_source, True
 
 
-def _CheckPythonVersion():
+def _CheckPythonVersion():  # pragma: no cover
   errmsg = 'yapf is only supported for Python 2.7 or 3.4+'
   if sys.version_info[0] == 2:
     if sys.version_info[1] < 7:
@@ -189,7 +189,7 @@ def ReadFile(filename, logger=None):
                                       encoding=encoding) as fd:
       source = fd.read()
     return source, encoding
-  except IOError as err:
+  except IOError as err:  # pragma: no cover
     if logger:
       logger(err)
     raise
