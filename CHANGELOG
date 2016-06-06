@@ -2,11 +2,14 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.9.1] UNRELEASED
+## [0.10.0] UNRELEASED
+### Added
+- Add a knob, 'USE_TABS', to allow using tabs for indentation.
+  
 ### Changed
 - Performance enhancements.
 
-## Fixed
+### Fixed
 - Don't split an import list if it's not surrounded by parentheses.
 
 ## [0.9.0] 2016-05-29

@@ -1031,6 +1031,29 @@ second_argument_makes_the_line_too_long):
                              extra_options=['--lines', '1-1', '--style',
                                             'chromium'])
 
+  def testUseTabs(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo_function():
+         if True:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo_function():
+        	if True:
+        		pass
+        """)
+    with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
+      f.write(textwrap.dedent('''\
+          [style]
+          based_on_style = chromium
+          USE_TABS = true
+          INDENT_WIDTH=1
+          '''))
+      f.flush()
+      self.assertYapfReformats(unformatted_code,
+                               expected_formatted_code,
+                               extra_options=['--style={0}'.format(f.name)])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""
