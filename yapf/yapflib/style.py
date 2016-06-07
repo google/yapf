@@ -148,6 +148,8 @@ _STYLE_HELP = dict(
     SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the 'and' and 'or'
       operators."""),
+    USE_TABS=textwrap.dedent("""\
+      Use the Tab character for indentation."""),
     # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
@@ -181,6 +183,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
+      USE_TABS=False
   )  # yapf: disable
 
 
@@ -271,6 +274,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,
+    USE_TABS=_BoolConverter
 )  # yapf: disable
 
 

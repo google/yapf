@@ -258,7 +258,7 @@ class _StateNode(object):
     self.newline = newline
     self.previous = previous
 
-  def __repr__(self):
+  def __repr__(self):  # pragma: no cover
     return 'StateNode(state=[\n{0}\n], newline={1})'.format(self.state,
                                                             self.newline)
 

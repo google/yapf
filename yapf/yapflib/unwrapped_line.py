@@ -141,10 +141,10 @@ class UnwrappedLine(object):
     tokens_str = ' '.join(tok.value for tok in self._tokens)
     return indent + tokens_str
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return self.AsCode()
 
-  def __repr__(self):
+  def __repr__(self):  # pragma: no cover
     tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value)
                             for tok in self._tokens])
     return 'UnwrappedLine(depth={0}, tokens=[{1}])'.format(self.depth,

@@ -414,6 +414,9 @@ Knobs
 ``SPLIT_PENALTY_LOGICAL_OPERATOR``
     The penalty of splitting the line around the ``and`` and ``or`` operators.
 
+``USE_TABS``
+    Use the Tab character for indentation.
+
 (Potentially) Frequently Asked Questions
 ========================================
 
