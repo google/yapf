@@ -34,6 +34,7 @@ from lib2to3.pgen2 import token as grammar_token
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
 
@@ -232,7 +233,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self._cur_depth -= 1
 
   def Visit_listmaker(self, node):  # pylint: disable=invalid-name
-    _DetermineMustSplitAnnotation(node)
+    _DetermineMustSplitAnnotation(
+        node, style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'))
     self.DefaultNodeVisit(node)
 
   def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
@@ -319,12 +321,16 @@ def _AdjustSplitPenalty(uwline):
       bracket_level -= 1
 
 
-def _DetermineMustSplitAnnotation(node):
+def _DetermineMustSplitAnnotation(node, must_split=False):
   """Enforce a split in the list if the list ends with a comma."""
-  if not _ContainsComments(node):
+  if not len(node.children):
+    return
+  if not must_split and not _ContainsComments(node):
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
       return
+  if must_split:
+    _SetMustSplitOnFirstLeaf(node.children[0])
   num_children = len(node.children)
   index = 0
   while index < num_children - 1:
