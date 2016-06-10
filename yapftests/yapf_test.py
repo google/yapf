@@ -961,6 +961,30 @@ second_argument_makes_the_line_too_long):
     # self.assertYapfReformats(unformatted_code, expected_formatted_pep8_code,
     #                          extra_options=['--style=pep8'])
 
+  def testCoalesceBrackets(self):
+    unformatted_code = textwrap.dedent(u"""\
+       some_long_function_name_foo({
+           'first_argument_of_the_thing': id,
+           'second_argument_of_the_thing': "some thing"}
+           )""")
+    expected_formatted_code = textwrap.dedent(u"""\
+       some_long_function_name_foo({
+           'first_argument_of_the_thing': id,
+           'second_argument_of_the_thing': "some thing"
+       })
+       """)
+    with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
+      f.write(textwrap.dedent('''\
+          [style]
+          based_on_style = facebook
+          column_limit=82
+          coalesce_brackets = True
+          '''))
+      f.flush()
+      self.assertYapfReformats(unformatted_code,
+                               expected_formatted_code,
+                               extra_options=['--style={0}'.format(f.name)])
+
   def testPseudoParenSpaces(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo():
