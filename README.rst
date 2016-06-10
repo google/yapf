@@ -293,6 +293,29 @@ Knobs
             def method():
                 pass
 
+``COALESCE_BRACKETS``
+    Do not split consecutive brackets. Only relevant when
+    ``DEDENT_CLOSING_BRACKETS`` is set. For example:
+
+    .. code-block:: python
+
+        call_func_that_takes_a_dict(
+            {
+                'key1': 'value1',
+                'key2': 'value2',
+            }
+        )
+
+    would reformat to:
+
+    .. code-block:: python
+
+        call_func_that_takes_a_dict({
+            'key1': 'value1',
+            'key2': 'value2',
+        })
+
+
 ``COLUMN_LIMIT``
     The column limit (or max line-length)
 

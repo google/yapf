@@ -2,7 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.10.1] UNRELEASED
+## [0.11.0] UNRELEASED
+### Added
+- The COALESCE_BRACKETS knob prevents splitting consecutive brackets when
+  DEDENT_CLOSING_BRACKETS is set.
+
 ### Fixed
 - When retaining format of a multiline string with Chromium style, make sure
   that the multiline string doesn't mess up where the following comma ends up.

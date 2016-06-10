@@ -55,6 +55,23 @@ _STYLE_HELP = dict(
                            # <------ this blank line
           def method():
             ..."""),
+    COALESCE_BRACKETS=textwrap.dedent("""\
+      Do not split consecutive brackets. Only relevant when
+      dedent_closing_brackets is set. For example:
+
+         call_func_that_takes_a_dict(
+             {
+                 'key1': 'value1',
+                 'key2': 'value2',
+             }
+         )
+
+      would reformat to:
+
+         call_func_that_takes_a_dict({
+             'key1': 'value1',
+             'key2': 'value2',
+         })"""),
     COLUMN_LIMIT=textwrap.dedent("""\
       The column limit."""),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
@@ -159,6 +176,7 @@ def CreatePEP8Style():
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALLOW_MULTILINE_LAMBDAS=False,
       COLUMN_LIMIT=79,
+      COALESCE_BRACKETS=False,
       DEDENT_CLOSING_BRACKETS=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
@@ -249,6 +267,7 @@ def _BoolConverter(s):
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
+    COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
     I18N_COMMENT=str,
