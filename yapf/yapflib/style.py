@@ -58,19 +58,20 @@ _STYLE_HELP = dict(
     COALESCE_BRACKETS=textwrap.dedent("""\
       Do not split consecutive brackets. Only relevant when
       dedent_closing_brackets is set. For example:
-         call_func_that_takes_a_dict({
-             'key1': 'value1',
-             'key2': 'value2',
-         })
-
-         instead of
 
          call_func_that_takes_a_dict(
              {
                  'key1': 'value1',
                  'key2': 'value2',
              }
-         )"""),
+         )
+
+      would reformat to:
+
+         call_func_that_takes_a_dict({
+             'key1': 'value1',
+             'key2': 'value2',
+         })"""),
     COLUMN_LIMIT=textwrap.dedent("""\
       The column limit."""),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\

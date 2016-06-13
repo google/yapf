@@ -299,21 +299,22 @@ Knobs
 
     .. code-block:: python
 
-        call_func_that_takes_a_dict({
-            'key1': 'value1',
-            'key2': 'value2',
-        })
-
-    instead of
-
-    .. code-block:: python
-
         call_func_that_takes_a_dict(
             {
                 'key1': 'value1',
                 'key2': 'value2',
             }
         )
+
+    would reformat to:
+
+    .. code-block:: python
+
+        call_func_that_takes_a_dict({
+            'key1': 'value1',
+            'key2': 'value2',
+        })
+
 
 ``COLUMN_LIMIT``
     The column limit (or max line-length)
