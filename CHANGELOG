@@ -5,7 +5,7 @@
 ## [0.10.0] UNRELEASED
 ### Added
 - Add a knob, 'USE_TABS', to allow using tabs for indentation.
-  
+
 ### Changed
 - Performance enhancements.
 
