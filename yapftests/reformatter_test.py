@@ -1736,26 +1736,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
-  def testSplittingBeforeAllElements(self):
-    try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: facebook, SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED: True}'))
-      unformatted_code = textwrap.dedent("""\
-          a = [1, 2, 3,]
-          """)
-      expected_formatted_code = textwrap.dedent("""\
-          a = [
-              1,
-              2,
-              3,
-          ]
-          """)
-      uwlines = _ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(uwlines))
-    finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
-
 
 class BuganizerFixes(ReformatterTest):
 
