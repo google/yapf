@@ -111,7 +111,7 @@ class FormatToken(object):
       spaces: (int) The number of spaces to place before the token.
       indent_level: (int) The indentation level.
     """
-    indent_char = "\t" if style.Get('USE_TABS') else ' '
+    indent_char = '\t' if style.Get('USE_TABS') else ' '
     indent_before = (
         indent_char * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
 
