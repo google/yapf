@@ -61,6 +61,10 @@ confidence=
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 disable=
+    # disabled by me,
+    locally-disabled,
+    missing-docstring,
+    fixme,
     # disabled by default,
     import-star-module-level,
     old-octal-literal,
@@ -164,7 +168,7 @@ max-module-lines=1000
 
 # String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1
 # tab).
-indent-string='    '
+indent-string='  '
 
 # Number of spaces of indent required inside a hanging  or continued line.
 indent-after-paren=4
@@ -203,7 +207,7 @@ logging-modules=logging
 bad-functions=map,filter,input
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,ex,Run,_
+good-names=i,e,s,_,fd,fp
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata
@@ -216,7 +220,9 @@ name-group=
 include-naming-hint=no
 
 # Regular expression matching correct function names
-function-rgx=[a-z_][a-z0-9_]{2,30}$
+# original:
+#function-rgx=[a-z_][a-z0-9_]{2,30}$
+function-rgx=[a-zA-Z_][a-zA-Z0-9_]{2,40}$
 
 # Naming hint for function names
 function-name-hint=[a-z_][a-z0-9_]{2,30}$
@@ -228,7 +234,9 @@ variable-rgx=[a-z_][a-z0-9_]{2,30}$
 variable-name-hint=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression matching correct constant names
-const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+# original:
+#const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+const-rgx=(([a-zA-Z_][a-zA-Z0-9_]*)|(__.*__))$
 
 # Naming hint for constant names
 const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
@@ -246,7 +254,9 @@ argument-rgx=[a-z_][a-z0-9_]{2,30}$
 argument-name-hint=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression matching correct class attribute names
-class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+# original:
+#class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,40}|(__.*__))$
 
 # Naming hint for class attribute names
 class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
@@ -258,7 +268,9 @@ inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 inlinevar-name-hint=[A-Za-z_][A-Za-z0-9_]*$
 
 # Regular expression matching correct class names
-class-rgx=[A-Z_][a-zA-Z0-9]+$
+# original:
+#class-rgx=[A-Z_][a-zA-Z0-9]+$
+class-rgx=[a-zA-Z_][a-zA-Z0-9]+$
 
 # Naming hint for class names
 class-name-hint=[A-Z_][a-zA-Z0-9]+$
@@ -270,7 +282,9 @@ module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 module-name-hint=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 
 # Regular expression matching correct method names
-method-rgx=[a-z_][a-z0-9_]{2,30}$
+# original:
+#method-rgx=[a-z_][a-z0-9_]{2,30}$
+method-rgx=[a-zA-Z_][a-zA-Z0-9_]{2,40}$
 
 # Naming hint for method names
 method-name-hint=[a-z_][a-z0-9_]{2,30}$
