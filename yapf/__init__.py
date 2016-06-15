@@ -99,7 +99,9 @@ def main(argv):
             'stdin)' % (style.LOCAL_STYLE, style.SETUP_CONFIG)))
   parser.add_argument('--style-help',
                       action='store_true',
-                      help='show style settings and exit')
+                      help=('show style settings and exit; this output can be '
+                            'saved to .style.yapf to make your settings '
+                            'permanent'))
   parser.add_argument('--no-local-style',
                       action='store_true',
                       help="don't search for local style definition")
@@ -114,10 +116,11 @@ def main(argv):
 
   if args.style_help:
     style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
+    print('[style]')
     for option, docstring in sorted(style.Help().items()):
-      print(option, '=', style.Get(option), sep='')
       for line in docstring.splitlines():
-        print('  ', line)
+        print('#', line)
+      print(option, '=', style.Get(option), sep='')
       print()
     return 0
 
