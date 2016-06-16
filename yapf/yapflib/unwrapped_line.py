@@ -19,8 +19,6 @@ single line if there were no line length restrictions. It's then used by the
 parser to perform the wrapping required to comply with the style guide.
 """
 
-from lib2to3 import pytree
-
 from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
@@ -51,13 +49,6 @@ class UnwrappedLine(object):
     self.depth = depth
     self._tokens = tokens or []
     self.disable = False
-
-    if self._tokens:
-      # Set up a doubly linked list.
-      for index, tok in enumerate(self._tokens[1:]):
-        # Note, 'index' is the index to the previous token.
-        tok.previous_token = self._tokens[index]
-        self._tokens[index].next_token = tok
 
   def CalculateFormattingInformation(self):
     """Calculate the split penalty and total length for the tokens."""
@@ -191,22 +182,9 @@ def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
   lval = left.value
   rval = right.value
-  if (left.is_pseudo_paren and _IsIdNumberStringToken(right) and
-      left.previous_token and _IsIdNumberStringToken(left.previous_token)):
-    # Space between keyword... tokens and pseudo parens.
-    return True
   if left.is_pseudo_paren or right.is_pseudo_paren:
     # The pseudo-parens shouldn't affect spacing.
     return False
-  if left.is_continuation or right.is_continuation:
-    # The continuation node's value has all of the spaces it needs.
-    return False
-  if right.name in pytree_utils.NONSEMANTIC_TOKENS:
-    # No space before a non-semantic token.
-    return False
-  if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
-    # Spaces between keyword, string, number, and identifier tokens.
-    return True
   if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
     return True
@@ -326,9 +304,7 @@ def _MustBreakBefore(prev_token, cur_token):
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
     return True
-  return pytree_utils.GetNodeAnnotation(cur_token.node,
-                                        pytree_utils.Annotation.MUST_SPLIT,
-                                        default=False)
+  return pytree_utils.GetNodeAnnotation(cur_token.node, pytree_utils.Annotation.MUST_SPLIT)
 
 
 def _CanBreakBefore(prev_token, cur_token):

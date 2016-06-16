@@ -295,10 +295,7 @@ class FormatDecisionState(object):
         self.stack[-1].closing_scope_indent = self.column - 1
         if style.Get('ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'):
           self.stack[-1].closing_scope_indent += 1
-        self.stack[-1].indent = self.column + spaces
-      else:
-        self.stack[-1].closing_scope_indent = (
-            self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+        self.stack[-1].indent = self.column
 
     self.column += spaces
 
@@ -355,7 +352,7 @@ class FormatDecisionState(object):
       penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
                   last.num_line_splits)
 
-    return penalty + 10
+    return penalty
 
   def _GetNewlineColumn(self):
     """Return the new column on the newline."""
