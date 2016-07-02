@@ -538,7 +538,7 @@ class _ParenState(object):
     state = _ParenState(self.indent, self.last_space)
     state.closing_scope_indent = self.closing_scope_indent
     state.split_before_closing_bracket = self.split_before_closing_bracket
-    self.num_line_splits = self.num_line_splits
+    state.num_line_splits = self.num_line_splits
     return state
 
   def __repr__(self):
