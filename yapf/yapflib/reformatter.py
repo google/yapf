@@ -233,7 +233,7 @@ def _FormatFinalLines(final_lines, verify):
         if (not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
           if (tok.previous_token.value == ':' or
-              tok.next_token.value not in frozenset(',}])')):
+              tok.next_token.value not in ',}])'):
             formatted_line.append(' ')
 
     formatted_code.append(''.join(formatted_line))
@@ -443,8 +443,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
 
   prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
-    if (not indent_depth and
-        first_token.value in frozenset({'class', 'def', 'async'})):
+    if (not indent_depth and first_token.value in {'class', 'def', 'async'}):
       # Separate a class or function from the module-level docstring with two
       # blank lines.
       return TWO_BLANK_LINES
@@ -454,7 +453,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     else:
       return ONE_BLANK_LINE
 
-  if first_token.value in frozenset({'class', 'def', '@'}):
+  if first_token.value in {'class', 'def', '@'}:
     # TODO(morbo): This can go once the blank line calculator is more
     # sophisticated.
     if not indent_depth:
@@ -480,7 +479,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
                                            pytree_utils.Annotation.NEWLINES,
                                            None)
           return NO_BLANK_LINES
-    elif prev_uwline.first.value in frozenset({'class', 'def'}):
+    elif prev_uwline.first.value in {'class', 'def'}:
       if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)
