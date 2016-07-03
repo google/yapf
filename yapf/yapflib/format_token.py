@@ -142,7 +142,7 @@ class FormatToken(object):
       prev_lineno += previous.value.count('\n')
 
     if (cur_lineno != prev_lineno or
-        (previous.is_pseudo_paren and
+        (previous.is_pseudo_paren and previous.value != ')' and
          cur_lineno != previous.previous_token.lineno)):
       self.spaces_required_before = (
           self.column - first_column + depth * style.Get('INDENT_WIDTH'))
