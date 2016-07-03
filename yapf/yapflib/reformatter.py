@@ -116,7 +116,10 @@ def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
   if prev_tok.is_string:
     prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
   elif prev_tok.is_pseudo_paren:
-    prev_lineno = prev_tok.previous_token.lineno
+    if not prev_tok.previous_token.is_multiline_string:
+      prev_lineno = prev_tok.previous_token.lineno
+    else:
+      prev_lineno = prev_tok.lineno
   else:
     prev_lineno = prev_tok.lineno
 

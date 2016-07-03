@@ -295,6 +295,25 @@ class FormatFileTest(unittest.TestCase):
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
     self.assertCodeEqual(code, formatted_code)
 
+  def testDisabledMultilineStringInDictionary(self):
+    code = textwrap.dedent("""\
+        # yapf: disable
+
+        A = [
+            {
+                "aaaaaaaaaaaaaaaaaaa": '''
+        bbbbbbbbbbb: "ccccccccccc"
+        dddddddddddddd: 1
+        eeeeeeee: 0
+        ffffffffff: "ggggggg"
+        ''',
+            },
+        ]
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='chromium')[0]
+    self.assertCodeEqual(code, formatted_code)
+
 
 class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""
