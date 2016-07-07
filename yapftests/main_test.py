@@ -65,7 +65,7 @@ class RunMainTest(unittest.TestCase):
     sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
       with self.assertRaises(SystemExit):
-        ret = yapf.run_main()
+        yapf.run_main()
       self.assertEqual(out.getvalue(), '')
       self.assertEqual(err.getvalue(), expected_message)
 
@@ -99,7 +99,7 @@ class MainTest(unittest.TestCase):
     with patched_input(bad_syntax):
       with captured_output() as (out, err):
         with self.assertRaisesRegexp(SyntaxError, "unexpected indent"):
-          ret = yapf.main([])
+          yapf.main([])
 
   def testHelp(self):
     with captured_output() as (out, err):
