@@ -19,7 +19,6 @@ from setuptools import setup, Command
 import sys
 
 import yapf
-import yapftests
 
 
 class RunTests(Command):
