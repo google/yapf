@@ -6,6 +6,7 @@
 ### Added
 - The COALESCE_BRACKETS knob prevents splitting consecutive brackets when
   DEDENT_CLOSING_BRACKETS is set.
+- Don't count "pylint" directives as exceeding the column limit.
 
 ### Fixed
 - When retaining format of a multiline string with Chromium style, make sure

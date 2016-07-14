@@ -442,8 +442,9 @@ class FormatDecisionState(object):
 
     # Calculate the penalty for overflowing the column limit.
     penalty = 0
-    if self.column > style.Get('COLUMN_LIMIT'):
-      excess_characters = self.column - style.Get('COLUMN_LIMIT')
+    column_limit = style.Get('COLUMN_LIMIT')
+    if not current.is_pylint_comment and self.column > column_limit:
+      excess_characters = self.column - column_limit
       penalty += style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
 
     if is_multiline_string:

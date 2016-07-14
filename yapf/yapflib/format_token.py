@@ -271,3 +271,7 @@ class FormatToken(object):
   @py3compat.lru_cache()
   def is_pseudo_paren(self):
     return hasattr(self.node, 'is_pseudo') and self.node.is_pseudo
+
+  @property
+  def is_pylint_comment(self):
+    return self.is_comment and re.match(r'#\s*\bpylint:\b', self.value)

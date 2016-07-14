@@ -1743,6 +1743,17 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB29908765(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def __repr__(self):
+            return '<session %s on %s>' % (self._id,
+                                           self._stub._stub.rpc_channel().target())  # pylint:disable=protected-access
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB30087362(self):
     code = textwrap.dedent("""\
         def _():
