@@ -10,6 +10,8 @@
 ### Fixed
 - When retaining format of a multiline string with Chromium style, make sure
   that the multiline string doesn't mess up where the following comma ends up.
+- Correct for when 'lib2to3' smooshes comments together into the same DEDENT
+  node.
 
 ## [0.10.0] 2016-06-14
 ### Added
