@@ -100,13 +100,10 @@ def SpliceComments(tree):
               #
               # In this case, we need to split them up ourselves.
               before = []
-              before_lineno = comment_lineno
-
               after = []
               after_lineno = comment_lineno
 
               index = 0
-              prefix_indent
               while index < len(comments):
                 cmt = comments[index]
                 if not cmt.strip() or cmt.startswith(prefix_indent + '#'):
@@ -125,7 +122,7 @@ def SpliceComments(tree):
                                             comment_column,
                                             standalone=True),
                   ancestor_at_indent)
-              if len(after):
+              if after:
                 after_column = len(after[0]) - len(after[0].lstrip())
                 comment_column -= comment_column - after_column
                 pytree_utils.InsertNodesAfter(
