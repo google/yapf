@@ -84,14 +84,53 @@ def SpliceComments(tree):
             # indentation, and insert the comment after it.
             ancestor_at_indent = _FindAncestorAtIndent(child, prefix_indent)
             if ancestor_at_indent.type == token.DEDENT:
+              comments = comment_prefix.split('\n')
+
+              # lib2to3 places comments that should be separated into the same
+              # DEDENT node. For example, "comment 1" and "comment 2" will be
+              # combined.
+              #
+              #   def _():
+              #     for x in y:
+              #       pass
+              #       # comment 1
+              #
+              #     # comment 2
+              #     pass
+              #
+              # In this case, we need to split them up ourselves.
+              before = []
+              after = []
+              after_lineno = comment_lineno
+
+              index = 0
+              while index < len(comments):
+                cmt = comments[index]
+                if not cmt.strip() or cmt.startswith(prefix_indent + '#'):
+                  before.append(cmt)
+                else:
+                  after_lineno += index
+                  after.extend(comments[index:])
+                  break
+                index += 1
+
               # Special case where the comment is inserted in the same
               # indentation level as the DEDENT it was originally attached to.
               pytree_utils.InsertNodesBefore(
-                  _CreateCommentsFromPrefix(comment_prefix,
+                  _CreateCommentsFromPrefix('\n'.join(before) + '\n',
                                             comment_lineno,
                                             comment_column,
                                             standalone=True),
                   ancestor_at_indent)
+              if after:
+                after_column = len(after[0]) - len(after[0].lstrip())
+                comment_column -= comment_column - after_column
+                pytree_utils.InsertNodesAfter(
+                    _CreateCommentsFromPrefix('\n'.join(after) + '\n',
+                                              after_lineno,
+                                              comment_column,
+                                              standalone=True),
+                    _FindNextAncestor(ancestor_at_indent))
             else:
               pytree_utils.InsertNodesAfter(
                   _CreateCommentsFromPrefix(comment_prefix,
@@ -276,20 +315,30 @@ def _FindAncestorAtIndent(node, indent):
   if node.parent.parent is None:
     # Our parent is the tree root, so there's nowhere else to go.
     return node
+
+  # If the parent has an indent annotation, and it's shorter than node's
+  # indent, this is a suitable ancestor.
+  # The reason for "shorter" rather than "equal" is that comments may be
+  # improperly indented (i.e. by three spaces, where surrounding statements
+  # have either zero or two or four), and we don't want to propagate them all
+  # the way to the root.
+  parent_indent = pytree_utils.GetNodeAnnotation(
+      node.parent, pytree_utils.Annotation.CHILD_INDENT)
+  if parent_indent is not None and indent.startswith(parent_indent):
+    return node
   else:
-    # If the parent has an indent annotation, and it's shorter than node's
-    # indent, this is a suitable ancestor.
-    # The reason for "shorter" rather than "equal" is that comments may be
-    # improperly indented (i.e. by three spaces, where surrounding statements
-    # have either zero or two or four), and we don't want to propagate them all
-    # the way to the root.
-    parent_indent = pytree_utils.GetNodeAnnotation(
-        node.parent, pytree_utils.Annotation.CHILD_INDENT)
-    if parent_indent is not None and indent.startswith(parent_indent):
-      return node
-    else:
-      # Keep looking up the tree.
-      return _FindAncestorAtIndent(node.parent, indent)
+    # Keep looking up the tree.
+    return _FindAncestorAtIndent(node.parent, indent)
+
+
+def _FindNextAncestor(node):
+  if node.parent is None:
+    return node
+
+  if node.parent.next_sibling is not None:
+    return node.parent.next_sibling
+
+  return _FindNextAncestor(node.parent)
 
 
 def _AnnotateIndents(tree):
