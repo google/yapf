@@ -49,7 +49,7 @@ Installation
 
 To install YAPF from PyPI:
 
-.. code-block:: shell
+.. code-block::
 
     $ pip install yapf
 
@@ -62,7 +62,7 @@ library, installation is not necessary. YAPF supports being run as a directory
 by the Python interpreter. If you cloned/unzipped YAPF into ``DIR``, it's
 possible to run:
 
-.. code-block:: shell
+.. code-block::
 
     $ PYTHONPATH=DIR python DIR/yapf [options] ...
 
@@ -125,7 +125,7 @@ file that specifies the desired style, or a dictionary of key/value pairs.
 The config file is a simple listing of (case-insensitive) ``key = value`` pairs
 with a ``[style]`` heading. For example:
 
-.. code-block:: guess
+.. code-block::
 
     [style]
     based_on_style = pep8
@@ -138,7 +138,7 @@ custom style is based on (think of it like subclassing).
 It's also possible to do the same on the command line with a dictionary. For
 example:
 
-.. code-block:: guess
+.. code-block::
 
     --style='{based_on_style: chromium, indent_width: 4}'
 
