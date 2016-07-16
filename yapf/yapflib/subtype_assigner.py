@@ -231,6 +231,16 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     self._ProcessArgLists(node)
     self._SetDefaultOrNamedAssignArgListSubtype(node)
 
+  def Visit_funcdef(self, node):  # pylint: disable=invalid-name
+    # funcdef ::=
+    #     'def' NAME parameters ['->' test] ':' suite
+    for child in node.children:
+      if pytree_utils.NodeName(child) == 'NAME' and child.value != 'def':
+        self._AppendTokenSubtype(child, format_token.Subtype.FUNC_DEF)
+        break
+    for child in node.children:
+      self.Visit(child)
+
   def Visit_typedargslist(self, node):  # pylint: disable=invalid-name
     # typedargslist ::=
     #     ((tfpdef ['=' test] ',')*
@@ -264,10 +274,11 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf):
-        self._AppendTokenSubtype(child,
-                                 subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
-                                     child.value, format_token.Subtype.NONE),
-                                 force=False)
+        self._AppendTokenSubtype(
+            child,
+            subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
+                                                  format_token.Subtype.NONE),
+            force=False)
 
   def _AppendSubtypeRec(self, node, subtype, force=True):
     """Append the leafs in the node to the given subtype."""
@@ -320,9 +331,8 @@ def _InsertPseudoParentheses(node):
   first = _GetFirstLeafNode(node)
   last = _GetLastLeafNode(node)
 
-  lparen = pytree.Leaf(token.LPAR,
-                       u'(',
-                       context=('', (first.get_lineno(), first.column - 1)))
+  lparen = pytree.Leaf(
+      token.LPAR, u'(', context=('', (first.get_lineno(), first.column - 1)))
   last_lineno = last.get_lineno()
   if last.type == token.STRING and '\n' in last.value:
     last_lineno += last.value.count('\n')
@@ -331,9 +341,8 @@ def _InsertPseudoParentheses(node):
     last_column = len(last.value.split('\n')[-1]) + 1
   else:
     last_column = last.column + len(last.value) + 1
-  rparen = pytree.Leaf(token.RPAR,
-                       u')',
-                       context=('', (last_lineno, last_column)))
+  rparen = pytree.Leaf(
+      token.RPAR, u')', context=('', (last_lineno, last_column)))
 
   lparen.is_pseudo = True
   rparen.is_pseudo = True

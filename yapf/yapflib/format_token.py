@@ -50,6 +50,7 @@ class Subtype(object):
   COMP_FOR = 12
   COMP_IF = 13
   DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 14
+  FUNC_DEF = 15
 
 
 class FormatToken(object):
@@ -183,9 +184,8 @@ class FormatToken(object):
   @py3compat.lru_cache()
   def node_split_penalty(self):
     """Split penalty attached to the pytree node of this token."""
-    return pytree_utils.GetNodeAnnotation(self.node,
-                                          pytree_utils.Annotation.SPLIT_PENALTY,
-                                          default=0)
+    return pytree_utils.GetNodeAnnotation(
+        self.node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
 
   @property
   def newlines(self):

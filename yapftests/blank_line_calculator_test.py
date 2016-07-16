@@ -47,11 +47,12 @@ class BlankLineCalculatorTest(unittest.TestCase):
         else:
           msg.append(' > %s' % l)
       msg.append('Diff:')
-      msg.extend(difflib.unified_diff(code.splitlines(),
-                                      expected_code.splitlines(),
-                                      fromfile='actual',
-                                      tofile='expected',
-                                      lineterm=''))
+      msg.extend(difflib.unified_diff(
+          code.splitlines(),
+          expected_code.splitlines(),
+          fromfile='actual',
+          tofile='expected',
+          lineterm=''))
       self.fail('\n'.join(msg))
 
 

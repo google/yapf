@@ -358,9 +358,8 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
     return count
 
   node = _StateNode(previous_node.state, newline, previous_node)
-  penalty += node.state.AddTokenToState(newline=newline,
-                                        dry_run=True,
-                                        must_split=must_split)
+  penalty += node.state.AddTokenToState(
+      newline=newline, dry_run=True, must_split=must_split)
   heapq.heappush(p_queue, _QueueItem(_OrderedPenalty(penalty, count), node))
   return count + 1
 
@@ -523,9 +522,8 @@ def _SingleOrMergedLines(uwlines):
         if uwlines[index].lineno != uwline.lineno:
           break
         if uwline.last.value != ':':
-          leaf = pytree.Leaf(type=token.SEMI,
-                             value=';',
-                             context=('', (uwline.lineno, column)))
+          leaf = pytree.Leaf(
+              type=token.SEMI, value=';', context=('', (uwline.lineno, column)))
           uwline.AppendToken(format_token.FormatToken(leaf))
         for tok in uwlines[index].tokens:
           uwline.AppendToken(tok)

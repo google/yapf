@@ -320,8 +320,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         if node.value in {'(', 'for', 'if'}:
           return
         penalty_annotation = pytree_utils.GetNodeAnnotation(
-            node, pytree_utils.Annotation.SPLIT_PENALTY,
-            default=0)
+            node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
         if penalty_annotation < penalty:
           pytree_utils.SetNodeAnnotation(node,
                                          pytree_utils.Annotation.SPLIT_PENALTY,
@@ -347,9 +346,8 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
   for child in tree.children:
     _RecAnnotate(child, annotate_name, annotate_value)
   if isinstance(tree, pytree.Leaf):
-    cur_annotate = pytree_utils.GetNodeAnnotation(tree,
-                                                  annotate_name,
-                                                  default=0)
+    cur_annotate = pytree_utils.GetNodeAnnotation(
+        tree, annotate_name, default=0)
     if cur_annotate < annotate_value:
       pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
 

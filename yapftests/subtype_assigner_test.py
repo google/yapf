@@ -72,7 +72,7 @@ class SubtypeAssignerTest(unittest.TestCase):
     uwlines = self._ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('def', [format_token.Subtype.NONE]),
-         ('foo', [format_token.Subtype.NONE]),
+         ('foo', {format_token.Subtype.FUNC_DEF}),
          ('(', [format_token.Subtype.NONE]),
          ('a', {format_token.Subtype.NONE,
                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
@@ -127,7 +127,7 @@ class SubtypeAssignerTest(unittest.TestCase):
     uwlines = self._ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('def', [format_token.Subtype.NONE]),
-         ('foo', [format_token.Subtype.NONE]),
+         ('foo', {format_token.Subtype.FUNC_DEF}),
          ('(', [format_token.Subtype.NONE]),
          ('strs', [format_token.Subtype.NONE]),
          (')', [format_token.Subtype.NONE]),

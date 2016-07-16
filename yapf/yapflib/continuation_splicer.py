@@ -36,9 +36,10 @@ def SpliceContinuations(tree):
     if isinstance(node, pytree.Leaf):
       if node.prefix.lstrip().startswith('\\\n'):
         new_lineno = node.lineno - node.prefix.count('\n')
-        return pytree.Leaf(type=format_token.CONTINUATION,
-                           value=node.prefix,
-                           context=('', (new_lineno, 0)))
+        return pytree.Leaf(
+            type=format_token.CONTINUATION,
+            value=node.prefix,
+            context=('', (new_lineno, 0)))
       return None
     num_inserted = 0
     for index, child in enumerate(node.children[:]):

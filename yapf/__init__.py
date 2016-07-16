@@ -55,26 +55,30 @@ def main(argv):
     YapfError: if none of the supplied files were Python files.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
-  parser.add_argument('-v',
-                      '--version',
-                      action='store_true',
-                      help='show version number and exit')
+  parser.add_argument(
+      '-v',
+      '--version',
+      action='store_true',
+      help='show version number and exit')
 
   diff_inplace_group = parser.add_mutually_exclusive_group()
-  diff_inplace_group.add_argument('-d',
-                                  '--diff',
-                                  action='store_true',
-                                  help='print the diff for the fixed source')
-  diff_inplace_group.add_argument('-i',
-                                  '--in-place',
-                                  action='store_true',
-                                  help='make changes to files in place')
+  diff_inplace_group.add_argument(
+      '-d',
+      '--diff',
+      action='store_true',
+      help='print the diff for the fixed source')
+  diff_inplace_group.add_argument(
+      '-i',
+      '--in-place',
+      action='store_true',
+      help='make changes to files in place')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
-  lines_recursive_group.add_argument('-r',
-                                     '--recursive',
-                                     action='store_true',
-                                     help='run recursively over directories')
+  lines_recursive_group.add_argument(
+      '-r',
+      '--recursive',
+      action='store_true',
+      help='run recursively over directories')
   lines_recursive_group.add_argument(
       '-l',
       '--lines',
@@ -83,12 +87,13 @@ def main(argv):
       default=None,
       help='range of lines to reformat, one-based')
 
-  parser.add_argument('-e',
-                      '--exclude',
-                      metavar='PATTERN',
-                      action='append',
-                      default=None,
-                      help='patterns for files to exclude from formatting')
+  parser.add_argument(
+      '-e',
+      '--exclude',
+      metavar='PATTERN',
+      action='append',
+      default=None,
+      help='patterns for files to exclude from formatting')
   parser.add_argument(
       '--style',
       action='store',
@@ -97,14 +102,16 @@ def main(argv):
             'default is pep8 unless a %s or %s file located in one of the '
             'parent directories of the source file (or current directory for '
             'stdin)' % (style.LOCAL_STYLE, style.SETUP_CONFIG)))
-  parser.add_argument('--style-help',
-                      action='store_true',
-                      help=('show style settings and exit; this output can be '
-                            'saved to .style.yapf to make your settings '
-                            'permanent'))
-  parser.add_argument('--no-local-style',
-                      action='store_true',
-                      help="don't search for local style definition")
+  parser.add_argument(
+      '--style-help',
+      action='store_true',
+      help=('show style settings and exit; this output can be '
+            'saved to .style.yapf to make your settings '
+            'permanent'))
+  parser.add_argument(
+      '--no-local-style',
+      action='store_true',
+      help="don't search for local style definition")
   parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
 
   parser.add_argument('files', nargs='*')
@@ -160,13 +167,14 @@ def main(argv):
                                              args.exclude)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
-  changed = FormatFiles(files,
-                        lines,
-                        style_config=args.style,
-                        no_local_style=args.no_local_style,
-                        in_place=args.in_place,
-                        print_diff=args.diff,
-                        verify=args.verify)
+  changed = FormatFiles(
+      files,
+      lines,
+      style_config=args.style,
+      no_local_style=args.no_local_style,
+      in_place=args.in_place,
+      print_diff=args.diff,
+      verify=args.verify)
   return 2 if changed else 0
 
 

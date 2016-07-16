@@ -81,12 +81,13 @@ def FormatFile(filename,
     raise ValueError('Cannot pass both in_place and print_diff.')
 
   original_source, encoding = ReadFile(filename, logger)
-  reformatted_source, changed = FormatCode(original_source,
-                                           style_config=style_config,
-                                           filename=filename,
-                                           lines=lines,
-                                           print_diff=print_diff,
-                                           verify=verify)
+  reformatted_source, changed = FormatCode(
+      original_source,
+      style_config=style_config,
+      filename=filename,
+      lines=lines,
+      print_diff=print_diff,
+      verify=verify)
   if in_place:
     if original_source and original_source != reformatted_source:
       file_resources.WriteReformattedCode(filename, reformatted_source,
@@ -138,9 +139,8 @@ def FormatCode(unformatted_source,
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
 
-  code_diff = _GetUnifiedDiff(unformatted_source,
-                              reformatted_source,
-                              filename=filename)
+  code_diff = _GetUnifiedDiff(
+      unformatted_source, reformatted_source, filename=filename)
 
   if print_diff:
     return code_diff, code_diff != ''
@@ -184,9 +184,8 @@ def ReadFile(filename, logger=None):
     raise
 
   try:
-    with py3compat.open_with_encoding(filename,
-                                      mode='r',
-                                      encoding=encoding) as fd:
+    with py3compat.open_with_encoding(
+        filename, mode='r', encoding=encoding) as fd:
       source = fd.read()
     return source, encoding
   except IOError as err:  # pragma: no cover
@@ -257,10 +256,11 @@ def _GetUnifiedDiff(before, after, filename='code'):
   """
   before = before.splitlines()
   after = after.splitlines()
-  return '\n'.join(difflib.unified_diff(before,
-                                        after,
-                                        filename,
-                                        filename,
-                                        '(original)',
-                                        '(reformatted)',
-                                        lineterm='')) + '\n'
+  return '\n'.join(difflib.unified_diff(
+      before,
+      after,
+      filename,
+      filename,
+      '(original)',
+      '(reformatted)',
+      lineterm='')) + '\n'

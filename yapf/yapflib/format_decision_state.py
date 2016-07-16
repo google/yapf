@@ -172,13 +172,28 @@ class FormatDecisionState(object):
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
-      if (previous.value not in {'(', '=', '*', '**'} and
+      if (previous.value not in {'=', '*', '**'} and
           current.value not in '=,)'):
-        opening = _GetOpeningParen(current)
-        if opening:
-          arglist_length = (opening.matching_bracket.total_length -
-                            opening.total_length + self.column)
-          return arglist_length > column_limit
+        # If we're going to split the lines because of named arguments, then we
+        # want to split after the opening bracket as well. But not when this is
+        # part of function definition.
+        if not _IsFunctionDefinition(previous):
+          # Make sure we don't split after the opening bracket if the
+          # continuation indent is greater than the opening bracket:
+          #
+          #  a(
+          #      b=1,
+          #      c=2)
+          indent_amt = self.stack[-1].indent * style.Get('INDENT_WIDTH')
+          pptoken = previous.previous_token
+          opening_column = len(pptoken.value) if pptoken else 0 - indent_amt - 1
+          if previous.value == '(':
+            return opening_column >= style.Get('CONTINUATION_INDENT_WIDTH')
+          opening = _GetOpeningParen(current)
+          if opening:
+            arglist_length = (opening.matching_bracket.total_length -
+                              opening.total_length + self.stack[-1].indent)
+            return arglist_length > column_limit
 
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
@@ -499,6 +514,12 @@ def _LastTokenInLine(current):
   while not current.is_comment and current.next_token:
     current = current.next_token
   return current
+
+
+def _IsFunctionDefinition(current):
+  prev = current.previous_token
+  return (current.value == '(' and prev and
+          format_token.Subtype.FUNC_DEF in prev.subtypes)
 
 
 def _IsLastScopeInLine(current):
