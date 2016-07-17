@@ -50,12 +50,13 @@ class ReformatterTest(unittest.TestCase):
         else:
           msg.append(' > %s' % l)
       msg.append('Diff:')
-      msg.extend(difflib.unified_diff(
-          code.splitlines(),
-          expected_code.splitlines(),
-          fromfile='actual',
-          tofile='expected',
-          lineterm=''))
+      msg.extend(
+          difflib.unified_diff(
+              code.splitlines(),
+              expected_code.splitlines(),
+              fromfile='actual',
+              tofile='expected',
+              lineterm=''))
       self.fail('\n'.join(msg))
 
 
@@ -806,8 +807,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         class A:
 
           def x(self, node, name, n=1):
-            for i, child in enumerate(itertools.ifilter(
-                lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
+            for i, child in enumerate(
+                itertools.ifilter(lambda c: pytree_utils.NodeName(c) == name,
+                                  node.pre_order())):
               pass
         """)
     uwlines = _ParseAndUnwrap(code)
@@ -902,9 +904,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         def f():
           if True:
             if True:
-              python_files.extend(os.path.join(filename, f)
-                                  for f in os.listdir(filename)
-                                  if IsPythonFile(os.path.join(filename, f)))
+              python_files.extend(
+                  os.path.join(filename, f) for f in os.listdir(filename)
+                  if IsPythonFile(os.path.join(filename, f)))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1441,8 +1443,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 _CreateCommentsFromPrefix(
                     comment_prefix, comment_lineno, comment_column, standalone=True),
                 ancestor_at_indent)
-            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
-                comment_prefix, comment_lineno, comment_column, standalone=True))
+            pytree_utils.InsertNodesBefore(
+                _CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno, comment_column, standalone=True))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1504,8 +1507,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testMultilineLambdas(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: chromium, allow_multiline_lambdas: true}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, allow_multiline_lambdas: true}'))
       unformatted_code = textwrap.dedent("""\
           class SomeClass(object):
             do_something = True
@@ -1537,9 +1541,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testStableDictionaryFormatting(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, indent_width: 2, '
-          'continuation_indent_width: 4, indent_dictionary_value: True}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, indent_width: 2, '
+              'continuation_indent_width: 4, indent_dictionary_value: True}'))
       code = textwrap.dedent("""\
           class A(object):
             def method(self):
@@ -1596,10 +1601,11 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testNoSplittingWhenBinPacking(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, indent_width: 2, '
-          'continuation_indent_width: 4, indent_dictionary_value: True, '
-          'dedent_closing_brackets: True, split_before_named_assigns: False}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, indent_width: 2, '
+              'continuation_indent_width: 4, indent_dictionary_value: True, '
+              'dedent_closing_brackets: True, split_before_named_assigns: False}'))
       code = textwrap.dedent("""\
           a_very_long_function_name(
               long_argument_name_1=1,
@@ -1691,9 +1697,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testSplittingArgumentsTerminatedByComma(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: chromium, '
-          'split_arguments_when_comma_terminated: True}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, '
+              'split_arguments_when_comma_terminated: True}'))
       code = textwrap.dedent("""\
           function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
 
@@ -1741,6 +1748,17 @@ class BuganizerFixes(ReformatterTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB30173198(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def _():
+            self.assertFalse(
+                evaluation_runner.get_larps_in_eval_set('these_arent_the_larps'))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB29908765(self):
     code = textwrap.dedent("""\
@@ -2125,8 +2143,9 @@ class BuganizerFixes(ReformatterTest):
 
   def testB20016122(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: chromium, SPLIT_BEFORE_LOGICAL_OPERATOR: True}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, SPLIT_BEFORE_LOGICAL_OPERATOR: True}'))
       code = textwrap.dedent("""\
           class foo():
 
@@ -2934,8 +2953,9 @@ class TestsForPEP8Style(ReformatterTest):
 
   def testB20016122(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, SPLIT_PENALTY_IMPORT_NAMES: 35}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, SPLIT_PENALTY_IMPORT_NAMES: 35}'))
       unformatted_code = textwrap.dedent("""\
           from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
                                                                      long_argument_2)
@@ -2952,8 +2972,9 @@ class TestsForPEP8Style(ReformatterTest):
 
   def testSplittingBeforeLogicalOperator(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, split_before_logical_operator: True}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, split_before_logical_operator: True}'))
       unformatted_code = textwrap.dedent("""\
           def foo():
               return bool(update.message.new_chat_member or update.message.left_chat_member or
@@ -2999,8 +3020,9 @@ class TestsForPEP8Style(ReformatterTest):
 
   def testSplittingBeforeFirstArgument(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, split_before_first_argument: True}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, split_before_first_argument: True}'))
       unformatted_code = textwrap.dedent("""\
           a_very_long_function_name(long_argument_name_1=1, long_argument_name_2=2,
                                     long_argument_name_3=3, long_argument_name_4=4)
@@ -3182,8 +3204,9 @@ class TestsForPython3Code(ReformatterTest):
 
   def testNoSpacesAroundPowerOparator(self):
     try:
-      style.SetGlobalStyle(style.CreateStyleFromConfig(
-          '{based_on_style: pep8, SPACES_AROUND_POWER_OPERATOR: True}'))
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, SPACES_AROUND_POWER_OPERATOR: True}'))
       unformatted_code = textwrap.dedent("""\
           a**b
           """)

@@ -119,8 +119,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     self.assertEqual(
-        sorted(file_resources.GetCommandLineFiles(
-            [self.test_tmpdir], recursive=True, exclude=None)),
+        sorted(
+            file_resources.GetCommandLineFiles(
+                [self.test_tmpdir], recursive=True, exclude=None)),
         sorted(files))
 
   def test_recursive_find_in_dir_with_exclude(self):
@@ -133,8 +134,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     self.assertEqual(
-        sorted(file_resources.GetCommandLineFiles(
-            [self.test_tmpdir], recursive=True, exclude=['*test*3.py'])),
+        sorted(
+            file_resources.GetCommandLineFiles(
+                [self.test_tmpdir], recursive=True, exclude=['*test*3.py'])),
         sorted([os.path.join(tdir1, 'testfile1.py'),
                 os.path.join(tdir2, 'testfile2.py')]))
 

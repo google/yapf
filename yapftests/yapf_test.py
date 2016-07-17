@@ -456,7 +456,8 @@ class CommandLineTest(unittest.TestCase):
         """)
 
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
-      f.write(textwrap.dedent('''\
+      f.write(
+          textwrap.dedent('''\
           [style]
           based_on_style = chromium
           SPACES_BEFORE_COMMENT = 4
@@ -999,7 +1000,8 @@ second_argument_makes_the_line_too_long):
        })
        """)
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
-      f.write(textwrap.dedent('''\
+      f.write(
+          textwrap.dedent('''\
           [style]
           based_on_style = facebook
           column_limit=82
@@ -1093,7 +1095,8 @@ second_argument_makes_the_line_too_long):
         		pass
         """)
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
-      f.write(textwrap.dedent('''\
+      f.write(
+          textwrap.dedent('''\
           [style]
           based_on_style = chromium
           USE_TABS = true

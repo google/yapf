@@ -256,11 +256,12 @@ def _GetUnifiedDiff(before, after, filename='code'):
   """
   before = before.splitlines()
   after = after.splitlines()
-  return '\n'.join(difflib.unified_diff(
-      before,
-      after,
-      filename,
-      filename,
-      '(original)',
-      '(reformatted)',
-      lineterm='')) + '\n'
+  return '\n'.join(
+      difflib.unified_diff(
+          before,
+          after,
+          filename,
+          filename,
+          '(original)',
+          '(reformatted)',
+          lineterm='')) + '\n'

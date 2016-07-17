@@ -232,21 +232,21 @@ class FormatDecisionState(object):
     previous_previous_token = previous.previous_token
     if (current.is_name and previous_previous_token and
         previous_previous_token.is_name and previous.value == '('):
-      sibling = previous.node.next_sibling
-      if pytree_utils.NodeName(sibling) == 'arglist':
-        arglist = previous.node.next_sibling
-        if len(arglist.children) > 2:
-          if _IsFunctionCallWithArguments(current):
-            # There is a function call, with more than 1 argument, where
-            # the first argument is itself a function call with arguments.
-            # In this specific case, if we split after the first argument's
-            # opening '(', then the formatting will look bad for the rest
-            # of the arguments. Instead, enforce a split before that
-            # argument to keep things looking good.
-            return True
-          elif (current.OpensScope() and
-                current.matching_bracket.total_length + self.column >
-                column_limit):
+      arg_length = previous.matching_bracket.total_length
+      arg_length -= previous.total_length
+      if arg_length + self.column > column_limit:
+        if _IsFunctionCallWithArguments(current):
+          # There is a function call, with more than 1 argument, where
+          # the first argument is itself a function call with arguments.
+          # In this specific case, if we split after the first argument's
+          # opening '(', then the formatting will look bad for the rest
+          # of the arguments. Instead, enforce a split before that
+          # argument to keep things looking good.
+          return True
+        elif current.OpensScope():
+          arg_length = current.matching_bracket.total_length
+          arg_length -= current.total_length
+          if arg_length + self.column > column_limit:
             # There is a data literal that will need to be split and could mess
             # up the formatting.
             return True

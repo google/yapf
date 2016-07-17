@@ -10,7 +10,7 @@
 
 ### Changed
 - We split all of the arguments to a function call if there's a named argument.
-  In this case, we want to split before the opening bracket too. This makes
+  In this case, we want to split after the opening bracket too. This makes
   things look a bit better.
 
 ### Fixed
