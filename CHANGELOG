@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.11.0] UNRELEASED
+## [0.11.0] 2016-07-17
 ### Added
 - The COALESCE_BRACKETS knob prevents splitting consecutive brackets when
   DEDENT_CLOSING_BRACKETS is set.
