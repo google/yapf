@@ -1605,7 +1605,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           style.CreateStyleFromConfig(
               '{based_on_style: pep8, indent_width: 2, '
               'continuation_indent_width: 4, indent_dictionary_value: True, '
-              'dedent_closing_brackets: True, split_before_named_assigns: False}'))
+              'dedent_closing_brackets: True, '
+              'split_before_named_assigns: False}'))
       code = textwrap.dedent("""\
           a_very_long_function_name(
               long_argument_name_1=1,
@@ -2144,8 +2145,8 @@ class BuganizerFixes(ReformatterTest):
   def testB20016122(self):
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig(
-              '{based_on_style: chromium, SPLIT_BEFORE_LOGICAL_OPERATOR: True}'))
+          style.CreateStyleFromConfig('{based_on_style: chromium, '
+                                      'SPLIT_BEFORE_LOGICAL_OPERATOR: True}'))
       code = textwrap.dedent("""\
           class foo():
 

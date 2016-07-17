@@ -33,6 +33,7 @@ def SpliceContinuations(tree):
   """
 
   def RecSplicer(node):
+    """Inserts a continuation marker into the node."""
     if isinstance(node, pytree.Leaf):
       if node.prefix.lstrip().startswith('\\\n'):
         new_lineno = node.lineno - node.prefix.count('\n')
