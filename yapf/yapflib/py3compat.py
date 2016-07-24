@@ -82,12 +82,15 @@ def EncodeAndWriteToStdout(s, encoding):
     sys.stdout.write(s.encode(encoding))
 
 
-def unicode(s):
+def unicode(s, encoding):
   """Force conversion of s to unicode."""
+
   if PY3:
     return s
   else:
-    return __builtin__.unicode(s, 'utf-8')
+    if isinstance(s, __builtin__.unicode):
+        return s
+    return __builtin__.unicode(s, encoding)
 
 
 def stdin():

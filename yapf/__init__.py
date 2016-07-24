@@ -157,12 +157,12 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     reformatted_source, changed = yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(original_source) + '\n'),
+        py3compat.unicode('\n'.join(original_source) + '\n', encoding),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    sys.stdout.write(reformatted_source)
+    py3compat.EncodeAndWriteToStdout(reformatted_source, encoding)
     return 2 if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
