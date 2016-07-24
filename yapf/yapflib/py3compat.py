@@ -89,7 +89,7 @@ def unicode(s, encoding):
     return s
   else:
     if isinstance(s, __builtin__.unicode):
-        return s
+      return s
     return __builtin__.unicode(s, encoding)
 
 

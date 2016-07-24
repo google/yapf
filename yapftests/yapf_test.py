@@ -319,7 +319,11 @@ class CommandLineTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
-  def assertYapfReformats(self, unformatted, expected, extra_options=None, encoding="utf-8"):
+  def assertYapfReformats(self,
+                          unformatted,
+                          expected,
+                          extra_options=None,
+                          encoding="utf-8"):
     """Check that yapf reformats the given code as expected.
 
     Invokes yapf in a subprocess, piping the unformatted code into its stdin.
@@ -331,10 +335,11 @@ class CommandLineTest(unittest.TestCase):
       extra_options: iterable of extra command-line options to pass to yapf
     """
     cmdline = YAPF_BINARY + (extra_options or [])
-    p = subprocess.Popen(cmdline,
-                         stdout=subprocess.PIPE,
-                         stdin=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+    p = subprocess.Popen(
+        cmdline,
+        stdout=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        stderr=subprocess.PIPE)
     reformatted_code, stderrdata = p.communicate(unformatted.encode(encoding))
     self.assertEqual(stderrdata, b'')
     self.assertEqual(reformatted_code.decode(encoding), expected)
@@ -443,7 +448,8 @@ class CommandLineTest(unittest.TestCase):
             # 中文
             x = 37
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code, encoding=stdin_encoding)
+    self.assertYapfReformats(
+        unformatted_code, expected_formatted_code, encoding=stdin_encoding)
 
   def testSetChromiumStyle(self):
     unformatted_code = textwrap.dedent(u"""\
