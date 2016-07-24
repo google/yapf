@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ follows that there can only be at most two lines to join.
 from yapf.yapflib import style
 
 _CLASS_OR_FUNC = frozenset({'def', 'class'})
-_COMPOUND_STMT = frozenset({'def', 'class', 'if', 'for', 'with', 'while'})
 
 
 def CanMergeMultipleLines(lines, last_was_merged=False):
@@ -104,10 +103,7 @@ def _CanMergeLineIntoIfStatement(lines, limit):
   if lines[0].lineno != lines[1].lineno:
     # Don't merge lines if the original lines weren't merged.
     return False
-  if lines[1].is_comment:
-    return False
   if lines[1].last.total_length >= limit:
+    # Don't merge lines if the result goes over the column limit.
     return False
-  if lines[1].first.value in _COMPOUND_STMT:
-    return False
-  return True
+  return style.Get('JOIN_MULTIPLE_LINES')

@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ Annotations:
 
 from lib2to3 import pytree
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
@@ -32,10 +33,11 @@ _ONE_BLANK_LINE = 2
 _TWO_BLANK_LINES = 3
 
 _PYTHON_STATEMENTS = frozenset({
-    'simple_stmt', 'small_stmt', 'expr_stmt', 'print_stmt', 'del_stmt',
-    'pass_stmt', 'break_stmt', 'continue_stmt', 'return_stmt', 'raise_stmt',
-    'yield_stmt', 'import_stmt', 'global_stmt', 'exec_stmt', 'assert_stmt',
-    'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt'
+    'small_stmt', 'expr_stmt', 'print_stmt', 'del_stmt', 'pass_stmt',
+    'break_stmt', 'continue_stmt', 'return_stmt', 'raise_stmt', 'yield_stmt',
+    'import_stmt', 'global_stmt', 'exec_stmt', 'assert_stmt', 'if_stmt',
+    'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt', 'nonlocal_stmt',
+    'async_stmt', 'simple_stmt'
 })
 
 
@@ -77,6 +79,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_was_decorator = True
 
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
+    self.last_was_class_or_function = False
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
     self.last_was_decorator = False
     self.class_level += 1
@@ -86,7 +89,14 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_was_class_or_function = True
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
+    self.last_was_class_or_function = False
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
+    if _AsyncFunction(node):
+      # Move the number of blank lines to the async keyword.
+      num_newlines = pytree_utils.GetNodeAnnotation(
+          node.children[0], pytree_utils.Annotation.NEWLINES)
+      self._SetNumNewlines(node.prev_sibling, num_newlines)
+      self._SetNumNewlines(node.children[0], None)
     self.last_was_decorator = False
     self.function_level += 1
     for child in node.children[index:]:
@@ -154,7 +164,17 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
   def _IsTopLevel(self, node):
     return (not (self.class_level or self.function_level) and
-            _GetFirstChildLeaf(node).column == 0)
+            _StartsInZerothColumn(node))
+
+
+def _StartsInZerothColumn(node):
+  return (_GetFirstChildLeaf(node).column == 0 or
+          (_AsyncFunction(node) and node.prev_sibling.column == 0))
+
+
+def _AsyncFunction(node):
+  return (py3compat.PY3 and node.prev_sibling and
+          pytree_utils.NodeName(node.prev_sibling) == 'ASYNC')
 
 
 def _GetFirstChildLeaf(node):

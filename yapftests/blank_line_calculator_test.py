@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """Tests for yapf.blank_line_calculator."""
 
+import difflib
 import sys
 import textwrap
 import unittest
@@ -30,6 +31,34 @@ from yapf.yapflib import subtype_assigner
 
 class BlankLineCalculatorTest(unittest.TestCase):
 
+  def assertCodeEqual(self, expected_code, code):
+    if code != expected_code:
+      msg = ['Code format mismatch:', 'Expected:']
+      linelen = style.Get('COLUMN_LIMIT')
+      for l in expected_code.splitlines():
+        if len(l) > linelen:
+          msg.append('!> %s' % l)
+        else:
+          msg.append(' > %s' % l)
+      msg.append('Actual:')
+      for l in code.splitlines():
+        if len(l) > linelen:
+          msg.append('!> %s' % l)
+        else:
+          msg.append(' > %s' % l)
+      msg.append('Diff:')
+      msg.extend(
+          difflib.unified_diff(
+              code.splitlines(),
+              expected_code.splitlines(),
+              fromfile='actual',
+              tofile='expected',
+              lineterm=''))
+      self.fail('\n'.join(msg))
+
+
+class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
+
   def testDecorators(self):
     unformatted_code = textwrap.dedent("""\
         @bork()
@@ -43,7 +72,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
           pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testComplexDecorators(self):
     unformatted_code = textwrap.dedent("""\
@@ -79,7 +108,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
             pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCodeAfterFunctionsAndClasses(self):
     unformatted_code = textwrap.dedent("""\
@@ -124,7 +153,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
           pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCommentSpacing(self):
     unformatted_code = textwrap.dedent("""\
@@ -189,7 +218,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
             pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCommentBeforeMethod(self):
     code = textwrap.dedent("""\
@@ -200,7 +229,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
             pass
         """)
     uwlines = _ParseAndUnwrap(code)
-    self.assertEqual(code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentsBeforeClassDefs(self):
     code = textwrap.dedent('''\
@@ -213,7 +242,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
           pass
         ''')
     uwlines = _ParseAndUnwrap(code)
-    self.assertEqual(code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testComemntsBeforeDecorator(self):
     code = textwrap.dedent("""\
@@ -223,7 +252,7 @@ class BlankLineCalculatorTest(unittest.TestCase):
           pass
         """)
     uwlines = _ParseAndUnwrap(code)
-    self.assertEqual(code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
         # Hello world
@@ -234,7 +263,31 @@ class BlankLineCalculatorTest(unittest.TestCase):
           pass
         """)
     uwlines = _ParseAndUnwrap(code)
-    self.assertEqual(code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testInnerClasses(self):
+    unformatted_code = textwrap.dedent("""\
+      class DeployAPIClient(object):
+          class Error(Exception): pass
+
+          class TaskValidationError(Error): pass
+
+          class DeployAPIHTTPError(Error): pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      class DeployAPIClient(object):
+
+        class Error(Exception):
+          pass
+
+        class TaskValidationError(Error):
+          pass
+
+        class DeployAPIHTTPError(Error):
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
 def _ParseAndUnwrap(code, dumptree=False):

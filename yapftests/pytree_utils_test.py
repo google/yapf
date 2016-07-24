@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,6 +67,12 @@ class ParseCodeToTreeTest(unittest.TestCase):
     self.assertEqual('file_input', pytree_utils.NodeName(tree))
     self.assertEqual(2, len(tree.children))
     self.assertEqual('simple_stmt', pytree_utils.NodeName(tree.children[0]))
+
+  def testClassNotLocal(self):
+    tree = pytree_utils.ParseCodeToTree('class nonlocal: pass\n')
+    self.assertEqual('file_input', pytree_utils.NodeName(tree))
+    self.assertEqual(2, len(tree.children))
+    self.assertEqual('classdef', pytree_utils.NodeName(tree.children[0]))
 
 
 class InsertNodesBeforeAfterTest(unittest.TestCase):
@@ -169,11 +175,26 @@ class AnnotationsTest(unittest.TestCase):
     pytree_utils.SetNodeAnnotation(self._leaf, _FOO4, 4)
     pytree_utils.SetNodeAnnotation(self._leaf, _FOO5, 5)
 
+    self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO), 20)
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO1), 1)
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO2), 2)
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO3), 3)
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO4), 4)
     self.assertEqual(pytree_utils.GetNodeAnnotation(self._leaf, _FOO5), 5)
+
+  def testSubtype(self):
+    pytree_utils.AppendNodeAnnotation(self._leaf,
+                                      pytree_utils.Annotation.SUBTYPE, _FOO)
+
+    self.assertSetEqual(
+        pytree_utils.GetNodeAnnotation(self._leaf,
+                                       pytree_utils.Annotation.SUBTYPE), {_FOO})
+
+    pytree_utils.RemoveSubtypeAnnotation(self._leaf, _FOO)
+
+    self.assertSetEqual(
+        pytree_utils.GetNodeAnnotation(self._leaf,
+                                       pytree_utils.Annotation.SUBTYPE), set())
 
   def testSetOnNode(self):
     pytree_utils.SetNodeAnnotation(self._node, _FOO, 20)

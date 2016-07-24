@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ These APIs have some common arguments:
 """
 
 import difflib
-import logging
 import re
 import sys
 
@@ -42,6 +41,7 @@ from lib2to3.pgen2 import tokenize
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
+from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -55,28 +55,46 @@ def FormatFile(filename,
                style_config=None,
                lines=None,
                print_diff=False,
-               verify=True):
+               verify=True,
+               in_place=False,
+               logger=None):
   """Format a single Python file and return the formatted code.
 
   Arguments:
     filename: (unicode) The file to reformat.
+    in_place: (bool) If True, write the reformatted code back to the file.
+    logger: (io streamer) A stream to output logging.
     remaining arguments: see comment at the top of this module.
 
   Returns:
-    Pair of reformatted_code, encoding. reformatted_code is None if the file
-    doesn't exist.
+    Tuple of (reformatted_code, encoding, changed). reformatted_code is None if
+    the file is sucessfully written to (having used in_place). reformatted_code
+    is a diff if print_diff is True.
+
+  Raises:
+    IOError: raised if there was an error reading the file.
+    ValueError: raised if in_place and print_diff are both specified.
   """
   _CheckPythonVersion()
-  original_source, encoding = ReadFile(filename, logging.warning)
-  if original_source is None:
-    return None, encoding
 
-  return FormatCode(original_source,
-                    style_config=style_config,
-                    filename=filename,
-                    lines=lines,
-                    print_diff=print_diff,
-                    verify=verify), encoding
+  if in_place and print_diff:
+    raise ValueError('Cannot pass both in_place and print_diff.')
+
+  original_source, encoding = ReadFile(filename, logger)
+  reformatted_source, changed = FormatCode(
+      original_source,
+      style_config=style_config,
+      filename=filename,
+      lines=lines,
+      print_diff=print_diff,
+      verify=verify)
+  if in_place:
+    if original_source and original_source != reformatted_source:
+      file_resources.WriteReformattedCode(filename, reformatted_source,
+                                          in_place, encoding)
+    return None, encoding, changed
+
+  return reformatted_source, encoding, changed
 
 
 def FormatCode(unformatted_source,
@@ -95,7 +113,8 @@ def FormatCode(unformatted_source,
     remaining arguments: see comment at the top of this module.
 
   Returns:
-    The code reformatted to conform to the desired formatting style.
+    Tuple of (reformatted_source, changed). reformatted_source conforms to the
+    desired formatting style. changed is True if the source changed.
   """
   _CheckPythonVersion()
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
@@ -118,18 +137,18 @@ def FormatCode(unformatted_source,
   reformatted_source = reformatter.Reformat(uwlines, verify)
 
   if unformatted_source == reformatted_source:
-    return '' if print_diff else reformatted_source
+    return '' if print_diff else reformatted_source, False
 
-  code_diff = _GetUnifiedDiff(unformatted_source, reformatted_source,
-                              filename=filename)
+  code_diff = _GetUnifiedDiff(
+      unformatted_source, reformatted_source, filename=filename)
 
   if print_diff:
-    return code_diff
+    return code_diff, code_diff != ''
 
-  return reformatted_source
+  return reformatted_source, True
 
 
-def _CheckPythonVersion():
+def _CheckPythonVersion():  # pragma: no cover
   errmsg = 'yapf is only supported for Python 2.7 or 3.4+'
   if sys.version_info[0] == 2:
     if sys.version_info[1] < 7:
@@ -154,7 +173,7 @@ def ReadFile(filename, logger=None):
     The contents of filename.
 
   Raises:
-    IOError: raised during an error if a logger is not specified.
+    IOError: raised if there was an error reading the file.
   """
   try:
     with open(filename, 'rb') as fd:
@@ -165,11 +184,11 @@ def ReadFile(filename, logger=None):
     raise
 
   try:
-    with py3compat.open_with_encoding(filename, mode='r',
-                                      encoding=encoding) as fd:
+    with py3compat.open_with_encoding(
+        filename, mode='r', encoding=encoding) as fd:
       source = fd.read()
     return source, encoding
-  except IOError as err:
+  except IOError as err:  # pragma: no cover
     if logger:
       logger(err)
     raise
@@ -191,23 +210,37 @@ def _MarkLinesToFormat(uwlines, lines):
           break
         if uwline.lineno >= start:
           uwline.disable = False
+        elif uwline.last.lineno >= start:
+          uwline.disable = False
 
   index = 0
   while index < len(uwlines):
     uwline = uwlines[index]
     if uwline.is_comment:
-      if re.search(DISABLE_PATTERN, uwline.first.value.strip(), re.IGNORECASE):
+      if _DisableYAPF(uwline.first.value.strip()):
         while index < len(uwlines):
           uwline = uwlines[index]
           uwline.disable = True
-          if (uwline.is_comment and
-              re.search(ENABLE_PATTERN, uwline.first.value.strip(),
-                        re.IGNORECASE)):
+          if uwline.is_comment and _EnableYAPF(uwline.first.value.strip()):
             break
           index += 1
     elif re.search(DISABLE_PATTERN, uwline.last.value.strip(), re.IGNORECASE):
       uwline.disable = True
     index += 1
+
+
+def _DisableYAPF(line):
+  return (re.search(DISABLE_PATTERN, line.split('\n')[0].strip(),
+                    re.IGNORECASE) or re.search(DISABLE_PATTERN,
+                                                line.split('\n')[-1].strip(),
+                                                re.IGNORECASE))
+
+
+def _EnableYAPF(line):
+  return (re.search(ENABLE_PATTERN, line.split('\n')[0].strip(),
+                    re.IGNORECASE) or re.search(ENABLE_PATTERN,
+                                                line.split('\n')[-1].strip(),
+                                                re.IGNORECASE))
 
 
 def _GetUnifiedDiff(before, after, filename='code'):
@@ -223,6 +256,12 @@ def _GetUnifiedDiff(before, after, filename='code'):
   """
   before = before.splitlines()
   after = after.splitlines()
-  return '\n'.join(difflib.unified_diff(before, after, filename, filename,
-                                        '(original)', '(reformatted)',
-                                        lineterm='')) + '\n'
+  return '\n'.join(
+      difflib.unified_diff(
+          before,
+          after,
+          filename,
+          filename,
+          '(original)',
+          '(reformatted)',
+          lineterm='')) + '\n'

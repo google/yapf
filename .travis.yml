@@ -1,14 +1,27 @@
 language: python
 
 python:
-  - "2.7"
-  - "3.4"
+  - 2.7
+  - 3.4
+  - 3.5
+  - nightly
+
+matrix:
+  allow_failures:
+    - python: nightly
+  include:
+    - python: 2.7
+      env: SCA=true
+    - python: 3.5
+      env: SCA=true
 
 install:
-  - pip install --quiet coveralls
+  - if [ -z "$SCA" ]; then pip install --quiet coveralls; else echo skip; fi
+  - if [ -n "$SCA" ]; then python setup.py develop; else echo skip; fi
 
 script:
-  - nosetests --with-coverage --cover-package=yapf
+  - if [ -n "$SCA" ]; then yapf --diff --recursive . || exit; else echo skip; fi
+  - if [ -z "$SCA" ]; then nosetests --with-coverage --cover-package=yapf; else echo skip; fi
 
 after_success:
   - coveralls

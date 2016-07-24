@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 """Tests for yapf.yapf."""
 
 import io
+import logging
 import os
 import shutil
 import subprocess
@@ -23,6 +24,7 @@ import tempfile
 import textwrap
 import unittest
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
@@ -34,8 +36,8 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code = yapf_api.FormatCode(unformatted_code,
-                                         style_config='chromium')
+    formatted_code, _ = yapf_api.FormatCode(
+        unformatted_code, style_config='chromium')
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -46,9 +48,11 @@ class FormatCodeTest(unittest.TestCase):
 
   def testNoEndingNewline(self):
     unformatted_code = textwrap.dedent(u"""\
-        if True: pass""")
+        if True:
+          pass""")
     expected_formatted_code = textwrap.dedent(u"""\
-        if True: pass
+        if True:
+          pass
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
@@ -145,6 +149,50 @@ class FormatFileTest(unittest.TestCase):
     formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
     self.assertCodeEqual(expected_formatted_code, formatted_code)
 
+  def testDisablePartOfMultilineComment(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        # This is a multiline comment that disables YAPF.
+        # yapf: disable
+        if f:    g
+        # yapf: enable
+        # This is a multiline comment that enables YAPF.
+
+        if h:    i
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+        # This is a multiline comment that disables YAPF.
+        # yapf: disable
+        if f:    g
+        # yapf: enable
+        # This is a multiline comment that enables YAPF.
+
+        if h: i
+        """)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
+
+    code = textwrap.dedent("""\
+      def foo_function():
+          # some comment
+          # yapf: disable
+
+          foo(
+          bar,
+          baz
+          )
+
+          # yapf: enable
+      """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
   def testFormatFileLinesSelection(self):
     unformatted_code = textwrap.dedent(u"""\
         if a:    b
@@ -162,8 +210,8 @@ class FormatFileTest(unittest.TestCase):
 
         if h:    i
         """)
-    formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
-                                         lines=[(1, 2)])[0]
+    formatted_code = yapf_api.FormatFile(
+        file1, style_config='pep8', lines=[(1, 2)])[0]
     self.assertCodeEqual(expected_formatted_code_lines1and2, formatted_code)
 
     expected_formatted_code_lines3 = textwrap.dedent(u"""\
@@ -173,8 +221,8 @@ class FormatFileTest(unittest.TestCase):
 
         if h:    i
         """)
-    formatted_code = yapf_api.FormatFile(file1, style_config='pep8',
-                                         lines=[(3, 3)])[0]
+    formatted_code = yapf_api.FormatFile(
+        file1, style_config='pep8', lines=[(3, 3)])[0]
     self.assertCodeEqual(expected_formatted_code_lines3, formatted_code)
 
   def testFormatFileDiff(self):
@@ -185,6 +233,79 @@ class FormatFileTest(unittest.TestCase):
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
     diff = yapf_api.FormatFile(file1, print_diff=True)[0]
     self.assertTrue(u'+    pass' in diff)
+
+  def testFormatFileInPlace(self):
+    unformatted_code = 'True==False\n'
+    formatted_code = 'True == False\n'
+    file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+    result, _, _ = yapf_api.FormatFile(file1, in_place=True)
+    self.assertEqual(result, None)
+    with open(file1) as f:
+      self.assertCodeEqual(formatted_code, f.read())
+
+    self.assertRaises(
+        ValueError, yapf_api.FormatFile, file1, in_place=True, print_diff=True)
+
+  def testNoFile(self):
+    stream = py3compat.StringIO()
+    handler = logging.StreamHandler(stream)
+    logger = logging.getLogger('mylogger')
+    logger.addHandler(handler)
+    self.assertRaises(
+        IOError, yapf_api.FormatFile, 'not_a_file.py', logger=logger.error)
+    self.assertEqual(stream.getvalue(),
+                     "[Errno 2] No such file or directory: 'not_a_file.py'\n")
+
+  def testCommentsUnformatted(self):
+    code = textwrap.dedent("""\
+        foo = [# A list of things
+               # bork
+            'one',
+            # quark
+            'two'] # yapf: disable
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
+  def testDisabledHorizontalFormattingOnNewLine(self):
+    code = textwrap.dedent("""\
+        # yapf: disable
+        a = [
+        1]
+        # yapf: enable
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
+  def testDisabledSemiColonSeparatedStatements(self):
+    code = textwrap.dedent("""\
+        # yapf: disable
+        if True: a ; b
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='pep8')[0]
+    self.assertCodeEqual(code, formatted_code)
+
+  def testDisabledMultilineStringInDictionary(self):
+    code = textwrap.dedent("""\
+        # yapf: disable
+
+        A = [
+            {
+                "aaaaaaaaaaaaaaaaaaa": '''
+        bbbbbbbbbbb: "ccccccccccc"
+        dddddddddddddd: 1
+        eeeeeeee: 0
+        ffffffffff: "ggggggg"
+        ''',
+            },
+        ]
+        """)
+    file1 = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code = yapf_api.FormatFile(file1, style_config='chromium')[0]
+    self.assertCodeEqual(code, formatted_code)
 
 
 class CommandLineTest(unittest.TestCase):
@@ -224,13 +345,13 @@ class CommandLineTest(unittest.TestCase):
             print('⇒')
         """)
 
-    with tempfile.NamedTemporaryFile(suffix='.py',
-                                     dir=self.test_tmpdir) as outfile:
-      with tempfile.NamedTemporaryFile(suffix='.py',
-                                       dir=self.test_tmpdir) as testfile:
+    with tempfile.NamedTemporaryFile(
+        suffix='.py', dir=self.test_tmpdir) as outfile:
+      with tempfile.NamedTemporaryFile(
+          suffix='.py', dir=self.test_tmpdir) as testfile:
         testfile.write(unformatted_code.encode('UTF-8'))
-        subprocess.check_call(YAPF_BINARY + ['--diff', testfile.name],
-                              stdout=outfile)
+        subprocess.check_call(
+            YAPF_BINARY + ['--diff', testfile.name], stdout=outfile)
 
   def testInPlaceReformatting(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -242,8 +363,8 @@ class CommandLineTest(unittest.TestCase):
             x = 37
         """)
 
-    with tempfile.NamedTemporaryFile(suffix='.py',
-                                     dir=self.test_tmpdir) as testfile:
+    with tempfile.NamedTemporaryFile(
+        suffix='.py', dir=self.test_tmpdir) as testfile:
       testfile.write(unformatted_code.encode('UTF-8'))
       testfile.seek(0)
 
@@ -259,8 +380,25 @@ class CommandLineTest(unittest.TestCase):
     unformatted_code = u'\n\n'
     expected_formatted_code = u'\n'
 
-    with tempfile.NamedTemporaryFile(suffix='.py',
-                                     dir=self.test_tmpdir) as testfile:
+    with tempfile.NamedTemporaryFile(
+        suffix='.py', dir=self.test_tmpdir) as testfile:
+      testfile.write(unformatted_code.encode('UTF-8'))
+      testfile.seek(0)
+
+      p = subprocess.Popen(YAPF_BINARY + ['--in-place', testfile.name])
+      p.wait()
+
+      with io.open(testfile.name, mode='r', newline='') as fd:
+        reformatted_code = fd.read()
+
+    self.assertEqual(reformatted_code, expected_formatted_code)
+
+  def testInPlaceReformattingEmpty(self):
+    unformatted_code = u''
+    expected_formatted_code = u''
+
+    with tempfile.NamedTemporaryFile(
+        suffix='.py', dir=self.test_tmpdir) as testfile:
       testfile.write(unformatted_code.encode('UTF-8'))
       testfile.seek(0)
 
@@ -316,8 +454,10 @@ class CommandLineTest(unittest.TestCase):
         def foo():  # trail
           x = 37
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--style=chromium'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--style=chromium'])
 
   def testSetCustomStyleBasedOnChromium(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -330,14 +470,17 @@ class CommandLineTest(unittest.TestCase):
         """)
 
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
-      f.write(textwrap.dedent('''\
+      f.write(
+          textwrap.dedent('''\
           [style]
           based_on_style = chromium
           SPACES_BEFORE_COMMENT = 4
           '''))
       f.flush()
-      self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                               extra_options=['--style={0}'.format(f.name)])
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(f.name)])
 
   def testReadSingleLineCodeFromStdin(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -356,13 +499,13 @@ class CommandLineTest(unittest.TestCase):
             x = 37
         """)
 
-    with tempfile.NamedTemporaryFile(suffix='.py',
-                                     dir=self.test_tmpdir) as outfile:
-      with tempfile.NamedTemporaryFile(suffix='.py',
-                                       dir=self.test_tmpdir) as testfile:
+    with tempfile.NamedTemporaryFile(
+        suffix='.py', dir=self.test_tmpdir) as outfile:
+      with tempfile.NamedTemporaryFile(
+          suffix='.py', dir=self.test_tmpdir) as testfile:
         testfile.write(unformatted_code.encode('utf-8'))
-        subprocess.check_call(YAPF_BINARY + ['--diff', testfile.name],
-                              stdout=outfile)
+        subprocess.check_call(
+            YAPF_BINARY + ['--diff', testfile.name], stdout=outfile)
 
   def testReformattingSpecificLines(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -378,7 +521,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
 
@@ -386,8 +529,13 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '1-2'])
+    # TODO(ambv): the `expected_formatted_code` here is not PEP8 compliant,
+    # raising "E129 visually indented line with same indent as next logical
+    # line" with flake8.
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-2'])
 
   def testReformattingSkippingLines(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -404,7 +552,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
 
@@ -437,7 +585,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
 
@@ -468,7 +616,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
 
@@ -521,7 +669,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
 
@@ -531,7 +679,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
-  def testREtainingVerticalWhitespace(self):
+  def testRetainingVerticalWhitespace(self):
     unformatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
@@ -547,7 +695,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent(u"""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
 
         def g():
@@ -557,8 +705,10 @@ class CommandLineTest(unittest.TestCase):
 
                 pass
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '1-2'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-2'])
 
     unformatted_code = textwrap.dedent(u"""\
 
@@ -592,9 +742,10 @@ class CommandLineTest(unittest.TestCase):
 
         #   trailing whitespace
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '3-3',
-                                            '--lines', '13-13'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '3-3', '--lines', '13-13'])
 
     unformatted_code = textwrap.dedent(u"""\
         '''
@@ -605,8 +756,8 @@ class CommandLineTest(unittest.TestCase):
         import blah
         """)
 
-    self.assertYapfReformats(unformatted_code, unformatted_code,
-                             extra_options=['--lines', '2-2'])
+    self.assertYapfReformats(
+        unformatted_code, unformatted_code, extra_options=['--lines', '2-2'])
 
   def testRetainingSemicolonsWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent("""\
@@ -621,8 +772,10 @@ class CommandLineTest(unittest.TestCase):
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '1-1'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1'])
 
   def testDisabledMultilineStrings(self):
     unformatted_code = textwrap.dedent('''\
@@ -639,14 +792,16 @@ class CommandLineTest(unittest.TestCase):
         foo = 42
         def f():
             email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
-        <b>Czar: </b>""" + despot["Nicholas"] + """<br>
-        <b>Minion: </b>""" + serf["Dmitri"] + """<br>
-        <b>Residence: </b>""" + palace["Winter"] + """<br>
+        <b>Czar: </b>"""+despot["Nicholas"]+"""<br>
+        <b>Minion: </b>"""+serf["Dmitri"]+"""<br>
+        <b>Residence: </b>"""+palace["Winter"]+"""<br>
         </body>
         </html>"""
         ''')
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '1-1'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1'])
 
   def testDisableWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -673,8 +828,299 @@ class CommandLineTest(unittest.TestCase):
             'world',
         ])  # yapf: disable
         """)
-    self.assertYapfReformats(unformatted_code, expected_formatted_code,
-                             extra_options=['--lines', '1-10'])
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-10'])
+
+  def testDisableFormattingInDataLiteral(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def horrible():
+          oh_god()
+          why_would_you()
+          [
+             'do',
+
+              'that',
+          ]
+
+        def still_horrible():
+            oh_god()
+            why_would_you()
+            [
+                'do',
+
+                'that'
+            ]
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def horrible():
+            oh_god()
+            why_would_you()
+            [
+               'do',
+
+                'that',
+            ]
+
+        def still_horrible():
+            oh_god()
+            why_would_you()
+            ['do', 'that']
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '14-15'])
+
+  def testRetainVerticalFormattingBetweenDisabledAndEnabledLines(self):
+    unformatted_code = textwrap.dedent(u"""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
+                self.assertEqual(
+                    ('ddddddddddddddddddddddddd',
+             'eeeeeeeeeeeeeeeeeeeeeeeee.%s' %
+                     c.ffffffffffff),
+             gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                iiiii = jjjjjjjjjjjjjj.iiiii
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
+                self.assertEqual(('ddddddddddddddddddddddddd',
+                                  'eeeeeeeeeeeeeeeeeeeeeeeee.%s' % c.ffffffffffff),
+                                 gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                iiiii = jjjjjjjjjjjjjj.iiiii
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '4-7'])
+
+  def testFormatLinesSpecifiedInMiddleOfExpression(self):
+    unformatted_code = textwrap.dedent(u"""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
+                self.assertEqual(
+                    ('ddddddddddddddddddddddddd',
+             'eeeeeeeeeeeeeeeeeeeeeeeee.%s' %
+                     c.ffffffffffff),
+             gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                iiiii = jjjjjjjjjjjjjj.iiiii
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                c = bbbbbbbbb.ccccccccc('challenge', 0, 1, 10)
+                self.assertEqual(('ddddddddddddddddddddddddd',
+                                  'eeeeeeeeeeeeeeeeeeeeeeeee.%s' % c.ffffffffffff),
+                                 gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
+                iiiii = jjjjjjjjjjjjjj.iiiii
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '5-6'])
+
+  def testCommentFollowingMultilineString(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo():
+            '''First line.
+            Second line.
+            '''  # comment
+            x = '''hello world'''  # second comment
+            return 42  # another comment
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():
+            '''First line.
+            Second line.
+            '''  # comment
+            x = '''hello world'''  # second comment
+            return 42  # another comment
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1'])
+
+  def testDedentClosingBracket(self):
+    # no line-break on the first argument, not dedenting closing brackets
+    unformatted_code = textwrap.dedent(u"""\
+      def overly_long_function_name(first_argument_on_the_same_line,
+      second_argument_makes_the_line_too_long):
+        pass
+    """)
+    expected_formatted_code = textwrap.dedent(u"""\
+      def overly_long_function_name(first_argument_on_the_same_line,
+                                    second_argument_makes_the_line_too_long):
+          pass
+    """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--style=pep8'])
+
+    # TODO(ambv): currently the following produces the closing bracket on a new
+    # line but indented to the opening bracket which is the worst of both
+    # worlds. Expected behaviour would be to format as --style=pep8 does in
+    # this case.
+    # self.assertYapfReformats(unformatted_code, expected_formatted_code,
+    #                          extra_options=['--style=facebook'])
+
+    # line-break before the first argument, dedenting closing brackets if set
+    unformatted_code = textwrap.dedent(u"""\
+      def overly_long_function_name(
+        first_argument_on_the_same_line,
+        second_argument_makes_the_line_too_long):
+        pass
+    """)
+    expected_formatted_pep8_code = textwrap.dedent(u"""\
+      def overly_long_function_name(
+              first_argument_on_the_same_line, \
+second_argument_makes_the_line_too_long):
+          pass
+    """)
+    expected_formatted_fb_code = textwrap.dedent(u"""\
+      def overly_long_function_name(
+          first_argument_on_the_same_line, second_argument_makes_the_line_too_long
+      ):
+          pass
+    """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_fb_code,
+        extra_options=['--style=facebook'])
+    # TODO(ambv): currently the following produces code that is not PEP8
+    # compliant, raising "E125 continuation line with same indent as next
+    # logical line" with flake8. Expected behaviour for PEP8 would be to use
+    # double-indentation here.
+    # self.assertYapfReformats(unformatted_code, expected_formatted_pep8_code,
+    #                          extra_options=['--style=pep8'])
+
+  def testCoalesceBrackets(self):
+    unformatted_code = textwrap.dedent(u"""\
+       some_long_function_name_foo({
+           'first_argument_of_the_thing': id,
+           'second_argument_of_the_thing': "some thing"}
+           )""")
+    expected_formatted_code = textwrap.dedent(u"""\
+       some_long_function_name_foo({
+           'first_argument_of_the_thing': id,
+           'second_argument_of_the_thing': "some thing"
+       })
+       """)
+    with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
+      f.write(
+          textwrap.dedent('''\
+          [style]
+          based_on_style = facebook
+          column_limit=82
+          coalesce_brackets = True
+          '''))
+      f.flush()
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(f.name)])
+
+  def testPseudoParenSpaces(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo():
+          def bar():
+            return {msg_id: author for author, msg_id in reader}
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo():
+          def bar():
+            return {msg_id: author for author, msg_id in reader}
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1', '--style', 'chromium'])
+
+  def testMultilineCommentFormattingDisabled(self):
+    unformatted_code = textwrap.dedent(u"""\
+        # This is a comment
+        FOO = {
+            aaaaaaaa.ZZZ: [
+                bbbbbbbbbb.Pop(),
+                # Multiline comment.
+                # Line two.
+                bbbbbbbbbb.Pop(),
+            ],
+            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
+                ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
+            '#': lambda x: x  # do nothing
+        }
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        # This is a comment
+        FOO = {
+            aaaaaaaa.ZZZ: [
+                bbbbbbbbbb.Pop(),
+                # Multiline comment.
+                # Line two.
+                bbbbbbbbbb.Pop(),
+            ],
+            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx':
+                ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
+            '#': lambda x: x  # do nothing
+        }
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1', '--style', 'chromium'])
+
+  def testTrailingCommentsWithDisabledFormatting(self):
+    unformatted_code = textwrap.dedent(u"""\
+        import os
+
+        SCOPES = [
+            'hello world'  # This is a comment.
+        ]
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        import os
+
+        SCOPES = [
+            'hello world'  # This is a comment.
+        ]
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1', '--style', 'chromium'])
+
+  def testUseTabs(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def foo_function():
+         if True:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def foo_function():
+        	if True:
+        		pass
+        """)
+    with tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode='w') as f:
+      f.write(
+          textwrap.dedent('''\
+          [style]
+          based_on_style = chromium
+          USE_TABS = true
+          INDENT_WIDTH=1
+          '''))
+      f.flush()
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(f.name)])
 
 
 class BadInputTest(unittest.TestCase):

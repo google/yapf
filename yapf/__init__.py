@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.1.8'
+__version__ = '0.11.0'
 
 
 def main(argv):
@@ -49,51 +49,70 @@ def main(argv):
       in argv[0]).
 
   Returns:
-    0 if there were no errors, non-zero otherwise.
+    0 if there were no changes, non-zero otherwise.
 
   Raises:
     YapfError: if none of the supplied files were Python files.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
-  parser.add_argument('--version',
-                      action='store_true',
-                      help='show version number and exit')
-  parser.add_argument('--style-help',
-                      action='store_true',
-                      help='show style settings and exit')
+  parser.add_argument(
+      '-v',
+      '--version',
+      action='store_true',
+      help='show version number and exit')
+
+  diff_inplace_group = parser.add_mutually_exclusive_group()
+  diff_inplace_group.add_argument(
+      '-d',
+      '--diff',
+      action='store_true',
+      help='print the diff for the fixed source')
+  diff_inplace_group.add_argument(
+      '-i',
+      '--in-place',
+      action='store_true',
+      help='make changes to files in place')
+
+  lines_recursive_group = parser.add_mutually_exclusive_group()
+  lines_recursive_group.add_argument(
+      '-r',
+      '--recursive',
+      action='store_true',
+      help='run recursively over directories')
+  lines_recursive_group.add_argument(
+      '-l',
+      '--lines',
+      metavar='START-END',
+      action='append',
+      default=None,
+      help='range of lines to reformat, one-based')
+
+  parser.add_argument(
+      '-e',
+      '--exclude',
+      metavar='PATTERN',
+      action='append',
+      default=None,
+      help='patterns for files to exclude from formatting')
   parser.add_argument(
       '--style',
       action='store',
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. The '
-            'default is pep8 unless a %s file located in one of the parent '
-            'directories of the source file (or current directory for '
-            'stdin)' % style.LOCAL_STYLE))
-  parser.add_argument('--no-local-style',
-                      action='store_true',
-                      help=('Do not search for local style defintion (%s)' %
-                            style.LOCAL_STYLE))
-  parser.add_argument('--verify',
-                      action='store_true',
-                      help='try to verify reformatted code for syntax errors')
-  diff_inplace_group = parser.add_mutually_exclusive_group()
-  diff_inplace_group.add_argument('-d', '--diff',
-                                  action='store_true',
-                                  help='print the diff for the fixed source')
-  diff_inplace_group.add_argument('-i', '--in-place',
-                                  action='store_true',
-                                  help='make changes to files in place')
-
-  lines_recursive_group = parser.add_mutually_exclusive_group()
-  lines_recursive_group.add_argument(
-      '-l', '--lines',
-      metavar='START-END',
-      action='append',
-      default=None,
-      help='range of lines to reformat, one-based')
-  lines_recursive_group.add_argument('-r', '--recursive',
-                                     action='store_true',
-                                     help='run recursively over directories')
+            'default is pep8 unless a %s or %s file located in one of the '
+            'parent directories of the source file (or current directory for '
+            'stdin)' % (style.LOCAL_STYLE, style.SETUP_CONFIG)))
+  parser.add_argument(
+      '--style-help',
+      action='store_true',
+      help=('show style settings and exit; this output can be '
+            'saved to .style.yapf to make your settings '
+            'permanent'))
+  parser.add_argument(
+      '--no-local-style',
+      action='store_true',
+      help="don't search for local style definition")
+  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
@@ -104,10 +123,11 @@ def main(argv):
 
   if args.style_help:
     style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
+    print('[style]')
     for option, docstring in sorted(style.Help().items()):
-      print(option, '=', style.Get(option), sep='')
       for line in docstring.splitlines():
-        print('  ', line)
+        print('#', line)
+      print(option, '=', style.Get(option), sep='')
       print()
     return 0
 
@@ -118,7 +138,7 @@ def main(argv):
   if not args.files:
     # No arguments specified. Read code from stdin.
     if args.in_place or args.diff:
-      parser.error('cannot use --in_place or --diff flags when reading '
+      parser.error('cannot use --in-place or --diff flags when reading '
                    'from stdin')
 
     encoding, sys.stdin = py3compat.stdin()
@@ -144,19 +164,32 @@ def main(argv):
     py3compat.EncodeAndWriteToStdout(formatedCode, encoding)
     return 0
 
-  files = file_resources.GetCommandLineFiles(args.files, args.recursive)
+    reformatted_source, changed = yapf_api.FormatCode(
+        py3compat.unicode('\n'.join(original_source) + '\n'),
+        filename='<stdin>',
+        style_config=style_config,
+        lines=lines,
+        verify=args.verify)
+    sys.stdout.write(reformatted_source)
+    return 2 if changed else 0
+
+  files = file_resources.GetCommandLineFiles(args.files, args.recursive,
+                                             args.exclude)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
-  FormatFiles(files, lines,
-              style_config=args.style,
-              no_local_style=args.no_local_style,
-              in_place=args.in_place,
-              print_diff=args.diff,
-              verify=args.verify)
-  return 0
+  changed = FormatFiles(
+      files,
+      lines,
+      style_config=args.style,
+      no_local_style=args.no_local_style,
+      in_place=args.in_place,
+      print_diff=args.diff,
+      verify=args.verify)
+  return 2 if changed else 0
 
 
-def FormatFiles(filenames, lines,
+def FormatFiles(filenames,
+                lines,
                 style_config=None,
                 no_local_style=False,
                 in_place=False,
@@ -177,22 +210,33 @@ def FormatFiles(filenames, lines,
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
+
+  Returns:
+    True if the source code changed in any of the files being formatted.
   """
+  changed = False
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     if style_config is None and not no_local_style:
       style_config = (
           file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
     try:
-      reformatted_code, encoding = yapf_api.FormatFile(
-          filename, style_config=style_config, lines=lines,
-          print_diff=print_diff, verify=verify)
+      reformatted_code, encoding, has_change = yapf_api.FormatFile(
+          filename,
+          in_place=in_place,
+          style_config=style_config,
+          lines=lines,
+          print_diff=print_diff,
+          verify=verify,
+          logger=logging.warning)
+      if has_change and reformatted_code is not None:
+        file_resources.WriteReformattedCode(filename, reformatted_code,
+                                            in_place, encoding)
+      changed |= has_change
     except SyntaxError as e:
       e.filename = filename
       raise
-    if reformatted_code is not None:
-      file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
-                                          encoding)
+  return changed
 
 
 def _GetLines(line_strings):

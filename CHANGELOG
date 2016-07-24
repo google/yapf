@@ -1,0 +1,223 @@
+# Change Log
+# All notable changes to this project will be documented in this file.
+# This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [0.11.1] UNRELEASED
+### Fixed
+- Enforce splitting each element in a dictionary if comma terminated.
+
+## [0.11.0] 2016-07-17
+### Added
+- The COALESCE_BRACKETS knob prevents splitting consecutive brackets when
+  DEDENT_CLOSING_BRACKETS is set.
+- Don't count "pylint" directives as exceeding the column limit.
+
+### Changed
+- We split all of the arguments to a function call if there's a named argument.
+  In this case, we want to split after the opening bracket too. This makes
+  things look a bit better.
+
+### Fixed
+- When retaining format of a multiline string with Chromium style, make sure
+  that the multiline string doesn't mess up where the following comma ends up.
+- Correct for when 'lib2to3' smooshes comments together into the same DEDENT
+  node.
+
+## [0.10.0] 2016-06-14
+### Added
+- Add a knob, 'USE_TABS', to allow using tabs for indentation.
+
+### Changed
+- Performance enhancements.
+
+### Fixed
+- Don't split an import list if it's not surrounded by parentheses.
+
+## [0.9.0] 2016-05-29
+### Added
+- Added a knob (SPLIT_PENALTY_BEFORE_IF_EXPR) to adjust the split penalty
+  before an if expression. This allows the user to place a list comprehension
+  all on one line.
+- Added a knob (SPLIT_BEFORE_FIRST_ARGUMENT) that encourages splitting before
+  the first element of a list of arguments or parameters if they are going to
+  be split anyway.
+- Added a knob (SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED) splits arguments to a
+  function if the list is terminated by a comma.
+
+### Fixed
+- Don't split before a first element list argument as we would before a first
+  element function call.
+- Don't penalize when we must split a line.
+- Allow splitting before the single argument in a function call.
+
+## [0.8.2] 2016-05-21
+### Fixed
+- Prefer not to split after the opening of a subscript.
+- Don't add space before the 'await' keyword if it's preceded by an opening
+  paren.
+- When we're setting the split penalty for a continuous list, we don't want to
+  mistake a comment at the end of that list as part of the list.
+- When calculating blank lines, don't assume the last seen object was a class
+  or function when we're in a class or function.
+- Don't count the closing scope when determining if the current scope is the
+  last scope on the line.
+
+## [0.8.1] 2016-05-18
+### Fixed
+- 'SPLIT_BEFORE_LOGICAL_OPERATOR' wasn't working correctly. The penalty was
+  being set incorrectly when it was part of a larger construct.
+- Don't separate a keyword, like "await", from a left paren.
+- Don't rely upon the original tokens' line number to determine if we should
+  perform splitting in Facebook mode. The line number isn't the line number of
+  the reformatted token, but the line number where it was in the original code.
+  Instead, we need to carefully determine if the line is liabel to be split and
+  act accordingly.
+
+## [0.8.0] 2016-05-10
+### Added
+- Add a knob, 'SPACES_AROUND_POWER_OPERATOR', to allow adding spaces around the
+  power operator.
+
+### Fixed
+- There shouldn't be a space between a decorator and an intervening comment.
+- If we split before a bitwise operator, then we assume that the programmer
+  knows what they're doing, more or less, and so we enforce a split before said
+  operator if one exists in the original program.
+- Strengthen the bond between a keyword and value argument.
+- Don't add a blank line after a multiline string.
+- If the "for" part of a list comprehension can exist on the starting line
+  without going over the column limit, then let it remain there.
+
+## [0.7.1] 2016-04-21
+### Fixed
+- Don't rewrite the file if there are no changes.
+- Ensure the proper number of blank lines before an async function.
+- Split after a bitwise operator when in PEP 8 mode.
+- Retain the splitting within a dictionary data literal between the key and
+  value.
+- Try to keep short function calls all on one line even if they're part of a
+  larger series of tokens. This stops us from splitting too much.
+
+## [0.7.0] 2016-04-09
+### Added
+- Support for Python 3.5.
+- Add 'ALLOW_MULTILINE_LAMBDAS' which allows lambdas to be formatted onto
+  multiple lines.
+
+### Fixed
+- Lessen penalty for splitting before a dictionary keyword.
+- Formatting of trailing comments on disabled formatting lines.
+- Disable / enable formatting at end of multi-line comment.
+
+## [0.6.3] 2016-03-06
+### Changed
+- Documentation updated.
+
+### Fixed
+- Fix spacing of multiline comments when formatting is disabled.
+
+## [0.6.2] 2015-11-01
+### Changed
+- Look at the 'setup.cfg' file to see if it contains style information for
+  YAPF.
+- Look at the '~/.config/yapf/style' file to see if it contains global style
+  information for YAPF.
+
+### Fixed
+- Make lists that can fit on one line more likely to stay together.
+- Correct formatting of '*args' and '**kwargs' when there are default values in
+  the argument list.
+
+## [0.6.1] 2015-10-24
+### Fixed
+- Make sure to align comments in data literals correctly. Also make sure we
+  don't count a "#." in a string as an i18n comment.
+- Retain proper vertical spacing before comments in a data literal.
+- Make sure that continuations from a compound statement are distinguished from
+  the succeeding line.
+- Ignore preceding comments when calculating what is a "dictonary maker".
+- Add a small penalty for splitting before a closing bracket.
+- Ensure that a space is enforced after we remove a pseudo-paren that's between
+  two names, keywords, numbers, etc.
+- Increase the penalty for splitting after a pseudo-paren. This could lead to
+  less readable code in some circumstances.
+
+## [0.6.0] 2015-10-18
+### Added
+- Add knob to indent the dictionary value if there is a split before it.
+
+### Changed
+- No longer check that a file is a "Python" file unless the '--recursive' flag
+  is specified.
+- No longer allow the user to specify a directory unless the '--recursive' flag
+  is specified.
+
+### Fixed
+- When determining if we should split a dictionary's value to a new line, use
+  the longest entry instead of the total dictionary's length. This allows the
+  formatter to reformat the dictionary in a more consistent manner.
+- Improve how list comprehensions are formatted. Make splitting dependent upon
+  whether the "comp_for" or "comp_if" goes over the column limit.
+- Don't over indent if expression hanging indents if we expect to dedent the
+  closing bracket.
+- Improve splitting heuristic when the first argument to a function call is
+  itself a function call with arguments. In cases like this, the remaining
+  arguments to the function call would look badly aligned, even though they are
+  techincally correct (the best kind of correct!).
+- Improve splitting heuristic more so that if the first argument to a function
+  call is a data literal that will go over the column limit, then we want to
+  split before it.
+- Remove spaces around '**' operator.
+- Retain formatting of comments in the middle of an expression.
+- Don't add a newline to an empty file.
+- Over indent a function's parameter list if it's not distinguished from the
+  body of the function.
+
+## [0.5.0] 2015-10-11
+### Added
+- Add option to exclude files/directories from formatting.
+- Add a knob to control whether import names are split after the first '('.
+
+### Fixed
+- Indent the continuation of an if-then statement when it's not distinguished
+  from the body of the if-then.
+- Allow for sensible splitting of array indices where appropriate.
+- Prefer to not split before the ending bracket of an atom. This produces
+  better code in most cases.
+- Corrected how horizontal spaces were presevered in a disabled region.
+
+## [0.4.0] 2015-10-07
+### Added
+- Support for dedenting closing brackets, "facebook" style.
+
+### Fixed
+- Formatting of tokens after a multiline string didn't retain their horizontal
+  spacing.
+
+## [0.3.1] 2015-09-30
+### Fixed
+- Format closing scope bracket correctly when indentation size changes.
+
+## [0.3.0] 2015-09-20
+### Added
+- Return a 2 if the source changed, 1 on error, and 0 for no change.
+
+### Fixed
+- Make sure we format if the "lines" specified are in the middle of a
+  statement.
+
+## [0.2.9] - 2015-09-13
+### Fixed
+- Formatting of multiple files. It was halting after formatting the first file.
+
+## [0.2.8] - 2015-09-12
+### Added
+- Return a non-zero exit code if the source was changed.
+- Add bitwise operator splitting penalty and prefer to split before bitwise
+  operators.
+
+### Fixed
+- Retain vertical spacing between disabled and enabled lines.
+- Split only at start of named assign.
+- Retain comment position when formatting is disabled.
+- Honor splitting before or after logical ops.

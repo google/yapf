@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ class UtilsTest(unittest.TestCase):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('foo,bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('  foo'), ['foo'])
-    self.assertEqual(style._StringListConverter('joe  ,foo,  bar'),
-                     ['joe', 'foo', 'bar'])
+    self.assertEqual(
+        style._StringListConverter('joe  ,foo,  bar'), ['joe', 'foo', 'bar'])
 
   def testBoolConverter(self):
     self.assertEqual(style._BoolConverter('true'), True)
@@ -40,20 +40,22 @@ class UtilsTest(unittest.TestCase):
 
 
 def _LooksLikeChromiumStyle(cfg):
-  return (
-      cfg['INDENT_WIDTH'] == 2 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
-  )
+  return (cfg['INDENT_WIDTH'] == 2 and
+          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
 
 
 def _LooksLikeGoogleStyle(cfg):
-  return (
-      cfg['INDENT_WIDTH'] == 4 and cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']
-  )
+  return (cfg['INDENT_WIDTH'] == 4 and
+          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
 
 
 def _LooksLikePEP8Style(cfg):
   return (cfg['INDENT_WIDTH'] == 4 and
           not cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
+
+
+def _LooksLikeFacebookStyle(cfg):
+  return (cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS'])
 
 
 class PredefinedStylesByNameTest(unittest.TestCase):
@@ -72,6 +74,11 @@ class PredefinedStylesByNameTest(unittest.TestCase):
     for pep8_name in ('PEP8', 'pep8', 'Pep8'):
       cfg = style.CreateStyleFromConfig(pep8_name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
+
+  def testFacebookByName(self):
+    for fb_name in ('facebook', 'FACEBOOK', 'Facebook'):
+      cfg = style.CreateStyleFromConfig(fb_name)
+      self.assertTrue(_LooksLikeFacebookStyle(cfg))
 
 
 @contextlib.contextmanager
@@ -117,23 +124,34 @@ class StyleFromFileTest(unittest.TestCase):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = chromium
-        split_penalty_matching_bracket = 33
+        continuation_indent_width = 30
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
-      self.assertEqual(cfg['SPLIT_PENALTY_MATCHING_BRACKET'], 33)
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 30)
 
   def testDefaultBasedOnGoogleStyle(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
-        split_penalty_matching_bracket = 33
+        continuation_indent_width = 20
         ''')
     with _TempFileContents(self.test_tmpdir, cfg) as f:
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
-      self.assertEqual(cfg['SPLIT_PENALTY_MATCHING_BRACKET'], 33)
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
+
+  def testDefaultBasedOnFacebookStyle(self):
+    cfg = textwrap.dedent('''\
+        [style]
+        based_on_style = facebook
+        continuation_indent_width = 20
+        ''')
+    with _TempFileContents(self.test_tmpdir, cfg) as f:
+      cfg = style.CreateStyleFromConfig(f.name)
+      self.assertTrue(_LooksLikeFacebookStyle(cfg))
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):
     cfg = textwrap.dedent('''\

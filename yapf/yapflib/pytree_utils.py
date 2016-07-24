@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,6 +76,7 @@ _GRAMMAR_FOR_PY3 = pygram.python_grammar_no_print_statement.copy()
 del _GRAMMAR_FOR_PY3.keywords['exec']
 
 _GRAMMAR_FOR_PY2 = pygram.python_grammar.copy()
+del _GRAMMAR_FOR_PY2.keywords['nonlocal']
 
 
 def ParseCodeToTree(code):
@@ -229,6 +230,32 @@ def SetNodeAnnotation(node, annotation, value):
   setattr(node, _NODE_ANNOTATION_PREFIX + annotation, value)
 
 
+def AppendNodeAnnotation(node, annotation, value):
+  """Appends an annotation value to a list of annotations on the node.
+
+  Arguments:
+    node: the node.
+    annotation: annotation name - a string.
+    value: annotation value to set.
+  """
+  attr = GetNodeAnnotation(node, annotation, set())
+  attr.add(value)
+  SetNodeAnnotation(node, annotation, attr)
+
+
+def RemoveSubtypeAnnotation(node, value):
+  """Removes an annotation value from the subtype annotations on the node.
+
+  Arguments:
+    node: the node.
+    value: annotation value to remove.
+  """
+  attr = GetNodeAnnotation(node, Annotation.SUBTYPE)
+  if attr and value in attr:
+    attr.remove(value)
+    SetNodeAnnotation(node, Annotation.SUBTYPE, attr)
+
+
 def DumpNodeToString(node):
   """Dump a string representation of the given node. For debugging.
 
@@ -240,18 +267,29 @@ def DumpNodeToString(node):
   """
   if isinstance(node, pytree.Leaf):
     fmt = '{name}({value}) [lineno={lineno}, column={column}, prefix={prefix}]'
-    return fmt.format(name=NodeName(node),
-                      value=repr(node),
-                      lineno=node.lineno,
-                      column=node.column,
-                      prefix=repr(node.prefix))
+    return fmt.format(
+        name=NodeName(node),
+        value=_PytreeNodeRepr(node),
+        lineno=node.lineno,
+        column=node.column,
+        prefix=repr(node.prefix))
   else:
     fmt = '{node} [{len} children] [child_indent="{indent}"]'
-    return fmt.format(node=NodeName(node),
-                      len=len(node.children),
-                      indent=GetNodeAnnotation(node, Annotation.CHILD_INDENT))
+    return fmt.format(
+        node=NodeName(node),
+        len=len(node.children),
+        indent=GetNodeAnnotation(node, Annotation.CHILD_INDENT))
+
+
+def _PytreeNodeRepr(node):
+  """Like pytree.Node.__repr__, but names instead of numbers for tokens."""
+  if isinstance(node, pytree.Node):
+    return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node),
+                           [_PytreeNodeRepr(c) for c in node.children])
+  if isinstance(node, pytree.Leaf):
+    return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node), node.value)
 
 
 def IsCommentStatement(node):
   return (NodeName(node) == 'simple_stmt' and
-          NodeName(node.children[0]) == 'COMMENT')
+          node.children[0].type == token.COMMENT)

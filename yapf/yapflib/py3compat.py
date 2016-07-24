@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import locale
 
 PY3 = sys.version_info[0] == 3
 
-
 if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
   open_with_encoding = codecs.open
+
+  import functools
+  lru_cache = functools.lru_cache
 
   range = range
   ifilter = filter
@@ -42,6 +44,14 @@ else:
   StringIO = BytesIO = cStringIO.StringIO
 
   open_with_encoding = io.open
+
+  # Python 2.7 doesn't have a native LRU cache, so do nothing.
+  def lru_cache(maxsize=128, typed=False):
+
+    def fake_wrapper(user_function):
+      return user_function
+
+    return fake_wrapper
 
   range = xrange
 
@@ -96,5 +106,6 @@ def stdin():
 # fix this - now read_file works across all Python versions we care about.
 class ConfigParser(configparser.ConfigParser):
   if not PY3:
+
     def read_file(self, fp, source=None):
       self.readfp(fp, filename=source)

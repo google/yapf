@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """Tests for yapf.reformatter."""
 
+import difflib
 import sys
 import textwrap
 import unittest
@@ -35,13 +36,28 @@ class ReformatterTest(unittest.TestCase):
 
   def assertCodeEqual(self, expected_code, code):
     if code != expected_code:
-      msg = 'Code format mismatch:\n'
-      msg += 'Expected:\n >'
-      msg += '\n > '.join(expected_code.splitlines())
-      msg += '\nActual:\n >'
-      msg += '\n > '.join(code.splitlines())
-      # TODO(sbc): maybe using difflib here to produce easy to read deltas?
-      self.fail(msg)
+      msg = ['Code format mismatch:', 'Expected:']
+      linelen = style.Get('COLUMN_LIMIT')
+      for l in expected_code.splitlines():
+        if len(l) > linelen:
+          msg.append('!> %s' % l)
+        else:
+          msg.append(' > %s' % l)
+      msg.append('Actual:')
+      for l in code.splitlines():
+        if len(l) > linelen:
+          msg.append('!> %s' % l)
+        else:
+          msg.append(' > %s' % l)
+      msg.append('Diff:')
+      msg.extend(
+          difflib.unified_diff(
+              code.splitlines(),
+              expected_code.splitlines(),
+              fromfile='actual',
+              tofile='expected',
+              lineterm=''))
+      self.fail('\n'.join(msg))
 
 
 class BasicReformatterTest(ReformatterTest):
@@ -172,7 +188,7 @@ class BasicReformatterTest(ReformatterTest):
 
 
         def f(a):
-          return 37 + -+a[42 - x:y ** 3]
+          return 37 + -+a[42 - x:y**3]
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -234,6 +250,23 @@ class BasicReformatterTest(ReformatterTest):
   def testSingleComment(self):
     code = textwrap.dedent("""\
         # Thing 1
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testCommentsInDataLiteral(self):
+    code = textwrap.dedent("""\
+        def f():
+          return collections.OrderedDict({
+              # First comment.
+              'fnord': 37,
+
+              # Second comment.
+              # Continuation of second comment.
+              'bork': 42,
+
+              # Ending comment.
+          })
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -456,7 +489,9 @@ class BasicReformatterTest(ReformatterTest):
         foo( ( 1, 2, 3, ) )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        foo((1, 2, 3,))
+        foo((1,
+             2,
+             3,))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -675,9 +710,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               if isinstance(child, pytree.Leaf):
                 self._SetTokenSubtype(
                     child,
-                    subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
-                        child.value, \
-format_token.Subtype.NONE))
+                    subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
+                                                          format_token.Subtype.NONE))
         ''')
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -709,14 +743,28 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testI18nCommentsInDataLiteral(self):
+    code = textwrap.dedent("""\
+        def f():
+          return collections.OrderedDict({
+              #. First i18n comment.
+              'bork': 'foo',
+
+              #. Second i18n comment.
+              'snork': 'bar#.*=\\\\0',
+          })
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testClosingBracketIndent(self):
     code = textwrap.dedent('''\
         def f():
 
           def g():
-            while (xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                   xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
-                  ):
+            while (
+                xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
               pass
         ''')
     uwlines = _ParseAndUnwrap(code)
@@ -759,8 +807,9 @@ format_token.Subtype.NONE))
         class A:
 
           def x(self, node, name, n=1):
-            for i, child in enumerate(itertools.ifilter(
-                lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
+            for i, child in enumerate(
+                itertools.ifilter(lambda c: pytree_utils.NodeName(c) == name,
+                                  node.pre_order())):
               pass
         """)
     uwlines = _ParseAndUnwrap(code)
@@ -806,7 +855,8 @@ format_token.Subtype.NONE))
           a = 42
 
           # This is a comment.
-          def __init__(self, xxxxxxx,
+          def __init__(self,
+                       xxxxxxx,
                        yyyyy=0,
                        zzzzzzz=None,
                        aaaaaaaaaaaaaaaaaa=False,
@@ -854,9 +904,9 @@ format_token.Subtype.NONE))
         def f():
           if True:
             if True:
-              python_files.extend(os.path.join(filename, f)
-                                  for f in os.listdir(filename)
-                                  if IsPythonFile(os.path.join(filename, f)))
+              python_files.extend(
+                  os.path.join(filename, f) for f in os.listdir(filename)
+                  if IsPythonFile(os.path.join(filename, f)))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -868,15 +918,6 @@ format_token.Subtype.NONE))
             (left.value == '[' and right.value == ']') or
             (left.value == '{' and right.value == '}')):
           return False
-        """)
-    uwlines = _ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
-
-  def testSingleLineIfStatements(self):
-    code = textwrap.dedent("""\
-        if True: a = 42
-        elif False: b = 42
-        else: c = 42
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -926,7 +967,7 @@ format_token.Subtype.NONE))
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplitListWithInterspersedComments(self):
-    unformatted_code = textwrap.dedent("""\
+    code = textwrap.dedent("""\
         FOO = ['bar',  # bar
                'baz',  # baz
                'mux',  # mux
@@ -940,22 +981,8 @@ format_token.Subtype.NONE))
                lambda a, b: 37  # lambda
               ]
         """)
-    expected_formatted_code = textwrap.dedent("""\
-        FOO = ['bar',  # bar
-               'baz',  # baz
-               'mux',  # mux
-               'qux',  # qux
-               'quux',  # quux
-               'quuux',  # quuux
-               'quuuux',  # quuuux
-               'quuuuux',  # quuuuux
-               'quuuuuux',  # quuuuuux
-               'quuuuuuux',  # quuuuuuux
-               lambda a, b: 37  # lambda
-              ]
-        """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testRelativeImportStatements(self):
     code = textwrap.dedent("""\
@@ -1003,6 +1030,7 @@ format_token.Subtype.NONE))
 
           # ..................................................................
           # ...............................................................
+
 
           def timeout(seconds=1):
             pass
@@ -1100,8 +1128,8 @@ format_token.Subtype.NONE))
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
-                     'yyyyyyyyyyyyyyyyyyyyyyyyyy':
-                     baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} +
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
@@ -1139,8 +1167,8 @@ format_token.Subtype.NONE))
 
   def testNoSplittingAroundTermOperators(self):
     code = textwrap.dedent("""\
-        a_very_long_function_call_yada_yada_etc_etc_etc(
-            long_arg1, long_arg2 / long_arg3)
+        a_very_long_function_call_yada_yada_etc_etc_etc(long_arg1,
+                                                        long_arg2 / long_arg3)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1176,12 +1204,1033 @@ format_token.Subtype.NONE))
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testUnaryOpInDictionaryValue(self):
+    code = textwrap.dedent("""\
+        beta = "123"
+
+        test = {'alpha': beta[-1]}
+
+        print(beta[-1])
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testUnaryNotOperator(self):
+    code = textwrap.dedent("""\
+        if True:
+          if True:
+            if True:
+              if True:
+                remote_checksum = self.get_checksum(conn, tmp, dest, inject,
+                                                    not directory_prepended, source)
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testRelaxArraySubscriptAffinity(self):
+    code = textwrap.dedent("""\
+        class A(object):
+
+          def f(self, aaaaaaaaa, bbbbbbbbbbbbb, row):
+            if True:
+              if True:
+                if True:
+                  if True:
+                    if row[4] is None or row[5] is None:
+                      bbbbbbbbbbbbb['..............'] = row[5] if row[
+                          5] is not None else 5
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testFunctionCallInDict(self):
+    code = "a = {'a': b(c=d, **e)}\n"
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testFunctionCallInNestedDict(self):
+    code = "a = {'a': {'a': {'a': b(c=d, **e)}}}\n"
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testUnbreakableNot(self):
+    code = textwrap.dedent("""\
+        def test():
+          if not "Foooooooooooooooooooooooooooooo" or "Foooooooooooooooooooooooooooooo" == "Foooooooooooooooooooooooooooooo":
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testSplitListWithComment(self):
+    code = textwrap.dedent("""\
+      a = [
+          'a',
+          'b',
+          'c'  # hello world
+      ]
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testOverColumnLimit(self):
+    unformatted_code = textwrap.dedent("""\
+      class Test:
+
+        def testSomething(self):
+          expected = {
+              ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+          }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      class Test:
+
+        def testSomething(self):
+          expected = {
+              ('aaaaaaaaaaaaa',
+               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa',
+               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa',
+               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+          }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testEndingComment(self):
+    code = textwrap.dedent("""\
+      a = f(a="something",
+            b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
+            c="something else, about which comment doesn't make sense")
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testContinuationSpaceRetention(self):
+    code = textwrap.dedent("""\
+      def fn():
+        return module \\
+               .method(Object(data,
+                   fn2(arg)
+               ))
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testIfExpressionWithFunctionCall(self):
+    code = textwrap.dedent("""\
+      if x or z.y(a,
+                  c,
+                  aaaaaaaaaaaaaaaaaaaaa=aaaaaaaaaaaaaaaaaa,
+                  bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
+        pass
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testUnformattedAfterMultilineString(self):
+    code = textwrap.dedent("""\
+      def foo():
+        com_text = \\
+      '''
+      TEST
+      ''' % (input_fname, output_fname)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testNoSpacesAroundKeywordDefaultValues(self):
+    code = textwrap.dedent("""\
+      sources = {
+          'json': request.get_json(silent=True) or {},
+          'json2': request.get_json(silent=True),
+      }
+      json = request.get_json(silent=True) or {}
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testNoSplittingBeforeEndingSubscriptBracket(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            status = cf.describe_stacks(StackName=stackname)[u'Stacks'][0][u'StackStatus']
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            status = cf.describe_stacks(
+                StackName=stackname)[u'Stacks'][0][u'StackStatus']
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testNoSplittingOnSingleArgument(self):
+    unformatted_code = textwrap.dedent("""\
+        xxxxxxxxxxxxxx = (re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+',
+                                    aaaaaaa.bbbbbbbbbbbb).group(1) +
+                          re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)',
+                                    ccccccc).group(1))
+        xxxxxxxxxxxxxx = (re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+',
+                                    aaaaaaa.bbbbbbbbbbbb).group(a.b) +
+                          re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)',
+                                    ccccccc).group(c.d))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        xxxxxxxxxxxxxx = (
+            re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+', aaaaaaa.bbbbbbbbbbbb).group(1) +
+            re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)', ccccccc).group(1))
+        xxxxxxxxxxxxxx = (
+            re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+', aaaaaaa.bbbbbbbbbbbb).group(a.b) +
+            re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)', ccccccc).group(c.d))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingArraysSensibly(self):
+    unformatted_code = textwrap.dedent("""\
+        while True:
+          while True:
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list['bbbbbbbbbbbbbbbbbbbbbbbbb'].split(',')
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list('bbbbbbbbbbbbbbbbbbbbbbbbb').split(',')
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        while True:
+          while True:
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list[
+                'bbbbbbbbbbbbbbbbbbbbbbbbb'].split(',')
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list(
+                'bbbbbbbbbbbbbbbbbbbbbbbbb').split(',')
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testComprehensionForAndIf(self):
+    unformatted_code = textwrap.dedent("""\
+        class f:
+
+          def __repr__(self):
+            tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class f:
+
+          def __repr__(self):
+            tokens_repr = ','.join(
+                ['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testFunctionCallArguments(self):
+    unformatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+                comment_prefix, comment_lineno, comment_column,
+                standalone=True), ancestor_at_indent)
+            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+                comment_prefix, comment_lineno, comment_column,
+                standalone=True))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            pytree_utils.InsertNodesBefore(
+                _CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno, comment_column, standalone=True),
+                ancestor_at_indent)
+            pytree_utils.InsertNodesBefore(
+                _CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno, comment_column, standalone=True))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testBinaryOperators(self):
+    unformatted_code = textwrap.dedent("""\
+        a = b ** 37
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a = b**37
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testBinaryOperators(self):
+    code = textwrap.dedent("""\
+      def f():
+        if True:
+          if (self.stack[-1].split_before_closing_bracket and
+              # FIXME(morbo): Use the 'matching_bracket' instead of this.
+              # FIXME(morbo): Don't forget about tuples!
+              current.value in ']}'):
+            pass
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testContiguousList(self):
+    code = textwrap.dedent("""\
+      [retval1, retval2] = a_very_long_function(argument_1, argument2, argument_3,
+                                                argument_4)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testArgsAndKwargsFormatting(self):
+    code = textwrap.dedent("""\
+      a(a=aaaaaaaaaaaaaaaaaaaaa,
+        b=aaaaaaaaaaaaaaaaaaaaaaaa,
+        c=aaaaaaaaaaaaaaaaaa,
+        *d,
+        **e)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testCommentColumnLimitOverflow(self):
+    code = textwrap.dedent("""\
+      def f():
+        if True:
+          TaskManager.get_tags = MagicMock(
+              name='get_tags_mock',
+              return_value=[157031694470475],
+              # side_effect=[(157031694470475), (157031694470475),],
+          )
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testMultilineLambdas(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, allow_multiline_lambdas: true}'))
+      unformatted_code = textwrap.dedent("""\
+          class SomeClass(object):
+            do_something = True
+
+            def succeeded(self, dddddddddddddd):
+              d = defer.succeed(None)
+
+              if self.do_something:
+                d.addCallback(lambda _: self.aaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccccc(dddddddddddddd))
+              return d
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          class SomeClass(object):
+            do_something = True
+
+            def succeeded(self, dddddddddddddd):
+              d = defer.succeed(None)
+
+              if self.do_something:
+                d.addCallback(lambda _: self.aaaaaa.bbbbbbbbbbbbbbbb.
+                              cccccccccccccccccccccccccccccccc(dddddddddddddd))
+              return d
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testStableDictionaryFormatting(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, indent_width: 2, '
+              'continuation_indent_width: 4, indent_dictionary_value: True}'))
+      code = textwrap.dedent("""\
+          class A(object):
+            def method(self):
+              filters = {
+                  'expressions': [
+                      {'field': {
+                          'search_field':
+                              {'user_field': 'latest_party__number_of_guests'},
+                      }}
+                  ]
+              }
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      uwlines = _ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testDontSplitKeywordValueArguments(self):
+    code = textwrap.dedent("""\
+      def mark_game_scored(gid):
+        _connect.execute(_games.update().where(_games.c.gid == gid).values(
+            scored=True))
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testDontAddBlankLineAfterMultilineString(self):
+    code = textwrap.dedent("""\
+      query = '''SELECT id 
+      FROM table 
+      WHERE day in {}'''
+      days = ",".join(days)
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testFormattingListComprehensions(self):
+    code = textwrap.dedent("""\
+      def a():
+        if True:
+          if True:
+            if True:
+              columns = [x for x, y in self._heap_this_is_very_long
+                         if x.route[0] == choice]
+              self._heap = [x for x in self._heap if x.route and x.route[0] == choice]
+      """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testNoSplittingWhenBinPacking(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, indent_width: 2, '
+              'continuation_indent_width: 4, indent_dictionary_value: True, '
+              'dedent_closing_brackets: True, '
+              'split_before_named_assigns: False}'))
+      code = textwrap.dedent("""\
+          a_very_long_function_name(
+              long_argument_name_1=1,
+              long_argument_name_2=2,
+              long_argument_name_3=3,
+              long_argument_name_4=4,
+          )
+
+          a_very_long_function_name(
+              long_argument_name_1=1, long_argument_name_2=2, long_argument_name_3=3,
+              long_argument_name_4=4
+          )
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      uwlines = _ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testNotSplittingAfterSubscript(self):
+    unformatted_code = textwrap.dedent("""\
+        if not aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.b(c == d[
+                'eeeeee']).ffffff():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if not aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.b(
+            c == d['eeeeee']).ffffff():
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingOneArgumentList(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          if True:
+            if True:
+              if True:
+                if True:
+                  if True:
+                    boxes[id_] = np.concatenate((points.min(axis=0), qoints.max(axis=0)))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+          if True:
+            if True:
+              if True:
+                if True:
+                  if True:
+                    boxes[id_] = np.concatenate(
+                        (points.min(axis=0), qoints.max(axis=0)))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingBeforeFirstElementListArgument(self):
+    unformatted_code = textwrap.dedent("""\
+        class _():
+          @classmethod
+          def _pack_results_for_constraint_or(cls, combination, constraints):
+            if True:
+              if True:
+                if True:
+                  return cls._create_investigation_result(
+                          (
+                                  clue for clue in combination if not clue == Verifier.UNMATCHED
+                          ), constraints, InvestigationResult.OR
+                  )
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class _():
+
+          @classmethod
+          def _pack_results_for_constraint_or(cls, combination, constraints):
+            if True:
+              if True:
+                if True:
+                  return cls._create_investigation_result(
+                      (clue for clue in combination if not clue == Verifier.UNMATCHED),
+                      constraints, InvestigationResult.OR)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingArgumentsTerminatedByComma(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, '
+              'split_arguments_when_comma_terminated: True}'))
+      code = textwrap.dedent("""\
+          function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
+
+          function_name(
+              argument_name_1=1,
+              argument_name_2=2,
+              argument_name_3=3,
+          )
+
+          a_very_long_function_name(
+              long_argument_name_1=1,
+              long_argument_name_2=2,
+              long_argument_name_3=3,
+              long_argument_name_4=4)
+
+          a_very_long_function_name(
+              long_argument_name_1,
+              long_argument_name_2,
+              long_argument_name_3,
+              long_argument_name_4,
+          )
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      uwlines = _ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testImportAsList(self):
+    code = textwrap.dedent("""\
+        from toto import titi, tata, tutu  # noqa
+        from toto import titi, tata, tutu
+        from toto import (titi, tata, tutu)
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB26868213(self):
+    unformatted_code = textwrap.dedent("""\
+      def _():
+        xxxxxxxxxxxxxxxxxxx = {
+            'ssssss': {'ddddd': 'qqqqq',
+                       'p90': aaaaaaaaaaaaaaaaa,
+                       'p99': bbbbbbbbbbbbbbbbb,
+                       'lllllllllllll': yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy(),},
+            'bbbbbbbbbbbbbbbbbbbbbbbbbbbb': {
+                'ddddd': 'bork bork bork bo',
+                'p90': wwwwwwwwwwwwwwwww,
+                'p99': wwwwwwwwwwwwwwwww,
+                'lllllllllllll': None,  # use the default
+            }
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      def _():
+        xxxxxxxxxxxxxxxxxxx = {
+            'ssssss': {
+                'ddddd': 'qqqqq',
+                'p90': aaaaaaaaaaaaaaaaa,
+                'p99': bbbbbbbbbbbbbbbbb,
+                'lllllllllllll': yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy(),
+            },
+            'bbbbbbbbbbbbbbbbbbbbbbbbbbbb': {
+                'ddddd': 'bork bork bork bo',
+                'p90': wwwwwwwwwwwwwwwww,
+                'p99': wwwwwwwwwwwwwwwww,
+                'lllllllllllll': None,  # use the default
+            }
+        }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB30173198(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def _():
+            self.assertFalse(
+                evaluation_runner.get_larps_in_eval_set('these_arent_the_larps'))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB29908765(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def __repr__(self):
+            return '<session %s on %s>' % (self._id,
+                                           self._stub._stub.rpc_channel().target())  # pylint:disable=protected-access
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB30087362(self):
+    code = textwrap.dedent("""\
+        def _():
+          for s in sorted(env['foo']):
+            bar()
+            # This is a comment
+
+          # This is another comment
+          foo()
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB29093579(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          _xxxxxxxxxxxxxxx(aaaaaaaa, bbbbbbbbbbbbbb.cccccccccc[
+              dddddddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+          _xxxxxxxxxxxxxxx(aaaaaaaa, bbbbbbbbbbbbbb.cccccccccc[
+              dddddddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee.
+              fffffffffffffffffffff])
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB26382315(self):
+    code = textwrap.dedent("""\
+        @hello_world
+        # This is a first comment
+
+        # Comment
+        def foo():
+          pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB27616132(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          query.fetch_page.assert_has_calls([
+              mock.call(100,
+                        start_cursor=None),
+              mock.call(100,
+                        start_cursor=cursor_1),
+              mock.call(100,
+                        start_cursor=cursor_2),
+          ])
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          query.fetch_page.assert_has_calls([
+              mock.call(
+                  100, start_cursor=None),
+              mock.call(
+                  100, start_cursor=cursor_1),
+              mock.call(
+                  100, start_cursor=cursor_2),
+          ])
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB27590179(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            self.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
+                { True:
+                     self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee),
+                 False:
+                     self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
+                })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          if True:
+            self.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = ({
+                True:
+                    self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee),
+                False:
+                    self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
+            })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB27266946(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccccccccc)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
+              self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+              cccccccccccccccccccccccccccccccccccc)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB25505359(self):
+    code = textwrap.dedent("""\
+        _EXAMPLE = {
+            'aaaaaaaaaaaaaa': [
+                {'bbbb': 'cccccccccccccccccccccc',
+                 'dddddddddddd': [
+                 ]}, {'bbbb': 'ccccccccccccccccccc',
+                      'dddddddddddd': [
+                      ]}
+            ]
+        }
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB25324261(self):
+    code = textwrap.dedent("""\
+        aaaaaaaaa = set(bbbb.cccc
+                        for ddd in eeeeee.fffffffffff.gggggggggggggggg
+                        for cccc in ddd.specification)
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB25136704(self):
+    code = textwrap.dedent("""\
+        class f:
+
+          def test(self):
+            self.bbbbbbb[0]['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+                            {'xxxxxx': 'yyyyyy'}] = cccccc.ddd('1m', '10x1+1')
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB25165602(self):
+    code = textwrap.dedent("""\
+        def f():
+          ids = {u: i for u, i in zip(self.aaaaa, xrange(42, 42 + len(self.aaaaaa)))}
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB25157123(self):
+    code = textwrap.dedent("""\
+        def ListArgs():
+          FairlyLongMethodName([relatively_long_identifier_for_a_list],
+                               another_argument_with_a_long_identifier)
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB25136820(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          return collections.OrderedDict({
+              # Preceding comment.
+              'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa':
+              '$bbbbbbbbbbbbbbbbbbbbbbbb',
+          })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+          return collections.OrderedDict({
+              # Preceding comment.
+              'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa':
+                  '$bbbbbbbbbbbbbbbbbbbbbbbb',
+          })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB25131481(self):
+    unformatted_code = textwrap.dedent("""\
+        APPARENT_ACTIONS = ('command_type', {
+            'materialize': lambda x: some_type_of_function('materialize ' + x.command_def),
+            '#': lambda x: x  # do nothing
+        })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        APPARENT_ACTIONS = (
+            'command_type',
+            {
+                'materialize':
+                    lambda x: some_type_of_function('materialize ' + x.command_def),
+                '#': lambda x: x  # do nothing
+            })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB23445244(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return xxxxxxxxxxxxxxxx(
+                command,
+                extra_env={
+                    "OOOOOOOOOOOOOOOOOOOOO": FLAGS.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz,
+                    "PPPPPPPPPPPPPPPPPPPPP":
+                        FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
+                })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return xxxxxxxxxxxxxxxx(
+                command,
+                extra_env={
+                    "OOOOOOOOOOOOOOOOOOOOO":
+                        FLAGS.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz,
+                    "PPPPPPPPPPPPPPPPPPPPP": FLAGS.aaaaaaaaaaaaaa +
+                                             FLAGS.bbbbbbbbbbbbbbbbbbb,
+                })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB20559654(self):
+    unformatted_code = textwrap.dedent("""\
+      class A(object):
+
+        def foo(self):
+          unused_error, result = server.Query(
+              ['AA BBBB CCC DDD EEEEEEEE X YY ZZZZ FFF EEE AAAAAAAA'],
+              aaaaaaaaaaa=True, bbbbbbbb=None)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      class A(object):
+
+        def foo(self):
+          unused_error, result = server.Query(
+              ['AA BBBB CCC DDD EEEEEEEE X YY ZZZZ FFF EEE AAAAAAAA'],
+              aaaaaaaaaaa=True,
+              bbbbbbbb=None)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB23943842(self):
+    unformatted_code = textwrap.dedent("""\
+        class F():
+          def f():
+            self.assertDictEqual(
+                accounts, {
+                    'foo':
+                    {'account': 'foo',
+                     'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
+                    'bar': {'account': 'bar',
+                            'lines': 'l5\\nl6\\nl7'},
+                    'wiz': {'account': 'wiz',
+                            'lines': 'l8'}
+                })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class F():
+
+          def f():
+            self.assertDictEqual(accounts, {
+                'foo': {'account': 'foo',
+                        'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
+                'bar': {'account': 'bar',
+                        'lines': 'l5\\nl6\\nl7'},
+                'wiz': {'account': 'wiz',
+                        'lines': 'l8'}
+            })
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB20551180(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return (struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+          if True:
+            return (
+                struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB23944849(self):
+    unformatted_code = textwrap.dedent("""\
+        class A(object):
+          def xxxxxxxxx(self, aaaaaaa, bbbbbbb=ccccccccccc, dddddd=300, eeeeeeeeeeeeee=None, fffffffffffffff=0):
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class A(object):
+
+          def xxxxxxxxx(self,
+                        aaaaaaa,
+                        bbbbbbb=ccccccccccc,
+                        dddddd=300,
+                        eeeeeeeeeeeeee=None,
+                        fffffffffffffff=0):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB23935890(self):
+    unformatted_code = textwrap.dedent("""\
+        class F():
+          def functioni(self, aaaaaaa, bbbbbbb, cccccc, dddddddddddddd, eeeeeeeeeeeeeee):
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class F():
+
+          def functioni(self, aaaaaaa, bbbbbbb, cccccc, dddddddddddddd,
+                        eeeeeeeeeeeeeee):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB28414371(self):
+    code = textwrap.dedent("""\
+        def _():
+          return (
+              (m.fffff(
+                  m.rrr('mmmmmmmmmmmmmmmm', 'ssssssssssssssssssssssssss'),
+                  ffffffffffffffff)
+               | m.wwwwww(m.ddddd('1h'))
+               | m.ggggggg(bbbbbbbbbbbbbbb)
+               | m.ppppp(
+                   (1 - m.ffffffffffffffff(llllllllllllllllllllll * 1000000, m.vvv)) *
+                   m.ddddddddddddddddd(m.vvv)), m.fffff(
+                       m.rrr('mmmmmmmmmmmmmmmm', 'sssssssssssssssssssssss'),
+                       dict(
+                           ffffffffffffffff,
+                           **{
+                               'mmmmmm:ssssss': m.rrrrrrrrrrr(
+                                   '|'.join(iiiiiiiiiiiiii), iiiiii=True)
+                           }))
+               | m.wwwwww(m.rrrr('1h'))
+               | m.ggggggg(bbbbbbbbbbbbbbb))
+              | m.jjjj()
+              | m.ppppp(m.vvv[0] + m.vvv[1]))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB20127686(self):
+    code = textwrap.dedent("""\
+        def f():
+          if True:
+            return ((m.fffff(
+                m.rrr('xxxxxxxxxxxxxxxx',
+                      'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'),
+                mmmmmmmm)
+                     | m.wwwwww(m.rrrr(self.tttttttttt, self.mmmmmmmmmmmmmmmmmmmmm))
+                     | m.ggggggg(self.gggggggg, m.sss()), m.fffff('aaaaaaaaaaaaaaaa')
+                     | m.wwwwww(m.ddddd(self.tttttttttt, self.mmmmmmmmmmmmmmmmmmmmm))
+                     | m.ggggggg(self.gggggggg))
+                    | m.jjjj()
+                    | m.ppppp(m.VAL[0] / m.VAL[1]))
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB20016122(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium, '
+                                      'SPLIT_BEFORE_LOGICAL_OPERATOR: True}'))
+      code = textwrap.dedent("""\
+          class foo():
+
+            def __eq__(self, other):
+              return (isinstance(other, type(self))
+                      and self.xxxxxxxxxxx == other.xxxxxxxxxxx
+                      and self.xxxxxxxx == other.xxxxxxxx
+                      and self.aaaaaaaaaaaa == other.aaaaaaaaaaaa
+                      and self.bbbbbbbbbbb == other.bbbbbbbbbbb
+                      and self.ccccccccccccccccc == other.ccccccccccccccccc
+                      and self.ddddddddddddddddddddddd == other.ddddddddddddddddddddddd
+                      and self.eeeeeeeeeeee == other.eeeeeeeeeeee
+                      and self.ffffffffffffff == other.time_completed
+                      and self.gggggg == other.gggggg and self.hhh == other.hhh
+                      and len(self.iiiiiiii) == len(other.iiiiiiii)
+                      and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
+          """)
+      uwlines = _ParseAndUnwrap(code)
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB22527411(self):
+    unformatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(ffffffffffffff)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f():
+          if True:
+            aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(
+                ffffffffffffff)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB20849933(self):
+    code = textwrap.dedent("""\
+        def main(unused_argv):
+          if True:
+            aaaaaaaa = {
+                'xxx': '%s/cccccc/ddddddddddddddddddd.jar' %
+                       (eeeeee.FFFFFFFFFFFFFFFFFF),
+            }
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20813997(self):
     code = textwrap.dedent("""\
@@ -1244,10 +2293,11 @@ class BuganizerFixes(ReformatterTest):
             if True:
               class_0_count = num_votes - class_1_count
               return ('{class_0_name}={class_0_count}, {class_1_name}={class_1_count}'
-                      .format(class_0_name=self.class_0_name,
-                              class_0_count=class_0_count,
-                              class_1_name=self.class_1_name,
-                              class_1_count=class_1_count))
+                      .format(
+                          class_0_name=self.class_0_name,
+                          class_0_count=class_0_count,
+                          class_1_name=self.class_1_name,
+                          class_1_count=class_1_count))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1255,10 +2305,10 @@ class BuganizerFixes(ReformatterTest):
   def testB19626808(self):
     code = textwrap.dedent("""\
         if True:
-          aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb('ccccccccccc',
-                                            ddddddddd='eeeee').fffffffff([
-                                                ggggggggggggggggggggg
-                                            ])
+          aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb(
+              'ccccccccccc', ddddddddd='eeeee').fffffffff([
+                  ggggggggggggggggggggg
+              ])
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1290,14 +2340,18 @@ class BuganizerFixes(ReformatterTest):
   def testB19372573(self):
     code = textwrap.dedent("""\
         def f():
-          if a: return 42
-          while True:
-            if b: continue
-            if c: break
-          return 0
+            if a: return 42
+            while True:
+                if b: continue
+                if c: break
+            return 0
         """)
     uwlines = _ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testB19353268(self):
     code = textwrap.dedent("""\
@@ -1342,30 +2396,22 @@ class BuganizerFixes(ReformatterTest):
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19073499(self):
-    unformatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
-            {  # Inline comment about why fnord has the value 6.
-                'fnord': 6
-            }))
+    code = textwrap.dedent("""\
+        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
+            'aa': 'context!'
+        }).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
+            'fnord': 6
+        }))
         """)
-    expected_formatted_code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd(
-            {'aa': 'context!'}).eeeeeeeeeeeeeeeeeee(
-                {  # Inline comment about why fnord has the value 6.
-                    'fnord': 6
-                }))
-        """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB18257115(self):
     code = textwrap.dedent("""\
         if True:
           if True:
-            self._Test(
-                aaaa, bbbbbbb.cccccccccc, dddddddd, eeeeeeeeeee,
-                [ffff, ggggggggggg, hhhhhhhhhhhh, iiiiii, jjjj])
+            self._Test(aaaa, bbbbbbb.cccccccccc, dddddddd, eeeeeeeeeee,
+                       [ffff, ggggggggggg, hhhhhhhhhhhh, iiiiii, jjjj])
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1426,8 +2472,8 @@ class BuganizerFixes(ReformatterTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
-          self.assertLess(abs(time.time() - aaaa.bbbbbbbbbbb(
-              datetime.datetime.now())), 1)
+          self.assertLess(
+              abs(time.time() - aaaa.bbbbbbbbbbb(datetime.datetime.now())), 1)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1444,8 +2490,8 @@ class BuganizerFixes(ReformatterTest):
         def f():
           if True:
             if True:
-              return aaaa.bbbbbbbbb(
-                  ccccccc=dddddddddddddd({('eeee', 'ffffffff'): str(j)}))
+              return aaaa.bbbbbbbbb(ccccccc=dddddddddddddd(
+                  {('eeee', 'ffffffff'): str(j)}))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1458,7 +2504,7 @@ class BuganizerFixes(ReformatterTest):
             with io.open("/dev/null", "rb"):
               with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc,
                                         DDDDDDDDDDDDDDD,
-                                        "eeeeeeeee ffffffffff",
+                                        "eeeeeeeee ffffffffff"
                                        ), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
@@ -1467,9 +2513,9 @@ class BuganizerFixes(ReformatterTest):
 
           def bbbbbbbbbb(self):
             with io.open("/dev/null", "rb"):
-              with io.open(os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
-                                        "eeeeeeeee ffffffffff",),
-                           "rb") as gggggggggggggggggggg:
+              with io.open(
+                  os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
+                               "eeeeeeeee ffffffffff"), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -1513,8 +2559,7 @@ class BuganizerFixes(ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         if True:
           with aaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccc(
-              ddddddddddddd,
-              eeeeeeeee=self.fffffffffffff) as gggg:
+              ddddddddddddd, eeeeeeeee=self.fffffffffffff) as gggg:
             pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -1530,8 +2575,9 @@ class BuganizerFixes(ReformatterTest):
         def foo(self):
 
           def bar(my_dict_name):
-            self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
-                'foo_bar_baz_boo')
+            self.my_dict_name[
+                'foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
+                    'foo_bar_baz_boo')
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1547,14 +2593,15 @@ class BuganizerFixes(ReformatterTest):
         if 1:
           if 1:
             for row in AAAA:
-              self.create(aaaaaaaa="/aaa/bbbb/cccc/dddddd/eeeeeeeeeeeeeeeeeeeeeeeeee/%s"
-                          % row[0].replace(".foo", ".bar"),
-                          aaaaa=bbb[1],
-                          ccccc=bbb[2],
-                          dddd=bbb[3],
-                          eeeeeeeeeee=[s.strip() for s in bbb[4].split(",")],
-                          ffffffff=[s.strip() for s in bbb[5].split(",")],
-                          gggggg=bbb[6])
+              self.create(
+                  aaaaaaaa="/aaa/bbbb/cccc/dddddd/eeeeeeeeeeeeeeeeeeeeeeeeee/%s" %
+                  row[0].replace(".foo", ".bar"),
+                  aaaaa=bbb[1],
+                  ccccc=bbb[2],
+                  dddd=bbb[3],
+                  eeeeeeeeeee=[s.strip() for s in bbb[4].split(",")],
+                  ffffffff=[s.strip() for s in bbb[5].split(",")],
+                  gggggg=bbb[6])
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1576,7 +2623,8 @@ class BuganizerFixes(ReformatterTest):
           ok = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
           bad_slice = map(math.sqrt,
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
-          a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
+          a_long_name_slicing = an_array_with_an_exceedingly_long_name[:
+                                                                       ARBITRARY_CONSTANT_A]
           bad_slice = ("I am a crazy, no good, string whats too long, etc." +
                        " no really ")[:ARBITRARY_CONSTANT_A]
         """)
@@ -1653,7 +2701,9 @@ class BuganizerFixes(ReformatterTest):
         )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        call(a=1, b=2,)
+        call(
+            a=1,
+            b=2,)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1753,6 +2803,15 @@ class TestsForPEP8Style(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSingleLineIfStatements(self):
+    code = textwrap.dedent("""\
+        if True: a = 42
+        elif False: b = 42
+        else: c = 42
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testNoBlankBetweenClassAndDef(self):
     unformatted_code = textwrap.dedent("""\
         class Foo:
@@ -1847,12 +2906,13 @@ class TestsForPEP8Style(ReformatterTest):
   def testAlignClosingBracketWithVisualIndentation(self):
     unformatted_code = textwrap.dedent("""\
         TEST_LIST = ('foo', 'bar',  # first comment
-                     'baz',  # second comment
+                     'baz'  # second comment
                     )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        TEST_LIST = ('foo', 'bar',  # first comment
-                     'baz',  # second comment
+        TEST_LIST = ('foo',
+                     'bar',  # first comment
+                     'baz'  # second comment
                      )
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -1870,14 +2930,168 @@ class TestsForPEP8Style(ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         def f():
             def g():
-                while (
-                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
-                ):
+                while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                       xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
+                       'bbbbbbb'):
                     pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testIndentSizeChanging(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          runtime_mins = (program_end_time - program_start_time).total_seconds() / 60.0
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+            runtime_mins = (
+                program_end_time - program_start_time).total_seconds() / 60.0
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testHangingIndentCollision(self):
+    unformatted_code = textwrap.dedent("""\
+        if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx or yyyyyyyyyyyyyyyyy):
+            pass
+        elif (xxxxxxxxxxxxxxx(aaaaaaaaaaa, bbbbbbbbbbbbbb, cccccccccccc, dddddddddd=None)):
+            pass
+
+
+        def h():
+            if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                pass
+
+            for connection in itertools.chain(branch.contact, branch.address, morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
+                dosomething(connection)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx or
+                yyyyyyyyyyyyyyyyy):
+            pass
+        elif (xxxxxxxxxxxxxxx(
+                aaaaaaaaaaa, bbbbbbbbbbbbbb, cccccccccccc, dddddddddd=None)):
+            pass
+
+
+        def h():
+            if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
+                    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
+                pass
+
+            for connection in itertools.chain(
+                    branch.contact, branch.address,
+                    morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
+                dosomething(connection)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB20016122(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, SPLIT_PENALTY_IMPORT_NAMES: 35}'))
+      unformatted_code = textwrap.dedent("""\
+          from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
+                                                                     long_argument_2)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          from a_very_long_or_indented_module_name_yada_yada import (
+              long_argument_1, long_argument_2)
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testSplittingBeforeLogicalOperator(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, split_before_logical_operator: True}'))
+      unformatted_code = textwrap.dedent("""\
+          def foo():
+              return bool(update.message.new_chat_member or update.message.left_chat_member or
+                          update.message.new_chat_title or update.message.new_chat_photo or
+                          update.message.delete_chat_photo or update.message.group_chat_created or
+                          update.message.supergroup_chat_created or update.message.channel_chat_created
+                          or update.message.migrate_to_chat_id or update.message.migrate_from_chat_id or
+                          update.message.pinned_message)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          def foo():
+              return bool(
+                  update.message.new_chat_member or update.message.left_chat_member
+                  or update.message.new_chat_title or update.message.new_chat_photo
+                  or update.message.delete_chat_photo
+                  or update.message.group_chat_created
+                  or update.message.supergroup_chat_created
+                  or update.message.channel_chat_created
+                  or update.message.migrate_to_chat_id
+                  or update.message.migrate_from_chat_id
+                  or update.message.pinned_message)
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testContiguousListEndingWithComment(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+            if True:
+                keys.append(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+            if True:
+                keys.append(
+                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingBeforeFirstArgument(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, split_before_first_argument: True}'))
+      unformatted_code = textwrap.dedent("""\
+          a_very_long_function_name(long_argument_name_1=1, long_argument_name_2=2,
+                                    long_argument_name_3=3, long_argument_name_4=4)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a_very_long_function_name(
+              long_argument_name_1=1,
+              long_argument_name_2=2,
+              long_argument_name_3=3,
+              long_argument_name_4=4)
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+
+class TestingNotInParameters(unittest.TestCase):
+
+  def testNotInParams(self):
+    unformatted_code = textwrap.dedent("""\
+      list("a long line to break the line. a long line to break the brk a long lin", not True)
+      """)
+
+    expected_code = textwrap.dedent("""\
+      list("a long line to break the line. a long line to break the brk a long lin",
+           not True)
+      """)
+
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
 
 @unittest.skipIf(py3compat.PY3, 'Requires Python 2')
@@ -1909,9 +3123,9 @@ class TestVerifyNoVerify(ReformatterTest):
             pass
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(uwlines,
-                                              verify=False))
+    self.assertCodeEqual(
+        expected_formatted_code, reformatter.Reformat(
+            uwlines, verify=False))
 
   def testVerifyFutureImport(self):
     unformatted_code = textwrap.dedent("""\
@@ -1939,9 +3153,30 @@ class TestVerifyNoVerify(ReformatterTest):
             call_my_function(print)
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(uwlines,
-                                              verify=False))
+    self.assertCodeEqual(
+        expected_formatted_code, reformatter.Reformat(
+            uwlines, verify=False))
+
+  def testContinuationLineShouldBeDistinguished(self):
+    unformatted_code = textwrap.dedent("""\
+        class Foo(object):
+
+            def bar(self):
+                if self.solo_generator_that_is_long is None and len(
+                        self.generators + self.next_batch) == 1:
+                    pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class Foo(object):
+            def bar(self):
+                if self.solo_generator_that_is_long is None and len(
+                        self.generators + self.next_batch) == 1:
+                    pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(
+        expected_formatted_code, reformatter.Reformat(
+            uwlines, verify=False))
 
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
@@ -1981,6 +3216,395 @@ class TestsForPython3Code(ReformatterTest):
     expected_formatted_code = 'methods.exec(sys.modules[name])\n'
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testAsyncFunctions(self):
+    if sys.version_info[1] < 5:
+      return
+    code = textwrap.dedent("""\
+        import asyncio
+        import time
+
+
+        @print_args
+        async def slow_operation():
+            await asyncio.sleep(1)
+            # print("Slow operation {} complete".format(n))
+
+
+        async def main():
+            start = time.time()
+            if (await get_html()):
+                pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
+
+  def testNoSpacesAroundPowerOparator(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, SPACES_AROUND_POWER_OPERATOR: True}'))
+      unformatted_code = textwrap.dedent("""\
+          a**b
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a ** b
+          """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+
+class TestsForFBStyle(ReformatterTest):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreateFacebookStyle())
+
+  def testNoNeedForLineBreaks(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+          just_one_arg, **kwargs):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(just_one_arg, **kwargs):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentClosingBracket(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+          first_argument_on_the_same_line,
+          second_argument_makes_the_line_too_long):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+            first_argument_on_the_same_line, second_argument_makes_the_line_too_long
+        ):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testBreakAfterOpeningBracketIfContentsTooBig(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(a, b, c, d, e, f, g, h, i, j, k, l, m,
+          n, o, p, q, r, s, t, u, v, w, x, y, z):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, \
+v, w, x, y, z
+        ):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentClosingBracketWithComments(self):
+    unformatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+          # comment about the first argument
+          first_argument_with_a_very_long_name_or_so,
+          # comment about the second argument
+          second_argument_makes_the_line_too_long):
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(
+            # comment about the first argument
+            first_argument_with_a_very_long_name_or_so,
+            # comment about the second argument
+            second_argument_makes_the_line_too_long
+        ):
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentImportAsNames(self):
+    unformatted_code = textwrap.dedent("""\
+    from module import (
+        internal_function as function,
+        SOME_CONSTANT_NUMBER1,
+        SOME_CONSTANT_NUMBER2,
+        SOME_CONSTANT_NUMBER3,
+    )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentTestListGexp(self):
+    # TODO(ambv): Arguably _DetermineMustSplitAnnotation shouldn't enforce
+    # breaks only on the basis of a trailing comma if the entire thing fits
+    # in a single line.
+    unformatted_code = textwrap.dedent("""\
+    try:
+        pass
+    except (
+        IOError, OSError, LookupError, RuntimeError, OverflowError
+    ) as exception:
+        pass
+
+    try:
+        pass
+    except (
+        IOError,
+        OSError,
+        LookupError,
+        RuntimeError,
+        OverflowError,
+    ) as exception:
+        pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testBrokenIdempotency(self):
+    # TODO(ambv): The following behaviour should be fixed.
+    pass0_code = textwrap.dedent("""\
+    try:
+        pass
+    except (IOError, OSError, LookupError, RuntimeError, OverflowError) as exception:
+        pass
+    """)
+    pass1_code = textwrap.dedent("""\
+    try:
+        pass
+    except (
+        IOError, OSError, LookupError, RuntimeError, OverflowError
+    ) as exception:
+        pass
+    """)
+    uwlines = _ParseAndUnwrap(pass0_code)
+    self.assertCodeEqual(pass1_code, reformatter.Reformat(uwlines))
+
+    pass2_code = textwrap.dedent("""\
+    try:
+        pass
+    except (
+        IOError, OSError, LookupError, RuntimeError, OverflowError
+    ) as exception:
+        pass
+    """)
+    uwlines = _ParseAndUnwrap(pass1_code)
+    self.assertCodeEqual(pass2_code, reformatter.Reformat(uwlines))
+
+  def testIfExprHangingIndent(self):
+    unformatted_code = textwrap.dedent("""\
+    if True:
+        if True:
+            if True:
+                if not self.frobbies and (
+                   self.foobars.counters['db.cheeses'] != 1 or
+                   self.foobars.counters['db.marshmellow_skins'] != 1):
+                    pass
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    if True:
+        if True:
+            if True:
+                if not self.frobbies and (
+                    self.foobars.counters['db.cheeses'] != 1 or
+                    self.foobars.counters['db.marshmellow_skins'] != 1
+                ):
+                    pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSimpleDedenting(self):
+    unformatted_code = textwrap.dedent("""\
+    if True:
+        self.assertEqual(result.reason_not_added, "current preflight is still running")
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    if True:
+        self.assertEqual(
+            result.reason_not_added, "current preflight is still running"
+        )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingWithSubscripts(self):
+    unformatted_code = textwrap.dedent("""\
+    class Foo:
+        class Bar:
+            @classmethod
+            def baz(cls, clues_list, effect, constraints, constraint_manager):
+                if clues_lists:
+                   return cls.single_constraint_not(clues_lists, effect, constraints[0], constraint_manager)
+
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    class Foo:
+        class Bar:
+            @classmethod
+            def baz(cls, clues_list, effect, constraints, constraint_manager):
+                if clues_lists:
+                    return cls.single_constraint_not(
+                        clues_lists, effect, constraints[0], constraint_manager
+                    )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingCallsWithInnerLists(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            cls.effect_clues = {
+                'effect': Clue((cls.effect_time, 'apache_host'), effect_line, 40)
+            }
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingListComprehension(self):
+    unformatted_code = textwrap.dedent("""\
+    class Foo():
+        def _pack_results_for_constraint_or():
+            self.param_groups = dict(
+                (
+                    key + 1, ParamGroup(groups[key], default_converter)
+                ) for key in six.moves.range(len(groups))
+            )
+
+            for combination in cls._clues_combinations(clues_lists):
+                if all(
+                    cls._verify_constraint(combination, effect, constraint)
+                    for constraint in constraints
+                ):
+                    pass
+
+            guessed_dict = dict(
+                (
+                    key, guessed_pattern_matches[key]
+                ) for key in six.moves.range(len(guessed_pattern_matches))
+            )
+
+            content = "".join(
+                itertools.chain(
+                    (first_line_fragment, ), lines_between, (last_line_fragment, )
+                )
+            )
+
+            rule = Rule(
+                [self.cause1, self.cause2, self.cause1, self.cause2], self.effect, constraints1,
+                Rule.LINKAGE_AND
+            )
+
+            assert sorted(log_type.files_to_parse) == [
+                ('localhost', os.path.join(path, 'node_1.log'), super_parser),
+                ('localhost', os.path.join(path, 'node_2.log'), super_parser)
+            ]
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+    class Foo():
+        def _pack_results_for_constraint_or():
+            self.param_groups = dict(
+                (key + 1, ParamGroup(groups[key], default_converter))
+                for key in six.moves.range(len(groups))
+            )
+
+            for combination in cls._clues_combinations(clues_lists):
+                if all(
+                    cls._verify_constraint(combination, effect, constraint)
+                    for constraint in constraints
+                ):
+                    pass
+
+            guessed_dict = dict(
+                (key, guessed_pattern_matches[key])
+                for key in six.moves.range(len(guessed_pattern_matches))
+            )
+
+            content = "".join(
+                itertools.chain(
+                    (first_line_fragment, ), lines_between, (last_line_fragment, )
+                )
+            )
+
+            rule = Rule(
+                [self.cause1, self.cause2, self.cause1, self.cause2], self.effect,
+                constraints1, Rule.LINKAGE_AND
+            )
+
+            assert sorted(log_type.files_to_parse) == [
+                ('localhost', os.path.join(path, 'node_1.log'), super_parser),
+                ('localhost', os.path.join(path, 'node_2.log'), super_parser)
+            ]
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testMustSplitDedenting(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            effect_line = FrontInput(
+                effect_line_offset, line_content,
+                LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
+            )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentIfConditional(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            if True:
+                if not self.frobbies and (
+                    self.foobars.counters['db.cheeses'] != 1 or
+                    self.foobars.counters['db.marshmellow_skins'] != 1
+                ):
+                    pass
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentSet(self):
+    unformatted_code = textwrap.dedent("""\
+    class _():
+        def _():
+            assert set(self.constraint_links.get_links()) == set(
+                [
+                    (2, 10, 100),
+                    (2, 10, 200),
+                    (2, 20, 100),
+                    (2, 20, 200),
+                ]
+            )
+    """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
+
+  def testDedentingInnerScope(self):
+    code = textwrap.dedent("""\
+        class Foo():
+            @classmethod
+            def _pack_results_for_constraint_or(cls, combination, constraints):
+                return cls._create_investigation_result(
+                    (clue for clue in combination if not clue == Verifier.UNMATCHED),
+                    constraints, InvestigationResult.OR
+                )
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(code, reformatted_code)
+
+    uwlines = _ParseAndUnwrap(reformatted_code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(code, reformatted_code)
 
 
 def _ParseAndUnwrap(code, dumptree=False):

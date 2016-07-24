@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,8 +37,9 @@ class CommentSplicerTest(unittest.TestCase):
       self.assertIn(text_in_comment, node_value)
 
   def _FindNthChildNamed(self, node, name, n=1):
-    for i, child in enumerate(py3compat.ifilter(
-        lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
+    for i, child in enumerate(
+        py3compat.ifilter(lambda c: pytree_utils.NodeName(c) == name,
+                          node.pre_order())):
       if i == n - 1:
         return child
     raise RuntimeError('No Nth child for n={0}'.format(n))

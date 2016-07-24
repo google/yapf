@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,8 +71,8 @@ def _NormalizeCode(code):
   elif re.match(r'(elif|else)\b', code):
     try:
       try_code = 'if True:\n    pass\n' + code + '\n    pass'
-      ast.parse(textwrap.dedent(try_code.lstrip('\n')).lstrip(), '<string>',
-                'exec')
+      ast.parse(
+          textwrap.dedent(try_code.lstrip('\n')).lstrip(), '<string>', 'exec')
       code = try_code
     except SyntaxError:
       # The assumption here is that the code is on a single line.

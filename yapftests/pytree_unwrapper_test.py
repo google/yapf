@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -278,6 +278,19 @@ class PytreeUnwrapperTest(unittest.TestCase):
         (0, ['# Comment #2']),
         (0, ['def', 'f', '(', ')', ':']),
         (1, ['pass'])])  # yapf: disable
+
+  def testSplitListWithComment(self):
+    code = textwrap.dedent(r"""
+      a = [
+          'a',
+          'b',
+          'c',  # hello world
+      ]
+      """)
+    uwlines = self._ParseAndUnwrap(code)
+    self._CheckUnwrappedLines(uwlines, [
+        (0, ['a', '=', '[', "'a'", ',', "'b'", ',',
+             "'c'", ',', '# hello world', ']'])])  # yapf: disable
 
 
 class MatchBracketsTest(unittest.TestCase):

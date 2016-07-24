@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,9 +20,14 @@ from yapf.yapflib import comment_splicer
 from yapf.yapflib import line_joiner
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
+from yapf.yapflib import style
 
 
 class LineJoinerTest(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
 
   def _ParseAndUnwrap(self, code):
     """Produces unwrapped lines from the given code.
@@ -38,7 +43,10 @@ class LineJoinerTest(unittest.TestCase):
     """
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
-    return pytree_unwrapper.UnwrapPyTree(tree)
+    uwlines = pytree_unwrapper.UnwrapPyTree(tree)
+    for uwl in uwlines:
+      uwl.CalculateFormattingInformation()
+    return uwlines
 
   def _CheckLineJoining(self, code, join_lines):
     """Check that the given UnwrappedLines are joined as expected.
@@ -82,6 +90,12 @@ class LineJoinerTest(unittest.TestCase):
         if isinstance(e, int):    continue
         """)
     self._CheckLineJoining(code, join_lines=True)
+
+  def testOverColumnLimit(self):
+    code = textwrap.dedent(u"""\
+        if instance(bbbbbbbbbbbbbbbbbbbbbbbbb, int): cccccccccccccccccccccccccc = ddddddddddddddddddddd
+        """)
+    self._CheckLineJoining(code, join_lines=False)
 
 
 if __name__ == '__main__':

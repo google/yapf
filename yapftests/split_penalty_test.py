@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
 
 UNBREAKABLE = split_penalty.UNBREAKABLE
+DOTTED_NAME = split_penalty.DOTTED_NAME
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
 CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
-SUBSCRIPT_LIST = split_penalty.SUBSCRIPT_LIST
 
 
 class SplitPenaltyTest(unittest.TestCase):
@@ -82,7 +82,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('foo', UNBREAKABLE),
         ('(', UNBREAKABLE),
         ('x', None),
-        (')', None),
+        (')', STRONGLY_CONNECTED),
         (':', UNBREAKABLE),
         ('pass', None),
     ])  # yapf: disable
@@ -98,7 +98,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('foo', UNBREAKABLE),
         ('(', UNBREAKABLE),
         ('x', None),
-        (')', None),
+        (')', STRONGLY_CONNECTED),
         (':', UNBREAKABLE),
         ('pass', None),
     ])  # yapf: disable
@@ -136,7 +136,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (',', UNBREAKABLE),
         ('b', UNBREAKABLE),
         (':', UNBREAKABLE),
-        ('None', None),
+        ('None', UNBREAKABLE),
     ])  # yapf: disable
 
     # Test dotted names.
@@ -164,41 +164,21 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('a', None), ('=', None), ('{', None),
-        ("'x'", STRONGLY_CONNECTED),
+        ("'x'", None),
         (':', STRONGLY_CONNECTED),
         ('42', None),
         (',', None),
-        ('y', STRONGLY_CONNECTED),
+        ('y', None),
         ('(', UNBREAKABLE),
         ('lambda', STRONGLY_CONNECTED),
         ('a', UNBREAKABLE),
         (':', UNBREAKABLE),
-        ('23', STRONGLY_CONNECTED),
+        ('23', UNBREAKABLE),
         (')', UNBREAKABLE),
         (':', STRONGLY_CONNECTED),
         ('37', None),
         (',', None),
         ('}', None),
-    ])  # yapf: disable
-
-    # Test subscripts.
-    code = textwrap.dedent(r"""
-      a[x(42):37:-1]
-      """)
-    tree = self._ParseAndComputePenalties(code)
-    self._CheckPenalties(tree, [
-        ('a', None),
-        ('[', UNBREAKABLE),
-        ('x', SUBSCRIPT_LIST),
-        ('(', UNBREAKABLE),
-        ('42', SUBSCRIPT_LIST),
-        (')', UNBREAKABLE),
-        (':', SUBSCRIPT_LIST),
-        ('37', SUBSCRIPT_LIST),
-        (':', SUBSCRIPT_LIST),
-        ('-', SUBSCRIPT_LIST),
-        ('1', SUBSCRIPT_LIST),
-        (']', UNBREAKABLE),
     ])  # yapf: disable
 
     # Test list comprehension.
@@ -208,18 +188,18 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('[', None),
-        ('a', None),
-        ('for', None),
+        ('a', STRONGLY_CONNECTED),
+        ('for', STRONGLY_CONNECTED),
         ('a', STRONGLY_CONNECTED),
         ('in', STRONGLY_CONNECTED),
         ('foo', STRONGLY_CONNECTED),
-        ('if', 0),
+        ('if', STRONGLY_CONNECTED),
         ('a', STRONGLY_CONNECTED),
         ('.', UNBREAKABLE),
-        ('x', UNBREAKABLE),
+        ('x', DOTTED_NAME),
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
-        (']', None),
+        (']', STRONGLY_CONNECTED),
     ])  # yapf: disable
 
   def testFuncCalls(self):

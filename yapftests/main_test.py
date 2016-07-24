@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class RunMainTest(unittest.TestCase):
     sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
       with self.assertRaises(SystemExit):
-        ret = yapf.run_main()
+        yapf.run_main()
       self.assertEqual(out.getvalue(), '')
       self.assertEqual(err.getvalue(), expected_message)
 
@@ -91,7 +91,7 @@ class MainTest(unittest.TestCase):
     with patched_input(code):
       with captured_output() as (out, err):
         ret = yapf.main(['-', '--style=chromium'])
-        self.assertEqual(ret, 0)
+        self.assertEqual(ret, 2)
         self.assertEqual(out.getvalue(), chromium_code)
 
   def testEchoBadInput(self):
@@ -99,7 +99,7 @@ class MainTest(unittest.TestCase):
     with patched_input(bad_syntax):
       with captured_output() as (out, err):
         with self.assertRaisesRegexp(SyntaxError, "unexpected indent"):
-          ret = yapf.main([])
+          yapf.main([])
 
   def testHelp(self):
     with captured_output() as (out, err):

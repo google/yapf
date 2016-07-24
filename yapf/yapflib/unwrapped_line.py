@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ single line if there were no line length restrictions. It's then used by the
 parser to perform the wrapping required to comply with the style guide.
 """
 
-from lib2to3 import pytree
-
 from yapf.yapflib import format_token
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
@@ -73,16 +72,15 @@ class UnwrappedLine(object):
           _SpaceRequiredBetween(prev_token, token)):
         token.spaces_required_before = 1
 
+      token.total_length = (
+          prev_length + len(token.value) + token.spaces_required_before)
+
       # The split penalty has to be computed before {must|can}_break_before,
       # because these may use it for their decision.
       token.split_penalty += _SplitPenalty(prev_token, token)
       token.must_break_before = _MustBreakBefore(prev_token, token)
       token.can_break_before = (token.must_break_before or
                                 _CanBreakBefore(prev_token, token))
-
-      token.total_length = (
-          prev_length + len(token.value) + token.spaces_required_before
-      )
 
       prev_length = token.total_length
       prev_token = token
@@ -106,7 +104,6 @@ class UnwrappedLine(object):
     Arguments:
       node: the node to append
     """
-    assert isinstance(node, pytree.Leaf)
     self.AppendToken(format_token.FormatToken(node))
 
   @property
@@ -142,10 +139,10 @@ class UnwrappedLine(object):
     tokens_str = ' '.join(tok.value for tok in self._tokens)
     return indent + tokens_str
 
-  def __str__(self):
+  def __str__(self):  # pragma: no cover
     return self.AsCode()
 
-  def __repr__(self):
+  def __repr__(self):  # pragma: no cover
     tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value)
                             for tok in self._tokens])
     return 'UnwrappedLine(depth={0}, tokens=[{1}])'.format(self.depth,
@@ -185,15 +182,20 @@ def _IsIdNumberStringToken(tok):
 
 
 def _IsUnaryOperator(tok):
-  return tok.subtype == format_token.Subtype.UNARY_OPERATOR
-
-
-def _IsBinaryOperator(tok):
-  return tok.subtype == format_token.Subtype.BINARY_OPERATOR
+  return format_token.Subtype.UNARY_OPERATOR in tok.subtypes
 
 
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
+  lval = left.value
+  rval = right.value
+  if (left.is_pseudo_paren and _IsIdNumberStringToken(right) and
+      left.previous_token and _IsIdNumberStringToken(left.previous_token)):
+    # Space between keyword... tokens and pseudo parens.
+    return True
+  if left.is_pseudo_paren or right.is_pseudo_paren:
+    # The pseudo-parens shouldn't affect spacing.
+    return False
   if left.is_continuation or right.is_continuation:
     # The continuation node's value has all of the spaces it needs.
     return False
@@ -203,106 +205,110 @@ def _SpaceRequiredBetween(left, right):
   if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
     # Spaces between keyword, string, number, and identifier tokens.
     return True
-  if left.value == ',' and right.value == ':':
+  if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
     return True
-  if right.value in ':,':
+  if rval in ':,':
     # Otherwise, we never want a space before a colon or comma.
     return False
-  if left.value == ',' and right.value in ']})':
+  if lval == ',' and rval in ']})':
     # Add a space between ending ',' and closing bracket if requested.
     return style.Get('SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET')
-  if left.value == ',':
+  if lval == ',':
     # We want a space after a comma.
     return True
-  if left.value == 'from' and right.value == '.':
+  if lval == 'from' and rval == '.':
     # Space before the '.' in an import statement.
     return True
-  if left.value == '.' and right.value == 'import':
+  if lval == '.' and rval == 'import':
     # Space after the '.' in an import statement.
     return True
   if ((right.is_keyword or right.is_name) and
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
     return True
-  if left.is_string and right.value not in '[)]}.':
+  if left.is_string and rval not in '[)]}.':
     # A string followed by something other than a subscript, closing bracket,
     # or dot should have a space after it.
     return True
-  if _IsBinaryOperator(left) and _IsUnaryOperator(right):
+  if left.is_binary_op and _IsUnaryOperator(right):
     # Space between the binary opertor and the unary operator.
     return True
   if _IsUnaryOperator(left) and _IsUnaryOperator(right):
     # No space between two unary operators.
     return False
-  if _IsBinaryOperator(left) or _IsBinaryOperator(right):
+  if left.is_binary_op or right.is_binary_op:
+    if lval == '**' or rval == '**':
+      # Space around the "power" operator.
+      return style.Get('SPACES_AROUND_POWER_OPERATOR')
     # Enforce spaces around binary operators.
     return True
-  if (_IsUnaryOperator(left) and left.value != 'not' and
-      (right.is_name or right.is_number or right.value == '(')):
+  if (_IsUnaryOperator(left) and lval != 'not' and
+      (right.is_name or right.is_number or rval == '(')):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
     return False
-  if (left.subtype == format_token.Subtype.SUBSCRIPT_COLON or
-      right.subtype == format_token.Subtype.SUBSCRIPT_COLON):
+  if (format_token.Subtype.SUBSCRIPT_COLON in left.subtypes or
+      format_token.Subtype.SUBSCRIPT_COLON in right.subtypes):
     # A subscript shouldn't have spaces separating its colons.
     return False
-  if (left.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN or
-      right.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN):
+  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes or
+      format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
     return False
-  if left.subtype in {
-      format_token.Subtype.VARARGS_STAR, format_token.Subtype.KWARGS_STAR_STAR
-  }:
+  if (format_token.Subtype.VARARGS_STAR in left.subtypes or
+      format_token.Subtype.KWARGS_STAR_STAR in left.subtypes):
     # Don't add a space after a vararg's star or a keyword's star-star.
     return False
-  if left.value == '@':
+  if lval == '@':
     # Decorators shouldn't be separated from the 'at' sign.
     return False
-  if left.value == '.' or right.value == '.':
+  if lval == '.' or rval == '.':
     # Don't place spaces between dots.
     return False
-  if ((left.value == '(' and right.value == ')') or
-      (left.value == '[' and right.value == ']') or
-      (left.value == '{' and right.value == '}')):
+  if ((lval == '(' and rval == ')') or (lval == '[' and rval == ']') or
+      (lval == '{' and rval == '}')):
     # Empty objects shouldn't be separted by spaces.
     return False
-  if (left.value in pytree_utils.OPENING_BRACKETS and
-      right.value in pytree_utils.OPENING_BRACKETS):
+  if (lval in pytree_utils.OPENING_BRACKETS and
+      rval in pytree_utils.OPENING_BRACKETS):
     # Nested objects' opening brackets shouldn't be separated.
     return False
-  if (left.value in pytree_utils.CLOSING_BRACKETS and
-      right.value in pytree_utils.CLOSING_BRACKETS):
+  if (lval in pytree_utils.CLOSING_BRACKETS and
+      rval in pytree_utils.CLOSING_BRACKETS):
     # Nested objects' closing brackets shouldn't be separated.
     return False
-  if left.value in pytree_utils.CLOSING_BRACKETS and right.value in '([':
+  if lval in pytree_utils.CLOSING_BRACKETS and rval in '([':
     # A call, set, dictionary, or subscript that has a call or subscript after
     # it shouldn't have a space between them.
     return False
-  if (left.value in pytree_utils.OPENING_BRACKETS and
-      _IsIdNumberStringToken(right)):
+  if lval in pytree_utils.OPENING_BRACKETS and _IsIdNumberStringToken(right):
     # Don't separate the opening bracket from the first item.
     return False
-  if left.is_name and right.value in '([':
+  if left.is_name and rval in '([':
     # Don't separate a call or array access from the name.
     return False
-  if right.value in pytree_utils.CLOSING_BRACKETS:
+  if rval in pytree_utils.CLOSING_BRACKETS:
     # Don't separate the closing bracket from the last item.
     # FIXME(morbo): This might be too permissive.
     return False
-  if left.value == 'print' and right.value == '(':
+  if lval == 'print' and rval == '(':
     # Special support for the 'print' function.
     return False
-  if left.value in pytree_utils.OPENING_BRACKETS and _IsUnaryOperator(right):
+  if lval in pytree_utils.OPENING_BRACKETS and _IsUnaryOperator(right):
     # Don't separate a unary operator from the opening bracket.
     return False
-  if (left.value in pytree_utils.OPENING_BRACKETS and right.subtype in {
-      format_token.Subtype.VARARGS_STAR, format_token.Subtype.KWARGS_STAR_STAR
-  }):
+  if (lval in pytree_utils.OPENING_BRACKETS and
+      (format_token.Subtype.VARARGS_STAR in right.subtypes or
+       format_token.Subtype.KWARGS_STAR_STAR in right.subtypes)):
     # Don't separate a '*' or '**' from the opening bracket.
     return False
-  if right.value == ';':
+  if rval == ';':
     # Avoid spaces before a semicolon. (Why is there a semicolon?!)
+    return False
+  if lval == '(' and rval == 'await':
+    # Special support for the 'await' keyword. Don't separate the 'await'
+    # keyword from an opening paren.
     return False
   return True
 
@@ -312,44 +318,57 @@ def _MustBreakBefore(prev_token, cur_token):
   if prev_token.is_comment:
     # Must break if the previous token was a comment.
     return True
-  if (_IsSurroundedByBrackets(cur_token) and cur_token.is_string and
-      prev_token.is_string):
+  if (cur_token.is_string and prev_token.is_string and
+      IsSurroundedByBrackets(cur_token)):
     # We want consecutive strings to be on separate lines. This is a
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
     return True
-  return pytree_utils.GetNodeAnnotation(cur_token.node,
-                                        pytree_utils.Annotation.MUST_SPLIT,
-                                        default=False)
+  return pytree_utils.GetNodeAnnotation(
+      cur_token.node, pytree_utils.Annotation.MUST_SPLIT, default=False)
 
 
 def _CanBreakBefore(prev_token, cur_token):
   """Return True if a line break may occur before the current token."""
+  pval = prev_token.value
+  cval = cur_token.value
+  if py3compat.PY3:
+    if pval == 'yield' and cval == 'from':
+      # Don't break before a yield argument.
+      return False
+    if pval in {'async', 'await'} and cval in {'def', 'with', 'for'}:
+      # Don't break after sync keywords.
+      return False
   if cur_token.split_penalty >= split_penalty.UNBREAKABLE:
     return False
-  if prev_token.value == '@':
+  if pval == '@':
     # Don't break right after the beginning of a decorator.
     return False
-  if cur_token.value == ':':
+  if cval == ':':
     # Don't break before the start of a block of code.
     return False
-  if cur_token.value == ',':
+  if cval == ',':
     # Don't break before a comma.
     return False
-  if prev_token.is_name and cur_token.value == '(':
+  if prev_token.is_name and cval == '(':
     # Don't break in the middle of a function definition or call.
     return False
-  if prev_token.is_name and cur_token.value == '[':
+  if prev_token.is_name and cval == '[':
     # Don't break in the middle of an array dereference.
     return False
-  if prev_token.is_name and cur_token.value == '.':
+  if prev_token.is_name and cval == '.':
     # Don't break before the '.' in a dotted name.
     return False
-  # TODO(morbo): There may be more to add here.
+  if cur_token.is_comment and prev_token.lineno == cur_token.lineno:
+    # Don't break a comment at the end of the line.
+    return False
+  if format_token.Subtype.UNARY_OPERATOR in prev_token.subtypes:
+    # Don't break after a unary token.
+    return False
   return True
 
 
-def _IsSurroundedByBrackets(tok):
+def IsSurroundedByBrackets(tok):
   """Return True if the token is surrounded by brackets."""
   paren_count = 0
   brace_count = 0
@@ -381,66 +400,82 @@ def _IsSurroundedByBrackets(tok):
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
+_BITWISE_OPERATORS = frozenset({'&', '|', '^'})
 _TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
-_LIST_COMP_OPERATORS = frozenset({
-    format_token.Subtype.COMP_FOR, format_token.Subtype.COMP_IF
-})
 
 
 def _SplitPenalty(prev_token, cur_token):
   """Return the penalty for breaking the line before the current token."""
+  pval = prev_token.value
+  cval = cur_token.value
+  if pval == 'not':
+    return split_penalty.UNBREAKABLE
+
   if cur_token.node_split_penalty > 0:
     return cur_token.node_split_penalty
 
   if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
     # Prefer to split before 'and' and 'or'.
-    if prev_token.value in _LOGICAL_OPERATORS:
+    if pval in _LOGICAL_OPERATORS:
       return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
-    if cur_token.value in _LOGICAL_OPERATORS:
+    if cval in _LOGICAL_OPERATORS:
       return 0
   else:
     # Prefer to split after 'and' and 'or'.
-    if prev_token.value in _LOGICAL_OPERATORS:
+    if pval in _LOGICAL_OPERATORS:
       return 0
-    if cur_token.value in _LOGICAL_OPERATORS:
+    if cval in _LOGICAL_OPERATORS:
       return style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR')
 
-  if cur_token.subtype in _LIST_COMP_OPERATORS:
+  if style.Get('SPLIT_BEFORE_BITWISE_OPERATOR'):
+    # Prefer to split before '&', '|', and '^'.
+    if pval in _BITWISE_OPERATORS:
+      return style.Get('SPLIT_PENALTY_BITWISE_OPERATOR')
+    if cval in _BITWISE_OPERATORS:
+      return 0
+  else:
+    # Prefer to split after '&', '|', and '^'.
+    if pval in _BITWISE_OPERATORS:
+      return 0
+    if cval in _BITWISE_OPERATORS:
+      return style.Get('SPLIT_PENALTY_BITWISE_OPERATOR')
+
+  if (format_token.Subtype.COMP_FOR in cur_token.subtypes or
+      format_token.Subtype.COMP_IF in cur_token.subtypes):
     # We don't mind breaking before the 'for' or 'if' of a list comprehension.
     return 0
-  if prev_token.subtype is format_token.Subtype.UNARY_OPERATOR:
+  if format_token.Subtype.UNARY_OPERATOR in prev_token.subtypes:
     # Try not to break after a unary operator.
     return style.Get('SPLIT_PENALTY_AFTER_UNARY_OPERATOR')
-  if prev_token.value == ',':
+  if pval == ',':
     # Breaking after a comma is fine, if need be.
     return 0
-  if prev_token.value == ':':
-    # We would rather not split after a colon.
-    return split_penalty.STRONGLY_CONNECTED
-  if prev_token.value == '==':
+  if prev_token.is_binary_op:
     # We would rather not split after an equality operator.
     return 20
-  if prev_token.subtype in {
-      format_token.Subtype.VARARGS_STAR, format_token.Subtype.KWARGS_STAR_STAR
-  }:
+  if (format_token.Subtype.VARARGS_STAR in prev_token.subtypes or
+      format_token.Subtype.KWARGS_STAR_STAR in prev_token.subtypes):
     # Don't split after a varargs * or kwargs **.
     return split_penalty.UNBREAKABLE
-  if prev_token.value in pytree_utils.OPENING_BRACKETS:
+  if prev_token.OpensScope() and cval != '(':
     # Slightly prefer
     return style.Get('SPLIT_PENALTY_AFTER_OPENING_BRACKET')
-  if cur_token.value == ':':
+  if cval == ':':
     # Don't split before a colon.
     return split_penalty.UNBREAKABLE
-  if cur_token.value == '=':
+  if cval == '=':
     # Don't split before an assignment.
     return split_penalty.UNBREAKABLE
-  if (prev_token.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN or
-      cur_token.subtype == format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN):
+  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in prev_token.subtypes or
+      format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes):
     # Don't break before or after an default or named assignment.
     return split_penalty.UNBREAKABLE
-  if cur_token.value == '==':
+  if cval == '==':
     # We would rather not split before an equality operator.
     return split_penalty.STRONGLY_CONNECTED
-  if prev_token.value in _TERM_OPERATORS or cur_token.value in _TERM_OPERATORS:
+  if cur_token.ClosesScope():
+    # Give a slight penalty for splitting before the closing scope.
+    return 100
+  if pval in _TERM_OPERATORS or cval in _TERM_OPERATORS:
     return 50
   return 0

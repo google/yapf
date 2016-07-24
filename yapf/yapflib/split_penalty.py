@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,26 +15,21 @@
 
 from lib2to3 import pytree
 
+from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
+from yapf.yapflib import style
 
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
+DOTTED_NAME = 2500
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
-SUBSCRIPT_LIST = 5000
 
-OR_TEST = 42
-AND_TEST = 142
 NOT_TEST = 242
-COMPARISON_EXPRESSION = 342
-STAR_EXPRESSION = 442
-EXPR_EXPRESSION = 542
-XOR_EXPRESSION = 642
-AND_EXPRESSION = 742
-SHIFT_EXPRESSION = 842
+COMPARISON_EXPRESSION = 842
 ARITHMETIC_EXPRESSION = 942
 
 
@@ -52,6 +47,18 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   Split penalties are attached as annotations to tokens.
   """
+
+  def Visit_import_as_names(self, node):  # pyline: disable=invalid-name
+    # import_as_names ::= import_as_name (',' import_as_name)* [',']
+    self.DefaultNodeVisit(node)
+    prev_child = None
+    for child in node.children:
+      if (prev_child and isinstance(prev_child, pytree.Leaf) and
+          prev_child.value == ','):
+        pytree_utils.SetNodeAnnotation(child,
+                                       pytree_utils.Annotation.SPLIT_PENALTY,
+                                       style.Get('SPLIT_PENALTY_IMPORT_NAMES'))
+      prev_child = child
 
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
     # classdef ::= 'class' NAME ['(' [arglist] ')'] ':' suite
@@ -85,9 +92,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_lambdef(self, node):  # pylint: disable=invalid-name
     # lambdef ::= 'lambda' [varargslist] ':' test
     # Loop over the lambda up to and including the colon.
-    lambda_has_arglist = pytree_utils.NodeName(node.children[1]) != 'COLON'
-    self._SetUnbreakableOnChildren(node,
-                                   num_children=3 if lambda_has_arglist else 2)
+    if style.Get('ALLOW_MULTILINE_LAMBDAS'):
+      self._SetStronglyConnected(node)
+    else:
+      self._SetUnbreakableOnChildren(node)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'
@@ -95,9 +103,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
     # Can't break before the opening paren of a parameter list.
     self._SetUnbreakable(node.children[0])
-    if len(node.children) == 2:
-      # Don't split an empty argument list if at all possible.
-      self._SetStronglyConnected(node.children[1])
+    if not style.Get('DEDENT_CLOSING_BRACKETS'):
+      self._SetStronglyConnected(node.children[-1])
 
   def Visit_argument(self, node):  # pylint: disable=invalid-name
     # argument ::= test [comp_for] | test '=' test  # Really [keyword '='] test
@@ -107,43 +114,46 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     while index < len(node.children) - 1:
       next_child = node.children[index + 1]
       if isinstance(next_child, pytree.Leaf) and next_child.value == '=':
-        self._SetStronglyConnected(node.children[index + 1],
-                                   node.children[index + 2])
+        self._SetUnbreakable(_FirstChildNode(node.children[index + 1]))
+        self._SetUnbreakable(_FirstChildNode(node.children[index + 2]))
       index += 1
 
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name
     # dotted_name ::= NAME ('.' NAME)*
-    self._SetUnbreakableOnChildren(node, num_children=len(node.children))
+    self._SetUnbreakableOnChildren(node)
 
   def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
     # dictsetmaker ::= ( (test ':' test
     #                      (comp_for | (',' test ':' test)* [','])) |
     #                    (test (comp_for | (',' test)* [','])) )
-    prev_child = None
     for child in node.children:
       self.Visit(child)
       if pytree_utils.NodeName(child) == 'COLON':
         # This is a key to a dictionary. We don't want to split the key if at
         # all possible.
-        self._SetStronglyConnected(prev_child, child)
-      prev_child = child
+        self._SetStronglyConnected(child)
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
     self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
-      self._SetUnbreakableOnChildren(node, num_children=len(node.children))
-    elif node.children[0].value == '[':
-      self._SetExpressionPenalty(node, SUBSCRIPT_LIST)
-      self._SetUnbreakable(node.children[0])
-      self._SetUnbreakable(node.children[-1])
+      self._SetUnbreakableOnChildren(node)
+      pytree_utils.SetNodeAnnotation(node.children[1],
+                                     pytree_utils.Annotation.SPLIT_PENALTY,
+                                     DOTTED_NAME)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       self._SetStronglyConnected(node.children[1])
     elif len(node.children) == 3:
-      if pytree_utils.NodeName(node.children[1]) == 'NAME':
+      if pytree_utils.NodeName(node.children[1]) not in {
+          'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison',
+          'atom'
+      }:
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
+      if pytree_utils.NodeName(node.children[-1]) == 'RSQB':
+        # Don't split the ending bracket of a subscript list.
+        self._SetStronglyConnected(node.children[-1])
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
     # power ::= atom trailer* ['**' factor]
@@ -161,7 +171,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       #   atom tr1 tr2
       # The last token of tr1 and the first token of tr2 comprise an unbreakable
       # region. For example: foo.bar.baz(1)
-      # We can't put breaks between either of the '.' or the '(' and the names
+      # We can't put breaks between either of the '.', '(', or '[' and the names
       # *preceding* them.
       prev_trailer_idx = 1
       while prev_trailer_idx < len(node.children) - 1:
@@ -188,10 +198,20 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for trailer in node.children[1:]:
       if pytree_utils.NodeName(trailer) != 'trailer':
         break
-      if trailer.children[0].value == '(':
+      if trailer.children[0].value in '([':
         if len(trailer.children) > 2:
-          self._SetUnbreakable(trailer.children[-1])
-          if _FirstChildNode(trailer).lineno == _LastChildNode(trailer).lineno:
+          subtypes = pytree_utils.GetNodeAnnotation(
+              trailer.children[0], pytree_utils.Annotation.SUBTYPE)
+          if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
+            self._SetStronglyConnected(_FirstChildNode(trailer.children[1]))
+
+          last_child_node = _LastChildNode(trailer)
+          if last_child_node.value.strip().startswith('#'):
+            last_child_node = last_child_node.prev_sibling
+          if not style.Get('DEDENT_CLOSING_BRACKETS'):
+            self._SetUnbreakable(last_child_node)
+
+          if _FirstChildNode(trailer).lineno == last_child_node.lineno:
             # If the trailer was originally on one line, then try to keep it
             # like that.
             self._SetExpressionPenalty(trailer, CONTIGUOUS_LIST)
@@ -212,25 +232,18 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
+    pytree_utils.SetNodeAnnotation(
+        _FirstChildNode(node), pytree_utils.Annotation.SPLIT_PENALTY, 0)
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
     pytree_utils.SetNodeAnnotation(node.children[0],
-                                   pytree_utils.Annotation.SPLIT_PENALTY, 0)
+                                   pytree_utils.Annotation.SPLIT_PENALTY,
+                                   style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     self._SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
-
-  def Visit_or_test(self, node):  # pylint: disable=invalid-name
-    # or_test ::= and_test ('or' and_test)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, OR_TEST)
-
-  def Visit_and_test(self, node):  # pylint: disable=invalid-name
-    # and_test ::= not_test ('and' not_test)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, AND_TEST)
 
   def Visit_not_test(self, node):  # pylint: disable=invalid-name
     # not_test ::= 'not' not_test | comparison
@@ -241,31 +254,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # comparison ::= expr (comp_op expr)*
     self.DefaultNodeVisit(node)
     self._SetExpressionPenalty(node, COMPARISON_EXPRESSION)
-
-  def Visit_star_expr(self, node):  # pylint: disable=invalid-name
-    # star_expr ::= '*' expr
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, STAR_EXPRESSION)
-
-  def Visit_expr(self, node):  # pylint: disable=invalid-name
-    # expr ::= xor_expr ('|' xor_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, EXPR_EXPRESSION)
-
-  def Visit_xor_expr(self, node):  # pylint: disable=invalid-name
-    # xor_expr ::= and_expr ('^' and_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, XOR_EXPRESSION)
-
-  def Visit_and_expr(self, node):  # pylint: disable=invalid-name
-    # and_expr ::= shift_expr ('&' shift_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, AND_EXPRESSION)
-
-  def Visit_shift_expr(self, node):  # pylint: disable=invalid-name
-    # shift_expr ::= arith_expr ('<<'|'>>' arith_expr)*
-    self.DefaultNodeVisit(node)
-    self._SetExpressionPenalty(node, SHIFT_EXPRESSION)
 
   def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
     # arith_expr ::= term (('+'|'-') term)*
@@ -280,15 +268,25 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if node.children[0].value == '(':
       if node.children[0].lineno == node.children[-1].lineno:
         self._SetExpressionPenalty(node, CONTIGUOUS_LIST)
-      if (pytree_utils.NodeName(node.parent) == 'if_stmt' and
-          node.children[-1].value == ')'):
-        pytree_utils.SetNodeAnnotation(node.children[-1],
-                                       pytree_utils.Annotation.SPLIT_PENALTY,
-                                       UNBREAKABLE)
+      if node.children[-1].value == ')':
+        if pytree_utils.NodeName(node.parent) == 'if_stmt':
+          pytree_utils.SetNodeAnnotation(node.children[-1],
+                                         pytree_utils.Annotation.SPLIT_PENALTY,
+                                         UNBREAKABLE)
+        else:
+          pytree_utils.SetNodeAnnotation(node.children[-1],
+                                         pytree_utils.Annotation.SPLIT_PENALTY,
+                                         COMPARISON_EXPRESSION)
     elif node.children[0].value in '[{':
       # Keep empty containers together if we can.
+      lbracket = node.children[0]
+      rbracket = node.children[-1]
       if len(node.children) == 2:
         self._SetUnbreakable(node.children[-1])
+      elif (rbracket.value in ']}' and
+            lbracket.get_lineno() == rbracket.get_lineno() and
+            rbracket.column - lbracket.column < style.Get('COLUMN_LIMIT')):
+        self._SetStronglyConnected(*node.children[1:])
 
   ############################################################################
   # Helper methods that set the annotations.
@@ -303,11 +301,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
                    STRONGLY_CONNECTED)
 
-  def _SetUnbreakableOnChildren(self, node, num_children):
+  def _SetUnbreakableOnChildren(self, node):
     """Set an UNBREAKABLE penalty annotation on children of node."""
     for child in node.children:
       self.Visit(child)
-    for i in py3compat.range(1, num_children):
+    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
+    for i in py3compat.range(start, len(node.children)):
       self._SetUnbreakable(node.children[i])
 
   def _SetExpressionPenalty(self, node, penalty):
@@ -321,8 +320,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         if node.value in {'(', 'for', 'if'}:
           return
         penalty_annotation = pytree_utils.GetNodeAnnotation(
-            node, pytree_utils.Annotation.SPLIT_PENALTY,
-            default=0)
+            node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
         if penalty_annotation < penalty:
           pytree_utils.SetNodeAnnotation(node,
                                          pytree_utils.Annotation.SPLIT_PENALTY,
@@ -348,14 +346,15 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
   for child in tree.children:
     _RecAnnotate(child, annotate_name, annotate_value)
   if isinstance(tree, pytree.Leaf):
-    cur_annotate = pytree_utils.GetNodeAnnotation(tree, annotate_name,
-                                                  default=0)
+    cur_annotate = pytree_utils.GetNodeAnnotation(
+        tree, annotate_name, default=0)
     if cur_annotate < annotate_value:
       pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
 
 
 def _AllowBuilderStyleCalls(node):
   """Allow splitting before '.' if it's a builder style function call."""
+
   def RecGetLeaves(node):
     if isinstance(node, pytree.Leaf):
       return [node]
@@ -369,8 +368,8 @@ def _AllowBuilderStyleCalls(node):
   for child in list_of_children:
     if child.value == '.':
       if prev_child.lineno != child.lineno:
-        pytree_utils.SetNodeAnnotation(
-            child, pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        pytree_utils.SetNodeAnnotation(child,
+                                       pytree_utils.Annotation.SPLIT_PENALTY, 0)
     prev_child = child
 
 

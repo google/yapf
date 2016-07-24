@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015-2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,12 +48,13 @@ def Reformat(uwlines, verify=True):
   """
   final_lines = []
   prev_uwline = None  # The previous line.
+  indent_width = style.Get('INDENT_WIDTH')
 
   for uwline in _SingleOrMergedLines(uwlines):
     first_token = uwline.first
-    _FormatFirstToken(first_token, uwline.depth, prev_uwline)
+    _FormatFirstToken(first_token, uwline.depth, prev_uwline, final_lines)
 
-    indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
+    indent_amt = indent_width * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
 
     if not uwline.disable:
@@ -64,71 +65,81 @@ def Reformat(uwlines, verify=True):
       if prev_uwline and prev_uwline.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainVerticalSpacing(prev_uwline, uwline)
+        _RetainVerticalSpacingBetweenTokens(uwline.first, prev_uwline.last)
+      if any(tok.is_comment for tok in uwline.tokens):
+        _RetainVerticalSpacingBeforeComments(uwline)
 
-    if _LineContainsI18n(uwline) or uwline.disable:
+    if (_LineContainsI18n(uwline) or uwline.disable or
+        _LineHasContinuationMarkers(uwline)):
       _RetainHorizontalSpacing(uwline)
-      _RetainVerticalSpacing(prev_uwline, uwline)
+      _RetainVerticalSpacing(uwline, prev_uwline)
       _EmitLineUnformatted(state)
-    elif _LineHasContinuationMarkers(uwline):
-      # The line contains continuation markers, in which case we assume the
-      # programmer formatted the code this way intentionally.
-      while state.next_token:
-        next_token_lineno = state.next_token.lineno
-        prev_token = state.next_token.previous_token
-        prev_token_lineno = (
-            prev_token.lineno if prev_token else next_token_lineno
-        )
-        if prev_token.is_continuation:
-          newline = False
-        else:
-          newline = next_token_lineno != prev_token_lineno
-        state.AddTokenToState(newline=newline, dry_run=False)
-    elif _CanPlaceOnSingleLine(uwline):
+    elif (_CanPlaceOnSingleLine(uwline) and not any(tok.must_split
+                                                    for tok in uwline.tokens)):
       # The unwrapped line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
     else:
-      _AnalyzeSolutionSpace(state, dry_run=False)
+      if not _AnalyzeSolutionSpace(state):
+        # Failsafe mode. If there isn't a solution to the line, then just emit
+        # it as is.
+        state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+        _RetainHorizontalSpacing(uwline)
+        _RetainVerticalSpacing(uwline, prev_uwline)
+        _EmitLineUnformatted(state)
 
     final_lines.append(uwline)
     prev_uwline = uwline
-
-  formatted_code = []
-  for line in final_lines:
-    formatted_line = []
-    for tok in line.tokens:
-      if tok.name in pytree_utils.NONSEMANTIC_TOKENS:
-        continue
-      formatted_line.append(tok.whitespace_prefix)
-      formatted_line.append(tok.value)
-    formatted_code.append(''.join(formatted_line))
-    if verify:
-      verifier.VerifyCode(formatted_code[-1])
-
-  return ''.join(formatted_code) + '\n'
+  return _FormatFinalLines(final_lines, verify)
 
 
 def _RetainHorizontalSpacing(uwline):
   """Retain all horizontal spacing between tokens."""
   for tok in uwline.tokens:
-    tok.RetainHorizontalSpacing()
+    tok.RetainHorizontalSpacing(uwline.first.column, uwline.depth)
 
 
-def _RetainVerticalSpacing(prev_uwline, cur_uwline):
-  """Retain all vertical spacing between lines."""
-  if not prev_uwline:
+def _RetainVerticalSpacing(cur_uwline, prev_uwline):
+  prev_tok = None
+  if prev_uwline is not None:
+    prev_tok = prev_uwline.last
+  for cur_tok in cur_uwline.tokens:
+    _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok)
+    prev_tok = cur_tok
+
+
+def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
+  """Retain vertical spacing between two tokens."""
+  if prev_tok is None:
     return
-  if prev_uwline.last.is_string:
-    prev_lineno = prev_uwline.last.lineno + prev_uwline.last.value.count('\n')
+
+  if prev_tok.is_string:
+    prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
+  elif prev_tok.is_pseudo_paren:
+    if not prev_tok.previous_token.is_multiline_string:
+      prev_lineno = prev_tok.previous_token.lineno
+    else:
+      prev_lineno = prev_tok.lineno
   else:
-    prev_lineno = prev_uwline.last.lineno
-  if cur_uwline.first.is_comment:
-    cur_lineno = cur_uwline.first.lineno - cur_uwline.first.value.count('\n')
+    prev_lineno = prev_tok.lineno
+
+  if cur_tok.is_comment:
+    cur_lineno = cur_tok.lineno - cur_tok.value.count('\n')
   else:
-    cur_lineno = cur_uwline.first.lineno
-  num_newlines = cur_lineno - prev_lineno
-  cur_uwline.first.AdjustNewlinesBefore(num_newlines)
+    cur_lineno = cur_tok.lineno
+
+  cur_tok.AdjustNewlinesBefore(cur_lineno - prev_lineno)
+
+
+def _RetainVerticalSpacingBeforeComments(uwline):
+  """Retain vertical spacing before comments."""
+  prev_token = None
+  for tok in uwline.tokens:
+    if tok.is_comment and prev_token:
+      if tok.lineno - tok.value.count('\n') - prev_token.lineno > 1:
+        tok.AdjustNewlinesBefore(ONE_BLANK_LINE)
+
+    prev_token = tok
 
 
 def _EmitLineUnformatted(state):
@@ -147,10 +158,16 @@ def _EmitLineUnformatted(state):
   while state.next_token:
     previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
+
     if previous_token.is_multiline_string:
       previous_lineno += previous_token.value.count('\n')
-    newline = (prev_lineno is not None and
-               state.next_token.lineno > previous_lineno)
+
+    if previous_token.is_continuation:
+      newline = False
+    else:
+      newline = (prev_lineno is not None and
+                 state.next_token.lineno > previous_lineno)
+
     prev_lineno = state.next_token.lineno
     state.AddTokenToState(newline=newline, dry_run=False)
 
@@ -167,11 +184,11 @@ def _LineContainsI18n(uwline):
   Returns:
     True if the line contains i18n comments or function calls. False otherwise.
   """
-  if (style.Get('I18N_COMMENT') and any(re.search(style.Get('I18N_COMMENT'),
-                                                  tok.value)
-                                        for tok in uwline.tokens)):
-    # Contains an i18n comment.
-    return True
+  if style.Get('I18N_COMMENT'):
+    for tok in uwline.tokens:
+      if tok.is_comment and re.match(style.Get('I18N_COMMENT'), tok.value):
+        # Contains an i18n comment.
+        return True
 
   if style.Get('I18N_FUNCTION_CALL'):
     length = len(uwline.tokens)
@@ -204,6 +221,28 @@ def _CanPlaceOnSingleLine(uwline):
           not any(tok.is_comment for tok in uwline.tokens[:-1]))
 
 
+def _FormatFinalLines(final_lines, verify):
+  formatted_code = []
+  for line in final_lines:
+    formatted_line = []
+    for tok in line.tokens:
+      if not tok.is_pseudo_paren:
+        formatted_line.append(tok.whitespace_prefix)
+        formatted_line.append(tok.value)
+      else:
+        if (not tok.next_token.whitespace_prefix.startswith('\n') and
+            not tok.next_token.whitespace_prefix.startswith(' ')):
+          if (tok.previous_token.value == ':' or
+              tok.next_token.value not in ',}])'):
+            formatted_line.append(' ')
+
+    formatted_code.append(''.join(formatted_line))
+    if verify:
+      verifier.VerifyCode(formatted_code[-1])
+
+  return ''.join(formatted_code) + '\n'
+
+
 class _StateNode(object):
   """An edge in the solution space from 'previous.state' to 'state'.
 
@@ -222,7 +261,7 @@ class _StateNode(object):
     self.newline = newline
     self.previous = previous
 
-  def __repr__(self):
+  def __repr__(self):  # pragma: no cover
     return 'StateNode(state=[\n{0}\n], newline={1})'.format(self.state,
                                                             self.newline)
 
@@ -238,7 +277,7 @@ _QueueItem = collections.namedtuple('QueueItem', ['ordered_penalty',
                                                   'state_node'])
 
 
-def _AnalyzeSolutionSpace(initial_state, dry_run=False):
+def _AnalyzeSolutionSpace(initial_state):
   """Analyze the entire solution space starting from initial_state.
 
   This implements a variant of Dijkstra's algorithm on the graph that spans
@@ -249,7 +288,9 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
   Arguments:
     initial_state: (format_decision_state.FormatDecisionState) The initial state
       to start the search from.
-    dry_run: (bool) Don't commit changes if True.
+
+  Returns:
+    True if a formatting solution was found. False otherwise.
   """
   count = 0
   seen = set()
@@ -275,9 +316,7 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
     if node.state in seen:
       continue
 
-    assert penalty >= prev_penalty
     prev_penalty = penalty
-
     seen.add(node.state)
 
     # FIXME(morbo): Add a 'decision' element?
@@ -287,10 +326,10 @@ def _AnalyzeSolutionSpace(initial_state, dry_run=False):
 
   if not p_queue:
     # We weren't able to find a solution. Do nothing.
-    return
+    return False
 
-  if not dry_run:
-    _ReconstructPath(initial_state, heapq.heappop(p_queue).state_node)
+  _ReconstructPath(initial_state, heapq.heappop(p_queue).state_node)
+  return True
 
 
 def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
@@ -313,16 +352,14 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
   if newline and not previous_node.state.CanSplit():
     # Don't add a newline if the token cannot be split.
     return count
-  if not newline and previous_node.state.MustSplit():
+  must_split = previous_node.state.MustSplit()
+  if not newline and must_split:
     # Don't add a token we must split but where we aren't splitting.
     return count
 
-  if previous_node.state.next_token.value in pytree_utils.CLOSING_BRACKETS:
-    if _MatchingParenSplitDecision(previous_node) != newline:
-      penalty += style.Get('SPLIT_PENALTY_MATCHING_BRACKET')
-
   node = _StateNode(previous_node.state, newline, previous_node)
-  penalty += node.state.AddTokenToState(newline=newline, dry_run=True)
+  penalty += node.state.AddTokenToState(
+      newline=newline, dry_run=True, must_split=must_split)
   heapq.heappush(p_queue, _QueueItem(_OrderedPenalty(penalty, count), node))
   return count + 1
 
@@ -346,30 +383,7 @@ def _ReconstructPath(initial_state, current):
     initial_state.AddTokenToState(newline=node.newline, dry_run=False)
 
 
-def _MatchingParenSplitDecision(current):
-  """Returns the splitting decision of the matching token.
-
-  Arguments:
-    current: (_StateNode) The node in the decision graph that is the end point
-      of the path with the least penalty.
-
-  Returns:
-    True if the matching paren split after it, False otherwise.
-  """
-  # FIXME(morbo): This is not ideal, because it backtracks through code.
-  # In the general case, it shouldn't be too bad, but it is technically
-  # O(n^2) behavior, which is never good.
-  matching_bracket = current.state.next_token.matching_bracket
-  newline = current.newline
-  while current.previous:
-    if current.state.next_token.previous_token == matching_bracket:
-      break
-    newline = current.newline
-    current = current.previous
-  return newline or current.state.next_token.is_comment
-
-
-def _FormatFirstToken(first_token, indent_depth, prev_uwline):
+def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
   """Format the first token in the unwrapped line.
 
   Add a newline and the required indent before the first token of the unwrapped
@@ -381,11 +395,13 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline):
     indent_depth: (int) The line's indentation depth.
     prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
+    final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
+      that have already been processed.
   """
-  first_token.AddWhitespacePrefix(_CalculateNumberOfNewlines(first_token,
-                                                             indent_depth,
-                                                             prev_uwline),
-                                  indent_level=indent_depth)
+  first_token.AddWhitespacePrefix(
+      _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
+                                 final_lines),
+      indent_level=indent_depth)
 
 
 NO_BLANK_LINES = 1
@@ -393,7 +409,8 @@ ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
-def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
+                               final_lines):
   """Calculate the number of newlines we need to add.
 
   Arguments:
@@ -402,6 +419,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
     indent_depth: (int) The line's indentation depth.
     prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
       previous to this line.
+    final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
+      that have already been processed.
 
   Returns:
     The number of newlines needed before the first token.
@@ -412,7 +431,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
     # The first line in the file. Don't add blank lines.
     # FIXME(morbo): Is this correct?
     if first_token.newlines is not None:
-      pytree_utils.SetNodeAnnotation(first_token.GetPytreeNode(),
+      pytree_utils.SetNodeAnnotation(first_token.node,
                                      pytree_utils.Annotation.NEWLINES, None)
     return 0
 
@@ -423,7 +442,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
 
   prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
-    if not indent_depth and first_token.value in {'class', 'def'}:
+    if (not indent_depth and first_token.value in {'class', 'def', 'async'}):
       # Separate a class or function from the module-level docstring with two
       # blank lines.
       return TWO_BLANK_LINES
@@ -445,9 +464,17 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
                                            prev_last_token):
           # Assume that the comment is "attached" to the current line.
           # Therefore, we want two blank lines before the comment.
-          prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
+          index = len(final_lines) - 1
+          while index > 0:
+            if not final_lines[index - 1].is_comment:
+              break
+            index -= 1
+          if final_lines[index - 1].first.value == '@':
+            final_lines[index].first.AdjustNewlinesBefore(NO_BLANK_LINES)
+          else:
+            prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
           if first_token.newlines is not None:
-            pytree_utils.SetNodeAnnotation(first_token.GetPytreeNode(),
+            pytree_utils.SetNodeAnnotation(first_token.node,
                                            pytree_utils.Annotation.NEWLINES,
                                            None)
           return NO_BLANK_LINES
@@ -464,10 +491,14 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline):
   else:
     first_token_lineno = first_token.lineno
 
-  if first_token_lineno - prev_last_token.lineno > 1:
+  prev_last_token_lineno = prev_last_token.lineno
+  if prev_last_token.is_multiline_string:
+    prev_last_token_lineno += prev_last_token.value.count('\n')
+
+  if first_token_lineno - prev_last_token_lineno > 1:
     return ONE_BLANK_LINE
-  else:
-    return NO_BLANK_LINES
+
+  return NO_BLANK_LINES
 
 
 def _SingleOrMergedLines(uwlines):
@@ -492,9 +523,7 @@ def _SingleOrMergedLines(uwlines):
           break
         if uwline.last.value != ':':
           leaf = pytree.Leaf(
-              type=token.SEMI,
-              value=';',
-              context=('', (uwline.lineno, column)))
+              type=token.SEMI, value=';', context=('', (uwline.lineno, column)))
           uwline.AppendToken(format_token.FormatToken(leaf))
         for tok in uwlines[index].tokens:
           uwline.AppendToken(tok)
