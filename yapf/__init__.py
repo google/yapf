@@ -155,14 +155,6 @@ def main(argv):
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
-    formatedCode = yapf_api.FormatCode(
-                        '\n'.join(original_source) + '\n',
-                        filename='<stdin>',
-                        style_config=style_config,
-                        lines=lines,
-                        verify=args.verify)
-    py3compat.EncodeAndWriteToStdout(formatedCode, encoding)
-    return 0
 
     reformatted_source, changed = yapf_api.FormatCode(
         py3compat.unicode('\n'.join(original_source) + '\n'),
