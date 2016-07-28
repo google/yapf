@@ -88,6 +88,12 @@ def main(argv):
       help='range of lines to reformat, one-based')
 
   parser.add_argument(
+      '-c',
+      '--changed-files-exit-code',
+      default=0,
+      type=int,
+      help='exit code to indicate that files were changed')
+  parser.add_argument(
       '-e',
       '--exclude',
       metavar='PATTERN',
@@ -161,7 +167,7 @@ def main(argv):
         lines=lines,
         verify=args.verify)
     sys.stdout.write(reformatted_source)
-    return 2 if changed else 0
+    return args.changed_files_exit_code if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
                                              args.exclude)
@@ -175,7 +181,7 @@ def main(argv):
       in_place=args.in_place,
       print_diff=args.diff,
       verify=args.verify)
-  return 2 if changed else 0
+  return args.changed_files_exit_code if changed else 0
 
 
 def FormatFiles(filenames,
