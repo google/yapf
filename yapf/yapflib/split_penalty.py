@@ -185,8 +185,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
             #   atom tr1() tr2
             # It may be necessary (though undesirable) to split up a previous
             # function call's parentheses to the next line.
-            self._SetUnbreakable(prev_trailer.children[-1])
-          self._SetUnbreakable(cur_trailer.children[0])
+            self._SetStronglyConnected(prev_trailer.children[-1])
+          self._SetStronglyConnected(cur_trailer.children[0])
           prev_trailer_idx = cur_trailer_idx
         else:
           break
