@@ -213,6 +213,13 @@ class FormatDecisionState(object):
       # Retain the split between the dictionary key and value.
       return True
 
+    if previous.value == '{':
+      closing = previous.matching_bracket
+      length = closing.total_length - previous.total_length + self.column
+      if length > column_limit and closing.previous_token.value == ',':
+        self.stack[-1].split_before_closing_bracket = True
+        return True
+
     if (format_token.Subtype.COMP_FOR in current.subtypes and
         format_token.Subtype.COMP_FOR not in previous.subtypes):
       # Split at the beginning of a list comprehension.

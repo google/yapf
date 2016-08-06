@@ -1750,6 +1750,42 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB26868213(self):
+    unformatted_code = textwrap.dedent("""\
+      def _():
+        xxxxxxxxxxxxxxxxxxx = {
+            'ssssss': {'ddddd': 'qqqqq',
+                       'p90': aaaaaaaaaaaaaaaaa,
+                       'p99': bbbbbbbbbbbbbbbbb,
+                       'lllllllllllll': yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy(),},
+            'bbbbbbbbbbbbbbbbbbbbbbbbbbbb': {
+                'ddddd': 'bork bork bork bo',
+                'p90': wwwwwwwwwwwwwwwww,
+                'p99': wwwwwwwwwwwwwwwww,
+                'lllllllllllll': None,  # use the default
+            }
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+      def _():
+        xxxxxxxxxxxxxxxxxxx = {
+            'ssssss': {
+                'ddddd': 'qqqqq',
+                'p90': aaaaaaaaaaaaaaaaa,
+                'p99': bbbbbbbbbbbbbbbbb,
+                'lllllllllllll': yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy(),
+            },
+            'bbbbbbbbbbbbbbbbbbbbbbbbbbbb': {
+                'ddddd': 'bork bork bork bo',
+                'p90': wwwwwwwwwwwwwwwww,
+                'p99': wwwwwwwwwwwwwwwww,
+                'lllllllllllll': None,  # use the default
+            }
+        }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB30173198(self):
     code = textwrap.dedent("""\
         class _():
