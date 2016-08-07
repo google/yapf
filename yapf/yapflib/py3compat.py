@@ -15,6 +15,8 @@
 
 import io
 import sys
+import codecs
+import locale
 
 PY3 = sys.version_info[0] == 3
 
@@ -22,7 +24,6 @@ if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
-  import codecs
   open_with_encoding = codecs.open
 
   import functools
@@ -73,17 +74,34 @@ def EncodeAndWriteToStdout(s, encoding):
     encoding: (string) The encoding of the string.
   """
   if PY3:
-    sys.stdout.buffer.write(codecs.encode(s, encoding))
+    if hasattr(sys.stdout, "buffer"):
+      sys.stdout.buffer.write(codecs.encode(s, encoding))
+    else:
+      sys.stdout.write(s)
   else:
     sys.stdout.write(s.encode(encoding))
 
 
-def unicode(s):
+def unicode(s, encoding):
   """Force conversion of s to unicode."""
+
   if PY3:
     return s
   else:
-    return __builtin__.unicode(s, 'utf-8')
+    if isinstance(s, __builtin__.unicode):
+      return s
+    return __builtin__.unicode(s, encoding)
+
+
+def stdin():
+  """sys.stdin convert, return locale encoding and converted stdin"""
+  _, encoding = locale.getdefaultlocale()
+  if PY3:
+    if sys.stdin.buffer.closed:
+      return encoding, io.open(0)
+    return encoding, io.TextIOWrapper(sys.stdin.buffer, encoding=encoding)
+  else:
+    return encoding, codecs.getreader(encoding)(sys.stdin)
 
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't

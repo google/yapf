@@ -141,6 +141,7 @@ def main(argv):
       parser.error('cannot use --in-place or --diff flags when reading '
                    'from stdin')
 
+    encoding, sys.stdin = py3compat.stdin()
     original_source = []
     while True:
       try:
@@ -154,13 +155,14 @@ def main(argv):
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
+
     reformatted_source, changed = yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(original_source) + '\n'),
+        py3compat.unicode('\n'.join(original_source) + '\n', encoding),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    sys.stdout.write(reformatted_source)
+    py3compat.EncodeAndWriteToStdout(reformatted_source, encoding)
     return 2 if changed else 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
