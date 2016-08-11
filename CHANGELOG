@@ -6,6 +6,11 @@
 ### Fixed
 - Enforce splitting each element in a dictionary if comma terminated.
 
+### Changed
+- Issue #228: Return exit code 0 on success, regardless of whether files were
+  changed.  (Previously, 0 meant success with no files
+  modified, and 2 meant success with at least one file modified.)
+
 ## [0.11.0] 2016-07-17
 ### Added
 - The COALESCE_BRACKETS knob prevents splitting consecutive brackets when
