@@ -8,6 +8,11 @@
 - It's okay to split in the middle of a dotted name if the whole expression is
   going to go over the column limit.
 
+### Changed
+- Issue #228: Return exit code 0 on success, regardless of whether files were
+  changed.  (Previously, 0 meant success with no files
+  modified, and 2 meant success with at least one file modified.)
+
 ## [0.11.0] 2016-07-17
 ### Added
 - The COALESCE_BRACKETS knob prevents splitting consecutive brackets when

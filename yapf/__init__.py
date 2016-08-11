@@ -161,7 +161,7 @@ def main(argv):
         lines=lines,
         verify=args.verify)
     sys.stdout.write(reformatted_source)
-    return 2 if changed else 0
+    return 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
                                              args.exclude)
@@ -175,7 +175,7 @@ def main(argv):
       in_place=args.in_place,
       print_diff=args.diff,
       verify=args.verify)
-  return 2 if changed else 0
+  return 0
 
 
 def FormatFiles(filenames,

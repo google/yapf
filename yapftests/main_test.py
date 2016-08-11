@@ -91,7 +91,7 @@ class MainTest(unittest.TestCase):
     with patched_input(code):
       with captured_output() as (out, err):
         ret = yapf.main(['-', '--style=chromium'])
-        self.assertEqual(ret, 2)
+        self.assertEqual(ret, 0)
         self.assertEqual(out.getvalue(), chromium_code)
 
   def testEchoBadInput(self):
@@ -116,3 +116,4 @@ class MainTest(unittest.TestCase):
       self.assertEqual(ret, 0)
       version = 'yapf {}\n'.format(yapf.__version__)
       self.assertEqual(version, out.getvalue())
+
