@@ -194,8 +194,13 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
 
   def Visit_async_funcdef(self, node):  # pylint: disable=invalid-name
     self._StartNewLine()
-    self.Visit(node.children[0])
-    for child in node.children[1].children:
+    index = 0
+    for child in node.children:
+      index += 1
+      self.Visit(child)
+      if pytree_utils.NodeName(child) == 'ASYNC':
+        break
+    for child in node.children[index].children:
       self.Visit(child)
 
   _CLASS_DEF_ELEMS = frozenset({'class'})
@@ -205,8 +210,13 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
 
   def Visit_async_stmt(self, node):  # pylint: disable=invalid-name
     self._StartNewLine()
-    self.Visit(node.children[0])
-    for child in node.children[1].children:
+    index = 0
+    for child in node.children:
+      index += 1
+      self.Visit(child)
+      if pytree_utils.NodeName(child) == 'ASYNC':
+        break
+    for child in node.children[index].children:
       self.Visit(child)
 
   def Visit_decorators(self, node):  # pylint: disable=invalid-name

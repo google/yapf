@@ -66,7 +66,7 @@ def _NormalizeCode(code):
       break
   code = '\n'.join(lines[i:]) + '\n'
 
-  if re.match(r'(if|while|for|with|def|class)\b', code):
+  if re.match(r'(if|while|for|with|def|class|async|await)\b', code):
     code += '\n    pass'
   elif re.match(r'(elif|else)\b', code):
     try:

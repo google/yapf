@@ -452,7 +452,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     else:
       return ONE_BLANK_LINE
 
-  if first_token.value in {'class', 'def', '@'}:
+  if first_token.value in {'class', 'def', 'async', '@'}:
     # TODO(morbo): This can go once the blank line calculator is more
     # sophisticated.
     if not indent_depth:
@@ -478,7 +478,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
                                            pytree_utils.Annotation.NEWLINES,
                                            None)
           return NO_BLANK_LINES
-    elif prev_uwline.first.value in {'class', 'def'}:
+    elif prev_uwline.first.value in {'class', 'def', 'async'}:
       if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)

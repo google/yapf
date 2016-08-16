@@ -7,6 +7,9 @@
 - Enforce splitting each element in a dictionary if comma terminated.
 - It's okay to split in the middle of a dotted name if the whole expression is
   going to go over the column limit.
+- Asynchronous functions were going missing if they were preceded by a comment
+  (a what? exactly). The asynchronous function processing wasn't taking the
+  comment into account and thus skipping the whole function.
 
 ### Changed
 - Issue #228: Return exit code 0 on success, regardless of whether files were

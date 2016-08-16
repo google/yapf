@@ -92,11 +92,10 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_was_class_or_function = False
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
     if _AsyncFunction(node):
-      # Move the number of blank lines to the async keyword.
-      num_newlines = pytree_utils.GetNodeAnnotation(
-          node.children[0], pytree_utils.Annotation.NEWLINES)
-      self._SetNumNewlines(node.prev_sibling, num_newlines)
+      index = self._SetBlankLinesBetweenCommentAndClassFunc(node.prev_sibling.parent)
       self._SetNumNewlines(node.children[0], None)
+    else:
+      index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
     self.last_was_decorator = False
     self.function_level += 1
     for child in node.children[index:]:

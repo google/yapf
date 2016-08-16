@@ -3271,6 +3271,34 @@ class TestsForPython3Code(ReformatterTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testAsyncWithPrecedingComment(self):
+    if sys.version_info[1] < 5:
+      return
+    unformatted_code = textwrap.dedent("""\
+        import asyncio
+
+        # Comment
+        async def bar():
+            pass
+
+        async def foo():
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        import asyncio
+
+
+        # Comment
+        async def bar():
+            pass
+
+
+        async def foo():
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class TestsForFBStyle(ReformatterTest):
 
