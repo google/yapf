@@ -116,4 +116,3 @@ class MainTest(unittest.TestCase):
       self.assertEqual(ret, 0)
       version = 'yapf {}\n'.format(yapf.__version__)
       self.assertEqual(version, out.getvalue())
-

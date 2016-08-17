@@ -3,6 +3,11 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.11.1] UNRELEASED
+### Changed
+- Issue #228: Return exit code 0 on success, regardless of whether files were
+  changed.  (Previously, 0 meant success with no files
+  modified, and 2 meant success with at least one file modified.)
+
 ### Fixed
 - Enforce splitting each element in a dictionary if comma terminated.
 - It's okay to split in the middle of a dotted name if the whole expression is
@@ -10,11 +15,9 @@
 - Asynchronous functions were going missing if they were preceded by a comment
   (a what? exactly). The asynchronous function processing wasn't taking the
   comment into account and thus skipping the whole function.
-
-### Changed
-- Issue #228: Return exit code 0 on success, regardless of whether files were
-  changed.  (Previously, 0 meant success with no files
-  modified, and 2 meant success with at least one file modified.)
+- The splitting of arguments when comma terminated had a conflict. The split
+  penalty of the closing bracket was set to the maximum, but it shouldn't be if
+  the closing bracket is preceded by a comma.
 
 ## [0.11.0] 2016-07-17
 ### Added

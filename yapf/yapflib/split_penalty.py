@@ -209,7 +209,8 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
           if last_child_node.value.strip().startswith('#'):
             last_child_node = last_child_node.prev_sibling
           if not style.Get('DEDENT_CLOSING_BRACKETS'):
-            self._SetUnbreakable(last_child_node)
+            if _LastChildNode(last_child_node.prev_sibling).value != ',':
+              self._SetUnbreakable(last_child_node)
 
           if _FirstChildNode(trailer).lineno == last_child_node.lineno:
             # If the trailer was originally on one line, then try to keep it

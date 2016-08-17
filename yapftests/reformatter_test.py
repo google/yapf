@@ -1702,7 +1702,18 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           style.CreateStyleFromConfig(
               '{based_on_style: chromium, '
               'split_arguments_when_comma_terminated: True}'))
-      code = textwrap.dedent("""\
+      unformatted_code = textwrap.dedent("""\
+          function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
+
+          function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3,)
+
+          a_very_long_function_name(long_argument_name_1=1, long_argument_name_2=2, long_argument_name_3=3, long_argument_name_4=4)
+
+          a_very_long_function_name(long_argument_name_1, long_argument_name_2, long_argument_name_3, long_argument_name_4,)
+
+          r =f0 (1,  2,3,)
+          """)
+      expected_formatted_code = textwrap.dedent("""\
           function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
 
           function_name(
@@ -1723,14 +1734,20 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               long_argument_name_3,
               long_argument_name_4,
           )
+
+          r = f0(
+              1,
+              2,
+              3,
+          )
           """)
-      uwlines = _ParseAndUnwrap(code)
+      uwlines = _ParseAndUnwrap(unformatted_code)
       reformatted_code = reformatter.Reformat(uwlines)
-      self.assertCodeEqual(code, reformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
 
       uwlines = _ParseAndUnwrap(reformatted_code)
       reformatted_code = reformatter.Reformat(uwlines)
-      self.assertCodeEqual(code, reformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 

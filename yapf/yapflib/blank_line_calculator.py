@@ -92,7 +92,8 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_was_class_or_function = False
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
     if _AsyncFunction(node):
-      index = self._SetBlankLinesBetweenCommentAndClassFunc(node.prev_sibling.parent)
+      index = self._SetBlankLinesBetweenCommentAndClassFunc(
+          node.prev_sibling.parent)
       self._SetNumNewlines(node.children[0], None)
     else:
       index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
