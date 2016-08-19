@@ -26,6 +26,7 @@ import unittest
 
 from yapf.yapflib import py3compat
 from yapf.yapflib import yapf_api
+from yapf.yapflib import style
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
@@ -1116,6 +1117,31 @@ class BadInputTest(unittest.TestCase):
     code = '  a = 1\n'
     self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
 
+
+class DiffIndentTest(unittest.TestCase):
+
+  @staticmethod
+  def own_style():
+    my_style = style.CreatePEP8Style()
+    my_style['INDENT_WIDTH'] = 3
+    my_style['CONTINUATION_INDENT_WIDTH'] = 3
+    return my_style
+
+  def _Check(self, unformatted_code, expected_formatted_code):
+    formatted_code, _ = yapf_api.FormatCode(
+        unformatted_code, style_config=style.SetGlobalStyle(self.own_style()))
+    self.assertEqual(expected_formatted_code, formatted_code)
+
+  def testSimple(self):
+    unformatted_code = textwrap.dedent(u"""\
+    for i in range(10):
+     print i
+     """)
+    formatted_code = textwrap.dedent(u"""\
+    for i in range(10):
+       print i
+       """)
+    self._Check(unformatted_code, formatted_code)
 
 if __name__ == '__main__':
   unittest.main()
