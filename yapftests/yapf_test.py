@@ -1134,14 +1134,14 @@ class DiffIndentTest(unittest.TestCase):
 
   def testSimple(self):
     unformatted_code = textwrap.dedent(u"""\
-    for i in range(10):
-     print i
-     """)
-    formatted_code = textwrap.dedent(u"""\
-    for i in range(10):
-       print i
-       """)
-    self._Check(unformatted_code, formatted_code)
+        for i in range(5):
+         print('bar')
+         """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        for i in range(5):
+           print('bar')
+           """)
+    self._Check(unformatted_code, expected_formatted_code)
 
 if __name__ == '__main__':
   unittest.main()
