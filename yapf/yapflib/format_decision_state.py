@@ -171,8 +171,8 @@ class FormatDecisionState(object):
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
-      if (previous.value not in {'=', '*', '**'} and
-          current.value not in '=,)'):
+      if (previous.value not in {'=', ':', '*', '**'} and
+          current.value not in ':=,)'):
         # If we're going to split the lines because of named arguments, then we
         # want to split after the opening bracket as well. But not when this is
         # part of function definition.

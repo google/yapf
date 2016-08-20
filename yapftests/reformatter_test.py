@@ -3219,6 +3219,21 @@ class TestsForPython3Code(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testTypedNames(self):
+    unformatted_code = textwrap.dedent("""\
+        def x(aaaaaaaaaaaaaaa:int,bbbbbbbbbbbbbbbb:str,ccccccccccccccc:dict,eeeeeeeeeeeeee:set={1, 2, 3})->bool:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def x(aaaaaaaaaaaaaaa: int,
+              bbbbbbbbbbbbbbbb: str,
+              ccccccccccccccc: dict,
+              eeeeeeeeeeeeee: set={1, 2, 3}) -> bool:
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testKeywordOnlyArgSpecifier(self):
     unformatted_code = textwrap.dedent("""\
         def foo(a, *, kw):
