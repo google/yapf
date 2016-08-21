@@ -313,7 +313,16 @@ def CreateStyleFromConfig(style_config):
   Raises:
     StyleConfigError: if an unknown style option was encountered.
   """
+  styles = (CreatePEP8Style(), CreateGoogleStyle(),
+             CreateFacebookStyle(), CreateChromiumStyle())
+  def_style = False
   if style_config is None:
+    for style in styles:
+      if _style == style:
+        def_style = True
+        break
+    if not def_style:
+        return _style
     return DEFAULT_STYLE_FACTORY()
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
@@ -423,5 +432,5 @@ SETUP_CONFIG = 'setup.cfg'
 # TODO(eliben): For now we're preserving the global presence of a style dict.
 # Refactor this so that the style is passed around through yapf rather than
 # being global.
-_style = {}
+_style = None
 SetGlobalStyle(DEFAULT_STYLE_FACTORY())
