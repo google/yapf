@@ -374,6 +374,10 @@ Knobs
 ``SPACES_AROUND_POWER_OPERATOR``
     Set to ``True`` to prefer using spaces around ``**``.
 
+``SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN``
+    Set to ``True`` to prefer spaces around the assignment operator for default
+    or keyword arguments.
+
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
 

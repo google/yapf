@@ -3303,6 +3303,24 @@ class TestsForPython3Code(ReformatterTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testSpacesAroundDefaultOrNamedAssign(self):
+    try:
+      style.SetGlobalStyle(
+        style.CreateStyleFromConfig(
+          '{based_on_style: pep8, '
+          'SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN: True}'))
+      unformatted_code = textwrap.dedent("""\
+      f(a=5)
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+      f(a = 5)
+      """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
   def testAsyncWithPrecedingComment(self):
     if sys.version_info[1] < 5:
       return

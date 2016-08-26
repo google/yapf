@@ -256,7 +256,7 @@ def _SpaceRequiredBetween(left, right):
       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
     # However, a typed argument should have a space after the colon.
-    return lval == ':'
+    return lval == ':' or style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
   if (format_token.Subtype.VARARGS_STAR in left.subtypes or
       format_token.Subtype.KWARGS_STAR_STAR in left.subtypes):
     # Don't add a space after a vararg's star or a keyword's star-star.
