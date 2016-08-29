@@ -7,6 +7,8 @@
 - Support formatting of typed names. Typed names are formatted a similar way to
   how named arguments are formatted, except that there's a space after the
   colon.
+- Add a knob, 'SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN', to allow adding spaces
+  around the assign operator on default or named assigns.
 
 ## [0.11.1] 2016-08-17
 ### Changed
