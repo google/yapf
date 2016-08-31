@@ -3141,9 +3141,7 @@ class TestVerifyNoVerify(ReformatterTest):
     uwlines = _ParseAndUnwrap(unformatted_code)
     with self.assertRaises(verifier.InternalError):
       reformatter.Reformat(uwlines, verify=True)
-    with self.assertRaises(verifier.InternalError):
-      # default should be True
-      reformatter.Reformat(uwlines)
+    reformatter.Reformat(uwlines)  # verify should be False by default.
 
   def testNoVerify(self):
     unformatted_code = textwrap.dedent("""\

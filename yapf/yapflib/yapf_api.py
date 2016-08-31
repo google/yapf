@@ -55,7 +55,7 @@ def FormatFile(filename,
                style_config=None,
                lines=None,
                print_diff=False,
-               verify=True,
+               verify=False,
                in_place=False,
                logger=None):
   """Format a single Python file and return the formatted code.
@@ -102,7 +102,7 @@ def FormatCode(unformatted_source,
                style_config=None,
                lines=None,
                print_diff=False,
-               verify=True):
+               verify=False):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.

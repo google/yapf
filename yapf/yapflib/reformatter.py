@@ -36,7 +36,7 @@ from yapf.yapflib import style
 from yapf.yapflib import verifier
 
 
-def Reformat(uwlines, verify=True):
+def Reformat(uwlines, verify=False):
   """Reformat the unwrapped lines.
 
   Arguments:
