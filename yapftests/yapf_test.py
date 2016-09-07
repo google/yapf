@@ -36,8 +36,6 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 class FormatCodeTest(unittest.TestCase):
 
-
-
   def setUp(self):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
@@ -69,6 +67,10 @@ class FormatCodeTest(unittest.TestCase):
 
   @unittest.expectedFailure
   def testSimpleExpectedFailure(self):
+    """
+    Expected failure for this test is ok because pep8 is not coinciding with chromium formatting
+    (look inside of style.py)
+    """
     unformatted_code = textwrap.dedent(u"""\
           print('foo')
           def foo(a):
@@ -81,10 +83,8 @@ class FormatCodeTest(unittest.TestCase):
           def foo(a):
               a = 1
           """)
-
     self._CheckWithStyleConfig(unformatted_code, pep8_formatted_code, 'chromium')
     self._CheckWithGlobalStyle(unformatted_code, pep8_formatted_code)
-
 
   def testNoEndingNewline(self):
     unformatted_code = textwrap.dedent(u"""\
