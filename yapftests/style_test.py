@@ -22,6 +22,8 @@ import unittest
 
 from yapf.yapflib import style
 
+def setUpModule():
+  style.SetGlobalStyle(style.DEFAULT_STYLE_FACTORY())
 
 class UtilsTest(unittest.TestCase):
 

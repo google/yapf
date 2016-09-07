@@ -41,17 +41,18 @@ def SetGlobalStyle(style):
   global _style
   _style = style
 
+
 def GetGlobalStyle():
   """"Get a style dict."""
   return _style
 
 
 _STYLE_HELP = dict(
-    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
+  ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
       Align closing bracket with visual indentation."""),
-    ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
+  ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
+  BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
       Insert a blank line before a 'def' or 'class' immediately nested
       within another 'def' or 'class'. For example:
 
@@ -59,7 +60,7 @@ _STYLE_HELP = dict(
                            # <------ this blank line
           def method():
             ..."""),
-    COALESCE_BRACKETS=textwrap.dedent("""\
+  COALESCE_BRACKETS=textwrap.dedent("""\
       Do not split consecutive brackets. Only relevant when
       dedent_closing_brackets is set. For example:
 
@@ -76,11 +77,11 @@ _STYLE_HELP = dict(
              'key1': 'value1',
              'key2': 'value2',
          })"""),
-    COLUMN_LIMIT=textwrap.dedent("""\
+  COLUMN_LIMIT=textwrap.dedent("""\
       The column limit."""),
-    CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
+  CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
       Indent width used for line continuations."""),
-    DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
+  DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, dedented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
       including function definitions and calls. For example:
@@ -97,15 +98,15 @@ _STYLE_HELP = dict(
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
         )        # <--- this bracket is dedented and on a separate line"""),
-    I18N_COMMENT=textwrap.dedent("""\
+  I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
       next to the string they translate."""),
-    I18N_FUNCTION_CALL=textwrap.dedent("""\
+  I18N_FUNCTION_CALL=textwrap.dedent("""\
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
       away from the i18n comment."""),
-    INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
+  INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
       Indent the dictionary value if it cannot fit on the same line as the
       dictionary key. For example:
 
@@ -115,48 +116,48 @@ _STYLE_HELP = dict(
             'key2': value1 +
                     value2,
         }"""),
-    INDENT_WIDTH=textwrap.dedent("""\
+  INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
-    JOIN_MULTIPLE_LINES=textwrap.dedent("""\
+  JOIN_MULTIPLE_LINES=textwrap.dedent("""\
       Join short lines into one line. E.g., single line 'if' statements."""),
-    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
+  SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
       Use spaces around the power operator."""),
-    SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
+  SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
-    SPACES_BEFORE_COMMENT=textwrap.dedent("""\
+  SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment."""),
-    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
+  SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
-    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
+  SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
       Split before arguments if the argument list is terminated by a
       comma."""),
-    SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
+  SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '&', '|' or '^' rather than
       after."""),
-    SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
+  SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
       If an argument / parameter list is going to be split, then split before
       the first argument."""),
-    SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent("""\
+  SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before 'and' or 'or' rather than
       after."""),
-    SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
+  SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
       Split named assignments onto individual lines."""),
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
+  SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
       The penalty for splitting right after the opening bracket."""),
-    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
+  SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
       The penalty for splitting the line after a unary operator."""),
-    SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent("""\
+  SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent("""\
       The penalty for splitting right before an if expression."""),
-    SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
+  SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the '&', '|', and '^'
       operators."""),
-    SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
+  SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
       The penalty for characters over the column limit."""),
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
+  SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the unwrapped line. The
       more line splits added the higher the penalty."""),
-    SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
+  SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
       The penalty of splitting a list of "import as" names. For example:
 
         from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
@@ -168,47 +169,47 @@ _STYLE_HELP = dict(
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
       """),
-    SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
+  SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the 'and' and 'or'
       operators."""),
-    USE_TABS=textwrap.dedent("""\
+  USE_TABS=textwrap.dedent("""\
       Use the Tab character for indentation."""),
-    # BASED_ON_STYLE='Which predefined style this style is based on',
+  # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
 
 def CreatePEP8Style():
   return dict(
-      ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
-      ALLOW_MULTILINE_LAMBDAS=False,
-      COLUMN_LIMIT=79,
-      COALESCE_BRACKETS=False,
-      DEDENT_CLOSING_BRACKETS=False,
-      I18N_COMMENT='',
-      I18N_FUNCTION_CALL='',
-      INDENT_DICTIONARY_VALUE=False,
-      INDENT_WIDTH=4,
-      CONTINUATION_INDENT_WIDTH=4,
-      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
-      JOIN_MULTIPLE_LINES=True,
-      SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
-      SPACES_AROUND_POWER_OPERATOR=False,
-      SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
-      SPACES_BEFORE_COMMENT=2,
-      SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
-      SPLIT_BEFORE_BITWISE_OPERATOR=False,
-      SPLIT_BEFORE_FIRST_ARGUMENT=False,
-      SPLIT_BEFORE_LOGICAL_OPERATOR=False,
-      SPLIT_BEFORE_NAMED_ASSIGNS=True,
-      SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
-      SPLIT_PENALTY_EXCESS_CHARACTER=2600,
-      SPLIT_PENALTY_BITWISE_OPERATOR=300,
-      SPLIT_PENALTY_IMPORT_NAMES=0,
-      SPLIT_PENALTY_LOGICAL_OPERATOR=300,
-      SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
-      SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
-      SPLIT_PENALTY_BEFORE_IF_EXPR=0,
-      USE_TABS=False
+    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
+    ALLOW_MULTILINE_LAMBDAS=False,
+    COLUMN_LIMIT=79,
+    COALESCE_BRACKETS=False,
+    DEDENT_CLOSING_BRACKETS=False,
+    I18N_COMMENT='',
+    I18N_FUNCTION_CALL='',
+    INDENT_DICTIONARY_VALUE=False,
+    INDENT_WIDTH=4,
+    CONTINUATION_INDENT_WIDTH=4,
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
+    JOIN_MULTIPLE_LINES=True,
+    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
+    SPACES_AROUND_POWER_OPERATOR=False,
+    SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
+    SPACES_BEFORE_COMMENT=2,
+    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
+    SPLIT_BEFORE_BITWISE_OPERATOR=False,
+    SPLIT_BEFORE_FIRST_ARGUMENT=False,
+    SPLIT_BEFORE_LOGICAL_OPERATOR=False,
+    SPLIT_BEFORE_NAMED_ASSIGNS=True,
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
+    SPLIT_PENALTY_EXCESS_CHARACTER=2600,
+    SPLIT_PENALTY_BITWISE_OPERATOR=300,
+    SPLIT_PENALTY_IMPORT_NAMES=0,
+    SPLIT_PENALTY_LOGICAL_OPERATOR=300,
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
+    SPLIT_PENALTY_BEFORE_IF_EXPR=0,
+    USE_TABS=False
   )  # yapf: disable
 
 
@@ -248,10 +249,10 @@ def CreateFacebookStyle():
 
 
 _STYLE_NAME_TO_FACTORY = dict(
-    pep8=CreatePEP8Style,
-    chromium=CreateChromiumStyle,
-    google=CreateGoogleStyle,
-    facebook=CreateFacebookStyle,
+  pep8=CreatePEP8Style,
+  chromium=CreateChromiumStyle,
+  google=CreateGoogleStyle,
+  facebook=CreateFacebookStyle,
 )  # yapf: disable
 
 
@@ -264,6 +265,7 @@ def _BoolConverter(s):
   """Option value converter for a boolean."""
   return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
 
+
 # Different style options need to have their values interpreted differently when
 # read from the config file. This dict maps an option name to a "converter"
 # function that accepts the string read for the option's value from the file and
@@ -272,36 +274,36 @@ def _BoolConverter(s):
 #
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
-    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
-    ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
-    COALESCE_BRACKETS=_BoolConverter,
-    COLUMN_LIMIT=int,
-    DEDENT_CLOSING_BRACKETS=_BoolConverter,
-    I18N_COMMENT=str,
-    I18N_FUNCTION_CALL=_StringListConverter,
-    INDENT_DICTIONARY_VALUE=_BoolConverter,
-    INDENT_WIDTH=int,
-    CONTINUATION_INDENT_WIDTH=int,
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
-    JOIN_MULTIPLE_LINES=_BoolConverter,
-    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
-    SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
-    SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
-    SPACES_BEFORE_COMMENT=int,
-    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
-    SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
-    SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
-    SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
-    SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
-    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
-    SPLIT_PENALTY_EXCESS_CHARACTER=int,
-    SPLIT_PENALTY_BITWISE_OPERATOR=int,
-    SPLIT_PENALTY_IMPORT_NAMES=int,
-    SPLIT_PENALTY_LOGICAL_OPERATOR=int,
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
-    SPLIT_PENALTY_BEFORE_IF_EXPR=int,
-    USE_TABS=_BoolConverter
+  ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
+  ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
+  COALESCE_BRACKETS=_BoolConverter,
+  COLUMN_LIMIT=int,
+  DEDENT_CLOSING_BRACKETS=_BoolConverter,
+  I18N_COMMENT=str,
+  I18N_FUNCTION_CALL=_StringListConverter,
+  INDENT_DICTIONARY_VALUE=_BoolConverter,
+  INDENT_WIDTH=int,
+  CONTINUATION_INDENT_WIDTH=int,
+  BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
+  JOIN_MULTIPLE_LINES=_BoolConverter,
+  SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
+  SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
+  SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
+  SPACES_BEFORE_COMMENT=int,
+  SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
+  SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
+  SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
+  SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
+  SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
+  SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
+  SPLIT_PENALTY_EXCESS_CHARACTER=int,
+  SPLIT_PENALTY_BITWISE_OPERATOR=int,
+  SPLIT_PENALTY_IMPORT_NAMES=int,
+  SPLIT_PENALTY_LOGICAL_OPERATOR=int,
+  SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
+  SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
+  SPLIT_PENALTY_BEFORE_IF_EXPR=int,
+  USE_TABS=_BoolConverter
 )  # yapf: disable
 
 
@@ -321,17 +323,9 @@ def CreateStyleFromConfig(style_config):
   Raises:
     StyleConfigError: if an unknown style option was encountered.
   """
-  styles = (CreatePEP8Style(), CreateGoogleStyle(),
-             CreateFacebookStyle(), CreateChromiumStyle())
-  def_style = False
+
   if style_config is None:
-    for style in styles:
-      if _style == style:
-        def_style = True
-        break
-    if not def_style:
-        return _style
-    return DEFAULT_STYLE_FACTORY()
+    return GetGlobalStyle()
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
     return style_factory()
@@ -348,7 +342,7 @@ def _CreateConfigParserFromConfigString(config_string):
   """Given a config string from the command line, return a config parser."""
   if config_string[0] != '{' or config_string[-1] != '}':
     raise StyleConfigError("Invalid style dict syntax: '{}'.".format(
-        config_string))
+      config_string))
   config = py3compat.ConfigParser()
   config.add_section('style')
   for key, value in re.findall(r'([a-zA-Z0-9_]+)\s*[:=]\s*([a-zA-Z0-9_]+)',
@@ -362,22 +356,22 @@ def _CreateConfigParserFromConfigFile(config_filename):
   if not os.path.exists(config_filename):
     # Provide a more meaningful error here.
     raise StyleConfigError('"{0}" is not a valid style or file path'.format(
-        config_filename))
+      config_filename))
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
     if config_filename.endswith(SETUP_CONFIG):
       if not config.has_section('yapf'):
         raise StyleConfigError('Unable to find section [yapf] in {0}'.format(
-            config_filename))
+          config_filename))
     elif config_filename.endswith(LOCAL_STYLE):
       if not config.has_section('style'):
         raise StyleConfigError('Unable to find section [style] in {0}'.format(
-            config_filename))
+          config_filename))
     else:
       if not config.has_section('style'):
         raise StyleConfigError('Unable to find section [style] in {0}'.format(
-            config_filename))
+          config_filename))
     return config
 
 
@@ -417,8 +411,9 @@ def _CreateStyleFromConfigParser(config):
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     except ValueError:
       raise StyleConfigError("'{}' is not a valid setting for {}.".format(
-          value, option))
+        value, option))
   return base_style
+
 
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.
@@ -427,8 +422,8 @@ DEFAULT_STYLE_FACTORY = CreatePEP8Style
 
 # The name of the file to use for global style definition.
 GLOBAL_STYLE = (os.path.join(
-    os.getenv('XDG_CONFIG_HOME') or os.path.expanduser('~/.config'), 'yapf',
-    'style'))
+  os.getenv('XDG_CONFIG_HOME') or os.path.expanduser('~/.config'), 'yapf',
+  'style'))
 
 # The name of the file to use for directory-local style definition.
 LOCAL_STYLE = '.style.yapf'

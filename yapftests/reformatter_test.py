@@ -3215,7 +3215,7 @@ class TestsForPython3Code(ReformatterTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreatePEP8Style())
+    style.SetGlobalStyle(style.DEFAULT_STYLE_FACTORY())
 
   def testTypedNames(self):
     unformatted_code = textwrap.dedent("""\
