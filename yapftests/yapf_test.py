@@ -45,6 +45,7 @@ class FormatCodeTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code, style_config):
     formatted_code, _ = yapf_api.FormatCode(unformatted_code, style_config=style_config)
+    self.assertEqual(style.GetGlobalStyle(), self._default_style)
     self.assertEqual(formatted_code, expected_formatted_code)
 
   def _CheckWithGlobalStyle(self, unformatted_code, expected_formatted_code):
