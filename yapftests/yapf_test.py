@@ -36,16 +36,55 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 class FormatCodeTest(unittest.TestCase):
 
-  def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code, _ = yapf_api.FormatCode(
-        unformatted_code, style_config='chromium')
-    self.assertEqual(expected_formatted_code, formatted_code)
+
+
+  def setUp(self):
+    style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def _Check(self, unformatted_code, expected_formatted_code, style_config):
+    formatted_code, _ = yapf_api.FormatCode(unformatted_code, style_config=style_config)
+    self.assertEqual(formatted_code, expected_formatted_code)
+
+  def _CheckWithGlobalStyle(self, unformatted_code, expected_formatted_code):
+    self._Check(unformatted_code, expected_formatted_code, None)
+
+  def _CheckWithStyleConfig(self, unformatted_code, expected_formatted_code, style_config):
+    self._Check(unformatted_code, expected_formatted_code, style_config)
 
   def testSimple(self):
     unformatted_code = textwrap.dedent(u"""\
         print('foo')
+        def foo(a):
+            a = 1
         """)
-    self._Check(unformatted_code, unformatted_code)
+    expected_formatted_code = textwrap.dedent(u"""\
+        print('foo')
+
+
+        def foo(a):
+          a = 1
+        """)
+    self._CheckWithStyleConfig(unformatted_code, expected_formatted_code, 'chromium')
+    self._CheckWithGlobalStyle(unformatted_code, expected_formatted_code)
+
+  @unittest.expectedFailure
+  def testSimpleExpectedFailure(self):
+    unformatted_code = textwrap.dedent(u"""\
+          print('foo')
+          def foo(a):
+              a = 1
+          """)
+    pep8_formatted_code = textwrap.dedent(u"""\
+          print('foo')
+
+
+          def foo(a):
+              a = 1
+          """)
+
+    self._CheckWithStyleConfig(unformatted_code, pep8_formatted_code, 'chromium')
+    self._CheckWithGlobalStyle(unformatted_code, pep8_formatted_code)
+
 
   def testNoEndingNewline(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -55,7 +94,9 @@ class FormatCodeTest(unittest.TestCase):
         if True:
           pass
         """)
-    self._Check(unformatted_code, expected_formatted_code)
+    self._CheckWithStyleConfig(unformatted_code, expected_formatted_code, 'chromium')
+    self._CheckWithGlobalStyle(unformatted_code, expected_formatted_code)
+
 
 
 class FormatFileTest(unittest.TestCase):
