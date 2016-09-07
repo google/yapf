@@ -36,8 +36,12 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 class FormatCodeTest(unittest.TestCase):
 
+  @classmethod
+  def setUpClass(cls):
+    cls._default_style = style.CreateChromiumStyle()
+
   def setUp(self):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(self._default_style)
 
   def _Check(self, unformatted_code, expected_formatted_code, style_config):
     formatted_code, _ = yapf_api.FormatCode(unformatted_code, style_config=style_config)
@@ -50,6 +54,7 @@ class FormatCodeTest(unittest.TestCase):
     self._Check(unformatted_code, expected_formatted_code, style_config)
 
   def testSimple(self):
+    self.assertEqual(style.GetGlobalStyle(), self._default_style)
     unformatted_code = textwrap.dedent(u"""\
         print('foo')
         def foo(a):
@@ -71,6 +76,7 @@ class FormatCodeTest(unittest.TestCase):
     Expected failure for this test is ok because pep8 is not coinciding with chromium formatting
     (look inside of style.py)
     """
+    self.assertEqual(style.GetGlobalStyle(), self._default_style)
     unformatted_code = textwrap.dedent(u"""\
           print('foo')
           def foo(a):
