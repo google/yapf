@@ -42,8 +42,8 @@ def SetGlobalStyle(style):
   _style = style
 
 def GetGlobalStyle():
-    """"Get a style dict."""
-    return _style
+  """"Get a style dict."""
+  return _style
 
 
 _STYLE_HELP = dict(
