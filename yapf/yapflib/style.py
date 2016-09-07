@@ -41,6 +41,10 @@ def SetGlobalStyle(style):
   global _style
   _style = style
 
+def GetGlobalStyle():
+    """"Get a style dict."""
+    return _style
+
 
 _STYLE_HELP = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
