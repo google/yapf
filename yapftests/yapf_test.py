@@ -282,7 +282,6 @@ class FormatFileTest(unittest.TestCase):
         """)
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
 
-    # TODO(alekum): Current code0 is probably broken
     diff = yapf_api.FormatFile(file1, print_diff=True)[0]
     self.assertTrue(u'+    pass' in diff)
 
@@ -291,7 +290,6 @@ class FormatFileTest(unittest.TestCase):
     formatted_code = 'True == False\n'
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
 
-    # TODO(alekum): Current code1 is probably broken
     result, _, _ = yapf_api.FormatFile(file1, in_place=True)
     self.assertEqual(result, None)
     with open(file1) as f:
@@ -1170,10 +1168,7 @@ class BadInputTest(unittest.TestCase):
     code = '  a = 1\n'
     self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
 
-# TODO(alekum) : The current test cases are broken
-# because FormatCode function has an error in a logic of the processing global style configuration.
-# This error occures when your try set a global style via SetGlobalStyle for FormatCode or FormatFile methods,
-# but style_config parameter have a value that equals None by default.
+
 class DiffIndentTest(unittest.TestCase):
 
   @staticmethod
