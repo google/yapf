@@ -1143,5 +1143,23 @@ class DiffIndentTest(unittest.TestCase):
            """)
     self._Check(unformatted_code, expected_formatted_code)
 
+
+class DiffIndentTestChromium(unittest.TestCase):
+  def _Check(self, unformatted_code, expected_formatted_code):
+    formatted_code, _ = yapf_api.FormatCode(
+        unformatted_code, style_config=style.SetGlobalStyle(style.CreateChromiumStyle()))
+    self.assertEqual(expected_formatted_code, formatted_code)
+
+  def testSimple(self):
+    unformatted_code = textwrap.dedent(u"""\
+        for i in range(5):
+         print('bar')
+         """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        for i in range(5):
+          print('bar')
+          """)
+    self._Check(unformatted_code, expected_formatted_code)
+
 if __name__ == '__main__':
   unittest.main()
