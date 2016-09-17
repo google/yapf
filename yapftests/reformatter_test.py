@@ -1453,14 +1453,15 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
   def testBinaryOperators(self):
     unformatted_code = textwrap.dedent("""\
         a = b ** 37
+        c = (20 ** -3) / (_GRID_ROWS ** (code_length - 10))
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = b**37
+        c = (20**-3) / (_GRID_ROWS**(code_length - 10))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testBinaryOperators(self):
     code = textwrap.dedent("""\
       def f():
         if True:
