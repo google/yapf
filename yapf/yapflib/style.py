@@ -317,8 +317,8 @@ def CreateStyleFromConfig(style_config):
   Raises:
     StyleConfigError: if an unknown style option was encountered.
   """
-  styles = (CreatePEP8Style(), CreateGoogleStyle(),
-             CreateFacebookStyle(), CreateChromiumStyle())
+  styles = (CreatePEP8Style(), CreateGoogleStyle(), CreateFacebookStyle(),
+            CreateChromiumStyle())
   def_style = False
   if style_config is None:
     for style in styles:
@@ -326,7 +326,7 @@ def CreateStyleFromConfig(style_config):
         def_style = True
         break
     if not def_style:
-        return _style
+      return _style
     return DEFAULT_STYLE_FACTORY()
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:

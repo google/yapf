@@ -269,6 +269,29 @@ class FormatDecisionState(object):
       # original comments were on a separate line.
       return True
 
+    if not current.next_token:
+      return False
+
+    opening = _GetOpeningParen(current)
+    if (opening and opening.value == '(' and current.is_name and
+        previous.value == ','):
+      # If we have a function call within an argument list and it won't fit on
+      # the remaining line, but it will fit on a line by itself, then go ahead
+      # and split before the call.
+      total_len = 0
+      ntoken = current
+      while ntoken:
+        if ntoken.value == '(':
+          total_len = ntoken.matching_bracket.total_length - current.total_length
+          break
+        ntoken = ntoken.next_token
+
+      if ntoken:
+        indent_amt = self.stack[-1].indent * style.Get('INDENT_WIDTH')
+        if (total_len + indent_amt < column_limit and
+            total_len + self.column >= column_limit):
+          return True
+
     return False
 
   def AddTokenToState(self, newline, dry_run, must_split=False):

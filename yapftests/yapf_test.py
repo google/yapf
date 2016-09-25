@@ -1143,5 +1143,6 @@ class DiffIndentTest(unittest.TestCase):
            """)
     self._Check(unformatted_code, expected_formatted_code)
 
+
 if __name__ == '__main__':
   unittest.main()

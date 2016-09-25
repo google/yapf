@@ -12,6 +12,9 @@
 
 ## Changed
 - Turn "verification" off by default for external APIs.
+- If a function call in an argument list won't fit on the current line but will
+  fit on a line by itself, then split before the call so that it won't be split
+  up unnecessarily.
 
 ## Fixed
 - Don't add space after power operator if the next operator's a unary operator.
