@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.12.0] UNRELEASED
+## [0.12.0] 2016-09-25
 ### Added
 - Support formatting of typed names. Typed names are formatted a similar way to
   how named arguments are formatted, except that there's a space after the

@@ -282,7 +282,8 @@ class FormatDecisionState(object):
       ntoken = current
       while ntoken:
         if ntoken.value == '(':
-          total_len = ntoken.matching_bracket.total_length - current.total_length
+          total_len = (ntoken.matching_bracket.total_length -
+                       current.total_length)
           break
         ntoken = ntoken.next_token
 
