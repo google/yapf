@@ -25,8 +25,8 @@ import textwrap
 import unittest
 
 from yapf.yapflib import py3compat
-from yapf.yapflib import yapf_api
 from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
@@ -1121,7 +1121,7 @@ class BadInputTest(unittest.TestCase):
 class DiffIndentTest(unittest.TestCase):
 
   @staticmethod
-  def own_style():
+  def _OwnStyle():
     my_style = style.CreatePEP8Style()
     my_style['INDENT_WIDTH'] = 3
     my_style['CONTINUATION_INDENT_WIDTH'] = 3
@@ -1129,7 +1129,7 @@ class DiffIndentTest(unittest.TestCase):
 
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
-        unformatted_code, style_config=style.SetGlobalStyle(self.own_style()))
+        unformatted_code, style_config=style.SetGlobalStyle(self._OwnStyle()))
     self.assertEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
