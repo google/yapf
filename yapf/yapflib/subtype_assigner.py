@@ -282,8 +282,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         _AppendTokenSubtype(
             child,
             subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
-                                                  format_token.Subtype.NONE),
-            force=False)
+                                                  format_token.Subtype.NONE))
 
 
 def _SetDefaultOrNamedAssignArgListSubtype(node):
@@ -307,7 +306,7 @@ def _SetDefaultOrNamedAssignArgListSubtype(node):
             child, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
 
-def _AppendTokenSubtype(node, subtype, force=True):
+def _AppendTokenSubtype(node, subtype):
   """Append the token's subtype only if it's not already set."""
   pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                     subtype)
@@ -316,7 +315,7 @@ def _AppendTokenSubtype(node, subtype, force=True):
 def _AppendFirstLeafTokenSubtype(node, subtype, force=False):
   """Append the first leaf token's subtypes."""
   if isinstance(node, pytree.Leaf):
-    _AppendTokenSubtype(node, subtype, force=force)
+    _AppendTokenSubtype(node, subtype)
     return
   _AppendFirstLeafTokenSubtype(node.children[0], subtype, force=force)
 
@@ -324,13 +323,14 @@ def _AppendFirstLeafTokenSubtype(node, subtype, force=False):
 def _AppendSubtypeRec(node, subtype, force=True):
   """Append the leafs in the node to the given subtype."""
   if isinstance(node, pytree.Leaf):
-    _AppendTokenSubtype(node, subtype, force=force)
+    _AppendTokenSubtype(node, subtype)
     return
   for child in node.children:
     _AppendSubtypeRec(child, subtype, force=force)
 
 
 def _InsertPseudoParentheses(node):
+  """Insert pseudo parentheses so that dicts can be formatted correctly."""
   comment_node = None
   if isinstance(node, pytree.Node):
     if node.children[-1].type == token.COMMENT:

@@ -231,7 +231,7 @@ def _SpaceRequiredBetween(left, right):
     # A string followed by something other than a subscript, closing bracket,
     # or dot should have a space after it.
     return True
-  if left.is_binary_op and _IsUnaryOperator(right):
+  if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary opertor and the unary operator.
     return True
   if _IsUnaryOperator(left) and _IsUnaryOperator(right):

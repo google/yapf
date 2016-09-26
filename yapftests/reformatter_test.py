@@ -1453,14 +1453,15 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
   def testBinaryOperators(self):
     unformatted_code = textwrap.dedent("""\
         a = b ** 37
+        c = (20 ** -3) / (_GRID_ROWS ** (code_length - 10))
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = b**37
+        c = (20**-3) / (_GRID_ROWS**(code_length - 10))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testBinaryOperators(self):
     code = textwrap.dedent("""\
       def f():
         if True:
@@ -1766,6 +1767,27 @@ class BuganizerFixes(ReformatterTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB30536435(self):
+    unformatted_code = textwrap.dedent("""\
+        def main(unused_argv):
+          if True:
+            if True:
+              aaaaaaaaaaa.comment('import-from[{}] {} {}'.format(
+                  bbbbbbbbb.usage,
+                  ccccccccc.within,
+                  imports.ddddddddddddddddddd(name_item.ffffffffffffffff)))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def main(unused_argv):
+          if True:
+            if True:
+              aaaaaaaaaaa.comment('import-from[{}] {} {}'.format(
+                  bbbbbbbbb.usage, ccccccccc.within,
+                  imports.ddddddddddddddddddd(name_item.ffffffffffffffff)))
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB30442148(self):
     unformatted_code = textwrap.dedent("""\
@@ -3304,9 +3326,9 @@ class TestsForPython3Code(ReformatterTest):
   def testSpacesAroundDefaultOrNamedAssign(self):
     try:
       style.SetGlobalStyle(
-        style.CreateStyleFromConfig(
-          '{based_on_style: pep8, '
-          'SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN: True}'))
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, '
+              'SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN: True}'))
       unformatted_code = textwrap.dedent("""\
       f(a=5)
       """)
