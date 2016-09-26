@@ -369,7 +369,7 @@ def _CreateConfigParserFromConfigFile(config_filename):
         raise StyleConfigError('Unable to find section [style] in {0}'.format(
           config_filename))
     else:
-      if not config.has_section('style'):
+      if not ( config.has_section('style') or config.has_section('yapf') ):
         raise StyleConfigError('Unable to find section [style] in {0}'.format(
           config_filename))
     return config
@@ -389,11 +389,8 @@ def _CreateStyleFromConfigParser(config):
   """
   # Initialize the base style.
   section = 'yapf' if config.has_section('yapf') else 'style'
-  if config.has_option('style', 'based_on_style'):
-    based_on = config.get('style', 'based_on_style').lower()
-    base_style = _STYLE_NAME_TO_FACTORY[based_on]()
-  elif config.has_option('yapf', 'based_on_style'):
-    based_on = config.get('yapf', 'based_on_style').lower()
+  if config.has_option(section, 'based_on_style'):
+    based_on = config.get(section, 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
   else:
     base_style = DEFAULT_STYLE_FACTORY()
