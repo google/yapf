@@ -111,7 +111,7 @@ class StyleFromFileTest(unittest.TestCase):
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
-  def testDefaultBasedOnPEP8Style(self):
+  def testDefaultBasedOnPEP8StyleViaStyleSection(self):
     cfg = textwrap.dedent('''\
         [style]
         based_on_style = pep8
@@ -121,6 +121,31 @@ class StyleFromFileTest(unittest.TestCase):
       cfg = style.CreateStyleFromConfig(f.name)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
+
+  def testDefaultBasedOnPEP8StyleViaYapfSection(self):
+    cfg = textwrap.dedent('''\
+        [yapf]
+        based_on_style = pep8
+        continuation_indent_width = 40
+        ''')
+    with _TempFileContents(self.test_tmpdir, cfg) as f:
+      cfg = style.CreateStyleFromConfig(f.name)
+      self.assertTrue(_LooksLikePEP8Style(cfg))
+      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
+
+  def testDefaultBasedOnPEP8StyleViaSetupCfg(self):
+    cfg = textwrap.dedent('''\
+          [yapf]
+          based_on_style = pep8
+          continuation_indent_width = 40
+          ''')
+    f = tempfile.NamedTemporaryFile(dir=self.test_tmpdir, mode="w", suffix=".setup.cfg")
+    f.write(cfg)
+    f.flush()
+    cfg = style.CreateStyleFromConfig(f.name)
+    self.assertTrue(_LooksLikePEP8Style(cfg))
+    self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
+    f.close()
 
   def testDefaultBasedOnChromiumStyle(self):
     cfg = textwrap.dedent('''\
@@ -171,6 +196,17 @@ class StyleFromFileTest(unittest.TestCase):
   def testStringListOptionValue(self):
     cfg = textwrap.dedent('''\
         [style]
+        based_on_style = chromium
+        I18N_FUNCTION_CALL = N_, V_, T_
+        ''')
+    with _TempFileContents(self.test_tmpdir, cfg) as f:
+      cfg = style.CreateStyleFromConfig(f.name)
+      self.assertTrue(_LooksLikeChromiumStyle(cfg))
+      self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
+
+  def testStringListOptionValue(self):
+    cfg = textwrap.dedent('''\
+        [yapf]
         based_on_style = chromium
         I18N_FUNCTION_CALL = N_, V_, T_
         ''')
