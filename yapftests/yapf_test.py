@@ -36,16 +36,62 @@ YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 class FormatCodeTest(unittest.TestCase):
 
-  def _Check(self, unformatted_code, expected_formatted_code):
-    formatted_code, _ = yapf_api.FormatCode(
-        unformatted_code, style_config='chromium')
-    self.assertEqual(expected_formatted_code, formatted_code)
+  def setUp(self):
+    self._default_style = style.CreateChromiumStyle()
+    style.SetGlobalStyle(self._default_style)
+
+  def tearDown(self):
+    style.SetGlobalStyle(style.DEFAULT_STYLE_FACTORY())
+
+  def _Check(self, unformatted_code, expected_formatted_code, style_config):
+    formatted_code, _ = yapf_api.FormatCode(unformatted_code, style_config=style_config)
+    self.assertEqual(style.GetGlobalStyle(), self._default_style)
+    self.assertEqual(formatted_code, expected_formatted_code)
+
+  def _CheckWithGlobalStyle(self, unformatted_code, expected_formatted_code):
+    self._Check(unformatted_code, expected_formatted_code, None)
+
+  def _CheckWithStyleConfig(self, unformatted_code, expected_formatted_code, style_config):
+    self._Check(unformatted_code, expected_formatted_code, style_config)
 
   def testSimple(self):
+    self.assertEqual(style.GetGlobalStyle(), self._default_style)
     unformatted_code = textwrap.dedent(u"""\
         print('foo')
+        def foo(a):
+            a = 1
         """)
-    self._Check(unformatted_code, unformatted_code)
+    expected_formatted_code = textwrap.dedent(u"""\
+        print('foo')
+
+
+        def foo(a):
+          a = 1
+        """)
+    self._CheckWithStyleConfig(unformatted_code, expected_formatted_code, 'chromium')
+    self._CheckWithGlobalStyle(unformatted_code, expected_formatted_code)
+
+  @unittest.expectedFailure
+  def testSimpleExpectedFailure(self):
+    """
+    Expected failure for this test is ok because pep8 is not coinciding with chromium formatting
+    (look inside of style.py)
+    """
+    self.assertEqual(style.GetGlobalStyle(), self._default_style)
+    unformatted_code = textwrap.dedent(u"""\
+          print('foo')
+          def foo(a):
+              a = 1
+          """)
+    pep8_formatted_code = textwrap.dedent(u"""\
+          print('foo')
+
+
+          def foo(a):
+              a = 1
+          """)
+    self._CheckWithStyleConfig(unformatted_code, pep8_formatted_code, 'chromium')
+    self._CheckWithGlobalStyle(unformatted_code, pep8_formatted_code)
 
   def testNoEndingNewline(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -55,13 +101,16 @@ class FormatCodeTest(unittest.TestCase):
         if True:
           pass
         """)
-    self._Check(unformatted_code, expected_formatted_code)
+    self._CheckWithStyleConfig(unformatted_code, expected_formatted_code, 'chromium')
+    self._CheckWithGlobalStyle(unformatted_code, expected_formatted_code)
+
 
 
 class FormatFileTest(unittest.TestCase):
 
   def setUp(self):
     self.test_tmpdir = tempfile.mkdtemp()
+    style.SetGlobalStyle(style.DEFAULT_STYLE_FACTORY())
 
   def tearDown(self):
     shutil.rmtree(self.test_tmpdir)
@@ -232,6 +281,7 @@ class FormatFileTest(unittest.TestCase):
          pass
         """)
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
     diff = yapf_api.FormatFile(file1, print_diff=True)[0]
     self.assertTrue(u'+    pass' in diff)
 
@@ -239,6 +289,7 @@ class FormatFileTest(unittest.TestCase):
     unformatted_code = 'True==False\n'
     formatted_code = 'True == False\n'
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
+
     result, _, _ = yapf_api.FormatFile(file1, in_place=True)
     self.assertEqual(result, None)
     with open(file1) as f:
@@ -1142,6 +1193,8 @@ class DiffIndentTest(unittest.TestCase):
            print('bar')
            """)
     self._Check(unformatted_code, expected_formatted_code)
+
+
 
 if __name__ == '__main__':
   unittest.main()
