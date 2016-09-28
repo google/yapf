@@ -24,6 +24,7 @@ from yapf.yapflib import style
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
+VERY_STRONGLY_CONNECTED = 3000
 DOTTED_NAME = 2500
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
@@ -210,7 +211,12 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
             last_child_node = last_child_node.prev_sibling
           if not style.Get('DEDENT_CLOSING_BRACKETS'):
             if _LastChildNode(last_child_node.prev_sibling).value != ',':
-              self._SetUnbreakable(last_child_node)
+              if last_child_node.value == ']':
+                self._SetUnbreakable(last_child_node)
+              else:
+                pytree_utils.SetNodeAnnotation(
+                    last_child_node, pytree_utils.Annotation.SPLIT_PENALTY,
+                    VERY_STRONGLY_CONNECTED)
 
           if _FirstChildNode(trailer).lineno == last_child_node.lineno:
             # If the trailer was originally on one line, then try to keep it

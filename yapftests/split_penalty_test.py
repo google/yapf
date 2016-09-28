@@ -24,6 +24,7 @@ from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
 
 UNBREAKABLE = split_penalty.UNBREAKABLE
+VERY_STRONGLY_CONNECTED = split_penalty.VERY_STRONGLY_CONNECTED
 DOTTED_NAME = split_penalty.DOTTED_NAME
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
 CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
@@ -163,7 +164,9 @@ class SplitPenaltyTest(unittest.TestCase):
       """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
-        ('a', None), ('=', None), ('{', None),
+        ('a', None),
+        ('=', None),
+        ('{', None),
         ("'x'", None),
         (':', STRONGLY_CONNECTED),
         ('42', None),
@@ -174,12 +177,12 @@ class SplitPenaltyTest(unittest.TestCase):
         ('a', UNBREAKABLE),
         (':', UNBREAKABLE),
         ('23', UNBREAKABLE),
-        (')', UNBREAKABLE),
+        (')', VERY_STRONGLY_CONNECTED),
         (':', STRONGLY_CONNECTED),
         ('37', None),
         (',', None),
         ('}', None),
-    ])  # yapf: disable
+    ])
 
     # Test list comprehension.
     code = textwrap.dedent(r"""
@@ -200,7 +203,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
         (']', STRONGLY_CONNECTED),
-    ])  # yapf: disable
+    ])
 
   def testFuncCalls(self):
     code = 'foo(1, 2, 3)\n'
@@ -213,7 +216,8 @@ class SplitPenaltyTest(unittest.TestCase):
         ('2', CONTIGUOUS_LIST),
         (',', CONTIGUOUS_LIST),
         ('3', CONTIGUOUS_LIST),
-        (')', UNBREAKABLE)])  # yapf: disable
+        (')', VERY_STRONGLY_CONNECTED),
+    ])
 
     # Now a method call, which has more than one trailer
     code = 'foo.bar.baz(1, 2, 3)\n'
@@ -230,7 +234,8 @@ class SplitPenaltyTest(unittest.TestCase):
         ('2', CONTIGUOUS_LIST),
         (',', CONTIGUOUS_LIST),
         ('3', CONTIGUOUS_LIST),
-        (')', UNBREAKABLE)])  # yapf: disable
+        (')', VERY_STRONGLY_CONNECTED),
+    ])
 
 
 if __name__ == '__main__':
