@@ -1127,9 +1127,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx' 'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'bbbbbbbbbbbbbbbbbbbbbbbbbb' 'cccccccccccccccccccccccccccccccc' 'ddddddddddddddddddddddddddddd')
         """)
     expected_formatted_code = textwrap.dedent("""\
-        a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
-                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} +
-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        a = foo.bar({
+            'xxxxxxxxxxxxxxxxxxxxxxx'
+            'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]
+        } + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
@@ -1768,6 +1769,20 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB30760569(self):
+    unformatted_code = textwrap.dedent("""\
+        {'1234567890123456789012345678901234567890123456789012345678901234567890':
+             '1234567890123456789012345678901234567890'}
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        {
+            '1234567890123456789012345678901234567890123456789012345678901234567890':
+                '1234567890123456789012345678901234567890'
+        }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB26034238(self):
     unformatted_code = textwrap.dedent("""\
         class Thing:
@@ -1987,13 +2002,15 @@ class BuganizerFixes(ReformatterTest):
   def testB25505359(self):
     code = textwrap.dedent("""\
         _EXAMPLE = {
-            'aaaaaaaaaaaaaa': [
-                {'bbbb': 'cccccccccccccccccccccc',
-                 'dddddddddddd': [
-                 ]}, {'bbbb': 'ccccccccccccccccccc',
-                      'dddddddddddd': [
-                      ]}
-            ]
+            'aaaaaaaaaaaaaa': [{
+                'bbbb': 'cccccccccccccccccccccc',
+                'dddddddddddd': [
+                ]
+            }, {
+                'bbbb': 'ccccccccccccccccccc',
+                'dddddddddddd': [
+                ]
+            }]
         }
         """)
     uwlines = _ParseAndUnwrap(code)
@@ -2013,8 +2030,9 @@ class BuganizerFixes(ReformatterTest):
         class f:
 
           def test(self):
-            self.bbbbbbb[0]['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                            {'xxxxxx': 'yyyyyy'}] = cccccc.ddd('1m', '10x1+1')
+            self.bbbbbbb[0]['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', {
+                'xxxxxx': 'yyyyyy'
+            }] = cccccc.ddd('1m', '10x1+1')
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -2143,12 +2161,18 @@ class BuganizerFixes(ReformatterTest):
 
           def f():
             self.assertDictEqual(accounts, {
-                'foo': {'account': 'foo',
-                        'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'},
-                'bar': {'account': 'bar',
-                        'lines': 'l5\\nl6\\nl7'},
-                'wiz': {'account': 'wiz',
-                        'lines': 'l8'}
+                'foo': {
+                    'account': 'foo',
+                    'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'
+                },
+                'bar': {
+                    'account': 'bar',
+                    'lines': 'l5\\nl6\\nl7'
+                },
+                'wiz': {
+                    'account': 'wiz',
+                    'lines': 'l8'
+                }
             })
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2562,8 +2586,9 @@ class BuganizerFixes(ReformatterTest):
         def f():
           if True:
             if True:
-              return aaaa.bbbbbbbbb(ccccccc=dddddddddddddd(
-                  {('eeee', 'ffffffff'): str(j)}))
+              return aaaa.bbbbbbbbb(ccccccc=dddddddddddddd({
+                  ('eeee', 'ffffffff'): str(j)
+              }))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

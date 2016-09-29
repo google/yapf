@@ -73,7 +73,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if index < len(node.children):
         child = node.children[index + 1]
         dict_maker = isinstance(child, pytree.Leaf) and child.value == ':'
-    last_was_comma = False
     last_was_colon = False
     for child in node.children:
       if pytree_utils.NodeName(child) == 'comp_for':
@@ -81,10 +80,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                                      format_token.Subtype.DICT_SET_GENERATOR)
       else:
         if dict_maker:
-          if last_was_comma:
-            _AppendFirstLeafTokenSubtype(child,
-                                         format_token.Subtype.DICTIONARY_KEY)
-          elif last_was_colon:
+          if last_was_colon:
             if pytree_utils.NodeName(child) == 'power':
               _AppendSubtypeRec(child, format_token.Subtype.NONE)
             else:
@@ -92,7 +88,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                   child, format_token.Subtype.DICTIONARY_VALUE)
             if style.Get('INDENT_DICTIONARY_VALUE'):
               _InsertPseudoParentheses(child)
-        last_was_comma = isinstance(child, pytree.Leaf) and child.value == ','
+          elif (child is not None and
+                (isinstance(child, pytree.Node) or child.value not in '{:,')):
+            # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
+            # normally want to split before them if the dictionary cannot exist
+            # on a single line.
+            _AppendFirstLeafTokenSubtype(child,
+                                         format_token.Subtype.DICTIONARY_KEY)
         last_was_colon = isinstance(child, pytree.Leaf) and child.value == ':'
       self.Visit(child)
 

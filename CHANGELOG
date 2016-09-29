@@ -6,6 +6,8 @@
 ### Fixed
 - Prefer to split before a terminating r-paren in an argument list if the line
   would otherwise go over the column limit.
+- Split before the first key in a dictionary if the dictionary cannot fit on a
+  single line.
 
 ## [0.12.0] 2016-09-25
 ### Added
