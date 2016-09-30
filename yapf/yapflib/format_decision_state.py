@@ -202,12 +202,14 @@ class FormatDecisionState(object):
           if opening.matching_bracket.previous_token.value == ',':
             return True
 
-    if previous.is_pseudo_paren and _IsDictionaryValue(current):
-      # Split before the dictionary value if we can't fit the whole dictionary
-      # on one line.
-      opening = _GetOpeningBracket(current)
-      if not self._FitsOnLine(opening, opening.matching_bracket):
-        return True
+    if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
+        previous.is_pseudo_paren):
+      if previous.is_pseudo_paren:
+        # Split before the dictionary value if we can't fit the whole dictionary
+        # on one line.
+        opening = _GetOpeningBracket(current)
+        if not self._FitsOnLine(opening, opening.matching_bracket):
+          return True
 
     if (previous.value in '{[' and current.lineno != previous.lineno and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
@@ -510,15 +512,6 @@ def _IsFunctionCallWithArguments(token):
     elif token.name not in {'NAME', 'DOT'}:
       break
     token = token.next_token
-  return False
-
-
-def _IsDictionaryValue(token):
-  while token:
-    if (format_token.Subtype.DICTIONARY_VALUE in token.subtypes or
-        token.is_pseudo_paren):
-      return True
-    token = token.previous_token
   return False
 
 
