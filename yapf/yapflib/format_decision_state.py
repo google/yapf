@@ -202,6 +202,13 @@ class FormatDecisionState(object):
           if opening.matching_bracket.previous_token.value == ',':
             return True
 
+    if previous.is_pseudo_paren and _IsDictionaryValue(current):
+      # Split before the dictionary value if we can't fit the whole dictionary
+      # on one line.
+      opening = _GetOpeningBracket(current)
+      if not self._FitsOnLine(opening, opening.matching_bracket):
+        return True
+
     if (previous.value in '{[' and current.lineno != previous.lineno and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
       # Retain the split after the container opening.

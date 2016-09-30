@@ -1290,12 +1290,12 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
         def testSomething(self):
           expected = {
-              ('aaaaaaaaaaaaa',
-               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
-              ('aaaaaaaaaaaaa',
-               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
-              ('aaaaaaaaaaaaa',
-               'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'):
+                  'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'):
+                  'ccccccccccccccccccccccccccccccccccccccccccc',
+              ('aaaaaaaaaaaaa', 'bbbb'):
+                  'ccccccccccccccccccccccccccccccccccccccccccc',
           }
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2140,8 +2140,8 @@ class BuganizerFixes(ReformatterTest):
                 extra_env={
                     "OOOOOOOOOOOOOOOOOOOOO":
                         FLAGS.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz,
-                    "PPPPPPPPPPPPPPPPPPPPP": FLAGS.aaaaaaaaaaaaaa +
-                                             FLAGS.bbbbbbbbbbbbbbbbbbb,
+                    "PPPPPPPPPPPPPPPPPPPPP":
+                        FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
                 })
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2272,8 +2272,9 @@ class BuganizerFixes(ReformatterTest):
                        dict(
                            ffffffffffffffff,
                            **{
-                               'mmmmmm:ssssss': m.rrrrrrrrrrr(
-                                   '|'.join(iiiiiiiiiiiiii), iiiiii=True)
+                               'mmmmmm:ssssss':
+                                   m.rrrrrrrrrrr(
+                                       '|'.join(iiiiiiiiiiiiii), iiiiii=True)
                            }))
                | m.wwwwww(m.rrrr('1h'))
                | m.ggggggg(bbbbbbbbbbbbbbb))
@@ -2348,8 +2349,8 @@ class BuganizerFixes(ReformatterTest):
         def main(unused_argv):
           if True:
             aaaaaaaa = {
-                'xxx': '%s/cccccc/ddddddddddddddddddd.jar' %
-                       (eeeeee.FFFFFFFFFFFFFFFFFF),
+                'xxx':
+                    '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
     uwlines = _ParseAndUnwrap(code)
@@ -2370,8 +2371,9 @@ class BuganizerFixes(ReformatterTest):
             'aaaa': {
                 # A comment for no particular reason.
                 'xxxxxxxx': 'bbbbbbbbb',
-                'yyyyyyyyyyyyyyyyyy': 'cccccccccccccccccccccccccccccc'
-                                      'dddddddddddddddddddddddddddddddddddddddddd',
+                'yyyyyyyyyyyyyyyyyy':
+                    'cccccccccccccccccccccccccccccc'
+                    'dddddddddddddddddddddddddddddddddddddddddd',
             }
         }
         """)
