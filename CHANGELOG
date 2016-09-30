@@ -8,6 +8,8 @@
   would otherwise go over the column limit.
 - Split before the first key in a dictionary if the dictionary cannot fit on a
   single line.
+- Don't count "pylint" comments when determining if the line goes over the
+  column limit.
 
 ## [0.12.0] 2016-09-25
 ### Added

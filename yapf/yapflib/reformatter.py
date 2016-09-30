@@ -217,8 +217,16 @@ def _CanPlaceOnSingleLine(uwline):
     True if the line can or should be added to a single line. False otherwise.
   """
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
-  return (uwline.last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
-          not any(tok.is_comment for tok in uwline.tokens[:-1]))
+  last = uwline.last
+  last_index = -1
+  if last.is_comment and re.search(r'^#+\s+pylint:', last.value.strip(),
+                                   re.IGNORECASE):
+    last = last.previous_token
+    last_index = -2
+  if last is None:
+    return True
+  return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
+          not any(tok.is_comment for tok in uwline.tokens[:last_index]))
 
 
 def _FormatFinalLines(final_lines, verify):

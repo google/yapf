@@ -1769,6 +1769,30 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB31847238(self):
+    unformatted_code = textwrap.dedent("""\
+        class _():
+
+          def aaaaa(self, bbbbb, cccccccccccccc=None):  # pylint: disable=unused-argument
+            return 1
+
+          def xxxxx(self, yyyyy, zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
+            return 1
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class _():
+
+          def aaaaa(self, bbbbb, cccccccccccccc=None):  # pylint: disable=unused-argument
+            return 1
+
+          def xxxxx(
+              self, yyyyy,
+              zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
+            return 1
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB30760569(self):
     unformatted_code = textwrap.dedent("""\
         {'1234567890123456789012345678901234567890123456789012345678901234567890':
