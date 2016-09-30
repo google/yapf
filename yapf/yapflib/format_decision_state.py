@@ -143,8 +143,7 @@ class FormatDecisionState(object):
           else:
             last_token = _LastTokenInLine(bracket.matching_bracket)
 
-          length = last_token.total_length - bracket.total_length
-          if length + self.column >= column_limit:
+          if not self._FitsOnLine(bracket, last_token):
             self.stack[-1].split_before_closing_bracket = True
             return True
 
@@ -210,8 +209,8 @@ class FormatDecisionState(object):
 
     if previous.value == '{':
       closing = previous.matching_bracket
-      length = closing.total_length - previous.total_length + self.column
-      if length > column_limit and closing.previous_token.value == ',':
+      if (not self._FitsOnLine(previous, closing) and
+          closing.previous_token.value == ','):
         self.stack[-1].split_before_closing_bracket = True
         return True
 
@@ -233,9 +232,7 @@ class FormatDecisionState(object):
     previous_previous_token = previous.previous_token
     if (current.is_name and previous_previous_token and
         previous_previous_token.is_name and previous.value == '('):
-      arg_length = previous.matching_bracket.total_length
-      arg_length -= previous.total_length
-      if arg_length + self.column > column_limit:
+      if not self._FitsOnLine(previous, previous.matching_bracket):
         if _IsFunctionCallWithArguments(current):
           # There is a function call, with more than 1 argument, where
           # the first argument is itself a function call with arguments.
@@ -245,9 +242,7 @@ class FormatDecisionState(object):
           # argument to keep things looking good.
           return True
         elif current.OpensScope():
-          arg_length = current.matching_bracket.total_length
-          arg_length -= current.total_length
-          if arg_length + self.column > column_limit:
+          if not self._FitsOnLine(current, current.matching_bracket):
             # There is a data literal that will need to be split and could mess
             # up the formatting.
             return True
@@ -493,6 +488,11 @@ class FormatDecisionState(object):
       self.column = len(current.value.split('\n')[-1])
 
     return penalty
+
+  def _FitsOnLine(self, start, end):
+    column_limit = style.Get('COLUMN_LIMIT')
+    length = end.total_length - start.total_length
+    return length + self.column < column_limit
 
 
 def _IsFunctionCallWithArguments(token):
