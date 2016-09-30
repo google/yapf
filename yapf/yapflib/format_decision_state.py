@@ -188,7 +188,7 @@ class FormatDecisionState(object):
           opening_column = len(pptoken.value) if pptoken else 0 - indent_amt - 1
           if previous.value == '(':
             return opening_column >= style.Get('CONTINUATION_INDENT_WIDTH')
-          opening = _GetOpeningParen(current)
+          opening = _GetOpeningBracket(current)
           if opening:
             arglist_length = (opening.matching_bracket.total_length -
                               opening.total_length + self.stack[-1].indent)
@@ -197,7 +197,7 @@ class FormatDecisionState(object):
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
       # arguments are terminated by a comma.
-      opening = _GetOpeningParen(current)
+      opening = _GetOpeningBracket(current)
       if opening and opening.previous_token and opening.previous_token.is_name:
         if previous.value in '(,':
           if opening.matching_bracket.previous_token.value == ',':
@@ -206,11 +206,6 @@ class FormatDecisionState(object):
     if (previous.value in '{[' and current.lineno != previous.lineno and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
       # Retain the split after the container opening.
-      return True
-
-    if (previous.value == ':' and _IsDictionaryValue(current) and
-        current.lineno != previous.lineno):
-      # Retain the split between the dictionary key and value.
       return True
 
     if previous.value == '{':
@@ -272,7 +267,7 @@ class FormatDecisionState(object):
     if not current.next_token:
       return False
 
-    opening = _GetOpeningParen(current)
+    opening = _GetOpeningBracket(current)
     if (opening and opening.value == '(' and current.is_name and
         previous.value == ','):
       # If we have a function call within an argument list and it won't fit on
@@ -513,7 +508,8 @@ def _IsFunctionCallWithArguments(token):
 
 def _IsDictionaryValue(token):
   while token:
-    if format_token.Subtype.DICTIONARY_VALUE in token.subtypes:
+    if (format_token.Subtype.DICTIONARY_VALUE in token.subtypes or
+        token.is_pseudo_paren):
       return True
     token = token.previous_token
   return False
@@ -527,10 +523,11 @@ def _GetLengthOfSubtype(token, subtype, exclude=None):
   return current.total_length - token.total_length + 1
 
 
-def _GetOpeningParen(current):
+def _GetOpeningBracket(current):
   previous = current
-  if previous and previous.matching_bracket:
+  if previous and previous.matching_bracket and not previous.is_pseudo_paren:
     return previous.matching_bracket
+  previous = previous.previous_token
   while previous is not None and previous.matching_bracket is None:
     previous = previous.previous_token
     if not previous:

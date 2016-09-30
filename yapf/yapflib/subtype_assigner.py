@@ -81,11 +81,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       else:
         if dict_maker:
           if last_was_colon:
-            if pytree_utils.NodeName(child) == 'power':
-              _AppendSubtypeRec(child, format_token.Subtype.NONE)
-            else:
-              _AppendFirstLeafTokenSubtype(
-                  child, format_token.Subtype.DICTIONARY_VALUE)
+            _AppendFirstLeafTokenSubtype(child,
+                                         format_token.Subtype.DICTIONARY_VALUE)
             if style.Get('INDENT_DICTIONARY_VALUE'):
               _InsertPseudoParentheses(child)
           elif (child is not None and

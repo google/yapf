@@ -1552,10 +1552,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             def method(self):
               filters = {
                   'expressions': [
-                      {'field': {
-                          'search_field':
-                              {'user_field': 'latest_party__number_of_guests'},
-                      }}
+                      {
+                          'field': {
+                              'search_field': {
+                                  'user_field': 'latest_party__number_of_guests'
+                              },
+                          }
+                      }
                   ]
               }
           """)
