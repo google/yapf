@@ -10,6 +10,8 @@
   single line.
 - Don't count "pylint" comments when determining if the line goes over the
   column limit.
+- Don't count the argument list of a lambda as a named assign in a function
+  call.
 
 ## [0.12.0] 2016-09-25
 ### Added

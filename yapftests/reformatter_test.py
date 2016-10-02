@@ -1303,9 +1303,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testEndingComment(self):
     code = textwrap.dedent("""\
-      a = f(a="something",
-            b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
-            c="something else, about which comment doesn't make sense")
+      a = f(
+          a="something",
+          b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
+          c="something else, about which comment doesn't make sense")
       """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -2513,9 +2514,8 @@ class BuganizerFixes(ReformatterTest):
 
   def testB19194420(self):
     code = textwrap.dedent("""\
-        method.Set(
-            'long argument goes here that causes the line to break',
-            lambda arg2=0.5: arg2)
+        method.Set('long argument goes here that causes the line to break',
+                   lambda arg2=0.5: arg2)
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

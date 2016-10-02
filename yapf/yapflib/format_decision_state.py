@@ -168,6 +168,7 @@ class FormatDecisionState(object):
       return True
 
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and
+        not current.is_comment and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
@@ -528,7 +529,7 @@ def _GetOpeningBracket(current):
   if previous and previous.matching_bracket and not previous.is_pseudo_paren:
     return previous.matching_bracket
   previous = previous.previous_token
-  while previous is not None and previous.matching_bracket is None:
+  while previous and not previous.matching_bracket:
     previous = previous.previous_token
     if not previous:
       break

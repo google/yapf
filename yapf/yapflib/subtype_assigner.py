@@ -81,10 +81,11 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       else:
         if dict_maker:
           if last_was_colon:
-            _AppendFirstLeafTokenSubtype(child,
-                                         format_token.Subtype.DICTIONARY_VALUE)
             if style.Get('INDENT_DICTIONARY_VALUE'):
               _InsertPseudoParentheses(child)
+            else:
+              _AppendFirstLeafTokenSubtype(child,
+                                           format_token.Subtype.DICTIONARY_VALUE)
           elif (child is not None and
                 (isinstance(child, pytree.Node) or child.value not in '{:,')):
             # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
@@ -260,8 +261,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #          ('*' [vname] (',' vname ['=' test])*  [',' '**' vname]
     #           | '**' vname)
     #      | vfpdef ['=' test] (',' vfpdef ['=' test])* [','])
-    self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    for child in node.children:
+      self.Visit(child)
+      if isinstance(child, pytree.Leaf) and child.value == '=':
+        _AppendTokenSubtype(child, format_token.Subtype.VARARGS_LIST)
 
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
@@ -311,12 +314,12 @@ def _AppendTokenSubtype(node, subtype):
                                     subtype)
 
 
-def _AppendFirstLeafTokenSubtype(node, subtype, force=False):
+def _AppendFirstLeafTokenSubtype(node, subtype):
   """Append the first leaf token's subtypes."""
   if isinstance(node, pytree.Leaf):
     _AppendTokenSubtype(node, subtype)
     return
-  _AppendFirstLeafTokenSubtype(node.children[0], subtype, force=force)
+  _AppendFirstLeafTokenSubtype(node.children[0], subtype)
 
 
 def _AppendSubtypeRec(node, subtype, force=True):
