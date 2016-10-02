@@ -547,18 +547,6 @@ def _GetOpeningBracket(current):
     current = current.previous_token
   return None
 
-  previous = current
-  if previous and previous.matching_bracket and not previous.is_pseudo_paren:
-    return previous.matching_bracket
-  previous = previous.previous_token
-  while previous and not previous.matching_bracket:
-    previous = previous.previous_token
-    if not previous:
-      break
-    if previous.ClosesScope():
-      previous = previous.matching_bracket.previous_token
-  return previous
-
 
 def _LastTokenInLine(current):
   while not current.is_comment and current.next_token:
