@@ -2,7 +2,15 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.12.1] UNRELEASED
+## [0.12.2] UNRELEASED
+### Fixed
+- If `style.SetGlobalStyle(<create pre-defined style>)` was called and then
+  `yapf_api.FormatCode` was called, the style set by the first call would be
+  lost, because it would return the style created by `DEFAULT_STYLE_FACTORY`,
+  which is set to PEP8 by default. Fix this by making the first call set which
+  factory we call as the "default" style.
+
+## [0.12.1] 2016-10-02
 ### Changed
 - Dictionary values will be placed on the same line as the key if *all* of the
   elements in the dictionary can be placed on one line. Otherwise, the

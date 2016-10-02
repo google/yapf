@@ -39,6 +39,9 @@ def Help():
 def SetGlobalStyle(style):
   """Set a style dict."""
   global _style
+  factory = _GetStyleFactory(style)
+  if factory:
+    _GLOBAL_STYLE_FACTORY = factory
   _style = style
 
 
@@ -204,8 +207,8 @@ def CreatePEP8Style():
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
-      USE_TABS=False
-  )  # yapf: disable
+      USE_TABS=False,
+  )
 
 
 def CreateGoogleStyle():
@@ -248,7 +251,21 @@ _STYLE_NAME_TO_FACTORY = dict(
     chromium=CreateChromiumStyle,
     google=CreateGoogleStyle,
     facebook=CreateFacebookStyle,
-)  # yapf: disable
+)
+
+_DEFAULT_STYLE_TO_FACTORY = [
+    (CreateChromiumStyle(), CreateChromiumStyle),
+    (CreateFacebookStyle(), CreateFacebookStyle),
+    (CreateGoogleStyle(), CreateGoogleStyle),
+    (CreatePEP8Style(), CreatePEP8Style),
+]
+
+
+def _GetStyleFactory(style):
+  for def_style, factory in _DEFAULT_STYLE_TO_FACTORY:
+    if style == def_style:
+      return factory
+  return None
 
 
 def _StringListConverter(s):
@@ -297,8 +314,8 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,
-    USE_TABS=_BoolConverter
-)  # yapf: disable
+    USE_TABS=_BoolConverter,
+)
 
 
 def CreateStyleFromConfig(style_config):
@@ -308,7 +325,7 @@ def CreateStyleFromConfig(style_config):
     style_config: either a style name or a file name. The file is expected to
       contain settings. It can have a special BASED_ON_STYLE setting naming the
       style which it derives from. If no such setting is found, it derives from
-      the default style. When style_config is None, the DEFAULT_STYLE_FACTORY
+      the default style. When style_config is None, the _GLOBAL_STYLE_FACTORY
       config is created.
 
   Returns:
@@ -317,17 +334,20 @@ def CreateStyleFromConfig(style_config):
   Raises:
     StyleConfigError: if an unknown style option was encountered.
   """
-  styles = (CreatePEP8Style(), CreateGoogleStyle(), CreateFacebookStyle(),
-            CreateChromiumStyle())
+
+  def GlobalStyles():
+    for style, _ in _DEFAULT_STYLE_TO_FACTORY:
+      yield style
+
   def_style = False
   if style_config is None:
-    for style in styles:
+    for style in GlobalStyles():
       if _style == style:
         def_style = True
         break
     if not def_style:
       return _style
-    return DEFAULT_STYLE_FACTORY()
+    return _GLOBAL_STYLE_FACTORY()
   style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
   if style_factory is not None:
     return style_factory()
@@ -398,7 +418,7 @@ def _CreateStyleFromConfigParser(config):
     based_on = config.get('yapf', 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
   else:
-    base_style = DEFAULT_STYLE_FACTORY()
+    base_style = _GLOBAL_STYLE_FACTORY()
 
   # Read all options specified in the file and update the style.
   for option, value in config.items(section):
@@ -420,6 +440,7 @@ def _CreateStyleFromConfigParser(config):
 # requesting a formatting style.
 DEFAULT_STYLE = 'pep8'
 DEFAULT_STYLE_FACTORY = CreatePEP8Style
+_GLOBAL_STYLE_FACTORY = CreatePEP8Style
 
 # The name of the file to use for global style definition.
 GLOBAL_STYLE = (os.path.join(
@@ -437,4 +458,4 @@ SETUP_CONFIG = 'setup.cfg'
 # Refactor this so that the style is passed around through yapf rather than
 # being global.
 _style = None
-SetGlobalStyle(DEFAULT_STYLE_FACTORY())
+SetGlobalStyle(_GLOBAL_STYLE_FACTORY())

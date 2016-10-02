@@ -37,7 +37,7 @@ def GetDefaultStyleForDir(dirname):
     dirname: (unicode) The name of the directory.
 
   Returns:
-    The filename if found, otherwise return the glboal default (pep8).
+    The filename if found, otherwise return the global default (pep8).
   """
   dirname = os.path.abspath(dirname)
   while True:

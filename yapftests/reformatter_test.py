@@ -2968,6 +2968,40 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
+class TestsForStyleConfig(ReformatterTest):
+
+  def setUp(self):
+    self.current_style = style.DEFAULT_STYLE
+
+  def testSetGlobalStyle(self):
+    try:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+      unformatted_code = textwrap.dedent(u"""\
+           for i in range(5):
+            print('bar')
+           """)
+      expected_formatted_code = textwrap.dedent(u"""\
+             for i in range(5):
+               print('bar')
+             """)
+      uwlines = _ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      style.DEFAULT_STYLE = self.current_style
+
+    unformatted_code = textwrap.dedent(u"""\
+         for i in range(5):
+          print('bar')
+         """)
+    expected_formatted_code = textwrap.dedent(u"""\
+           for i in range(5):
+               print('bar')
+           """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
 class TestsForPEP8Style(ReformatterTest):
 
   @classmethod
