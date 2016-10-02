@@ -501,8 +501,9 @@ class FormatDecisionState(object):
     return length + self.column < self.column_limit
 
   def _AllDictElementsFitOnOneLine(self, opening):
+    """Determine if all dict elems can fit on one line."""
     closing = opening.matching_bracket
-    current, previous = opening.next_token, opening
+    current = opening.next_token
     start = None
     while current and current != closing:
       if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
