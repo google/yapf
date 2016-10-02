@@ -3,6 +3,11 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.12.1] UNRELEASED
+### Changed
+- Dictionary values will be placed on the same line as the key if *all* of the
+  elements in the dictionary can be placed on one line. Otherwise, the
+  dictionary values will be placed on the next line.
+
 ### Fixed
 - Prefer to split before a terminating r-paren in an argument list if the line
   would otherwise go over the column limit.

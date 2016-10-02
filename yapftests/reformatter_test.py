@@ -1198,7 +1198,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
   def testDictSetGenerator(self):
     code = textwrap.dedent("""\
         foo = {
-            variable: 'hello world. How are you today?'
+            variable:
+                'hello world. How are you today?'
             for variable in fnord if variable != 37
         }
         """)
@@ -1766,6 +1767,58 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testDictionaryValuesOnOwnLines(self):
+    unformatted_code = textwrap.dedent("""\
+        a = {
+        'aaaaaaaaaaaaaaaaaaaaaaaa':
+            Check('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ', '=', True),
+        'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb':
+            Check('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY', '=', True),
+        'ccccccccccccccc':
+            Check('XXXXXXXXXXXXXXXXXXX', '!=', 'SUSPENDED'),
+        'dddddddddddddddddddddddddddddd':
+            Check('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW', '=', False),
+        'eeeeeeeeeeeeeeeeeeeeeeeeeeeee':
+            Check('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV', '=', False),
+        'ffffffffffffffffffffffffff':
+            Check('UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU', '=', True),
+        'ggggggggggggggggg':
+            Check('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT', '=', True),
+        'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh':
+            Check('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS', '=', True),
+        'iiiiiiiiiiiiiiiiiiiiiiii':
+            Check('RRRRRRRRRRRRRRRRRRRRRRRRRRR', '=', True),
+        'jjjjjjjjjjjjjjjjjjjjjjjjjj':
+            Check('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ', '=', False),
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a = {
+            'aaaaaaaaaaaaaaaaaaaaaaaa':
+                Check('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ', '=', True),
+            'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb':
+                Check('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY', '=', True),
+            'ccccccccccccccc':
+                Check('XXXXXXXXXXXXXXXXXXX', '!=', 'SUSPENDED'),
+            'dddddddddddddddddddddddddddddd':
+                Check('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW', '=', False),
+            'eeeeeeeeeeeeeeeeeeeeeeeeeeeee':
+                Check('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV', '=', False),
+            'ffffffffffffffffffffffffff':
+                Check('UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU', '=', True),
+            'ggggggggggggggggg':
+                Check('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT', '=', True),
+            'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh':
+                Check('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS', '=', True),
+            'iiiiiiiiiiiiiiiiiiiiiiii':
+                Check('RRRRRRRRRRRRRRRRRRRRRRRRRRR', '=', True),
+            'jjjjjjjjjjjjjjjjjjjjjjjjjj':
+                Check('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ', '=', False),
+        }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -2115,7 +2168,8 @@ class BuganizerFixes(ReformatterTest):
             {
                 'materialize':
                     lambda x: some_type_of_function('materialize ' + x.command_def),
-                '#': lambda x: x  # do nothing
+                '#':
+                    lambda x: x  # do nothing
             })
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
@@ -2371,7 +2425,8 @@ class BuganizerFixes(ReformatterTest):
         foo = {
             'aaaa': {
                 # A comment for no particular reason.
-                'xxxxxxxx': 'bbbbbbbbb',
+                'xxxxxxxx':
+                    'bbbbbbbbb',
                 'yyyyyyyyyyyyyyyyyy':
                     'cccccccccccccccccccccccccccccc'
                     'dddddddddddddddddddddddddddddddddddddddddd',
@@ -2397,8 +2452,10 @@ class BuganizerFixes(ReformatterTest):
     code = textwrap.dedent("""\
         a = {
             'xxxxxxxxxxxxxxxxxxxx': {
-                'aaaa': 'mmmmmmm',
-                'bbbbb': 'mmmmmmmmmmmmmmmmmmmmm',
+                'aaaa':
+                    'mmmmmmm',
+                'bbbbb':
+                    'mmmmmmmmmmmmmmmmmmmmm',
                 'cccccccccc': [
                     'nnnnnnnnnnn',
                     'ooooooooooo',

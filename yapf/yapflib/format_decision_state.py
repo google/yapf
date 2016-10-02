@@ -79,6 +79,7 @@ class FormatDecisionState(object):
     self.first_indent = first_indent
     self.newline = False
     self.previous = None
+    self.column_limit = style.Get('COLUMN_LIMIT')
     self._MoveStateToNextToken()
 
   def Clone(self):
@@ -123,7 +124,6 @@ class FormatDecisionState(object):
     """Returns True if the line must split before the next token."""
     current = self.next_token
     previous = current.previous_token
-    column_limit = style.Get('COLUMN_LIMIT')
 
     if current.must_break_before:
       return True
@@ -167,8 +167,7 @@ class FormatDecisionState(object):
     if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
       return True
 
-    if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and
-        not current.is_comment and
+    if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
@@ -192,7 +191,7 @@ class FormatDecisionState(object):
           if opening:
             arglist_length = (opening.matching_bracket.total_length -
                               opening.total_length + self.stack[-1].indent)
-            return arglist_length > column_limit
+            return arglist_length > self.column_limit
 
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
@@ -204,13 +203,14 @@ class FormatDecisionState(object):
             return True
 
     if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
-        previous.is_pseudo_paren):
-      if previous.is_pseudo_paren:
-        # Split before the dictionary value if we can't fit the whole dictionary
-        # on one line.
+        (previous.is_pseudo_paren and previous.value == '(')):
+      if not current.OpensScope():
         opening = _GetOpeningBracket(current)
-        if not self._FitsOnLine(opening, opening.matching_bracket):
-          return True
+        if previous.is_pseudo_paren:
+          # Split before the dictionary value if we can't fit the whole
+          # dictionary on one line.
+          if not self._AllDictElementsFitOnOneLine(opening):
+            return True
 
     if (previous.value in '{[' and current.lineno != previous.lineno and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
@@ -229,14 +229,14 @@ class FormatDecisionState(object):
       # Split at the beginning of a list comprehension.
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR,
                                    format_token.Subtype.COMP_IF)
-      if length + self.column > column_limit:
+      if length + self.column > self.column_limit:
         return True
 
     if (format_token.Subtype.COMP_IF in current.subtypes and
         format_token.Subtype.COMP_IF not in previous.subtypes):
       # Split at the beginning of an if expression.
       length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
-      if length + self.column > column_limit:
+      if length + self.column > self.column_limit:
         return True
 
     previous_previous_token = previous.previous_token
@@ -269,9 +269,6 @@ class FormatDecisionState(object):
       # original comments were on a separate line.
       return True
 
-    if not current.next_token:
-      return False
-
     opening = _GetOpeningBracket(current)
     if (opening and opening.value == '(' and current.is_name and
         previous.value == ','):
@@ -289,8 +286,8 @@ class FormatDecisionState(object):
 
       if ntoken:
         indent_amt = self.stack[-1].indent * style.Get('INDENT_WIDTH')
-        if (total_len + indent_amt < column_limit and
-            total_len + self.column >= column_limit):
+        if (total_len + indent_amt < self.column_limit and
+            total_len + self.column >= self.column_limit):
           return True
 
     return False
@@ -487,9 +484,8 @@ class FormatDecisionState(object):
 
     # Calculate the penalty for overflowing the column limit.
     penalty = 0
-    column_limit = style.Get('COLUMN_LIMIT')
-    if not current.is_pylint_comment and self.column > column_limit:
-      excess_characters = self.column - column_limit
+    if not current.is_pylint_comment and self.column > self.column_limit:
+      excess_characters = self.column - self.column_limit
       penalty += style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
 
     if is_multiline_string:
@@ -500,9 +496,23 @@ class FormatDecisionState(object):
     return penalty
 
   def _FitsOnLine(self, start, end):
-    column_limit = style.Get('COLUMN_LIMIT')
+    """Determines if line between start and end can fit on the current line."""
     length = end.total_length - start.total_length
-    return length + self.column < column_limit
+    return length + self.column < self.column_limit
+
+  def _AllDictElementsFitOnOneLine(self, opening):
+    closing = opening.matching_bracket
+    current, previous = opening.next_token, opening
+    start = None
+    while current and current != closing:
+      if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
+        if start and not self._FitsOnLine(start, current.previous_token):
+          return False
+        start = current
+      if current.OpensScope():
+        current = current.matching_bracket
+      current = current.next_token
+    return start and self._FitsOnLine(start, current.previous_token)
 
 
 def _IsFunctionCallWithArguments(token):
@@ -525,6 +535,18 @@ def _GetLengthOfSubtype(token, subtype, exclude=None):
 
 
 def _GetOpeningBracket(current):
+  if current.matching_bracket and not current.is_pseudo_paren:
+    return current.matching_bracket
+  while current:
+    if current.ClosesScope():
+      current = current.matching_bracket
+    elif current.is_pseudo_paren:
+      current = current.previous_token
+    elif current.OpensScope():
+      return current
+    current = current.previous_token
+  return None
+
   previous = current
   if previous and previous.matching_bracket and not previous.is_pseudo_paren:
     return previous.matching_bracket

@@ -84,8 +84,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             if style.Get('INDENT_DICTIONARY_VALUE'):
               _InsertPseudoParentheses(child)
             else:
-              _AppendFirstLeafTokenSubtype(child,
-                                           format_token.Subtype.DICTIONARY_VALUE)
+              _AppendFirstLeafTokenSubtype(
+                  child, format_token.Subtype.DICTIONARY_VALUE)
           elif (child is not None and
                 (isinstance(child, pytree.Node) or child.value not in '{:,')):
             # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
