@@ -1854,6 +1854,73 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testDictionaryOnOwnLine(self):
+    unformatted_code = textwrap.dedent("""\
+        _A = {
+            'cccccccccc': ('^^1',),
+            'rrrrrrrrrrrrrrrrrrrrrrrrr': ('^7913',  # AAAAAAAAAAAAAA.
+                                         ),
+            'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': ('^6242',  # BBBBBBBBBBBBBBB.
+                                                  ),
+            'vvvvvvvvvvvvvvvvvvv': ('^27959',  # CCCCCCCCCCCCCCCCCC.
+                                    '^19746',  # DDDDDDDDDDDDDDDDDDDDDDD.
+                                    '^22907',  # EEEEEEEEEEEEEEEEEEEEEEEE.
+                                    '^21098',  # FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.
+                                    '^22826',  # GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.
+                                    '^22769',  # HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH.
+                                    '^22935',  # IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.
+                                    '^3982',  # JJJJJJJJJJJJJ.
+                                   ),
+            'uuuuuuuuuuuu': ('^19745',  # LLLLLLLLLLLLLLLLLLLLLLLLLL.
+                             '^21324',  # MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.
+                             '^22831',  # NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.
+                             '^17081',  # OOOOOOOOOOOOOOOOOOOOO.
+                            ),
+            'eeeeeeeeeeeeee': (
+                '^9416',  # Reporter email. Not necessarily the reporter.
+                '^^3',  # This appears to be the raw email field.
+            ),
+            'cccccccccc': ('^21109',  # PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP.
+                          ),
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        _A = {
+            'cccccccccc': ('^^1',),
+            'rrrrrrrrrrrrrrrrrrrrrrrrr': (
+                '^7913',  # AAAAAAAAAAAAAA.
+            ),
+            'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': (
+                '^6242',  # BBBBBBBBBBBBBBB.
+            ),
+            'vvvvvvvvvvvvvvvvvvv': (
+                '^27959',  # CCCCCCCCCCCCCCCCCC.
+                '^19746',  # DDDDDDDDDDDDDDDDDDDDDDD.
+                '^22907',  # EEEEEEEEEEEEEEEEEEEEEEEE.
+                '^21098',  # FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.
+                '^22826',  # GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG.
+                '^22769',  # HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH.
+                '^22935',  # IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII.
+                '^3982',  # JJJJJJJJJJJJJ.
+            ),
+            'uuuuuuuuuuuu': (
+                '^19745',  # LLLLLLLLLLLLLLLLLLLLLLLLLL.
+                '^21324',  # MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.
+                '^22831',  # NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.
+                '^17081',  # OOOOOOOOOOOOOOOOOOOOO.
+            ),
+            'eeeeeeeeeeeeee': (
+                '^9416',  # Reporter email. Not necessarily the reporter.
+                '^^3',  # This appears to be the raw email field.
+            ),
+            'cccccccccc': (
+                '^21109',  # PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP.
+            ),
+        }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -2625,12 +2692,13 @@ class BuganizerFixes(ReformatterTest):
 
   def testB19073499(self):
     code = textwrap.dedent("""\
-        instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
-            'aa': 'context!'
-        }).eeeeeeeeeeeeeeeeeee(
-            {  # Inline comment about why fnord has the value 6.
-                'fnord': 6
-            }))
+        instance = (
+            aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
+                'aa': 'context!'
+            }).eeeeeeeeeeeeeeeeeee(
+                {  # Inline comment about why fnord has the value 6.
+                    'fnord': 6
+                }))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -3175,10 +3243,11 @@ class TestsForPEP8Style(ReformatterTest):
                     )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        TEST_LIST = ('foo',
-                     'bar',  # first comment
-                     'baz'  # second comment
-                     )
+        TEST_LIST = (
+            'foo',
+            'bar',  # first comment
+            'baz'  # second comment
+        )
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

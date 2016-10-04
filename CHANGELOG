@@ -13,7 +13,8 @@
 - A dictionary being used as an argument to a function call and which can exist
   on a single line shouldn't be split.
 - Don't rely upon the original line break to determine if we should split
-  before the elements in a container.
+  before the elements in a container. Especially split if there's a comment in
+  the container.
 
 ## [0.12.1] 2016-10-02
 ### Changed
