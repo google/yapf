@@ -1054,7 +1054,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testTrailerOnSingleLine(self):
     code = textwrap.dedent("""\
-        urlpatterns = patterns('', url(r'^$', 'homepage_view'),
+        urlpatterns = patterns('',
+                               url(r'^$', 'homepage_view'),
                                url(r'^/login/$', 'login_view'),
                                url(r'^/login/$', 'logout_view'),
                                url(r'^/user/(?P<username>\\w+)/$', 'profile_view'))
@@ -1825,6 +1826,21 @@ class BuganizerFixes(ReformatterTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testB31911533(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          @parameterized.NamedParameters(
+              ('IncludingModInfoWithHeaderList', AAAA, aaaa),
+              ('IncludingModInfoWithoutHeaderList', BBBB, bbbbb),
+              ('ExcludingModInfoWithHeaderList', CCCCC, cccc),
+              ('ExcludingModInfoWithoutHeaderList', DDDDD, ddddd),)
+          def _():
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB31847238(self):
     unformatted_code = textwrap.dedent("""\

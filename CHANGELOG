@@ -9,6 +9,7 @@
   lost, because it would return the style created by `DEFAULT_STYLE_FACTORY`,
   which is set to PEP8 by default. Fix this by making the first call set which
   factory we call as the "default" style.
+- Don't force a split before non-function call arguments.
 
 ## [0.12.1] 2016-10-02
 ### Changed
