@@ -1820,6 +1820,37 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testDictionaryOnOwnLine(self):
+    unformatted_code = textwrap.dedent("""\
+        doc = test_utils.CreateTestDocumentViaController(
+            content={ 'a': 'b' },
+            branch_key=branch.key,
+            collection_key=collection.key)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        doc = test_utils.CreateTestDocumentViaController(
+            content={'a': 'b'}, branch_key=branch.key, collection_key=collection.key)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        doc = test_utils.CreateTestDocumentViaController(
+            content={ 'a': 'b' },
+            branch_key=branch.key,
+            collection_key=collection.key,
+            collection_key2=collection.key2)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        doc = test_utils.CreateTestDocumentViaController(
+            content={'a': 'b'},
+            branch_key=branch.key,
+            collection_key=collection.key,
+            collection_key2=collection.key2)
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -3001,7 +3032,8 @@ class TestsForStyleConfig(ReformatterTest):
                print('bar')
              """)
       uwlines = _ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style

@@ -207,8 +207,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
-      USE_TABS=False,
-  )
+      USE_TABS=False,)
 
 
 def CreateGoogleStyle():
@@ -250,8 +249,7 @@ _STYLE_NAME_TO_FACTORY = dict(
     pep8=CreatePEP8Style,
     chromium=CreateChromiumStyle,
     google=CreateGoogleStyle,
-    facebook=CreateFacebookStyle,
-)
+    facebook=CreateFacebookStyle,)
 
 _DEFAULT_STYLE_TO_FACTORY = [
     (CreateChromiumStyle(), CreateChromiumStyle),
@@ -314,8 +312,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,
-    USE_TABS=_BoolConverter,
-)
+    USE_TABS=_BoolConverter,)
 
 
 def CreateStyleFromConfig(style_config):

@@ -219,8 +219,8 @@ def _CanPlaceOnSingleLine(uwline):
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
   last = uwline.last
   last_index = -1
-  if last.is_comment and re.search(r'^#+\s+pylint:', last.value.strip(),
-                                   re.IGNORECASE):
+  if last.is_comment and re.search(r'^#+\s+pylint:',
+                                   last.value.strip(), re.IGNORECASE):
     last = last.previous_token
     last_index = -2
   if last is None:

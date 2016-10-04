@@ -10,6 +10,8 @@
   which is set to PEP8 by default. Fix this by making the first call set which
   factory we call as the "default" style.
 - Don't force a split before non-function call arguments.
+- A dictionary being used as an argument to a function call and which can exist
+  on a single line shouldn't be split.
 
 ## [0.12.1] 2016-10-02
 ### Changed

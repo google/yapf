@@ -161,6 +161,13 @@ class FormatDecisionState(object):
     if (format_token.Subtype.DICTIONARY_KEY in current.subtypes and
         not current.is_comment):
       # Place each dictionary entry on its own line.
+      if previous.value == '{' and previous.previous_token:
+        opening = _GetOpeningBracket(previous.previous_token)
+        if (opening and opening.value == '(' and opening.previous_token and
+            opening.previous_token.is_name):
+          # This is a dictionary that's an argument to a function.
+          if self._FitsOnLine(previous, previous.matching_bracket):
+            return False
       return True
 
     # TODO(morbo): This should be controlled with a knob.
