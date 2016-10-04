@@ -219,10 +219,29 @@ class FormatDecisionState(object):
           if not self._AllDictElementsFitOnOneLine(opening):
             return True
 
-    if (previous.value in '{[' and current.lineno != previous.lineno and
+    if (previous.OpensScope() and not current.OpensScope() and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
-      # Retain the split after the container opening.
-      return True
+      if previous.value == '(':
+        pptoken = previous.previous_token
+        if not pptoken or not pptoken.is_name:
+          # Split after the opening of a tuple if it doesn't fit on the current
+          # line and it's not a function call.
+          if self._FitsOnLine(previous, previous.matching_bracket):
+            return False
+      else:
+        # Split after the opening of a container if it doesn't fit on the
+        # current line or if it has a comment.
+        if not self._FitsOnLine(previous, previous.matching_bracket):
+          return True
+        if not current.is_comment:
+          contains_comments = False
+          token = previous
+          while token != previous.matching_bracket:
+            if token.is_comment:
+              contains_comments = True
+              break
+            token = token.next_token
+          return contains_comments
 
     if previous.value == '{':
       closing = previous.matching_bracket

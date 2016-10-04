@@ -951,35 +951,38 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           'quuuuux', 'quuuuuux', 'quuuuuuux', lambda a, b: 37,]
         """)
     expected_formatted_code = textwrap.dedent("""\
-        FOO = ['bar',
-               'baz',
-               'mux',
-               'qux',
-               'quux',
-               'quuux',
-               'quuuux',
-               'quuuuux',
-               'quuuuuux',
-               'quuuuuuux',
-               lambda a, b: 37,]
+        FOO = [
+            'bar',
+            'baz',
+            'mux',
+            'qux',
+            'quux',
+            'quuux',
+            'quuuux',
+            'quuuuux',
+            'quuuuuux',
+            'quuuuuuux',
+            lambda a, b: 37,
+        ]
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplitListWithInterspersedComments(self):
     code = textwrap.dedent("""\
-        FOO = ['bar',  # bar
-               'baz',  # baz
-               'mux',  # mux
-               'qux',  # qux
-               'quux',  # quux
-               'quuux',  # quuux
-               'quuuux',  # quuuux
-               'quuuuux',  # quuuuux
-               'quuuuuux',  # quuuuuux
-               'quuuuuuux',  # quuuuuuux
-               lambda a, b: 37  # lambda
-              ]
+        FOO = [
+            'bar',  # bar
+            'baz',  # baz
+            'mux',  # mux
+            'qux',  # qux
+            'quux',  # quux
+            'quuux',  # quuux
+            'quuuux',  # quuuux
+            'quuuuux',  # quuuuux
+            'quuuuuux',  # quuuuuux
+            'quuuuuuux',  # quuuuuuux
+            lambda a, b: 37  # lambda
+        ]
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1190,8 +1193,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         class foo:
 
           def bar(self):
-            self.write(s=['%s%s %s' % ('many of really', 'long strings',
-                                       '+ just makes up 81')])
+            self.write(s=[
+                '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
+            ])
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -1554,15 +1558,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           class A(object):
             def method(self):
               filters = {
-                  'expressions': [
-                      {
-                          'field': {
-                              'search_field': {
-                                  'user_field': 'latest_party__number_of_guests'
-                              },
-                          }
+                  'expressions': [{
+                      'field': {
+                          'search_field': {
+                              'user_field': 'latest_party__number_of_guests'
+                          },
                       }
-                  ]
+                  }]
               }
           """)
       uwlines = _ParseAndUnwrap(code)
@@ -1600,8 +1602,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         if True:
           if True:
             if True:
-              columns = [x for x, y in self._heap_this_is_very_long
-                         if x.route[0] == choice]
+              columns = [
+                  x for x, y in self._heap_this_is_very_long if x.route[0] == choice
+              ]
               self._heap = [x for x in self._heap if x.route and x.route[0] == choice]
       """)
     uwlines = _ParseAndUnwrap(code)
@@ -2132,12 +2135,10 @@ class BuganizerFixes(ReformatterTest):
         _EXAMPLE = {
             'aaaaaaaaaaaaaa': [{
                 'bbbb': 'cccccccccccccccccccccc',
-                'dddddddddddd': [
-                ]
+                'dddddddddddd': []
             }, {
                 'bbbb': 'ccccccccccccccccccc',
-                'dddddddddddd': [
-                ]
+                'dddddddddddd': []
             }]
         }
         """)
@@ -2536,9 +2537,7 @@ class BuganizerFixes(ReformatterTest):
     code = textwrap.dedent("""\
         if True:
           aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb(
-              'ccccccccccc', ddddddddd='eeeee').fffffffff([
-                  ggggggggggggggggggggg
-              ])
+              'ccccccccccc', ddddddddd='eeeee').fffffffff([ggggggggggggggggggggg])
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -2628,9 +2627,10 @@ class BuganizerFixes(ReformatterTest):
     code = textwrap.dedent("""\
         instance = (aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
             'aa': 'context!'
-        }).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
-            'fnord': 6
-        }))
+        }).eeeeeeeeeeeeeeeeeee(
+            {  # Inline comment about why fnord has the value 6.
+                'fnord': 6
+            }))
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -3901,12 +3901,10 @@ v, w, x, y, z
     class _():
         def _():
             assert set(self.constraint_links.get_links()) == set(
-                [
-                    (2, 10, 100),
-                    (2, 10, 200),
-                    (2, 20, 100),
-                    (2, 20, 200),
-                ]
+                [(2, 10, 100),
+                 (2, 10, 200),
+                 (2, 20, 100),
+                 (2, 20, 200), ]
             )
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
