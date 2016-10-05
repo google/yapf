@@ -281,8 +281,8 @@ _OrderedPenalty = collections.namedtuple('OrderedPenalty', ['penalty', 'count'])
 
 # An item in the prioritized BFS search queue. The 'StateNode's 'state' has
 # the given '_OrderedPenalty'.
-_QueueItem = collections.namedtuple('QueueItem', ['ordered_penalty',
-                                                  'state_node'])
+_QueueItem = collections.namedtuple('QueueItem',
+                                    ['ordered_penalty', 'state_node'])
 
 
 def _AnalyzeSolutionSpace(initial_state):

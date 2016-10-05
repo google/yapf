@@ -233,7 +233,7 @@ class FormatFileTest(unittest.TestCase):
         """)
     file1 = self._MakeTempFileWithContents('testfile1.py', unformatted_code)
     diff = yapf_api.FormatFile(file1, print_diff=True)[0]
-    self.assertTrue(u'+    pass' in diff)
+    self.assertTrue(u'+  pass' in diff)
 
   def testFormatFileInPlace(self):
     unformatted_code = 'True==False\n'

@@ -33,8 +33,10 @@ def _MakeFormatTokenLeaf(token_type, token_value):
 
 
 def _MakeFormatTokenList(token_type_values):
-  return [_MakeFormatTokenLeaf(token_type, token_value)
-          for token_type, token_value in token_type_values]
+  return [
+      _MakeFormatTokenLeaf(token_type, token_value)
+      for token_type, token_value in token_type_values
+  ]
 
 
 class UnwrappedLineBasicTest(unittest.TestCase):
@@ -82,9 +84,10 @@ class UnwrappedLineFormattingInformationTest(unittest.TestCase):
 
     uwlines = pytree_unwrapper.UnwrapPyTree(tree)
     for i, uwline in enumerate(uwlines):
-      uwlines[i] = unwrapped_line.UnwrappedLine(
-          uwline.depth, [ft for ft in uwline.tokens
-                         if ft.name not in pytree_utils.NONSEMANTIC_TOKENS])
+      uwlines[i] = unwrapped_line.UnwrappedLine(uwline.depth, [
+          ft for ft in uwline.tokens
+          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
+      ])
     return uwlines
 
   def testFuncDef(self):

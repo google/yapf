@@ -33,8 +33,8 @@ from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
-_COMPOUND_STMTS = frozenset({'for', 'while', 'if', 'elif', 'with', 'except',
-                             'def', 'class'})
+_COMPOUND_STMTS = frozenset(
+    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
 
 
 class FormatDecisionState(object):

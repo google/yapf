@@ -57,8 +57,10 @@ class PytreeUnwrapperTest(unittest.TestCase):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [ft.value for ft in uwl.tokens
-                         if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
+      filtered_values = [
+          ft.value for ft in uwl.tokens
+          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
+      ]
       actual.append((uwl.depth, filtered_values))
 
     self.assertEqual(list_of_expected, actual)

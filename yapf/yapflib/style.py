@@ -39,6 +39,7 @@ def Help():
 def SetGlobalStyle(style):
   """Set a style dict."""
   global _style
+  global _GLOBAL_STYLE_FACTORY
   factory = _GetStyleFactory(style)
   if factory:
     _GLOBAL_STYLE_FACTORY = factory

@@ -91,8 +91,8 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
     lpar2 = pytree.Leaf(token.LPAR, '(')
     simple_stmt = pytree.Node(_GRAMMAR_SYMBOL2NUMBER['simple_stmt'],
                               [pytree.Leaf(token.NAME, 'foo')])
-    return pytree.Node(_GRAMMAR_SYMBOL2NUMBER['suite'], [lpar1, lpar2,
-                                                         simple_stmt])
+    return pytree.Node(_GRAMMAR_SYMBOL2NUMBER['suite'],
+                       [lpar1, lpar2, simple_stmt])
 
   def _MakeNewNodeRPAR(self):
     return pytree.Leaf(token.RPAR, ')')

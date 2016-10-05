@@ -110,8 +110,10 @@ def _FindPythonFiles(filenames, recursive, exclude):
       python_files.append(filename)
 
   if exclude:
-    return [f for f in python_files
-            if not any(fnmatch.fnmatch(f, p) for p in exclude)]
+    return [
+        f for f in python_files
+        if not any(fnmatch.fnmatch(f, p) for p in exclude)
+    ]
 
   return python_files
 

@@ -113,9 +113,10 @@ class GetCommandLineFilesTest(unittest.TestCase):
     tdir1 = self._make_test_dir('test1')
     tdir2 = self._make_test_dir('test2/testinner/')
     tdir3 = self._make_test_dir('test3/foo/bar/bas/xxx')
-    files = [os.path.join(tdir1, 'testfile1.py'),
-             os.path.join(tdir2, 'testfile2.py'),
-             os.path.join(tdir3, 'testfile3.py')]
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'), os.path.join(tdir3, 'testfile3.py')
+    ]
     _touch_files(files)
 
     self.assertEqual(
@@ -128,17 +129,20 @@ class GetCommandLineFilesTest(unittest.TestCase):
     tdir1 = self._make_test_dir('test1')
     tdir2 = self._make_test_dir('test2/testinner/')
     tdir3 = self._make_test_dir('test3/foo/bar/bas/xxx')
-    files = [os.path.join(tdir1, 'testfile1.py'),
-             os.path.join(tdir2, 'testfile2.py'),
-             os.path.join(tdir3, 'testfile3.py')]
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'), os.path.join(tdir3, 'testfile3.py')
+    ]
     _touch_files(files)
 
     self.assertEqual(
         sorted(
             file_resources.GetCommandLineFiles(
                 [self.test_tmpdir], recursive=True, exclude=['*test*3.py'])),
-        sorted([os.path.join(tdir1, 'testfile1.py'),
-                os.path.join(tdir2, 'testfile2.py')]))
+        sorted([
+            os.path.join(tdir1, 'testfile1.py'),
+            os.path.join(tdir2, 'testfile2.py')
+        ]))
 
 
 class IsPythonFileTest(unittest.TestCase):

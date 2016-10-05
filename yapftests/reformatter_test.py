@@ -489,9 +489,10 @@ class BasicReformatterTest(ReformatterTest):
         foo( ( 1, 2, 3, ) )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        foo((1,
-             2,
-             3,))
+        foo((
+            1,
+            2,
+            3,))
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1854,7 +1855,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testDictionaryOnOwnLine(self):
+  def testNestedListsInDictionary(self):
     unformatted_code = textwrap.dedent("""\
         _A = {
             'cccccccccc': ('^^1',),
@@ -1917,6 +1918,39 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 '^21109',  # PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP.
             ),
         }
+        """)
+    uwlines = _ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testNestedDictionary(self):
+    unformatted_code = textwrap.dedent("""\
+        class _():
+          def _():
+            breadcrumbs = [{'name': 'Admin',
+                            'url': url_for(".home")},
+                           {'title': title},]
+            breadcrumbs = [{'name': 'Admin',
+                            'url': url_for(".home")},
+                           {'title': title}]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class _():
+          def _():
+            breadcrumbs = [
+                {
+                    'name': 'Admin',
+                    'url': url_for(".home")
+                },
+                {
+                    'title': title
+                },
+            ]
+            breadcrumbs = [{
+                'name': 'Admin',
+                'url': url_for(".home")
+            }, {
+                'title': title
+            }]
         """)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -3980,10 +4014,12 @@ v, w, x, y, z
     class _():
         def _():
             assert set(self.constraint_links.get_links()) == set(
-                [(2, 10, 100),
-                 (2, 10, 200),
-                 (2, 20, 100),
-                 (2, 20, 200), ]
+                [
+                    (2, 10, 100),
+                    (2, 10, 200),
+                    (2, 20, 100),
+                    (2, 20, 200),
+                ]
             )
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)

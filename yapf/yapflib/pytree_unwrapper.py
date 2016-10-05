@@ -53,8 +53,10 @@ def UnwrapPyTree(tree):
   return uwlines
 
 # Grammar tokens considered as whitespace for the purpose of unwrapping.
-_WHITESPACE_TOKENS = frozenset([grammar_token.NEWLINE, grammar_token.DEDENT,
-                                grammar_token.INDENT, grammar_token.ENDMARKER])
+_WHITESPACE_TOKENS = frozenset([
+    grammar_token.NEWLINE, grammar_token.DEDENT, grammar_token.INDENT,
+    grammar_token.ENDMARKER
+])
 
 
 class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
@@ -332,11 +334,15 @@ def _AdjustSplitPenalty(uwline):
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
   if not _ContainsComments(node):
+    if sum(1 for ch in node.children
+           if pytree_utils.NodeName(ch) == 'COMMA') < 2:
+      return
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
       return
   num_children = len(node.children)
   index = 0
+  _SetMustSplitOnFirstLeaf(node.children[0])
   while index < num_children - 1:
     child = node.children[index]
     if isinstance(child, pytree.Leaf) and child.value == ',':

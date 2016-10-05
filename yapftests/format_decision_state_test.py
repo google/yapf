@@ -55,8 +55,10 @@ class FormatDecisionStateTest(unittest.TestCase):
 
   def _FilterLine(self, uwline):
     """Filter out nonsemantic tokens from the UnwrappedLines."""
-    return [ft for ft in uwline.tokens
-            if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
+    return [
+        ft for ft in uwline.tokens
+        if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
+    ]
 
   def testSimpleFunctionDefWithNoSplitting(self):
     code = textwrap.dedent(r"""

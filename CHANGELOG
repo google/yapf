@@ -16,6 +16,8 @@
   before the elements in a container. Especially split if there's a comment in
   the container.
 - Don't add spaces between star and args in a lambda expression.
+- If a nested data structure terminates in a comma, then split before the first
+  element, but only if there's more than one element in the list.
 
 ## [0.12.1] 2016-10-02
 ### Changed
