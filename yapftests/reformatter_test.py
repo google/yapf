@@ -1928,6 +1928,16 @@ class BuganizerFixes(ReformatterTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB31937033(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def __init__(self, metric, fields_cb=None):
+            self._fields_cb = fields_cb or (lambda *unused_args, **unused_kwargs: {})
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB31911533(self):
     code = textwrap.dedent("""\
         class _():

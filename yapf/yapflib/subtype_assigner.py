@@ -261,6 +261,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #          ('*' [vname] (',' vname ['=' test])*  [',' '**' vname]
     #           | '**' vname)
     #      | vfpdef ['=' test] (',' vfpdef ['=' test])* [','])
+    self._ProcessArgLists(node)
     for child in node.children:
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '=':
