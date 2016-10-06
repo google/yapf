@@ -113,6 +113,12 @@ def main(argv):
       action='store_true',
       help="don't search for local style definition")
   parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
+  parser.add_argument(
+      '-p',
+      '--parallel',
+      action='store_true',
+      help=('Run yapf in parallel when formatting multiple files. Requires '
+            'concurrent.futures in Python 2.X'))
 
   parser.add_argument('files', nargs='*')
   args = parser.parse_args(argv[1:])
@@ -178,7 +184,8 @@ def main(argv):
       no_local_style=args.no_local_style,
       in_place=args.in_place,
       print_diff=args.diff,
-      verify=args.verify)
+      verify=args.verify,
+      parallel=args.parallel)
   return 0
 
 
@@ -188,7 +195,8 @@ def FormatFiles(filenames,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=True):
+                verify=True,
+                parallel=False):
   """Format a list of files.
 
   Arguments:
@@ -204,27 +212,58 @@ def FormatFiles(filenames,
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
+    parallel: (bool) True if should format multiple files in parallel.
+
+  Returns:
+    True if the source code changed in any of the files being formatted.
   """
-  for filename in filenames:
-    logging.info('Reformatting %s', filename)
-    if style_config is None and not no_local_style:
-      style_config = (
-          file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
-    try:
-      reformatted_code, encoding, _ = yapf_api.FormatFile(
-          filename,
-          in_place=in_place,
-          style_config=style_config,
-          lines=lines,
-          print_diff=print_diff,
-          verify=verify,
-          logger=logging.warning)
-      if not in_place and reformatted_code:
-        file_resources.WriteReformattedCode(filename, reformatted_code,
-                                            in_place, encoding)
-    except SyntaxError as e:
-      e.filename = filename
-      raise
+  changed = False
+  if parallel:
+    import multiprocessing
+    import concurrent.futures
+    workers = min(multiprocessing.cpu_count(), len(filenames))
+    with concurrent.futures.ProcessPoolExecutor(workers) as executor:
+      future_formats = [
+          executor.submit(_FormatFile, filename, lines, style_config,
+                          no_local_style, in_place, print_diff, verify)
+          for filename in filenames
+      ]
+      for future in concurrent.futures.as_completed(future_formats):
+        changed |= future.result()
+  else:
+    for filename in filenames:
+      changed |= _FormatFile(filename, lines, style_config, no_local_style,
+                             in_place, print_diff, verify)
+  return changed
+
+
+def _FormatFile(filename,
+                lines,
+                style_config=None,
+                no_local_style=False,
+                in_place=False,
+                print_diff=False,
+                verify=True):
+  logging.info('Reformatting %s', filename)
+  if style_config is None and not no_local_style:
+    style_config = (
+        file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
+  try:
+    reformatted_code, encoding, has_change = yapf_api.FormatFile(
+        filename,
+        in_place=in_place,
+        style_config=style_config,
+        lines=lines,
+        print_diff=print_diff,
+        verify=verify,
+        logger=logging.warning)
+    if not in_place and reformatted_code:
+      file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
+                                          encoding)
+    return has_change
+  except SyntaxError as e:
+    e.filename = filename
+    raise
 
 
 def _GetLines(line_strings):
