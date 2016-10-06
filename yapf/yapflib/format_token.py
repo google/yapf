@@ -103,6 +103,11 @@ class FormatToken(object):
     else:
       self.spaces_required_before = 0
 
+    if self.is_continuation:
+      self.value = self.node.value.rstrip()
+    else:
+      self.value = self.node.value
+
   def AddWhitespacePrefix(self, newlines_before, spaces=0, indent_level=0):
     """Register a token's whitespace prefix.
 
@@ -120,6 +125,9 @@ class FormatToken(object):
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
       self.node.value = ('\n' + indent_before).join(comment_lines)
+
+      # Update our own value since we are changing node value
+      self.value = self.node.value
 
     if not self.whitespace_prefix:
       self.whitespace_prefix = (
@@ -174,12 +182,6 @@ class FormatToken(object):
     msg = 'FormatToken(name={0}, value={1}'.format(self.name, self.value)
     msg += ', pseudo)' if self.is_pseudo_paren else ')'
     return msg
-
-  @property
-  def value(self):
-    if self.is_continuation:
-      return self.node.value.rstrip()
-    return self.node.value
 
   @property
   @py3compat.lru_cache()
