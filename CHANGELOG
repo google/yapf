@@ -2,7 +2,9 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.13.3] UNRELEASED
+## [0.14.0] UNRELEASED
+#### Added
+- formatting can be run in parallel using the "-p" / "--parallel" flags.
 ### Fixed
 - "not in" and "is not" should be subtyped as binary operators.
 - A non-Node dictionary value may have a comment before it. In those cases, we

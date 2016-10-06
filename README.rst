@@ -53,6 +53,12 @@ To install YAPF from PyPI:
 
     $ pip install yapf
 
+(optional) If you are using Python 2.7 and want to enable multiprocessing:
+
+.. code-block::
+
+    $ pip install futures
+
 YAPF is still considered in "alpha" stage, and the released version may change
 often; therefore, the best way to keep up-to-date with the latest development
 is to clone this repository.
@@ -83,7 +89,7 @@ Usage
 Options::
 
     usage: yapf [-h] [-v] [-d | -i] [-r | -l START-END] [-e PATTERN]
-                [--style STYLE] [--style-help] [--no-local-style]
+                [--style STYLE] [--style-help] [--no-local-style] [-p]
                 [files [files ...]]
 
     Formatter for Python code.
@@ -109,6 +115,8 @@ Options::
                             directory for stdin)
       --style-help          show style settings and exit
       --no-local-style      don't search for local style definition (.style.yapf)
+      -p, --parallel        Run yapf in parallel when formatting multiple files.
+                            Requires concurrent.futures in Python 2.X
 
 
 Formatting style
