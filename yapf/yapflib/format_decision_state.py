@@ -637,6 +637,9 @@ class _ParenState(object):
   def __eq__(self, other):
     return hash(self) == hash(other)
 
+  def __ne__(self, other):
+    return not self == other
+
   def __hash__(self, *args, **kwargs):
     return hash((self.indent, self.last_space, self.closing_scope_indent,
                  self.split_before_closing_bracket, self.num_line_splits))
