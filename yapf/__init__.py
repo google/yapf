@@ -167,6 +167,9 @@ def main(argv):
                                              args.exclude)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
+  for FILE in files:
+	  if FILE.split('.')[-1].lower() != "py":
+   	 	 raise errors.YapfError('Input files must be python files')
   changed = FormatFiles(
       files,
       lines,
