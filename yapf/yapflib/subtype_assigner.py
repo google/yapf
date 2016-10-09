@@ -364,9 +364,12 @@ def _InsertPseudoParentheses(node):
     node.append_child(rparen)
     if comment_node:
       node.append_child(comment_node)
+    _AppendFirstLeafTokenSubtype(node, format_token.Subtype.DICTIONARY_VALUE)
   else:
-    new_node = pytree.Node(syms.atom, [lparen, node.clone(), rparen])
+    clone = node.clone()
+    new_node = pytree.Node(syms.atom, [lparen, clone, rparen])
     node.replace(new_node)
+    _AppendFirstLeafTokenSubtype(clone, format_token.Subtype.DICTIONARY_VALUE)
 
 
 def _GetFirstLeafNode(node):

@@ -125,6 +125,9 @@ class FormatDecisionState(object):
     current = self.next_token
     previous = current.previous_token
 
+    if current.is_pseudo_paren:
+      return False
+
     if current.must_break_before:
       return True
 
@@ -216,7 +219,7 @@ class FormatDecisionState(object):
         if previous.is_pseudo_paren:
           # Split before the dictionary value if we can't fit the whole
           # dictionary on one line.
-          if not self._AllDictElementsFitOnOneLine(opening):
+          if not self._EachDictEntryFitsOnOneLine(opening):
             return True
 
     if (previous.OpensScope() and not current.OpensScope() and
@@ -525,23 +528,28 @@ class FormatDecisionState(object):
 
   def _FitsOnLine(self, start, end):
     """Determines if line between start and end can fit on the current line."""
-    length = end.total_length - start.total_length
+    length = end.total_length - start.total_length + len(start.value)
     return length + self.column < self.column_limit
 
-  def _AllDictElementsFitOnOneLine(self, opening):
-    """Determine if all dict elems can fit on one line."""
+  def _EachDictEntryFitsOnOneLine(self, opening):
+    """Determine if each dict elems can fit on one line."""
     closing = opening.matching_bracket
-    current = opening.next_token
-    start = None
+    entry_start = opening.next_token
+    current = opening.next_token.next_token
     while current and current != closing:
       if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
-        if start and not self._FitsOnLine(start, current.previous_token):
+        length = current.previous_token.total_length - entry_start.total_length
+        length += len(entry_start.value)
+        if length + self.stack[-2].indent >= self.column_limit:
           return False
-        start = current
+        entry_start = current
       if current.OpensScope():
         current = current.matching_bracket
-      current = current.next_token
-    return start and self._FitsOnLine(start, current.previous_token)
+      else:
+        current = current.next_token
+    length = current.total_length - entry_start.total_length
+    length += len(entry_start.value)
+    return length + self.stack[-2].indent + 2 < self.column_limit
 
 
 def _IsFunctionCallWithArguments(token):

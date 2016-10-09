@@ -188,7 +188,8 @@ class AnnotationsTest(unittest.TestCase):
 
     self.assertSetEqual(
         pytree_utils.GetNodeAnnotation(self._leaf,
-                                       pytree_utils.Annotation.SUBTYPE), {_FOO})
+                                       pytree_utils.Annotation.SUBTYPE),
+        {_FOO})
 
     pytree_utils.RemoveSubtypeAnnotation(self._leaf, _FOO)
 

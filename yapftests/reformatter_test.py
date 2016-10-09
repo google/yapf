@@ -1955,6 +1955,19 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testImportAsList(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          @mock.patch.dict(
+              os.environ,
+              {'HTTP_' + xsrf._XSRF_TOKEN_HEADER.replace('-', '_'): 'atoken'})
+          def _():
+            pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 class BuganizerFixes(ReformatterTest):
 
@@ -3989,7 +4002,9 @@ v, w, x, y, z
         def _():
             effect_line = FrontInput(
                 effect_line_offset, line_content,
-                LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
+                LineSource(
+                    'localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                )
             )
     """)
     uwlines = _ParseAndUnwrap(unformatted_code)
