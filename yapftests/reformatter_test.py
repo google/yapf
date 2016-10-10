@@ -1955,7 +1955,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = _ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testImportAsList(self):
+  def testDictionaryElementsOnOneLine(self):
     code = textwrap.dedent("""\
         class _():
 
