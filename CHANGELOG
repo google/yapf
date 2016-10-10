@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.12.2] UNRELEASED
+## [0.12.2] 2016-10-09
 ### Fixed
 - If `style.SetGlobalStyle(<create pre-defined style>)` was called and then
   `yapf_api.FormatCode` was called, the style set by the first call would be
