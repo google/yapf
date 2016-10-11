@@ -524,6 +524,26 @@ class CommandLineTest(unittest.TestCase):
         expected_formatted_code,
         extra_options=['--lines', '1-2'])
 
+  def testOmitFormattingLinesBeforeDisabledFunctionComment(self):
+    unformatted_code = textwrap.dedent(u"""\
+        import sys
+
+        # Comment
+        def some_func(x):
+            x = ["badly" , "formatted","line" ]
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        import sys
+
+        # Comment
+        def some_func(x):
+            x = ["badly", "formatted", "line"]
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '5-5'])
+
   def testReformattingSkippingLines(self):
     unformatted_code = textwrap.dedent(u"""\
         def h():

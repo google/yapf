@@ -2,6 +2,14 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.12.3] UNRELEASED
+### Fixed
+- Functions or classes with comments before them were reformatting the comments
+  even if the code was supposed to be ignored by the formatter. We now don't
+  adjust the whitespace before a function's comment if the comment is a
+  "disabled" line. We also don't count "# yapf: {disable|enable}" as a disabled
+  line, which seems logical.
+
 ## [0.12.2] 2016-10-09
 ### Fixed
 - If `style.SetGlobalStyle(<create pre-defined style>)` was called and then

@@ -466,7 +466,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     if not indent_depth:
       # This is a top-level class or function.
       is_inline_comment = prev_last_token.whitespace_prefix.count('\n') == 0
-      if prev_last_token.is_comment and not is_inline_comment:
+      if (not prev_uwline.disable and prev_last_token.is_comment and
+          not is_inline_comment):
         # This token follows a non-inline comment.
         if _NoBlankLinesBeforeCurrentToken(prev_last_token.value, first_token,
                                            prev_last_token):

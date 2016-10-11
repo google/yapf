@@ -218,11 +218,12 @@ def _MarkLinesToFormat(uwlines, lines):
     uwline = uwlines[index]
     if uwline.is_comment:
       if _DisableYAPF(uwline.first.value.strip()):
+        index += 1
         while index < len(uwlines):
           uwline = uwlines[index]
-          uwline.disable = True
           if uwline.is_comment and _EnableYAPF(uwline.first.value.strip()):
             break
+          uwline.disable = True
           index += 1
     elif re.search(DISABLE_PATTERN, uwline.last.value.strip(), re.IGNORECASE):
       uwline.disable = True
