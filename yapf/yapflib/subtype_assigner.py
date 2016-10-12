@@ -63,22 +63,23 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # dictsetmaker ::= (test ':' test (comp_for |
     #                                   (',' test ':' test)* [','])) |
     #                  (test (comp_for | (',' test)* [',']))
+    for child in node.children:
+      self.Visit(child)
+
+    comp_for = False
     dict_maker = False
-    if len(node.children) > 1:
-      index = 0
-      while index < len(node.children):
-        if node.children[index].type != token.COMMENT:
-          break
-        index += 1
-      if index < len(node.children):
-        child = node.children[index + 1]
-        dict_maker = isinstance(child, pytree.Leaf) and child.value == ':'
-    last_was_colon = False
+
     for child in node.children:
       if pytree_utils.NodeName(child) == 'comp_for':
+        comp_for = True
         _AppendFirstLeafTokenSubtype(child,
                                      format_token.Subtype.DICT_SET_GENERATOR)
-      else:
+      elif pytree_utils.NodeName(child) == 'COLON':
+        dict_maker = True
+
+    if not comp_for and dict_maker:
+      last_was_colon = False
+      for child in node.children:
         if dict_maker:
           if last_was_colon:
             if style.Get('INDENT_DICTIONARY_VALUE'):
@@ -93,8 +94,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             # on a single line.
             _AppendFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
-        last_was_colon = isinstance(child, pytree.Leaf) and child.value == ':'
-      self.Visit(child)
+        last_was_colon = pytree_utils.NodeName(child) == 'COLON'
 
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name
     # expr_stmt ::= testlist_star_expr (augassign (yield_expr|testlist)

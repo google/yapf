@@ -9,6 +9,8 @@
   adjust the whitespace before a function's comment if the comment is a
   "disabled" line. We also don't count "# yapf: {disable|enable}" as a disabled
   line, which seems logical.
+- It's not really more readable to split before a dictionary value if it's part
+  of a dictionary comprehension.
 
 ## [0.12.2] 2016-10-09
 ### Fixed

@@ -1204,8 +1204,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
   def testDictSetGenerator(self):
     code = textwrap.dedent("""\
         foo = {
-            variable:
-                'hello world. How are you today?'
+            variable: 'hello world. How are you today?'
             for variable in fnord if variable != 37
         }
         """)
