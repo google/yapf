@@ -245,7 +245,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
-  def testComemntsBeforeDecorator(self):
+  def testCommentsBeforeDecorator(self):
     code = textwrap.dedent("""\
         # The @foo operator adds bork to a().
         @foo()
@@ -262,6 +262,23 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         @foo()
         def a():
           pass
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testCommentsAfterDecorator(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def _():
+            pass
+
+          @pytest.mark.xfail(reason="#709 and #710")
+          # also
+          #@pytest.mark.xfail(setuptools.tests.is_ascii,
+          #    reason="https://github.com/pypa/setuptools/issues/706")
+          def test_unicode_filename_in_sdist(self, sdist_unicode, tmpdir, monkeypatch):
+            pass
         """)
     uwlines = _ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

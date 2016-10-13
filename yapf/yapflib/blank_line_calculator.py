@@ -137,7 +137,8 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
       # Standalone comments are wrapped in a simple_stmt node with the comment
       # node as its only child.
       self.Visit(node.children[index].children[0])
-      self._SetNumNewlines(node.children[index].children[0], _ONE_BLANK_LINE)
+      if not self.last_was_decorator:
+        self._SetNumNewlines(node.children[index].children[0], _ONE_BLANK_LINE)
       index += 1
     if (index and node.children[index].lineno - 1 ==
         node.children[index - 1].children[0].lineno):

@@ -12,7 +12,8 @@
 - It's not really more readable to split before a dictionary value if it's part
   of a dictionary comprehension.
 - Enforce two blank lines after a function or class definition, even before a
-  comment. This is related to PEP8 error E305.
+  comment. (But not between a decorator and a comment.) This is related to PEP8
+  error E305.
 
 ## [0.12.2] 2016-10-09
 ### Fixed
