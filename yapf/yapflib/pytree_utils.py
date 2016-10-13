@@ -67,6 +67,7 @@ def NodeName(node):
   else:
     return pygram.python_grammar.number2symbol[node.type]
 
+
 # lib2to3 thoughtfully provides pygram.python_grammar_no_print_statement for
 # parsing Python 3 code that wouldn't parse otherwise (when 'print' is used in a
 # context where a keyword is disallowed).
@@ -196,6 +197,7 @@ def _InsertNodeAt(new_node, target, after=False):
 
   raise RuntimeError('unable to find insertion point for target node',
                      (target,))
+
 
 # The following constant and functions implement a simple custom annotation
 # mechanism for pytree nodes. We attach new attributes to nodes. Each attribute

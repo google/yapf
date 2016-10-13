@@ -195,6 +195,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         def foo():
           pass
 
+
         # multiline before a
         # class definition
 

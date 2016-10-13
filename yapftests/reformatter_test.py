@@ -197,7 +197,6 @@ class BasicReformatterTest(ReformatterTest):
     unformatted_code = textwrap.dedent("""\
         class Foo(object):
           pass
-        # End class Foo
 
         # Attached comment
         class Bar(object):
@@ -220,7 +219,6 @@ class BasicReformatterTest(ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         class Foo(object):
           pass
-        # End class Foo
 
 
         # Attached comment
@@ -237,6 +235,7 @@ class BasicReformatterTest(ReformatterTest):
         @noop
         class Baz(object):
           pass
+
 
         # Intermediate comment
 

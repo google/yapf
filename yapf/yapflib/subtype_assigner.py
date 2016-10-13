@@ -44,6 +44,7 @@ def AssignSubtypes(tree):
   subtype_assigner = _SubtypeAssigner()
   subtype_assigner.Visit(tree)
 
+
 # Map tokens in argument lists to their respective subtype.
 _ARGLIST_TOKEN_TO_SUBTYPE = {
     '=': format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,

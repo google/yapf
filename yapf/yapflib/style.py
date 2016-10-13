@@ -276,6 +276,7 @@ def _BoolConverter(s):
   """Option value converter for a boolean."""
   return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
 
+
 # Different style options need to have their values interpreted differently when
 # read from the config file. This dict maps an option name to a "converter"
 # function that accepts the string read for the option's value from the file and
@@ -433,6 +434,7 @@ def _CreateStyleFromConfigParser(config):
       raise StyleConfigError("'{}' is not a valid setting for {}.".format(
           value, option))
   return base_style
+
 
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.

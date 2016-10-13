@@ -273,6 +273,7 @@ class _StateNode(object):
     return 'StateNode(state=[\n{0}\n], newline={1})'.format(self.state,
                                                             self.newline)
 
+
 # A tuple of (penalty, count) that is used to prioritize the BFS. In case of
 # equal penalties, we prefer states that were inserted first. During state
 # generation, we make sure that we insert states first that break the line as

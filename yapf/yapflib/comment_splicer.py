@@ -249,6 +249,7 @@ def _CreateCommentsFromPrefix(comment_prefix,
 
   return comments
 
+
 # "Standalone line nodes" are tree nodes that have to start a new line in Python
 # code (and cannot follow a ';' or ':'). Other nodes, like 'expr_stmt', serve as
 # parents of other nodes but can come later in a line. This is a list of
@@ -283,6 +284,7 @@ def _FindNodeWithStandaloneLineParent(node):
     # This is guaranteed to terminate because 'file_input' is the root node of
     # any pytree.
     return _FindNodeWithStandaloneLineParent(node.parent)
+
 
 # "Statement nodes" are standalone statements. The don't have to start a new
 # line.

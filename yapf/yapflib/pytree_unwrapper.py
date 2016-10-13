@@ -52,6 +52,7 @@ def UnwrapPyTree(tree):
   uwlines.sort(key=lambda x: x.lineno)
   return uwlines
 
+
 # Grammar tokens considered as whitespace for the purpose of unwrapping.
 _WHITESPACE_TOKENS = frozenset([
     grammar_token.NEWLINE, grammar_token.DEDENT, grammar_token.INDENT,

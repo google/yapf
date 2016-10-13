@@ -116,8 +116,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     if self.last_was_class_or_function:
       if pytree_utils.NodeName(node) in _PYTHON_STATEMENTS:
         leaf = _GetFirstChildLeaf(node)
-        if pytree_utils.NodeName(leaf) != 'COMMENT':
-          self._SetNumNewlines(leaf, self._GetNumNewlines(leaf))
+        self._SetNumNewlines(leaf, self._GetNumNewlines(leaf))
     self.last_was_class_or_function = False
     super(_BlankLineCalculator, self).DefaultNodeVisit(node)
 
