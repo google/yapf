@@ -204,15 +204,36 @@ def _MarkLinesToFormat(uwlines, lines):
     for uwline in uwlines:
       uwline.disable = True
 
-    for start, end in sorted(lines):
-      for uwline in uwlines:
-        if uwline.lineno > end:
-          break
-        if uwline.lineno >= start:
-          uwline.disable = False
-        elif uwline.last.lineno >= start:
-          uwline.disable = False
+    # Sort and combine overlapping ranges.
+    lines = sorted(lines)
+    line_ranges = [lines[0]] if len(lines[0]) else []
+    index = 1
+    while index < len(lines):
+      current = line_ranges[-1]
+      if lines[index][0] <= current[1]:
+        # The ranges overlap, so combine them.
+        line_ranges[-1] = (current[0], max(lines[index][1], current[1]))
+      else:
+        line_ranges.append(lines[index])
+      index += 1
 
+    # Mark lines to format as not being disabled.
+    index = 0
+    for start, end in sorted(line_ranges):
+      while index < len(uwlines) and uwlines[index].last.lineno < start:
+        index += 1
+      if index >= len(uwlines):
+        break
+
+      while index < len(uwlines):
+        if uwlines[index].lineno > end:
+          break
+        if uwlines[index].lineno >= start or uwlines[index].last.lineno >= start:
+          uwlines[index].disable = False
+        index += 1
+
+  # Now go through the lines and disable any lines explicitly marked as
+  # disabled.
   index = 0
   while index < len(uwlines):
     uwline = uwlines[index]

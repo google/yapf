@@ -14,6 +14,7 @@
 - Enforce two blank lines after a function or class definition, even before a
   comment. (But not between a decorator and a comment.) This is related to PEP8
   error E305.
+- Remove O(n^2) algorithm from the line disabling logic.
 
 ## [0.12.2] 2016-10-09
 ### Fixed
