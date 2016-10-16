@@ -151,23 +151,27 @@ def main(argv):
         original_source.append(py3compat.raw_input())
       except EOFError:
         break
+
     style_config = args.style
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
+
+    source = [line.rstrip() for line in original_source]
     reformatted_source, changed = yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(original_source) + '\n'),
+        py3compat.unicode('\n'.join(source) + '\n'),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    sys.stdout.write(reformatted_source)
+    file_resources.WriteReformattedCode('<stdout>', reformatted_source)
     return 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
                                              args.exclude)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
-  changed = FormatFiles(
+
+  FormatFiles(
       files,
       lines,
       style_config=args.style,
@@ -200,18 +204,14 @@ def FormatFiles(filenames,
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
-
-  Returns:
-    True if the source code changed in any of the files being formatted.
   """
-  changed = False
   for filename in filenames:
     logging.info('Reformatting %s', filename)
     if style_config is None and not no_local_style:
       style_config = (
           file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
     try:
-      reformatted_code, encoding, has_change = yapf_api.FormatFile(
+      yapf_api.FormatFile(
           filename,
           in_place=in_place,
           style_config=style_config,
@@ -219,14 +219,9 @@ def FormatFiles(filenames,
           print_diff=print_diff,
           verify=verify,
           logger=logging.warning)
-      if has_change and reformatted_code is not None:
-        file_resources.WriteReformattedCode(filename, reformatted_code,
-                                            in_place, encoding)
-      changed |= has_change
     except SyntaxError as e:
       e.filename = filename
       raise
-  return changed
 
 
 def _GetLines(line_strings):

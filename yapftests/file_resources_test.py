@@ -212,7 +212,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
     shutil.rmtree(cls.test_tmpdir)
 
   def test_write_to_file(self):
-    s = u'foobar'
+    s = u'foobar\n'
     with tempfile.NamedTemporaryFile(dir=self.test_tmpdir) as testfile:
       file_resources.WriteReformattedCode(
           testfile.name, s, in_place=True, encoding='utf-8')

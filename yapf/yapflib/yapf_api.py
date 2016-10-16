@@ -80,7 +80,7 @@ def FormatFile(filename,
   if in_place and print_diff:
     raise ValueError('Cannot pass both in_place and print_diff.')
 
-  original_source, encoding = ReadFile(filename, logger)
+  original_source, newline, encoding = ReadFile(filename, logger)
   reformatted_source, changed = FormatCode(
       original_source,
       style_config=style_config,
@@ -88,10 +88,13 @@ def FormatFile(filename,
       lines=lines,
       print_diff=print_diff,
       verify=verify)
+  if reformatted_source.rstrip('\n'):
+    lines = reformatted_source.rstrip('\n').split('\n')
+    reformatted_source = newline.join(line for line in lines) + newline
   if in_place:
     if original_source and original_source != reformatted_source:
       file_resources.WriteReformattedCode(filename, reformatted_source,
-                                          in_place, encoding)
+                                          newline, in_place, encoding)
     return None, encoding, changed
 
   return reformatted_source, encoding, changed
@@ -184,10 +187,14 @@ def ReadFile(filename, logger=None):
     raise
 
   try:
+    # Preserves line endings.
     with py3compat.open_with_encoding(
-        filename, mode='r', encoding=encoding) as fd:
-      source = fd.read()
-    return source, encoding
+        filename, mode='r', encoding=encoding, newline='') as fd:
+      lines = fd.readlines()
+
+    line_ending = file_resources.LineEnding(lines)
+    source = '\n'.join(line.rstrip('\r\n') for line in lines) + '\n'
+    return source, line_ending, encoding
   except IOError as err:  # pragma: no cover
     if logger:
       logger(err)

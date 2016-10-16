@@ -28,6 +28,11 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 
 
+CR = '\r'
+LF = '\n'
+CRLF = '\r\n'
+
+
 def GetDefaultStyleForDir(dirname):
   """Return default style name for a given directory.
 
@@ -72,7 +77,8 @@ def GetCommandLineFiles(command_line_file_list, recursive, exclude):
   return _FindPythonFiles(command_line_file_list, recursive, exclude)
 
 
-def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
+def WriteReformattedCode(filename, reformatted_code, newline=os.linesep,
+                         in_place=False, encoding=''):
   """Emit the reformatted code.
 
   Write the reformatted code into the file, if in_place is True. Otherwise,
@@ -81,6 +87,7 @@ def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
   Arguments:
     filename: (unicode) The name of the unformatted file.
     reformatted_code: (unicode) The reformatted code.
+    newline: (unicode) The original line ending of the source file.
     in_place: (bool) If True, then write the reformatted code to the file.
     encoding: (unicode) The encoding of the file.
   """
@@ -89,7 +96,20 @@ def WriteReformattedCode(filename, reformatted_code, in_place, encoding):
         filename, mode='w', encoding=encoding) as fd:
       fd.write(reformatted_code)
   else:
-    py3compat.EncodeAndWriteToStdout(reformatted_code, encoding)
+    py3compat.EncodeAndWriteToStdout(reformatted_code)
+
+
+def LineEnding(lines):
+    """Retrieve the line ending of the original source."""
+    endings = {CRLF: 0, CR: 0, LF: 0}
+    for line in lines:
+      if line.endswith(CRLF):
+        endings[CRLF] += 1
+      elif line.endswith(CR):
+        endings[CR] += 1
+      elif line.endswith(LF):
+        endings[LF] += 1
+    return (sorted(endings, key=endings.get, reverse=True) or [LF])[0]
 
 
 def _FindPythonFiles(filenames, recursive, exclude):
@@ -128,7 +148,8 @@ def IsPythonFile(filename):
       encoding = tokenize.detect_encoding(fd.readline)[0]
 
     # Check for correctness of encoding.
-    with py3compat.open_with_encoding(filename, encoding=encoding) as fd:
+    with py3compat.open_with_encoding(
+        filename, mode='r', encoding=encoding) as fd:
       fd.read()
   except UnicodeDecodeError:
     encoding = 'latin-1'

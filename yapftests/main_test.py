@@ -25,10 +25,42 @@ except ImportError:  # Python 3
   # Note: io.StringIO is different in Python 2, so try for python 2 first.
   from io import StringIO
 
+from yapf.yapflib import py3compat
+
+
+class IO(object):
+  """IO is a thin wrapper around StringIO.
+
+  This is strictly to wrap the Python 3 StringIO object so that it can supply a
+  "buffer" attribute.
+  """
+
+  class Buffer(object):
+
+    def __init__(self):
+      self.string_io = StringIO()
+
+    def write(self, s):
+      if py3compat.PY3 and isinstance(s, bytes):
+        s = str(s, 'utf-8')
+      self.string_io.write(s)
+
+    def getvalue(self):
+      return self.string_io.getvalue()
+
+  def __init__(self):
+    self.buffer = self.Buffer()
+
+  def write(self, s):
+    self.buffer.write(s)
+
+  def getvalue(self):
+    return self.buffer.getvalue()
+
 
 @contextmanager
 def captured_output():
-  new_out, new_err = StringIO(), StringIO()
+  new_out, new_err = IO(), IO()
   old_out, old_err = sys.stdout, sys.stderr
   try:
     sys.stdout, sys.stderr = new_out, new_err

@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.12.3] UNRELEASED
+## [0.13.0] UNRELEASED
+### Added
+- Added support to retain the original line endings of the source code.
+
 ### Fixed
 - Functions or classes with comments before them were reformatting the comments
   even if the code was supposed to be ignored by the formatter. We now don't

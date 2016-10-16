@@ -23,7 +23,8 @@ if PY3:
   BytesIO = io.BytesIO
 
   import codecs
-  open_with_encoding = codecs.open
+  def open_with_encoding(filename, mode, encoding, newline=''):
+    return codecs.open(filename, mode=mode, encoding=encoding)
 
   import functools
   lru_cache = functools.lru_cache
@@ -61,7 +62,7 @@ else:
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access
 
 
-def EncodeAndWriteToStdout(s, encoding):
+def EncodeAndWriteToStdout(s, encoding='utf-8'):
   """Encode the given string and emit to stdout.
 
   The string may contain non-ascii characters. This is a problem when stdout is
