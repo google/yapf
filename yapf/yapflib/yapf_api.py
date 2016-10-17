@@ -93,8 +93,8 @@ def FormatFile(filename,
     reformatted_source = newline.join(line for line in lines) + newline
   if in_place:
     if original_source and original_source != reformatted_source:
-      file_resources.WriteReformattedCode(filename, reformatted_source,
-                                          newline, in_place, encoding)
+      file_resources.WriteReformattedCode(filename, reformatted_source, newline,
+                                          in_place, encoding)
     return None, encoding, changed
 
   return reformatted_source, encoding, changed
@@ -235,7 +235,8 @@ def _MarkLinesToFormat(uwlines, lines):
       while index < len(uwlines):
         if uwlines[index].lineno > end:
           break
-        if uwlines[index].lineno >= start or uwlines[index].last.lineno >= start:
+        if (uwlines[index].lineno >= start or
+            uwlines[index].last.lineno >= start):
           uwlines[index].disable = False
         index += 1
 

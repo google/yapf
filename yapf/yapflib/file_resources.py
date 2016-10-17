@@ -27,7 +27,6 @@ from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 
-
 CR = '\r'
 LF = '\n'
 CRLF = '\r\n'
@@ -77,8 +76,11 @@ def GetCommandLineFiles(command_line_file_list, recursive, exclude):
   return _FindPythonFiles(command_line_file_list, recursive, exclude)
 
 
-def WriteReformattedCode(filename, reformatted_code, newline=os.linesep,
-                         in_place=False, encoding=''):
+def WriteReformattedCode(filename,
+                         reformatted_code,
+                         newline=os.linesep,
+                         in_place=False,
+                         encoding=''):
   """Emit the reformatted code.
 
   Write the reformatted code into the file, if in_place is True. Otherwise,
@@ -100,16 +102,16 @@ def WriteReformattedCode(filename, reformatted_code, newline=os.linesep,
 
 
 def LineEnding(lines):
-    """Retrieve the line ending of the original source."""
-    endings = {CRLF: 0, CR: 0, LF: 0}
-    for line in lines:
-      if line.endswith(CRLF):
-        endings[CRLF] += 1
-      elif line.endswith(CR):
-        endings[CR] += 1
-      elif line.endswith(LF):
-        endings[LF] += 1
-    return (sorted(endings, key=endings.get, reverse=True) or [LF])[0]
+  """Retrieve the line ending of the original source."""
+  endings = {CRLF: 0, CR: 0, LF: 0}
+  for line in lines:
+    if line.endswith(CRLF):
+      endings[CRLF] += 1
+    elif line.endswith(CR):
+      endings[CR] += 1
+    elif line.endswith(LF):
+      endings[LF] += 1
+  return (sorted(endings, key=endings.get, reverse=True) or [LF])[0]
 
 
 def _FindPythonFiles(filenames, recursive, exclude):

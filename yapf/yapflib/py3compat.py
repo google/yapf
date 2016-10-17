@@ -23,6 +23,7 @@ if PY3:
   BytesIO = io.BytesIO
 
   import codecs
+
   def open_with_encoding(filename, mode, encoding, newline=''):
     return codecs.open(filename, mode=mode, encoding=encoding)
 
