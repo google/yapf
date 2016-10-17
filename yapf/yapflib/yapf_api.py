@@ -93,7 +93,7 @@ def FormatFile(filename,
     reformatted_source = newline.join(line for line in lines) + newline
   if in_place:
     if original_source and original_source != reformatted_source:
-      file_resources.WriteReformattedCode(filename, reformatted_source, newline,
+      file_resources.WriteReformattedCode(filename, reformatted_source,
                                           in_place, encoding)
     return None, encoding, changed
 
