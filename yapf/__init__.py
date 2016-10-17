@@ -211,7 +211,7 @@ def FormatFiles(filenames,
       style_config = (
           file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
     try:
-      yapf_api.FormatFile(
+      reformatted_code, encoding, _ = yapf_api.FormatFile(
           filename,
           in_place=in_place,
           style_config=style_config,
@@ -219,6 +219,9 @@ def FormatFiles(filenames,
           print_diff=print_diff,
           verify=verify,
           logger=logging.warning)
+      if not in_place and reformatted_code:
+        file_resources.WriteReformattedCode(filename, reformatted_code,
+                                            in_place, encoding)
     except SyntaxError as e:
       e.filename = filename
       raise
