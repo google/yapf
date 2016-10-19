@@ -173,7 +173,9 @@ def ReadFile(filename, logger=None):
     logger: (function) A function or lambda that takes a string and emits it.
 
   Returns:
-    The contents of filename.
+    Tuple of (source, line_ending, encoding). source is the contents of filename.
+    line_ending is the most commonly used line ending in filename. encoding is
+    the detected file encoding of filename.
 
   Raises:
     IOError: raised if there was an error reading the file.
