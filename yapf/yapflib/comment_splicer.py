@@ -61,6 +61,8 @@ def SpliceComments(tree):
           # child in the next iteration...
           child_prefix = child.prefix.lstrip('\n')
           prefix_indent = child_prefix[:child_prefix.find('#')]
+          if '\n' in prefix_indent:
+            prefix_indent = prefix_indent[prefix_indent.find('\n') + 1:]
           child.prefix = ''
 
           if child.type == token.NEWLINE:

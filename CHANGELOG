@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.13.2] 2016-10-22
+### Fixed
+- REGRESSION: A comment may have a prefix with newlines in it. When calculating
+  the prefix indent, we cannot take the newlines into account. Otherwise, the
+  comment will be misplaced causing the code to fail.
+
 ## [0.13.1] 2016-10-17
 ### Fixed
 - Correct emitting a diff that was accidentally removed.

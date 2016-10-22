@@ -4056,6 +4056,23 @@ v, w, x, y, z
     reformatted_code = reformatter.Reformat(uwlines)
     self.assertCodeEqual(code, reformatted_code)
 
+  def testCommentWithNewlinesInPrefix(self):
+    code = textwrap.dedent("""\
+        def foo():
+            if 0:
+                return False
+                
+            #a deadly comment
+            elif 1:
+                return True
+
+
+        print(foo())
+        """)
+    uwlines = _ParseAndUnwrap(code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(code, reformatted_code)
+
 
 def _ParseAndUnwrap(code, dumptree=False):
   """Produces unwrapped lines from the given code.
