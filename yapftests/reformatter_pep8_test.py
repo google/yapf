@@ -19,10 +19,10 @@ import unittest
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
-from yapftests import reformatter_test
+from yapftests import yapf_test_helper
 
 
-class TestsForPEP8Style(reformatter_test.ReformatterTest):
+class TestsForPEP8Style(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
@@ -37,7 +37,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
         if a + b:
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSingleLineIfStatements(self):
@@ -46,7 +46,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
         elif False: b = 42
         else: c = 42
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoBlankBetweenClassAndDef(self):
@@ -61,7 +61,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
             def joe():
                 pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSingleWhiteBeforeTrailingComment(self):
@@ -73,7 +73,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
         if a + b:  # comment
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingSemicolonStatements(self):
@@ -91,7 +91,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
                 b += 1
                 c += 1
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSpaceBetweenEndingCommandAndClosingBracket(self):
@@ -103,7 +103,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         a = [1, ]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testContinuedNonOudentedLine(self):
@@ -113,7 +113,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
             ) != self.geom_type and not self.geom_type == 'GEOMETRY':
                 ror(code='om_type')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testWrappingPercentExpressions(self):
@@ -137,7 +137,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
                 zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxx + 1,
                                    xxxxxxxxxxxxxxxxxxxxx + 1)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testAlignClosingBracketWithVisualIndentation(self):
@@ -153,7 +153,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
             'baz'  # second comment
         )
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -173,7 +173,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
                        'bbbbbbb'):
                     pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testIndentSizeChanging(self):
@@ -186,7 +186,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
             runtime_mins = (
                 program_end_time - program_start_time).total_seconds() / 60.0
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testHangingIndentCollision(self):
@@ -223,7 +223,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
                     morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
                 dosomething(connection)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingBeforeLogicalOperator(self):
@@ -253,7 +253,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
                   or update.message.migrate_from_chat_id
                   or update.message.pinned_message)
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
@@ -271,7 +271,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
                 keys.append(
                     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingBeforeFirstArgument(self):
@@ -290,7 +290,7 @@ class TestsForPEP8Style(reformatter_test.ReformatterTest):
               long_argument_name_3=3,
               long_argument_name_4=4)
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:

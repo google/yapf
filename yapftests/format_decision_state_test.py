@@ -13,60 +13,30 @@
 # limitations under the License.
 """Tests for yapf.format_decision_state."""
 
-import sys
 import textwrap
 import unittest
 
-from yapf.yapflib import comment_splicer
 from yapf.yapflib import format_decision_state
-from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
-from yapf.yapflib import split_penalty
-from yapf.yapflib import subtype_assigner
+from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
+from yapftests import yapf_test_helper
 
-class FormatDecisionStateTest(unittest.TestCase):
 
-  def _ParseAndUnwrap(self, code, dumptree=False):
-    """Produces unwrapped lines from the given code.
+class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
 
-    Parses the code into a tree, performs comment splicing and runs the
-    unwrapper.
-
-    Arguments:
-      code: code to parse as a string
-      dumptree: if True, the parsed pytree (after comment splicing) is dumped
-        to stderr. Useful for debugging.
-
-    Returns:
-      List of unwrapped lines.
-    """
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
-    subtype_assigner.AssignSubtypes(tree)
-    split_penalty.ComputeSplitPenalties(tree)
-
-    if dumptree:
-      pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
-
-    return pytree_unwrapper.UnwrapPyTree(tree)
-
-  def _FilterLine(self, uwline):
-    """Filter out nonsemantic tokens from the UnwrappedLines."""
-    return [
-        ft for ft in uwline.tokens
-        if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
-    ]
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testSimpleFunctionDefWithNoSplitting(self):
     code = textwrap.dedent(r"""
       def f(a, b):
         pass
       """)
-    uwlines = self._ParseAndUnwrap(code)
-    uwline = unwrapped_line.UnwrappedLine(0, self._FilterLine(uwlines[0]))
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    uwline = unwrapped_line.UnwrappedLine(0, _FilterLine(uwlines[0]))
     uwline.CalculateFormattingInformation()
 
     # Add: 'f'
@@ -118,8 +88,8 @@ class FormatDecisionStateTest(unittest.TestCase):
       def f(a, b):
         pass
       """)
-    uwlines = self._ParseAndUnwrap(code)
-    uwline = unwrapped_line.UnwrappedLine(0, self._FilterLine(uwlines[0]))
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    uwline = unwrapped_line.UnwrappedLine(0, _FilterLine(uwlines[0]))
     uwline.CalculateFormattingInformation()
 
     # Add: 'f'
@@ -159,6 +129,14 @@ class FormatDecisionStateTest(unittest.TestCase):
 
     clone = state.Clone()
     self.assertEqual(repr(state), repr(clone))
+
+
+def _FilterLine(uwline):
+  """Filter out nonsemantic tokens from the UnwrappedLines."""
+  return [
+      ft for ft in uwline.tokens
+      if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
+  ]
 
 
 if __name__ == '__main__':

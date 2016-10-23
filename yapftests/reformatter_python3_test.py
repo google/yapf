@@ -21,11 +21,11 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
-from yapftests import reformatter_test
+from yapftests import yapf_test_helper
 
 
 @unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
-class TestsForPython3Code(reformatter_test.ReformatterTest):
+class TestsForPython3Code(yapf_test_helper.YAPFTest):
   """Test a few constructs that are new Python 3 syntax."""
 
   @classmethod
@@ -44,7 +44,7 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
               eeeeeeeeeeeeee: set={1, 2, 3}) -> bool:
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testKeywordOnlyArgSpecifier(self):
@@ -56,7 +56,7 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
         def foo(a, *, kw):
             return a + kw
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testAnnotations(self):
@@ -68,13 +68,13 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
         def foo(a: list, b: "bar") -> dict:
             return a + b
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testExecAsNonKeyword(self):
     unformatted_code = 'methods.exec( sys.modules[name])\n'
     expected_formatted_code = 'methods.exec(sys.modules[name])\n'
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testAsyncFunctions(self):
@@ -96,7 +96,7 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
             if (await get_html()):
                 pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
   def testNoSpacesAroundPowerOparator(self):
@@ -110,7 +110,7 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
       expected_formatted_code = textwrap.dedent("""\
           a ** b
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
@@ -128,7 +128,7 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
       expected_formatted_code = textwrap.dedent("""\
           f(a = 5)
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
@@ -159,7 +159,7 @@ class TestsForPython3Code(reformatter_test.ReformatterTest):
         async def foo():
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 

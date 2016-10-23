@@ -13,51 +13,20 @@
 # limitations under the License.
 """Tests for yapf.blank_line_calculator."""
 
-import difflib
-import sys
 import textwrap
 import unittest
 
-from yapf.yapflib import blank_line_calculator
-from yapf.yapflib import comment_splicer
-from yapf.yapflib import pytree_unwrapper
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
 from yapf.yapflib import reformatter
-from yapf.yapflib import split_penalty
 from yapf.yapflib import style
-from yapf.yapflib import subtype_assigner
+
+from yapftests import yapf_test_helper
 
 
-class BlankLineCalculatorTest(unittest.TestCase):
+class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
 
-  def assertCodeEqual(self, expected_code, code):
-    if code != expected_code:
-      msg = ['Code format mismatch:', 'Expected:']
-      linelen = style.Get('COLUMN_LIMIT')
-      for l in expected_code.splitlines():
-        if len(l) > linelen:
-          msg.append('!> %s' % l)
-        else:
-          msg.append(' > %s' % l)
-      msg.append('Actual:')
-      for l in code.splitlines():
-        if len(l) > linelen:
-          msg.append('!> %s' % l)
-        else:
-          msg.append(' > %s' % l)
-      msg.append('Diff:')
-      msg.extend(
-          difflib.unified_diff(
-              code.splitlines(),
-              expected_code.splitlines(),
-              fromfile='actual',
-              tofile='expected',
-              lineterm=''))
-      self.fail('\n'.join(msg))
-
-
-class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testDecorators(self):
     unformatted_code = textwrap.dedent("""\
@@ -71,7 +40,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         def foo():
           pass
         """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testComplexDecorators(self):
@@ -107,7 +76,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
           def method(self):
             pass
         """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCodeAfterFunctionsAndClasses(self):
@@ -152,7 +121,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         except Error as error:
           pass
         """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCommentSpacing(self):
@@ -218,7 +187,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
             # comment
             pass
         """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCommentBeforeMethod(self):
@@ -229,7 +198,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
           def f(self):
             pass
         """)
-    uwlines = _ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentsBeforeClassDefs(self):
@@ -242,7 +211,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         class Foo(object):
           pass
         ''')
-    uwlines = _ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentsBeforeDecorator(self):
@@ -252,7 +221,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         def a():
           pass
         """)
-    uwlines = _ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
@@ -263,7 +232,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         def a():
           pass
         """)
-    uwlines = _ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentsAfterDecorator(self):
@@ -280,7 +249,7 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
           def test_unicode_filename_in_sdist(self, sdist_unicode, tmpdir, monkeypatch):
             pass
         """)
-    uwlines = _ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testInnerClasses(self):
@@ -304,39 +273,8 @@ class BasicBlankLineCalculatorTest(BlankLineCalculatorTest):
         class DeployAPIHTTPError(Error):
           pass
         """)
-    uwlines = _ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
-
-def _ParseAndUnwrap(code, dumptree=False):
-  """Produces unwrapped lines from the given code.
-
-  Parses the code into a tree, performs comment splicing and runs the
-  unwrapper.
-
-  Arguments:
-    code: code to parse as a string
-    dumptree: if True, the parsed pytree (after comment splicing) is dumped
-      to stderr. Useful for debugging.
-
-  Returns:
-    List of unwrapped lines.
-  """
-  style.SetGlobalStyle(style.CreateChromiumStyle())
-  tree = pytree_utils.ParseCodeToTree(code)
-  comment_splicer.SpliceComments(tree)
-  subtype_assigner.AssignSubtypes(tree)
-  split_penalty.ComputeSplitPenalties(tree)
-  blank_line_calculator.CalculateBlankLines(tree)
-
-  if dumptree:
-    pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
-
-  uwlines = pytree_unwrapper.UnwrapPyTree(tree)
-  for uwl in uwlines:
-    uwl.CalculateFormattingInformation()
-
-  return uwlines
 
 
 if __name__ == '__main__':

@@ -21,11 +21,11 @@ from yapf.yapflib import reformatter
 from yapf.yapflib import style
 from yapf.yapflib import verifier
 
-from yapftests import reformatter_test
+from yapftests import yapf_test_helper
 
 
 @unittest.skipIf(py3compat.PY3, 'Requires Python 2')
-class TestVerifyNoVerify(reformatter_test.ReformatterTest):
+class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
@@ -36,7 +36,7 @@ class TestVerifyNoVerify(reformatter_test.ReformatterTest):
         class ABC(metaclass=type):
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     with self.assertRaises(verifier.InternalError):
       reformatter.Reformat(uwlines, verify=True)
     reformatter.Reformat(uwlines)  # verify should be False by default.
@@ -50,7 +50,7 @@ class TestVerifyNoVerify(reformatter_test.ReformatterTest):
         class ABC(metaclass=type):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(
         expected_formatted_code, reformatter.Reformat(
             uwlines, verify=False))
@@ -65,7 +65,7 @@ class TestVerifyNoVerify(reformatter_test.ReformatterTest):
         if __name__ == "__main__":
           call_my_function(print)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     with self.assertRaises(verifier.InternalError):
       reformatter.Reformat(uwlines, verify=True)
 
@@ -80,7 +80,7 @@ class TestVerifyNoVerify(reformatter_test.ReformatterTest):
         if __name__ == "__main__":
             call_my_function(print)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(
         expected_formatted_code, reformatter.Reformat(
             uwlines, verify=False))
@@ -101,7 +101,7 @@ class TestVerifyNoVerify(reformatter_test.ReformatterTest):
                         self.generators + self.next_batch) == 1:
                     pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(
         expected_formatted_code, reformatter.Reformat(
             uwlines, verify=False))

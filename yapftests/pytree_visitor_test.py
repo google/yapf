@@ -46,16 +46,16 @@ class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
     self.DefaultLeafVisit(leaf)
 
 
-_VISITOR_TEST_SIMPLE_CODE = r'''
+_VISITOR_TEST_SIMPLE_CODE = r"""
 foo = bar
 baz = x
-'''
+"""
 
-_VISITOR_TEST_NESTED_CODE = r'''
+_VISITOR_TEST_NESTED_CODE = r"""
 if x:
   if y:
     return z
-'''
+"""
 
 
 class PytreeVisitorTest(unittest.TestCase):

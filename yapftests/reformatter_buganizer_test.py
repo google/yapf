@@ -19,10 +19,10 @@ import unittest
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
-from yapftests import reformatter_test
+from yapftests import yapf_test_helper
 
 
-class BuganizerFixes(reformatter_test.ReformatterTest):
+class BuganizerFixes(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
@@ -35,7 +35,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           def __init__(self, metric, fields_cb=None):
             self._fields_cb = fields_cb or (lambda *unused_args, **unused_kwargs: {})
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB31911533(self):
@@ -50,7 +50,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           def _():
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB31847238(self):
@@ -74,7 +74,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
             return 1
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB30760569(self):
@@ -88,7 +88,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 '1234567890123456789012345678901234567890'
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB26034238(self):
@@ -106,7 +106,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 '/aaaaaaaaa/bbbbbbbbbb/ccccc/dddd/eeeeeeeeeeeeee/ffffffffffffff'
             ).AndReturn(42)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB30536435(self):
@@ -127,7 +127,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                   bbbbbbbbb.usage, ccccccccc.within,
                   imports.ddddddddddddddddddd(name_item.ffffffffffffffff)))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB30442148(self):
@@ -141,7 +141,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           return (some_long_module_name.SomeLongClassName.some_long_attribute_name.
                   some_long_method_name())
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB26868213(self):
@@ -177,7 +177,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             }
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB30173198(self):
@@ -188,7 +188,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             self.assertFalse(
                 evaluation_runner.get_larps_in_eval_set('these_arent_the_larps'))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB29908765(self):
@@ -199,7 +199,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             return '<session %s on %s>' % (self._id,
                                            self._stub._stub.rpc_channel().target())  # pylint:disable=protected-access
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB30087362(self):
@@ -212,7 +212,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           # This is another comment
           foo()
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB29093579(self):
@@ -228,7 +228,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               bbbbbbbbbbbbbb.cccccccccc[dddddddddddddddddddddddddddd.
                                         eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB26382315(self):
@@ -240,7 +240,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
         def foo():
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB27616132(self):
@@ -266,7 +266,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                   100, start_cursor=cursor_2),
           ])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB27590179(self):
@@ -290,7 +290,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
             })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB27266946(self):
@@ -304,7 +304,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
               cccccccccccccccccccccccccccccccccccc)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB25505359(self):
@@ -319,7 +319,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             }]
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB25324261(self):
@@ -328,7 +328,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                         for ddd in eeeeee.fffffffffff.gggggggggggggggg
                         for cccc in ddd.specification)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB25136704(self):
@@ -340,7 +340,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 'xxxxxx': 'yyyyyy'
             }] = cccccc.ddd('1m', '10x1+1')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB25165602(self):
@@ -348,7 +348,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
         def f():
           ids = {u: i for u, i in zip(self.aaaaa, xrange(42, 42 + len(self.aaaaaa)))}
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB25157123(self):
@@ -357,7 +357,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           FairlyLongMethodName([relatively_long_identifier_for_a_list],
                                another_argument_with_a_long_identifier)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB25136820(self):
@@ -377,7 +377,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                   '$bbbbbbbbbbbbbbbbbbbbbbbb',
           })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB25131481(self):
@@ -397,7 +397,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     lambda x: x  # do nothing
             })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB23445244(self):
@@ -424,7 +424,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                         FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
                 })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB20559654(self):
@@ -445,7 +445,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               aaaaaaaaaaa=True,
               bbbbbbbb=None)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB23943842(self):
@@ -482,7 +482,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 }
             })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB20551180(self):
@@ -497,7 +497,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             return (
                 struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB23944849(self):
@@ -517,7 +517,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                         fffffffffffffff=0):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB23935890(self):
@@ -533,7 +533,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                         eeeeeeeeeeeeeee):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB28414371(self):
@@ -561,7 +561,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               | m.jjjj()
               | m.ppppp(m.vvv[0] + m.vvv[1]))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20127686(self):
@@ -579,7 +579,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     | m.jjjj()
                     | m.ppppp(m.VAL[0] / m.VAL[1]))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20016122(self):
@@ -595,7 +595,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           from a_very_long_or_indented_module_name_yada_yada import (
               long_argument_1, long_argument_2)
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
@@ -622,7 +622,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                       and len(self.iiiiiiii) == len(other.iiiiiiii)
                       and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
@@ -639,7 +639,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(
                 ffffffffffffff)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB20849933(self):
@@ -651,7 +651,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20813997(self):
@@ -660,7 +660,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           myarray = numpy.zeros((2, 2, 2))
           print(myarray[:, 1, :])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20605036(self):
@@ -676,7 +676,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             }
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20562732(self):
@@ -688,7 +688,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             'Second item',
         ]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20128830(self):
@@ -708,7 +708,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             },
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20073838(self):
@@ -725,7 +725,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                           class_1_name=self.class_1_name,
                           class_1_count=class_1_count))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19626808(self):
@@ -734,7 +734,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb(
               'ccccccccccc', ddddddddd='eeeee').fffffffff([ggggggggggggggggggggg])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19547210(self):
@@ -748,7 +748,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     xxxxxxxxxxxx.yyyyyyyyyyyyyy.zzzzzzzz):
                   continue
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19377034(self):
@@ -758,7 +758,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               bbbbbbbbbbbbbbb.start >= bbbbbbbbbbbbbbb.end):
             return False
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19372573(self):
@@ -770,7 +770,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 if c: break
             return 0
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     try:
       style.SetGlobalStyle(style.CreatePEP8Style())
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
@@ -782,7 +782,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
         a = {1, 2, 3}[x]
         b = {'foo': 42, 'bar': 37}['foo']
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19287512(self):
@@ -807,7 +807,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                         -1, 'permission error'))):
               self.assertRaises(nnnnnnnnnnnnnnnn.ooooo, ppppp.qqqqqqqqqqqqqqqqq)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB19194420(self):
@@ -815,7 +815,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
         method.Set('long argument goes here that causes the line to break',
                    lambda arg2=0.5: arg2)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19073499(self):
@@ -828,7 +828,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     'fnord': 6
                 }))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB18257115(self):
@@ -838,7 +838,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             self._Test(aaaa, bbbbbbb.cccccccccc, dddddddd, eeeeeeeeeee,
                        [ffff, ggggggggggg, hhhhhhhhhhhh, iiiiii, jjjj])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB18256666(self):
@@ -856,7 +856,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 },
                 llllllllll=mmmmmm.nnnnnnnnnnnnnnnn)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB18256826(self):
@@ -875,7 +875,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
         elif False:
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB18255697(self):
@@ -886,7 +886,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             'YYYYYYYYYYYYYYYY': ['zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'],
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB17534869(self):
@@ -900,7 +900,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           self.assertLess(
               abs(time.time() - aaaa.bbbbbbbbbbb(datetime.datetime.now())), 1)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB17489866(self):
@@ -919,7 +919,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                   ('eeee', 'ffffffff'): str(j)
               }))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB17133019(self):
@@ -944,7 +944,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                                "eeeeeeeee ffffffffff"), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB17011869(self):
@@ -971,7 +971,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               'DDDDDDDD': 0.4811
           }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB16783631(self):
@@ -988,7 +988,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               ddddddddddddd, eeeeeeeee=self.fffffffffffff) as gggg:
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB16572361(self):
@@ -1005,7 +1005,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                 'foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
                     'foo_bar_baz_boo')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB15884241(self):
@@ -1029,7 +1029,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                   ffffffff=[s.strip() for s in bbb[5].split(",")],
                   gggggg=bbb[6])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB15697268(self):
@@ -1054,7 +1054,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
           bad_slice = ("I am a crazy, no good, string whats too long, etc." +
                        " no really ")[:ARBITRARY_CONSTANT_A]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB15597568(self):
@@ -1071,7 +1071,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
               print(("Return code was %d" + (", and the process timed out."
                                              if did_time_out else ".")) % errorcode)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB15542157(self):
@@ -1082,7 +1082,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
         aaaaaaaaaaaa = bbbb.ccccccccccccccc(dddddd.eeeeeeeeeeeeee, ffffffffffffffffff,
                                             gggggg.hhhhhhhhhhhhhhhhh)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB15438132(self):
@@ -1117,7 +1117,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
                     gggggg.hh, iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk, lllll.mm),
                 nnnnnnnnnn=ooooooo.pppppppppp)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB14468247(self):
@@ -1131,7 +1131,7 @@ class BuganizerFixes(reformatter_test.ReformatterTest):
             a=1,
             b=2,)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB14406499(self):
@@ -1144,7 +1144,7 @@ parameter_5, parameter_6): pass
                  parameter_6):
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB13900309(self):
@@ -1156,7 +1156,7 @@ parameter_5, parameter_6): pass
         self.aaaaaaaaaaa(  # A comment in the middle of it all.
             948.0 / 3600, self.bbb.ccccccccccccccccccccc(dddddddddddddddd.eeee, True))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
@@ -1165,7 +1165,7 @@ parameter_5, parameter_6): pass
             CCCCCCC).ddddddddd(  # Look! A comment is here.
                 AAAAAAAA - (20 * 60 - 5))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -1175,7 +1175,7 @@ parameter_5, parameter_6): pass
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(
         ).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -1185,7 +1185,7 @@ parameter_5, parameter_6): pass
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(
             x).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -1195,7 +1195,7 @@ parameter_5, parameter_6): pass
         aaaaaaaaaaaaaaaaaaaaaaaa(
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -1207,7 +1207,7 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
         ).dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff(
         ).gggggggggggggggggg()
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 

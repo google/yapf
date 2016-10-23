@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Support module for tests for yapf.reformatter."""
+"""Support module for tests for yapf."""
 
 import difflib
 import sys
@@ -28,7 +28,7 @@ from yapf.yapflib import style
 from yapf.yapflib import subtype_assigner
 
 
-class ReformatterTest(unittest.TestCase):
+class YAPFTest(unittest.TestCase):
 
   def assertCodeEqual(self, expected_code, code):
     if code != expected_code:

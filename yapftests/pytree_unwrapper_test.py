@@ -22,30 +22,10 @@ from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
+from yapftests import yapf_test_helper
 
-class PytreeUnwrapperTest(unittest.TestCase):
 
-  def _ParseAndUnwrap(self, code, dumptree=False):
-    """Produces unwrapped lines from the given code.
-
-    Parses the code into a tree, performs comment splicing and runs the
-    unwrapper.
-
-    Arguments:
-      code: code to parse as a string
-      dumptree: if True, the parsed pytree (after comment splicing) is dumped
-        to stderr. Useful for debugging.
-
-    Returns:
-      List of unwrapped lines.
-    """
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
-
-    if dumptree:
-      pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
-
-    return pytree_unwrapper.UnwrapPyTree(tree)
+class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
 
   def _CheckUnwrappedLines(self, uwlines, list_of_expected):
     """Check that the given UnwrappedLines match expectations.
@@ -71,27 +51,27 @@ class PytreeUnwrapperTest(unittest.TestCase):
       # a comment
       y = 2
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['x', '=', '1']),
         (0, ['# a comment']),
-        (0, ['y', '=', '2'])])  # yapf: disable
+        (0, ['y', '=', '2'])])
 
   def testSimpleMultilineStatement(self):
     code = textwrap.dedent(r"""
       y = (1 +
            x)
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
-        (0, ['y', '=', '(', '1', '+', 'x', ')'])])  # yapf: disable
+        (0, ['y', '=', '(', '1', '+', 'x', ')'])])
 
   def testFileScopeWithInlineComment(self):
     code = textwrap.dedent(r"""
       x = 1    # a comment
       y = 2
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['x', '=', '1', '# a comment']),
         (0, ['y', '=', '2'])])  # yapf: disable
@@ -102,7 +82,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
           x = 1
           y = 2
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['if', 'foo', ':']),
         (1, ['x', '=', '1']),
@@ -115,7 +95,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
           x = 1
           y = 2
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['# c1']),
         (0, ['if', 'foo', ':', '# c2']),
@@ -130,7 +110,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
           # c3
           y = 2
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['if', 'foo', ':']),
         (1, ['# c1']),
@@ -148,7 +128,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
          # c3
          z = 1
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['if', 'x', ':']),
         (1, ['x', '=', '1', '# c1']),
@@ -167,7 +147,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
            j = 1
          k = 1
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['if', 'x', ':']),
         (1, ['x', '=', '1', '# c1']),
@@ -182,7 +162,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
           # c2
           x = 1
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['while', 'x', '>', '1', ':', '# c1']),
         (1, ['# c2']),
@@ -201,7 +181,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
       finally:
         pass
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['try', ':']),
         (1, ['pass']),
@@ -220,7 +200,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         # c2
         return x
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['def', 'foo', '(', 'x', ')', ':', '# c1']),
         (1, ['# c2']),
@@ -236,7 +216,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         # c4
         return x
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['def', 'foo', '(', 'x', ')', ':', '# c1']),
         (1, ['# c2']),
@@ -251,7 +231,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         # c2
         p = 1
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['class', 'Klass', ':', '# c1']),
         (1, ['# c2']),
@@ -261,7 +241,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
     code = textwrap.dedent(r"""
         def f(): return 37
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['def', 'f', '(', ')', ':']),
         (1, ['return', '37'])])  # yapf: disable
@@ -274,7 +254,7 @@ class PytreeUnwrapperTest(unittest.TestCase):
         def f():
           pass
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['# Comment #1']),
         (0, ['# Comment #2']),
@@ -289,34 +269,13 @@ class PytreeUnwrapperTest(unittest.TestCase):
           'c',  # hello world
       ]
       """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckUnwrappedLines(uwlines, [
         (0, ['a', '=', '[', "'a'", ',', "'b'", ',',
              "'c'", ',', '# hello world', ']'])])  # yapf: disable
 
 
-class MatchBracketsTest(unittest.TestCase):
-
-  def _ParseAndUnwrap(self, code, dumptree=False):
-    """Produces unwrapped lines from the given code.
-
-    Parses the code into a tree, match brackets and runs the unwrapper.
-
-    Arguments:
-      code: code to parse as a string
-      dumptree: if True, the parsed pytree (after comment splicing) is dumped to
-        stderr. Useful for debugging.
-
-    Returns:
-      List of unwrapped lines.
-    """
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
-
-    if dumptree:
-      pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
-
-    return pytree_unwrapper.UnwrapPyTree(tree)
+class MatchBracketsTest(yapf_test_helper.YAPFTest):
 
   def _CheckMatchingBrackets(self, uwlines, list_of_expected):
     """Check that the tokens have the expected matching bracket.
@@ -349,7 +308,7 @@ class MatchBracketsTest(unittest.TestCase):
         def foo(a, b={'hello': ['w','d']}, c=[42, 37]):
           pass
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckMatchingBrackets(uwlines, [
         [(2, 24), (7, 15), (10, 14), (19, 23)],
         []
@@ -361,7 +320,7 @@ class MatchBracketsTest(unittest.TestCase):
         def foo(a, b, c):
           pass
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckMatchingBrackets(uwlines, [
         [(2, 3)],
         [(2, 8)],
@@ -373,7 +332,7 @@ class MatchBracketsTest(unittest.TestCase):
         class A(B, C, D):
           pass
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckMatchingBrackets(uwlines, [
         [(2, 8)],
         []

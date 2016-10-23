@@ -21,10 +21,10 @@ from yapf.yapflib import reformatter
 from yapf.yapflib import style
 from yapf.yapflib import verifier
 
-from yapftests import reformatter_test
+from yapftests import yapf_test_helper
 
 
-class BasicReformatterTest(reformatter_test.ReformatterTest):
+class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
@@ -39,7 +39,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         if a + b:
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSimpleFunctions(self):
@@ -58,7 +58,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         def f():
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSimpleFunctionsWithTrailingComments(self):
@@ -87,7 +87,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
               xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testBlankLinesAtEndOfFile(self):
@@ -102,7 +102,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         def foobar():  # foo
           pass
     """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -114,7 +114,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         x = {'a': 37, 'b': 42, 'c': 927}
     """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testMultipleUgliness(self):
@@ -154,7 +154,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         def f(a):
           return 37 + -+a[42 - x:y**3]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testComments(self):
@@ -207,14 +207,14 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         class Qux(object):
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSingleComment(self):
     code = textwrap.dedent("""\
         # Thing 1
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentsInDataLiteral(self):
@@ -231,7 +231,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
               # Ending comment.
           })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testEndingWhitespaceAfterSimpleStatement(self):
@@ -240,7 +240,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         # Thing 1
         # Thing 2
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDocstrings(self):
@@ -278,7 +278,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
             print('hello {}'.format('world'))
             return 42
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testDocstringAndMultilineComment(self):
@@ -313,7 +313,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
             # comment
             pass
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testMultilineDocstringAndMultilineComment(self):
@@ -366,7 +366,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
             # comment
             pass
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testTupleCommaBeforeLastParen(self):
@@ -376,7 +376,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
     expected_formatted_code = textwrap.dedent("""\
         a = (1,)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoBreakOutsideOfBracket(self):
@@ -392,7 +392,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
           assert port >= minimum, 'Unexpected port %d when minimum was %d.' % (port,
                                                                                minimum)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testBlankLinesBeforeDecorators(self):
@@ -413,7 +413,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
           def x(self):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testCommentBetweenDecorators(self):
@@ -431,7 +431,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         def x(self):
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testListComprehension(self):
@@ -444,7 +444,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         def given(y):
           [k for k in () if k in y]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testOpeningAndClosingBrackets(self):
@@ -457,7 +457,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
             2,
             3,))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSingleLineFunctions(self):
@@ -468,7 +468,7 @@ class BasicReformatterTest(reformatter_test.ReformatterTest):
         def foo():
           return 42
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoQueueSeletionInMiddleOfLine(self):
@@ -484,7 +484,7 @@ node.child) + " >"
         find_symbol(node.type) + "< " + " ".join(find_pattern(n)
                                                  for n in node.child) + " >"
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoSpacesBetweenSubscriptsAndCalls(self):
@@ -494,7 +494,7 @@ node.child) + " >"
     expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaa = bbbbbbbb.ccccccccc()[42](a, 2)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoSpacesBetweenOpeningBracketAndStartingOperator(self):
@@ -505,7 +505,7 @@ node.child) + " >"
     expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaa = bbbbbbbb.ccccccccc[-1](-42)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     # Varargs and kwargs.
@@ -517,7 +517,7 @@ node.child) + " >"
         aaaaaaaaaa = bbbbbbbb.ccccccccc(*varargs)
         aaaaaaaaaa = bbbbbbbb.ccccccccc(**kwargs)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testMultilineCommentReformatted(self):
@@ -533,7 +533,7 @@ node.child) + " >"
           # comment.
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testDictionaryMakerFormatting(self):
@@ -558,7 +558,7 @@ node.child) + " >"
             'while_stmt': 'for_stmt',
         })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSimpleMultilineCode(self):
@@ -576,7 +576,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           aaaaaaaaaaaaaa.bbbbbbbbbbbbbb.ccccccc(zzzzzzzzzzzz, xxxxxxxxxxx, yyyyyyyyyyyy,
                                                 vvvvvvvvv)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testMultilineComment(self):
@@ -589,7 +589,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           # Yo man.
           a = 42
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testMultilineString(self):
@@ -604,7 +604,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               a = 42
             ''')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent('''\
@@ -625,7 +625,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         </body>
         </html>"""
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSimpleMultilineWithComments(self):
@@ -637,7 +637,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           # Whoa! A normal comment!!
           pass  # Another trailing comment
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testMatchingParenSplittingMatching(self):
@@ -651,7 +651,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           raise RuntimeError('unable to find insertion point for target node',
                              (target,))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testContinuationIndent(self):
@@ -677,7 +677,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                     subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
                                                           format_token.Subtype.NONE))
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testTrailingCommaAndBracket(self):
@@ -691,20 +691,20 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         b = (42,)
         c = [42,]
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testI18n(self):
     code = textwrap.dedent("""\
         N_('Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.')  # A comment is here.
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
         foo('Fake function call')  #. Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testI18nCommentsInDataLiteral(self):
@@ -718,7 +718,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               'snork': 'bar#.*=\\\\0',
           })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testClosingBracketIndent(self):
@@ -731,7 +731,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
               pass
         ''')
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testClosingBracketsInlinedInCall(self):
@@ -763,7 +763,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                     "porkporkpork": 5,
                 })
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testLineWrapInForExpression(self):
@@ -776,7 +776,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                                   node.pre_order())):
               pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testFunctionCallContinuationLine(self):
@@ -789,7 +789,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 return [(aaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(
                     cccc, ddddddddddddddddddddddddddddddddddddd))]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testI18nNonFormatting(self):
@@ -801,7 +801,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                        message=N_('Please check your email address.'), **kwargs):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoSpaceBetweenUnaryOpAndOpeningParen(self):
@@ -809,7 +809,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         if ~(a or b):
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentBeforeFuncDef(self):
@@ -827,7 +827,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                        bbbbbbbbbbbbbbb=False):
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testExcessLineCountWithDefaultKeywords(self):
@@ -852,7 +852,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 hhhhhhhhhhhhh=hhhhhhhhhhhhh,
                 iiiiiii=iiiiiiiiiiiiii)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSpaceAfterNotOperator(self):
@@ -860,7 +860,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         if not (this and that):
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoPenaltySplitting(self):
@@ -872,7 +872,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   os.path.join(filename, f) for f in os.listdir(filename)
                   if IsPythonFile(os.path.join(filename, f)))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testExpressionPenalties(self):
@@ -883,7 +883,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             (left.value == '{' and right.value == '}')):
           return False
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testLineDepthOfSingleLineStatement(self):
@@ -906,7 +906,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         with open(a) as fd:
           a = fd.read()
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplitListWithTerminatingComma(self):
@@ -929,7 +929,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             lambda a, b: 37,
         ]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplitListWithInterspersedComments(self):
@@ -948,14 +948,14 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             lambda a, b: 37  # lambda
         ]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testRelativeImportStatements(self):
     code = textwrap.dedent("""\
         from ... import bork
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testSingleLineList(self):
@@ -970,7 +970,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb = aaaaaaaaaaa(
             ("...", "."), "..", "..............................................")
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testBlankLinesBeforeFunctionsNotInColumnZero(self):
@@ -1004,7 +1004,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         except:
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoKeywordArgumentBreakage(self):
@@ -1016,7 +1016,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 cccccccccccccccccccc=True):
               pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testTrailerOnSingleLine(self):
@@ -1027,7 +1027,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                                url(r'^/login/$', 'logout_view'),
                                url(r'^/user/(?P<username>\\w+)/$', 'profile_view'))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testIfConditionalParens(self):
@@ -1040,7 +1040,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   child.value in substatement_names):
                 pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testContinuationMarkers(self):
@@ -1051,14 +1051,14 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                "sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. "\\
                "Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet"
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
         from __future__ import nested_scopes, generators, division, absolute_import, with_statement, \\
             print_function, unicode_literals
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
@@ -1066,7 +1066,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
            cccccccc == 42:
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentsWithContinuationMarkers(self):
@@ -1077,7 +1077,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   key2=arg)\\
                         .fn3()
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testEmptyContainers(self):
@@ -1087,7 +1087,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             'Lorem ipsum dolor sit amet, consetetur adipiscing elit. Donec a diam lectus. '
             'Sed sit amet ipsum mauris. Maecenas congue.')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testSplitStringsIfSurroundedByParens(self):
@@ -1103,7 +1103,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
@@ -1111,7 +1111,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 'bbbbbbbbbbbbbbbbbbbbbbbbbb' 'cccccccccccccccccccccccccccccccc' \
 'ddddddddddddddddddddddddddddd'
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testMultilineShebang(self):
@@ -1131,7 +1131,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
         assert os.environ['FOO'] == '123'
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoSplittingAroundTermOperators(self):
@@ -1139,7 +1139,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         a_very_long_function_call_yada_yada_etc_etc_etc(long_arg1,
                                                         long_arg2 / long_arg3)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoSplittingWithinSubscriptList(self):
@@ -1149,7 +1149,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             'someotherlongkey': 2
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testExcessCharacters(self):
@@ -1161,7 +1161,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
             ])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDictSetGenerator(self):
@@ -1171,7 +1171,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             for variable in fnord if variable != 37
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testUnaryOpInDictionaryValue(self):
@@ -1182,7 +1182,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
         print(beta[-1])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testUnaryNotOperator(self):
@@ -1194,7 +1194,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 remote_checksum = self.get_checksum(conn, tmp, dest, inject,
                                                     not directory_prepended, source)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testRelaxArraySubscriptAffinity(self):
@@ -1210,17 +1210,17 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                       bbbbbbbbbbbbb['..............'] = row[5] if row[
                           5] is not None else 5
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testFunctionCallInDict(self):
     code = "a = {'a': b(c=d, **e)}\n"
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testFunctionCallInNestedDict(self):
     code = "a = {'a': {'a': {'a': b(c=d, **e)}}}\n"
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testUnbreakableNot(self):
@@ -1229,7 +1229,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           if not "Foooooooooooooooooooooooooooooo" or "Foooooooooooooooooooooooooooooo" == "Foooooooooooooooooooooooooooooo":
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testSplitListWithComment(self):
@@ -1240,7 +1240,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           'c'  # hello world
       ]
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testOverColumnLimit(self):
@@ -1267,7 +1267,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   'ccccccccccccccccccccccccccccccccccccccccccc',
           }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testEndingComment(self):
@@ -1277,7 +1277,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
           c="something else, about which comment doesn't make sense")
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testContinuationSpaceRetention(self):
@@ -1288,7 +1288,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                    fn2(arg)
                ))
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testIfExpressionWithFunctionCall(self):
@@ -1299,7 +1299,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
         pass
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testUnformattedAfterMultilineString(self):
@@ -1310,7 +1310,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       TEST
       ''' % (input_fname, output_fname)
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoSpacesAroundKeywordDefaultValues(self):
@@ -1321,7 +1321,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       }
       json = request.get_json(silent=True) or {}
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoSplittingBeforeEndingSubscriptBracket(self):
@@ -1336,7 +1336,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             status = cf.describe_stacks(
                 StackName=stackname)[u'Stacks'][0][u'StackStatus']
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoSplittingOnSingleArgument(self):
@@ -1358,7 +1358,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+', aaaaaaa.bbbbbbbbbbbb).group(a.b) +
             re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)', ccccccc).group(c.d))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingArraysSensibly(self):
@@ -1376,7 +1376,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list(
                 'bbbbbbbbbbbbbbbbbbbbbbbbb').split(',')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testComprehensionForAndIf(self):
@@ -1393,7 +1393,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             tokens_repr = ','.join(
                 ['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testFunctionCallArguments(self):
@@ -1418,7 +1418,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 _CreateCommentsFromPrefix(
                     comment_prefix, comment_lineno, comment_column, standalone=True))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testBinaryOperators(self):
@@ -1430,7 +1430,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         a = b**37
         c = (20**-3) / (_GRID_ROWS**(code_length - 10))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
@@ -1442,7 +1442,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               current.value in ']}'):
             pass
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testContiguousList(self):
@@ -1450,7 +1450,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       [retval1, retval2] = a_very_long_function(argument_1, argument2, argument_3,
                                                 argument_4)
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testArgsAndKwargsFormatting(self):
@@ -1461,7 +1461,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         *d,
         **e)
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testCommentColumnLimitOverflow(self):
@@ -1474,7 +1474,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               # side_effect=[(157031694470475), (157031694470475),],
           )
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testMultilineLambdas(self):
@@ -1505,7 +1505,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                               cccccccccccccccccccccccccccccccc(dddddddddddddd))
               return d
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
@@ -1530,11 +1530,11 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   }]
               }
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(code, reformatted_code)
 
-      uwlines = reformatter_test.ParseAndUnwrap(reformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(code, reformatted_code)
     finally:
@@ -1546,7 +1546,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         _connect.execute(_games.update().where(_games.c.gid == gid).values(
             scored=True))
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDontAddBlankLineAfterMultilineString(self):
@@ -1556,7 +1556,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       WHERE day in {}'''
       days = ",".join(days)
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testFormattingListComprehensions(self):
@@ -1570,7 +1570,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               ]
               self._heap = [x for x in self._heap if x.route and x.route[0] == choice]
       """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNoSplittingWhenBinPacking(self):
@@ -1594,11 +1594,11 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               long_argument_name_4=4
           )
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(code, reformatted_code)
 
-      uwlines = reformatter_test.ParseAndUnwrap(reformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(code, reformatted_code)
     finally:
@@ -1615,7 +1615,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             c == d['eeeeee']).ffffff():
           pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingOneArgumentList(self):
@@ -1638,7 +1638,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                     boxes[id_] = np.concatenate(
                         (points.min(axis=0), qoints.max(axis=0)))
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingBeforeFirstElementListArgument(self):
@@ -1667,7 +1667,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                       (clue for clue in combination if not clue == Verifier.UNMATCHED),
                       constraints, InvestigationResult.OR)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSplittingArgumentsTerminatedByComma(self):
@@ -1715,11 +1715,11 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               3,
           )
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(expected_formatted_code, reformatted_code)
 
-      uwlines = reformatter_test.ParseAndUnwrap(reformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(expected_formatted_code, reformatted_code)
     finally:
@@ -1731,7 +1731,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         from toto import titi, tata, tutu
         from toto import (titi, tata, tutu)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDictionaryValuesOnOwnLines(self):
@@ -1783,7 +1783,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 Check('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ', '=', False),
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testDictionaryOnOwnLine(self):
@@ -1797,7 +1797,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         doc = test_utils.CreateTestDocumentViaController(
             content={'a': 'b'}, branch_key=branch.key, collection_key=collection.key)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
     unformatted_code = textwrap.dedent("""\
@@ -1814,7 +1814,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             collection_key=collection.key,
             collection_key2=collection.key2)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNestedListsInDictionary(self):
@@ -1881,7 +1881,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             ),
         }
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNestedDictionary(self):
@@ -1914,7 +1914,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                 'title': title
             }]
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testDictionaryElementsOnOneLine(self):
@@ -1927,7 +1927,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           def _():
             pass
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNotInParams(self):
@@ -1938,7 +1938,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         list("a long line to break the line. a long line to break the brk a long lin",
              not True)
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
 

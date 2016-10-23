@@ -19,10 +19,10 @@ import unittest
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
-from yapftests import reformatter_test
+from yapftests import yapf_test_helper
 
 
-class TestsForStyleConfig(reformatter_test.ReformatterTest):
+class TestsForStyleConfig(yapf_test_helper.YAPFTest):
 
   def setUp(self):
     self.current_style = style.DEFAULT_STYLE
@@ -38,7 +38,7 @@ class TestsForStyleConfig(reformatter_test.ReformatterTest):
           for i in range(5):
             print('bar')
           """)
-      uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
@@ -53,7 +53,7 @@ class TestsForStyleConfig(reformatter_test.ReformatterTest):
         for i in range(5):
             print('bar')
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
