@@ -13,39 +13,16 @@
 # limitations under the License.
 """Tests for yapf.subtype_assigner."""
 
-import sys
 import textwrap
 import unittest
 
 from yapf.yapflib import format_token
-from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
-from yapf.yapflib import subtype_assigner
+
+from yapftests import yapf_test_helper
 
 
-class SubtypeAssignerTest(unittest.TestCase):
-
-  def _ParseAndUnwrap(self, code, dumptree=False):
-    """Produces unwrapped lines from the given code.
-
-    Parses the code into a tree, assigns subtypes and runs the unwrapper.
-
-    Arguments:
-      code: code to parse as a string
-      dumptree: if True, the parsed pytree (after comment splicing) is dumped
-        to stderr. Useful for debugging.
-
-    Returns:
-      List of unwrapped lines.
-    """
-    tree = pytree_utils.ParseCodeToTree(code)
-    subtype_assigner.AssignSubtypes(tree)
-
-    if dumptree:
-      pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
-
-    return pytree_unwrapper.UnwrapPyTree(tree)
+class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
 
   def _CheckFormatTokenSubtypes(self, uwlines, list_of_expected):
     """Check that the tokens in the UnwrappedLines have the expected subtypes.
@@ -69,7 +46,7 @@ class SubtypeAssignerTest(unittest.TestCase):
         def foo(a=37, *b, **c):
           return -x[:42]
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('def', [format_token.Subtype.NONE]),
          ('foo', {format_token.Subtype.FUNC_DEF}),
@@ -98,14 +75,14 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
          (':', {format_token.Subtype.SUBSCRIPT_COLON}),
          ('42', [format_token.Subtype.NONE]),
-         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})]
+         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})],
     ])  # yapf: disable
 
   def testFuncCallWithDefaultAssign(self):
     code = textwrap.dedent(r"""
         foo(x, a='hello world')
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('foo', [format_token.Subtype.NONE]),
          ('(', [format_token.Subtype.NONE]),
@@ -116,7 +93,7 @@ class SubtypeAssignerTest(unittest.TestCase):
                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
          ('=', {format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN}),
          ("'hello world'", {format_token.Subtype.NONE}),
-         (')', [format_token.Subtype.NONE])]
+         (')', [format_token.Subtype.NONE])],
     ])  # yapf: disable
 
   def testSetComprehension(self):
@@ -124,7 +101,7 @@ class SubtypeAssignerTest(unittest.TestCase):
         def foo(strs):
           return {s.lower() for s in strs}
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('def', [format_token.Subtype.NONE]),
          ('foo', {format_token.Subtype.FUNC_DEF}),
@@ -151,7 +128,7 @@ class SubtypeAssignerTest(unittest.TestCase):
     code = textwrap.dedent("""\
         not a
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('not', {format_token.Subtype.UNARY_OPERATOR}),
          ('a', [format_token.Subtype.NONE])]
@@ -161,7 +138,7 @@ class SubtypeAssignerTest(unittest.TestCase):
     code = textwrap.dedent("""\
         x = ((a | (b ^ 3) & c) << 3) >> 1
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('x', [format_token.Subtype.NONE]),
          ('=', {format_token.Subtype.ASSIGN_OPERATOR}),
@@ -181,14 +158,14 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('3', [format_token.Subtype.NONE]),
          (')', [format_token.Subtype.NONE]),
          ('>>', {format_token.Subtype.BINARY_OPERATOR}),
-         ('1', [format_token.Subtype.NONE])]
+         ('1', [format_token.Subtype.NONE])],
     ])  # yapf: disable
 
   def testSubscriptColon(self):
     code = textwrap.dedent("""\
         x[0:42:1]
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('x', [format_token.Subtype.NONE]),
          ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
@@ -197,14 +174,14 @@ class SubtypeAssignerTest(unittest.TestCase):
          ('42', [format_token.Subtype.NONE]),
          (':', {format_token.Subtype.SUBSCRIPT_COLON}),
          ('1', [format_token.Subtype.NONE]),
-         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})]
-    ])  # yapf: disable
+         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})],
+    ])
 
   def testFunctionCallWithStarExpression(self):
     code = textwrap.dedent("""\
         [a, *b]
         """)
-    uwlines = self._ParseAndUnwrap(code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
         [('[', [format_token.Subtype.NONE]),
          ('a', [format_token.Subtype.NONE]),

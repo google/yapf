@@ -19,24 +19,11 @@ import unittest
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
-from yapf.yapflib import comment_splicer
 from yapf.yapflib import format_token
-from yapf.yapflib import pytree_unwrapper
-from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
-from yapf.yapflib import subtype_assigner
 from yapf.yapflib import unwrapped_line
 
-
-def _MakeFormatTokenLeaf(token_type, token_value):
-  return format_token.FormatToken(pytree.Leaf(token_type, token_value))
-
-
-def _MakeFormatTokenList(token_type_values):
-  return [
-      _MakeFormatTokenLeaf(token_type, token_value)
-      for token_type, token_value in token_type_values
-  ]
+from yapftests import yapf_test_helper
 
 
 class UnwrappedLineBasicTest(unittest.TestCase):
@@ -74,29 +61,14 @@ class UnwrappedLineBasicTest(unittest.TestCase):
     self.assertEqual(['LPAR', 'RPAR'], [tok.name for tok in uwl.tokens])
 
 
-class UnwrappedLineFormattingInformationTest(unittest.TestCase):
-
-  def _ParseAndUnwrap(self, code):
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
-    subtype_assigner.AssignSubtypes(tree)
-    split_penalty.ComputeSplitPenalties(tree)
-
-    uwlines = pytree_unwrapper.UnwrapPyTree(tree)
-    for i, uwline in enumerate(uwlines):
-      uwlines[i] = unwrapped_line.UnwrappedLine(uwline.depth, [
-          ft for ft in uwline.tokens
-          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
-      ])
-    return uwlines
+class UnwrappedLineFormattingInformationTest(yapf_test_helper.YAPFTest):
 
   def testFuncDef(self):
-    code = textwrap.dedent(r'''
-      def f(a, b):
-        pass
-      ''')
-    uwlines = self._ParseAndUnwrap(code)
-    uwlines[0].CalculateFormattingInformation()
+    code = textwrap.dedent(r"""
+        def f(a, b):
+          pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
 
     f = uwlines[0].tokens[1]
     self.assertFalse(f.can_break_before)
@@ -107,6 +79,17 @@ class UnwrappedLineFormattingInformationTest(unittest.TestCase):
     self.assertFalse(lparen.can_break_before)
     self.assertFalse(lparen.must_break_before)
     self.assertEqual(lparen.split_penalty, split_penalty.UNBREAKABLE)
+
+
+def _MakeFormatTokenLeaf(token_type, token_value):
+  return format_token.FormatToken(pytree.Leaf(token_type, token_value))
+
+
+def _MakeFormatTokenList(token_type_values):
+  return [
+      _MakeFormatTokenLeaf(token_type, token_value)
+      for token_type, token_value in token_type_values
+  ]
 
 
 if __name__ == '__main__':

@@ -16,10 +16,7 @@
 import textwrap
 import unittest
 
-from yapf.yapflib import comment_splicer
 from yapf.yapflib import line_joiner
-from yapf.yapflib import pytree_unwrapper
-from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 
 from yapftests import yapf_test_helper

@@ -86,7 +86,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', STRONGLY_CONNECTED),
         (':', UNBREAKABLE),
         ('pass', None),
-    ])  # yapf: disable
+    ])
 
     # Test function definition with trailing comment.
     code = textwrap.dedent(r"""
@@ -102,7 +102,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', STRONGLY_CONNECTED),
         (':', UNBREAKABLE),
         ('pass', None),
-    ])  # yapf: disable
+    ])
 
     # Test class definitions.
     code = textwrap.dedent(r"""
@@ -124,7 +124,7 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', None),
         (':', UNBREAKABLE),
         ('pass', None),
-    ])  # yapf: disable
+    ])
 
     # Test lambda definitions.
     code = textwrap.dedent(r"""
@@ -138,7 +138,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('b', UNBREAKABLE),
         (':', UNBREAKABLE),
         ('None', UNBREAKABLE),
-    ])  # yapf: disable
+    ])
 
     # Test dotted names.
     code = textwrap.dedent(r"""
@@ -152,7 +152,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('b', UNBREAKABLE),
         ('.', UNBREAKABLE),
         ('c', UNBREAKABLE),
-    ])  # yapf: disable
+    ])
 
   def testStronglyConnected(self):
     # Test dictionary keys.
