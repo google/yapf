@@ -127,7 +127,7 @@ def main(argv):
     for option, docstring in sorted(style.Help().items()):
       for line in docstring.splitlines():
         print('#', line)
-      print(option, '=', style.Get(option), sep='')
+      print(option.lower(), '=', style.Get(option), sep='')
       print()
     return 0
 
