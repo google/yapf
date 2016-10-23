@@ -375,7 +375,20 @@ v, w, x, y, z
     self.assertCodeEqual(code, reformatted_code)
 
   def testCommentWithNewlinesInPrefix(self):
-    code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+            if 0:
+                return False
+                
+                
+            #a deadly comment
+            elif 1:
+                return True
+
+
+        print(foo())
+        """)
+    expected_formatted_code = textwrap.dedent("""\
         def foo():
             if 0:
                 return False
@@ -387,9 +400,8 @@ v, w, x, y, z
 
         print(foo())
         """)
-    uwlines = reformatter_test.ParseAndUnwrap(code)
-    reformatted_code = reformatter.Reformat(uwlines)
-    self.assertCodeEqual(code, reformatted_code)
+    uwlines = reformatter_test.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
 if __name__ == '__main__':
