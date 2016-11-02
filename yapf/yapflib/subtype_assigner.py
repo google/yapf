@@ -132,9 +132,12 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
       if (isinstance(child, pytree.Leaf) and child.value in {
-          '<', '>', '==', '>=', '<=', '<>', '!=', 'in', 'not in', 'is', 'is not'
-      }):
+          '<', '>', '==', '>=', '<=', '<>', '!=', 'in', 'is'
+       }):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+      elif pytree_utils.NodeName(child) == 'comp_op':
+        for grandchild in child.children:
+          _AppendTokenSubtype(grandchild, format_token.Subtype.BINARY_OPERATOR)
 
   def Visit_star_expr(self, node):  # pylint: disable=invalid-name
     # star_expr ::= '*' expr

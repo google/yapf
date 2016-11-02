@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.13.3] UNRELEASED
+### Fixed
+- "not in" and "is not" should be subtyped as binary operators.
+
 ## [0.13.2] 2016-10-22
 ### Fixed
 - REGRESSION: A comment may have a prefix with newlines in it. When calculating

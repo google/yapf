@@ -28,6 +28,17 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB32570937(self):
+    code = textwrap.dedent("""\
+      def _():
+        if (job_message.ball not in ('*', ball) or
+            job_message.call not in ('*', call) or
+            job_message.mall not in ('*', job_name)):
+          return False
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB31937033(self):
     code = textwrap.dedent("""\
         class _():
