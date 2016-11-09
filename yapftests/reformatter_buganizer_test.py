@@ -28,6 +28,23 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB32737279(self):
+    unformatted_code = textwrap.dedent("""\
+        here_is_a_dict = {
+            'key': 
+            # Comment.
+            'value'
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        here_is_a_dict = {
+            'key':  # Comment.
+                'value'
+        }
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB32570937(self):
     code = textwrap.dedent("""\
       def _():

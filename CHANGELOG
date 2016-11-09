@@ -5,6 +5,9 @@
 ## [0.13.3] UNRELEASED
 ### Fixed
 - "not in" and "is not" should be subtyped as binary operators.
+- A non-Node dictionary value may have a comment before it. In those cases, we
+  want to avoid encompassing only the comment in pseudo parens. So we include
+  the actual value as well.
 
 ## [0.13.2] 2016-10-22
 ### Fixed

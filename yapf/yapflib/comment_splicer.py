@@ -176,16 +176,17 @@ def SpliceComments(tree):
                 if comment_lineno == prev_leaf[0].lineno:
                   comment_lines = comment_prefix.splitlines()
                   value = comment_lines[0].lstrip()
-                  comment_column = prev_leaf[0].column + len(prev_leaf[0].value)
-                  comment_column += (
-                      len(comment_lines[0]) - len(comment_lines[0].lstrip()))
-                  comment_leaf = pytree.Leaf(
-                      type=token.COMMENT,
-                      value=value.rstrip('\n'),
-                      context=('', (comment_lineno, comment_column)))
-                  pytree_utils.InsertNodesAfter([comment_leaf], prev_leaf[0])
-                  comment_prefix = '\n'.join(comment_lines[1:])
-                  comment_lineno += 1
+                  if value.rstrip('\n'):
+                    comment_column = prev_leaf[0].column + len(prev_leaf[0].value)
+                    comment_column += (
+                        len(comment_lines[0]) - len(comment_lines[0].lstrip()))
+                    comment_leaf = pytree.Leaf(
+                        type=token.COMMENT,
+                        value=value.rstrip('\n'),
+                        context=('', (comment_lineno, comment_column)))
+                    pytree_utils.InsertNodesAfter([comment_leaf], prev_leaf[0])
+                    comment_prefix = '\n'.join(comment_lines[1:])
+                    comment_lineno += 1
 
                 rindex = (0 if '\n' not in comment_prefix.rstrip() else
                           comment_prefix.rstrip().rindex('\n') + 1)

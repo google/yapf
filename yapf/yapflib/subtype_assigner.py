@@ -347,6 +347,18 @@ def _InsertPseudoParentheses(node):
   first = _GetFirstLeafNode(node)
   last = _GetLastLeafNode(node)
 
+  if first == last and first.type == token.COMMENT:
+    # A comment was inserted before the value, which is a pytree.Leaf.
+    # Encompass the dictionary's value into an ATOM node.
+    last = first.next_sibling
+    new_node = pytree.Node(syms.atom, [first.clone(), last.clone()])
+    node.replace(new_node)
+    node = new_node
+    last.remove()
+
+    first = _GetFirstLeafNode(node)
+    last = _GetLastLeafNode(node)
+
   lparen = pytree.Leaf(
       token.LPAR, u'(', context=('', (first.get_lineno(), first.column - 1)))
   last_lineno = last.get_lineno()
