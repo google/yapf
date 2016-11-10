@@ -24,7 +24,7 @@ if PY3:
 
   import codecs
 
-  def open_with_encoding(filename, mode, encoding, newline=''):  # pylint: disable=unused-argument
+  def open_with_encoding(filename, mode, encoding, newline=''):
     return codecs.open(filename, mode=mode, encoding=encoding)
 
   import functools

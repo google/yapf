@@ -78,6 +78,7 @@ def GetCommandLineFiles(command_line_file_list, recursive, exclude):
 
 def WriteReformattedCode(filename,
                          reformatted_code,
+                         newline=os.linesep,
                          in_place=False,
                          encoding=''):
   """Emit the reformatted code.
@@ -88,12 +89,13 @@ def WriteReformattedCode(filename,
   Arguments:
     filename: (unicode) The name of the unformatted file.
     reformatted_code: (unicode) The reformatted code.
+    newline: (unicode) The original line ending of the source file.
     in_place: (bool) If True, then write the reformatted code to the file.
     encoding: (unicode) The encoding of the file.
   """
   if in_place:
     with py3compat.open_with_encoding(
-        filename, mode='w', encoding=encoding) as fd:
+        filename, mode='w', encoding=encoding, newline=newline) as fd:
       fd.write(reformatted_code)
   else:
     py3compat.EncodeAndWriteToStdout(reformatted_code)
