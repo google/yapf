@@ -8,6 +8,8 @@
 - A non-Node dictionary value may have a comment before it. In those cases, we
   want to avoid encompassing only the comment in pseudo parens. So we include
   the actual value as well.
+- Adjust calculation so that pseudo-parentheses don't count towards the total
+  line length.
 
 ## [0.13.2] 2016-10-22
 ### Fixed

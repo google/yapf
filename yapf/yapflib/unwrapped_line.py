@@ -72,8 +72,8 @@ class UnwrappedLine(object):
           _SpaceRequiredBetween(prev_token, token)):
         token.spaces_required_before = 1
 
-      token.total_length = (
-          prev_length + len(token.value) + token.spaces_required_before)
+      tok_len = len(token.value) if not token.is_pseudo_paren else 0
+      token.total_length = prev_length + tok_len + token.spaces_required_before
 
       # The split penalty has to be computed before {must|can}_break_before,
       # because these may use it for their decision.

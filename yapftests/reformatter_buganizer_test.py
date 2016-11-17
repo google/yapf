@@ -675,8 +675,8 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
         def main(unused_argv):
           if True:
             aaaaaaaa = {
-                'xxx':
-                    '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
+                'xxx': '%s/cccccc/ddddddddddddddddddd.jar' %
+                       (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)

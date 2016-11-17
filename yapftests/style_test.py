@@ -60,20 +60,29 @@ def _LooksLikeFacebookStyle(cfg):
 
 class PredefinedStylesByNameTest(unittest.TestCase):
 
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
+
   def testDefault(self):
     # default is PEP8
     cfg = style.CreateStyleFromConfig(None)
     self.assertTrue(_LooksLikePEP8Style(cfg))
+
+  def testPEP8ByName(self):
+    for pep8_name in ('PEP8', 'pep8', 'Pep8'):
+      cfg = style.CreateStyleFromConfig(pep8_name)
+      self.assertTrue(_LooksLikePEP8Style(cfg))
 
   def testGoogleByName(self):
     for google_name in ('google', 'Google', 'GOOGLE'):
       cfg = style.CreateStyleFromConfig(google_name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
 
-  def testPEP8ByName(self):
-    for pep8_name in ('PEP8', 'pep8', 'Pep8'):
-      cfg = style.CreateStyleFromConfig(pep8_name)
-      self.assertTrue(_LooksLikePEP8Style(cfg))
+  def testChromiumByName(self):
+    for chromium_name in ('chromium', 'Chromium', 'CHROMIUM'):
+      cfg = style.CreateStyleFromConfig(chromium_name)
+      self.assertTrue(_LooksLikeChromiumStyle(cfg))
 
   def testFacebookByName(self):
     for fb_name in ('facebook', 'FACEBOOK', 'Facebook'):
@@ -94,6 +103,7 @@ class StyleFromFileTest(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.test_tmpdir = tempfile.mkdtemp()
+    style.SetGlobalStyle(style.CreatePEP8Style())
 
   @classmethod
   def tearDownClass(cls):
@@ -205,6 +215,10 @@ class StyleFromFileTest(unittest.TestCase):
 
 
 class StyleFromCommandLine(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefaultBasedOnStyle(self):
     cfg = style.CreateStyleFromConfig(

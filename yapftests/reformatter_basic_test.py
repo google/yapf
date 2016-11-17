@@ -1907,12 +1907,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                     'title': title
                 },
             ]
-            breadcrumbs = [{
-                'name': 'Admin',
-                'url': url_for(".home")
-            }, {
-                'title': title
-            }]
+            breadcrumbs = [{'name': 'Admin', 'url': url_for(".home")}, {'title': title}]
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1926,6 +1921,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               {'HTTP_' + xsrf._XSRF_TOKEN_HEADER.replace('-', '_'): 'atoken'})
           def _():
             pass
+
+
+        AAAAAAAAAAAAAAAAAAAAAAAA = {
+            Environment.XXXXXXXXXX: 'some text more text even more tex',
+            Environment.YYYYYYY: 'some text more text even more text yet ag',
+            Environment.ZZZZZZZZZZZ: 'some text more text even mor etext yet again tex',
+        }
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

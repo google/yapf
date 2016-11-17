@@ -547,9 +547,12 @@ class FormatDecisionState(object):
         current = current.matching_bracket
       else:
         current = current.next_token
+    # At this point, current is the closing bracket. Go back one to get the the
+    # end of the dictionary entry.
+    current = current.previous_token
     length = current.total_length - entry_start.total_length
     length += len(entry_start.value)
-    return length + self.stack[-2].indent + 2 < self.column_limit
+    return length + self.stack[-2].indent <= self.column_limit
 
 
 def _IsFunctionCallWithArguments(token):
