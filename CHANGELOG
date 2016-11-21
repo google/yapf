@@ -10,6 +10,8 @@
   the actual value as well.
 - Adjust calculation so that pseudo-parentheses don't count towards the total
   line length.
+- Don't count a dictionary entry as not fitting on a single line in a
+  dictionary.
 
 ## [0.13.2] 2016-10-22
 ### Fixed

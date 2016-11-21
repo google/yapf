@@ -28,6 +28,36 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB32714745(self):
+    code = textwrap.dedent("""\
+        class _():
+
+          def _BlankDefinition():
+            '''Return a generic blank dictionary for a new field.'''
+            return {
+                'type': '',
+                'validation': '',
+                'name': 'fieldname',
+                'label': 'Field Label',
+                'help': '',
+                'initial': '',
+                'required': False,
+                'required_msg': 'Required',
+                'invalid_msg': 'Please enter a valid value',
+                'options': {
+                    'regex': '',
+                    'widget_attr': '',
+                    'choices_checked': '',
+                    'choices_count': '',
+                    'choices': {}
+                },
+                'isnew': True,
+                'dirty': False,
+            }
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB32737279(self):
     unformatted_code = textwrap.dedent("""\
         here_is_a_dict = {

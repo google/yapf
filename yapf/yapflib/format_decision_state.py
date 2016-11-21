@@ -536,6 +536,7 @@ class FormatDecisionState(object):
     closing = opening.matching_bracket
     entry_start = opening.next_token
     current = opening.next_token.next_token
+
     while current and current != closing:
       if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
         length = current.previous_token.total_length - entry_start.total_length
@@ -544,9 +545,25 @@ class FormatDecisionState(object):
           return False
         entry_start = current
       if current.OpensScope():
-        current = current.matching_bracket
+        if ((current.value == '{' or
+             (current.is_pseudo_paren and current.next_token.value == '{')) and
+            format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
+          # A dictionary entry that cannot fit on a single line shouldn't matter
+          # to this calcuation. If it can't fit on a single line, then the
+          # opening should be on the same line as the key and the rest on
+          # newlines after it. But the other entries should be on single lines
+          # if possible.
+          while current:
+            if current == closing:
+              return True
+            if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
+              break
+            current = current.next_token
+        else:
+          current = current.matching_bracket
       else:
         current = current.next_token
+
     # At this point, current is the closing bracket. Go back one to get the the
     # end of the dictionary entry.
     current = current.previous_token
