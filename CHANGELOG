@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.14.0] UNRELEASED
+## [0.14.0] 2016-11-21
 #### Added
 - formatting can be run in parallel using the "-p" / "--parallel" flags.
 ### Fixed
