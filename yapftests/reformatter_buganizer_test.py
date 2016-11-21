@@ -1,4 +1,4 @@
-# Copyright 2015-2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def testB32737279(self):
     unformatted_code = textwrap.dedent("""\
         here_is_a_dict = {
-            'key': 
+            'key':
             # Comment.
             'value'
         }

@@ -177,7 +177,8 @@ def SpliceComments(tree):
                   comment_lines = comment_prefix.splitlines()
                   value = comment_lines[0].lstrip()
                   if value.rstrip('\n'):
-                    comment_column = prev_leaf[0].column + len(prev_leaf[0].value)
+                    comment_column = prev_leaf[0].column
+                    comment_column += len(prev_leaf[0].value)
                     comment_column += (
                         len(comment_lines[0]) - len(comment_lines[0].lstrip()))
                     comment_leaf = pytree.Leaf(
