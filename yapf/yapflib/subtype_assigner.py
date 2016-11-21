@@ -131,9 +131,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # comp_op ::= '<'|'>'|'=='|'>='|'<='|'<>'|'!='|'in'|'not in'|'is'|'is not'
     for child in node.children:
       self.Visit(child)
-      if (isinstance(child, pytree.Leaf) and child.value in {
-          '<', '>', '==', '>=', '<=', '<>', '!=', 'in', 'is'
-      }):
+      if (isinstance(child, pytree.Leaf) and
+          child.value in {'<', '>', '==', '>=', '<=', '<>', '!=', 'in', 'is'}):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
       elif pytree_utils.NodeName(child) == 'comp_op':
         for grandchild in child.children:

@@ -508,7 +508,7 @@ class FormatDecisionState(object):
     if is_multiline_string:
       # This is a multiline string. Only look at the first line.
       self.column += len(current.value.split('\n')[0])
-    elif not current.is_pseudo_paren or current.value == '(':
+    elif not current.is_pseudo_paren:
       self.column += len(current.value)
 
     self.next_token = self.next_token.next_token
@@ -528,8 +528,10 @@ class FormatDecisionState(object):
 
   def _FitsOnLine(self, start, end):
     """Determines if line between start and end can fit on the current line."""
-    length = end.total_length - start.total_length + len(start.value)
-    return length + self.column < self.column_limit
+    length = end.total_length - start.total_length
+    if not start.is_pseudo_paren:
+      length += len(start.value)
+    return length + self.column <= self.column_limit
 
   def _EachDictEntryFitsOnOneLine(self, opening):
     """Determine if each dict elems can fit on one line."""

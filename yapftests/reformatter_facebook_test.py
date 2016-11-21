@@ -317,9 +317,7 @@ v, w, x, y, z
             def _():
                 effect_line = FrontInput(
                     effect_line_offset, line_content,
-                    LineSource(
-                        'localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                    )
+                    LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
                 )
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)

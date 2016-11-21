@@ -194,7 +194,10 @@ def _SpaceRequiredBetween(left, right):
     # Space between keyword... tokens and pseudo parens.
     return True
   if left.is_pseudo_paren or right.is_pseudo_paren:
-    # The pseudo-parens shouldn't affect spacing.
+    # There should be a space after the ':' in a dictionary.
+    if left.OpensScope():
+      return True
+    # The closing pseudo-paren shouldn't affect spacing.
     return False
   if left.is_continuation or right.is_continuation:
     # The continuation node's value has all of the spaces it needs.

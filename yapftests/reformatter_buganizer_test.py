@@ -28,6 +28,20 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB33047408(self):
+    code = textwrap.dedent("""\
+        def _():
+          for sort in (sorts or []):
+            request['sorts'].append({
+                'field': {
+                    'user_field': sort
+                },
+                'order': 'ASCENDING'
+            })
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB32714745(self):
     code = textwrap.dedent("""\
         class _():
@@ -701,7 +715,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB20849933(self):
-    code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
         def main(unused_argv):
           if True:
             aaaaaaaa = {
@@ -709,8 +723,16 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                        (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    expected_formatted_code = textwrap.dedent("""\
+        def main(unused_argv):
+          if True:
+            aaaaaaaa = {
+                'xxx':
+                    '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
+            }
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB20813997(self):
     code = textwrap.dedent("""\
