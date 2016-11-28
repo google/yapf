@@ -201,8 +201,8 @@ def ReadFile(filename, logger=None):
     raise
 
 
-DISABLE_PATTERN = r'^#+ +yapf: *disable$'
-ENABLE_PATTERN = r'^#+ +yapf: *enable$'
+DISABLE_PATTERN = r'^#.*\byapf:\s*disable\b'
+ENABLE_PATTERN = r'^#.*\byapf:\s*enable\b'
 
 
 def _MarkLinesToFormat(uwlines, lines):

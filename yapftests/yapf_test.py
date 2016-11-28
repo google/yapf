@@ -308,6 +308,25 @@ class FormatFileTest(unittest.TestCase):
     formatted_code, _, _ = yapf_api.FormatFile(f, style_config='chromium')
     self.assertCodeEqual(code, formatted_code)
 
+  def testDisabledWithPrecedingText(self):
+    code = textwrap.dedent("""\
+        # TODO(fix formatting): yapf: disable
+
+        A = [
+            {
+                "aaaaaaaaaaaaaaaaaaa": '''
+        bbbbbbbbbbb: "ccccccccccc"
+        dddddddddddddd: 1
+        eeeeeeee: 0
+        ffffffffff: "ggggggg"
+        ''',
+            },
+        ]
+        """)
+    f = self._MakeTempFileWithContents('testfile1.py', code)
+    formatted_code, _, _ = yapf_api.FormatFile(f, style_config='chromium')
+    self.assertCodeEqual(code, formatted_code)
+
   def testCRLFLineEnding(self):
     code = 'class _():\r\n  pass\r\n'
     f = self._MakeTempFileWithContents('testfile1.py', code)

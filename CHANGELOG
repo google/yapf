@@ -9,6 +9,7 @@
   calculations and implicitly concatenated strings, which are already placed on
   separate lines.
 - Allow text before a "pylint" comment.
+- Also allow text before a "yapf: (disable|enable)" comment.
 
 ## [0.14.0] 2016-11-21
 #### Added
