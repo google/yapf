@@ -28,6 +28,67 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB32931780(self):
+    unformatted_code = textwrap.dedent("""\
+        environments = {
+            'prod': {
+                # this is a comment before the first entry.
+                'entry one':
+                    'an entry.',
+                # this is the comment before the second entry.
+                'entry number 2.':
+                    'something',
+                # this is the comment before the third entry and it's a doozy. So big!
+                'who':
+                    'allin',
+                # This is an entry that has a dictionary in it. It's ugly
+                'something': {
+                    'page': ['this-is-a-page@xxxxxxxx.com', 'something-for-eml@xxxxxx.com'],
+                    'bug': ['bugs-go-here5300@xxxxxx.com'],
+                    'email': ['sometypeof-email@xxxxxx.com'],
+                },
+                # a short comment
+                'yolo!!!!!':
+                    'another-email-address@xxxxxx.com',
+                # this entry has an implicit string concatenation
+                'implicit':
+                    'https://this-is-very-long.url-addr.com/'
+                    '?something=something%20some%20more%20stuff..',
+                # A more normal entry.
+                '.....':
+                    'this is an entry',
+            }
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        environments = {
+            'prod': {
+                # this is a comment before the first entry.
+                'entry one': 'an entry.',
+                # this is the comment before the second entry.
+                'entry number 2.': 'something',
+                # this is the comment before the third entry and it's a doozy. So big!
+                'who': 'allin',
+                # This is an entry that has a dictionary in it. It's ugly
+                'something': {
+                    'page':
+                        ['this-is-a-page@xxxxxxxx.com', 'something-for-eml@xxxxxx.com'],
+                    'bug': ['bugs-go-here5300@xxxxxx.com'],
+                    'email': ['sometypeof-email@xxxxxx.com'],
+                },
+                # a short comment
+                'yolo!!!!!': 'another-email-address@xxxxxx.com',
+                # this entry has an implicit string concatenation
+                'implicit': 'https://this-is-very-long.url-addr.com/'
+                            '?something=something%20some%20more%20stuff..',
+                # A more normal entry.
+                '.....': 'this is an entry',
+            }
+        }
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB33047408(self):
     code = textwrap.dedent("""\
         def _():
@@ -748,11 +809,9 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
         foo = {
             'aaaa': {
                 # A comment for no particular reason.
-                'xxxxxxxx':
-                    'bbbbbbbbb',
-                'yyyyyyyyyyyyyyyyyy':
-                    'cccccccccccccccccccccccccccccc'
-                    'dddddddddddddddddddddddddddddddddddddddddd',
+                'xxxxxxxx': 'bbbbbbbbb',
+                'yyyyyyyyyyyyyyyyyy': 'cccccccccccccccccccccccccccccc'
+                                      'dddddddddddddddddddddddddddddddddddddddddd',
             }
         }
         """)

@@ -535,30 +535,51 @@ class FormatDecisionState(object):
 
   def _EachDictEntryFitsOnOneLine(self, opening):
     """Determine if each dict elems can fit on one line."""
+
+    def PreviousNonCommentToken(tok):
+      tok = tok.previous_token
+      while tok.is_comment:
+        tok = tok.previous_token
+      return tok
+
+    def ImplicitStringConcatenation(tok):
+      num_strings = 0
+      if tok.is_pseudo_paren:
+        tok = tok.next_token
+      while tok.is_string:
+        num_strings += 1
+        tok = tok.next_token
+      return num_strings > 1
+
     closing = opening.matching_bracket
     entry_start = opening.next_token
     current = opening.next_token.next_token
 
     while current and current != closing:
       if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
-        length = current.previous_token.total_length - entry_start.total_length
+        prev = PreviousNonCommentToken(current)
+        length = prev.total_length - entry_start.total_length
         length += len(entry_start.value)
         if length + self.stack[-2].indent >= self.column_limit:
           return False
         entry_start = current
       if current.OpensScope():
         if ((current.value == '{' or
-             (current.is_pseudo_paren and current.next_token.value == '{')) and
-            format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
+             (current.is_pseudo_paren and current.next_token.value == '{') and
+             format_token.Subtype.DICTIONARY_VALUE in current.subtypes) or
+            ImplicitStringConcatenation(current)):
           # A dictionary entry that cannot fit on a single line shouldn't matter
           # to this calcuation. If it can't fit on a single line, then the
           # opening should be on the same line as the key and the rest on
           # newlines after it. But the other entries should be on single lines
           # if possible.
+          if current.matching_bracket:
+            current = current.matching_bracket
           while current:
             if current == closing:
               return True
             if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
+              entry_start = current
               break
             current = current.next_token
         else:
@@ -568,7 +589,7 @@ class FormatDecisionState(object):
 
     # At this point, current is the closing bracket. Go back one to get the the
     # end of the dictionary entry.
-    current = current.previous_token
+    current = PreviousNonCommentToken(current)
     length = current.total_length - entry_start.total_length
     length += len(entry_start.value)
     return length + self.stack[-2].indent <= self.column_limit
