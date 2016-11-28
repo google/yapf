@@ -8,6 +8,7 @@
   are skipping dictionary entries. However, we need to ignore comments in our
   calculations and implicitly concatenated strings, which are already placed on
   separate lines.
+- Allow text before a "pylint" comment.
 
 ## [0.14.0] 2016-11-21
 #### Added

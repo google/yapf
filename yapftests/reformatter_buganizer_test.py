@@ -190,7 +190,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         class _():
 
-          def aaaaa(self, bbbbb, cccccccccccccc=None):  # pylint: disable=unused-argument
+          def aaaaa(self, bbbbb, cccccccccccccc=None):  # TODO(who): pylint: disable=unused-argument
             return 1
 
           def xxxxx(self, yyyyy, zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
@@ -199,7 +199,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
     expected_formatted_code = textwrap.dedent("""\
         class _():
 
-          def aaaaa(self, bbbbb, cccccccccccccc=None):  # pylint: disable=unused-argument
+          def aaaaa(self, bbbbb, cccccccccccccc=None):  # TODO(who): pylint: disable=unused-argument
             return 1
 
           def xxxxx(
