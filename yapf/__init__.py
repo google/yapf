@@ -219,8 +219,8 @@ def FormatFiles(filenames,
   """
   changed = False
   if parallel:
-    import multiprocessing
-    import concurrent.futures
+    import multiprocessing  # pylint: disable=g-import-not-at-top
+    import concurrent.futures  # pylint: disable=g-import-not-at-top
     workers = min(multiprocessing.cpu_count(), len(filenames))
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [

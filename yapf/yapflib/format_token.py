@@ -277,4 +277,5 @@ class FormatToken(object):
 
   @property
   def is_pylint_comment(self):
-    return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=', self.value)
+    return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=',
+                                        self.value)
