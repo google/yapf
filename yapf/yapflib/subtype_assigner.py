@@ -75,13 +75,15 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         comp_for = True
         _AppendFirstLeafTokenSubtype(child,
                                      format_token.Subtype.DICT_SET_GENERATOR)
-      elif pytree_utils.NodeName(child) == 'COLON':
+      elif pytree_utils.NodeName(child) in ('COLON', 'DOUBLESTAR'):
         dict_maker = True
 
     if not comp_for and dict_maker:
       last_was_colon = False
       for child in node.children:
         if dict_maker:
+          if pytree_utils.NodeName(child) == "DOUBLESTAR":
+            _AppendFirstLeafTokenSubtype(child, format_token.Subtype.KWARGS_STAR_STAR)
           if last_was_colon:
             if style.Get('INDENT_DICTIONARY_VALUE'):
               _InsertPseudoParentheses(child)
