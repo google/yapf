@@ -82,7 +82,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       last_was_colon = False
       for child in node.children:
         if dict_maker:
-          if pytree_utils.NodeName(child) == "DOUBLESTAR":
+          if pytree_utils.NodeName(child) == 'DOUBLESTAR':
             _AppendFirstLeafTokenSubtype(child, format_token.Subtype.KWARGS_STAR_STAR)
           if last_was_colon:
             if style.Get('INDENT_DICTIONARY_VALUE'):
