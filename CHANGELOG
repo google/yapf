@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.14.1] UNRELEASED
+## [0.15.0] 2017-01-12
+### Added
+- Keep type annotations intact as much as possible. Don't try to split the over
+  mutliple lines.
 ### Fixed
 - When determining if each element in a dictionary can fit on a single line, we
   are skipping dictionary entries. However, we need to ignore comments in our
@@ -12,7 +15,7 @@
 - Also allow text before a "yapf: (disable|enable)" comment.
 
 ## [0.14.0] 2016-11-21
-#### Added
+### Added
 - formatting can be run in parallel using the "-p" / "--parallel" flags.
 ### Fixed
 - "not in" and "is not" should be subtyped as binary operators.

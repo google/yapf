@@ -82,13 +82,22 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     while pytree_utils.NodeName(node.children[colon_idx]) == 'simple_stmt':
       colon_idx += 1
     self._SetUnbreakable(node.children[colon_idx])
+    arrow_idx = -1
     while colon_idx < len(node.children):
-      if (isinstance(node.children[colon_idx], pytree.Leaf) and
-          node.children[colon_idx].value == ':'):
-        break
+      if isinstance(node.children[colon_idx], pytree.Leaf):
+        if node.children[colon_idx].value == ':':
+          break
+        if node.children[colon_idx].value == '->':
+          arrow_idx = colon_idx
       colon_idx += 1
     self._SetUnbreakable(node.children[colon_idx])
     self.DefaultNodeVisit(node)
+    if arrow_idx > 0:
+      pytree_utils.SetNodeAnnotation(
+          _LastChildNode(node.children[arrow_idx - 1]),
+          pytree_utils.Annotation.SPLIT_PENALTY, 0)
+      self._SetUnbreakable(node.children[arrow_idx])
+      self._SetStronglyConnected(node.children[arrow_idx + 1])
 
   def Visit_lambdef(self, node):  # pylint: disable=invalid-name
     # lambdef ::= 'lambda' [varargslist] ':' test
@@ -317,7 +326,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       self._SetUnbreakable(node.children[i])
 
   def _SetExpressionPenalty(self, node, penalty):
-    """Set an ARITHMETIC_EXPRESSION penalty annotation children nodes."""
+    """Set a penalty annotation on children nodes."""
 
     def RecArithmeticExpression(node, first_child_leaf):
       if node is first_child_leaf:

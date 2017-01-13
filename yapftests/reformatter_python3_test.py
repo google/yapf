@@ -179,6 +179,24 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testKeepTypesIntact(self):
+    if sys.version_info[1] < 5:
+      return
+    unformatted_code = textwrap.dedent("""\
+        def _ReduceAbstractContainers(
+            self, *args: Optional[automation_converter.PyiCollectionAbc]) -> List[
+                automation_converter.PyiCollectionAbc]:
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _ReduceAbstractContainers(
+                self, *args: Optional[automation_converter.PyiCollectionAbc]
+        ) -> List[automation_converter.PyiCollectionAbc]:
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
