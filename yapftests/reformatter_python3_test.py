@@ -151,6 +151,26 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testTypeHint(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo(x: int=42):
+            pass
+
+
+        def foo2(x: 'int' =42):
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo(x: int=42):
+            pass
+
+
+        def foo2(x: 'int'=42):
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testAsyncWithPrecedingComment(self):
     if sys.version_info[1] < 5:
       return

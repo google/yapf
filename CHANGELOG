@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.15.1] UNRELEASED
+### Fixed
+- Don't insert a space between a type hint and the '=' sign.
+
 ## [0.15.0] 2017-01-12
 ### Added
 - Keep type annotations intact as much as possible. Don't try to split the over

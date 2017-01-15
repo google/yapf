@@ -230,10 +230,17 @@ def _SpaceRequiredBetween(left, right):
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
     return True
-  if left.is_string and rval not in '[)]}.':
-    # A string followed by something other than a subscript, closing bracket,
-    # or dot should have a space after it.
-    return True
+  if left.is_string:
+    if (rval == '=' and
+        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
+        right.subtypes):
+      # If there is a type hint, then we don't want to add a space between the
+      # equal sign and the hint.
+      return False
+    if rval not in '[)]}.':
+      # A string followed by something other than a subscript, closing bracket,
+      # or dot should have a space after it.
+      return True
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary opertor and the unary operator.
     return True
