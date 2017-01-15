@@ -5,6 +5,8 @@
 ## [0.15.1] UNRELEASED
 ### Fixed
 - Don't insert a space between a type hint and the '=' sign.
+- The '@' operator can be used in Python 3 for matrix multiplication. Give the
+  '@' in the decorator a DECORATOR subtype to distinguish it.
 
 ## [0.15.0] 2017-01-12
 ### Added

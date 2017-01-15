@@ -274,7 +274,7 @@ def _SpaceRequiredBetween(left, right):
       format_token.Subtype.KWARGS_STAR_STAR in left.subtypes):
     # Don't add a space after a vararg's star or a keyword's star-star.
     return False
-  if lval == '@':
+  if (lval == '@' and format_token.Subtype.DECORATOR in left.subtypes):
     # Decorators shouldn't be separated from the 'at' sign.
     return False
   if lval == '.' or rval == '.':

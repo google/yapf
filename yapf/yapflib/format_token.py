@@ -52,6 +52,7 @@ class Subtype(object):
   COMP_FOR = 14
   COMP_IF = 15
   FUNC_DEF = 16
+  DECORATOR = 17
 
 
 class FormatToken(object):

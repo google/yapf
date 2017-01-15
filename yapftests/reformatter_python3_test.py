@@ -171,6 +171,16 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testMatrixMultiplication(self):
+    unformatted_code = textwrap.dedent("""\
+        a=b@c
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a = b @ c
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testAsyncWithPrecedingComment(self):
     if sys.version_info[1] < 5:
       return

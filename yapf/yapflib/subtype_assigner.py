@@ -243,6 +243,14 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     self._ProcessArgLists(node)
     _SetDefaultOrNamedAssignArgListSubtype(node)
 
+  def Visit_decorator(self, node):  # pylint: disable=invalid-name
+    # decorator ::=
+    #     '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
+    for child in node.children:
+      if isinstance(child, pytree.Leaf) and child.value == '@':
+        _AppendTokenSubtype(child, subtype=format_token.Subtype.DECORATOR)
+      self.Visit(child)
+
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
     # funcdef ::=
     #     'def' NAME parameters ['->' test] ':' suite
