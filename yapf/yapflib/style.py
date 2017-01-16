@@ -229,7 +229,6 @@ def CreateChromiumStyle():
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
-  style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 0
   return style
 
 
@@ -362,8 +361,8 @@ def CreateStyleFromConfig(style_config):
 def _CreateConfigParserFromConfigString(config_string):
   """Given a config string from the command line, return a config parser."""
   if config_string[0] != '{' or config_string[-1] != '}':
-    raise StyleConfigError("Invalid style dict syntax: '{}'.".format(
-        config_string))
+    raise StyleConfigError(
+        "Invalid style dict syntax: '{}'.".format(config_string))
   config = py3compat.ConfigParser()
   config.add_section('style')
   for key, value in re.findall(r'([a-zA-Z0-9_]+)\s*[:=]\s*([a-zA-Z0-9_]+)',
@@ -376,23 +375,23 @@ def _CreateConfigParserFromConfigFile(config_filename):
   """Read the file and return a ConfigParser object."""
   if not os.path.exists(config_filename):
     # Provide a more meaningful error here.
-    raise StyleConfigError('"{0}" is not a valid style or file path'.format(
-        config_filename))
+    raise StyleConfigError(
+        '"{0}" is not a valid style or file path'.format(config_filename))
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     config.read_file(style_file)
     if config_filename.endswith(SETUP_CONFIG):
       if not config.has_section('yapf'):
-        raise StyleConfigError('Unable to find section [yapf] in {0}'.format(
-            config_filename))
+        raise StyleConfigError(
+            'Unable to find section [yapf] in {0}'.format(config_filename))
     elif config_filename.endswith(LOCAL_STYLE):
       if not config.has_section('style'):
-        raise StyleConfigError('Unable to find section [style] in {0}'.format(
-            config_filename))
+        raise StyleConfigError(
+            'Unable to find section [style] in {0}'.format(config_filename))
     else:
       if not config.has_section('style'):
-        raise StyleConfigError('Unable to find section [style] in {0}'.format(
-            config_filename))
+        raise StyleConfigError(
+            'Unable to find section [style] in {0}'.format(config_filename))
     return config
 
 
@@ -431,8 +430,8 @@ def _CreateStyleFromConfigParser(config):
     try:
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     except ValueError:
-      raise StyleConfigError("'{}' is not a valid setting for {}.".format(
-          value, option))
+      raise StyleConfigError(
+          "'{}' is not a valid setting for {}.".format(value, option))
   return base_style
 
 

@@ -7,6 +7,11 @@
 - Don't insert a space between a type hint and the '=' sign.
 - The '@' operator can be used in Python 3 for matrix multiplication. Give the
   '@' in the decorator a DECORATOR subtype to distinguish it.
+- Encourage the formatter to split at the beginning of an argument list instead
+  of in the middle. Especially if the middle is an empty parameter list. This
+  adjusts the affinity of binary and comparison operators. In particular, the
+  "not in" and other such operators don't want to have a split after it (or
+  before it) if at all possible.
 
 ## [0.15.0] 2017-01-12
 ### Added

@@ -95,9 +95,9 @@ class FormatDecisionState(object):
             self.column == other.column and
             self.paren_level == other.paren_level and
             self.start_of_line_level == other.start_of_line_level and
-            self.lowest_level_on_line == other.lowest_level_on_line and
-            (self.ignore_stack_for_comparison or
-             other.ignore_stack_for_comparison or self.stack == other.stack))
+            self.lowest_level_on_line == other.lowest_level_on_line and (
+                self.ignore_stack_for_comparison or
+                other.ignore_stack_for_comparison or self.stack == other.stack))
 
   def __ne__(self, other):
     return not self == other
@@ -406,9 +406,9 @@ class FormatDecisionState(object):
     self.start_of_line_level = self.paren_level
     self.lowest_level_on_line = self.paren_level
 
-    if (previous.OpensScope() or (previous.is_comment and
-                                  previous.previous_token is not None and
-                                  previous.previous_token.OpensScope())):
+    if (previous.OpensScope() or
+        (previous.is_comment and previous.previous_token is not None and
+         previous.previous_token.OpensScope())):
       self.stack[-1].closing_scope_indent = max(
           0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       self.stack[-1].split_before_closing_bracket = True
@@ -447,9 +447,9 @@ class FormatDecisionState(object):
       return top_of_stack.indent if self.paren_level else self.first_indent
 
     if current.ClosesScope():
-      if (previous.OpensScope() or (previous.is_comment and
-                                    previous.previous_token is not None and
-                                    previous.previous_token.OpensScope())):
+      if (previous.OpensScope() or
+          (previous.is_comment and previous.previous_token is not None and
+           previous.previous_token.OpensScope())):
         return max(0,
                    top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent

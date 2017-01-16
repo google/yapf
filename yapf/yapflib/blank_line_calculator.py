@@ -140,8 +140,8 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
       if not self.last_was_decorator:
         self._SetNumNewlines(node.children[index].children[0], _ONE_BLANK_LINE)
       index += 1
-    if (index and node.children[index].lineno - 1 ==
-        node.children[index - 1].children[0].lineno):
+    if (index and node.children[index].lineno -
+        1 == node.children[index - 1].children[0].lineno):
       self._SetNumNewlines(node.children[index], _NO_BLANK_LINES)
     else:
       if self.last_comment_lineno + 1 == node.children[index].lineno:

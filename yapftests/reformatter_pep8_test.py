@@ -169,8 +169,8 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         def f():
             def g():
                 while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                       xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
-                       'bbbbbbb'):
+                       xxxxxxxxxxxxxxxxxxxx(
+                           yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
                     pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)

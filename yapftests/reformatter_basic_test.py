@@ -1539,13 +1539,18 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testDontSplitKeywordValueArguments(self):
-    code = textwrap.dedent("""\
-      def mark_game_scored(gid):
-        _connect.execute(_games.update().where(_games.c.gid == gid).values(
-            scored=True))
-      """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    unformatted_code = textwrap.dedent("""\
+        def mark_game_scored(gid):
+          _connect.execute(_games.update().where(_games.c.gid == gid).values(
+              scored=True))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def mark_game_scored(gid):
+          _connect.execute(
+              _games.update().where(_games.c.gid == gid).values(scored=True))
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testDontAddBlankLineAfterMultilineString(self):
     code = textwrap.dedent("""\

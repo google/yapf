@@ -231,8 +231,7 @@ def _SpaceRequiredBetween(left, right):
     # Don't merge two keywords/identifiers.
     return True
   if left.is_string:
-    if (rval == '=' and
-        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
+    if (rval == '=' and format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         right.subtypes):
       # If there is a type hint, then we don't want to add a space between the
       # equal sign and the hint.
