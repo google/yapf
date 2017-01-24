@@ -28,6 +28,17 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB34682902(self):
+    unformatted_code = textwrap.dedent("""\
+        logging.info("Mean angular velocity norm: %.3f", np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        logging.info("Mean angular velocity norm: %.3f",
+                     np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB33842726(self):
     unformatted_code = textwrap.dedent("""\
         class _():
@@ -407,12 +418,9 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
     expected_formatted_code = textwrap.dedent("""\
         if True:
           query.fetch_page.assert_has_calls([
-              mock.call(
-                  100, start_cursor=None),
-              mock.call(
-                  100, start_cursor=cursor_1),
-              mock.call(
-                  100, start_cursor=cursor_2),
+              mock.call(100, start_cursor=None),
+              mock.call(100, start_cursor=cursor_1),
+              mock.call(100, start_cursor=cursor_2),
           ])
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
@@ -696,13 +704,10 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                        (1 - m.ffffffffffffffff(llllllllllllllllllllll * 1000000, m.vvv))
                        * m.ddddddddddddddddd(m.vvv)), m.fffff(
                            m.rrr('mmmmmmmmmmmmmmmm', 'sssssssssssssssssssssss'),
-                           dict(
-                               ffffffffffffffff,
-                               **{
-                                   'mmmmmm:ssssss':
-                                       m.rrrrrrrrrrr(
-                                           '|'.join(iiiiiiiiiiiiii), iiiiii=True)
-                               }))
+                           dict(ffffffffffffffff, **{
+                               'mmmmmm:ssssss':
+                                   m.rrrrrrrrrrr('|'.join(iiiiiiiiiiiiii), iiiiii=True)
+                           }))
                    | m.wwwwww(m.rrrr('1h'))
                    | m.ggggggg(bbbbbbbbbbbbbbb))
                   | m.jjjj()
@@ -965,8 +970,9 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
 
   def testB19194420(self):
     code = textwrap.dedent("""\
-        method.Set('long argument goes here that causes the line to break',
-                   lambda arg2=0.5: arg2)
+        method.Set(
+            'long argument goes here that causes the line to break',
+            lambda arg2=0.5: arg2)
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

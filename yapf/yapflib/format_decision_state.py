@@ -192,11 +192,25 @@ class FormatDecisionState(object):
           #  a(
           #      b=1,
           #      c=2)
-          indent_amt = self.stack[-1].indent * style.Get('INDENT_WIDTH')
-          pptoken = previous.previous_token
-          opening_column = len(pptoken.value) if pptoken else 0 - indent_amt - 1
           if previous.value == '(':
-            return opening_column >= style.Get('CONTINUATION_INDENT_WIDTH')
+            if (self._FitsOnLine(previous, previous.matching_bracket) and
+                unwrapped_line.IsSurroundedByBrackets(previous)):
+              # An argument to a function is a function call with named
+              # assigns.
+              return False
+
+            func_start = previous.previous_token
+            while func_start and func_start.previous_token:
+              prev = func_start.previous_token
+              if not prev.is_name and prev.value != '.':
+                break
+              func_start = prev
+
+            if func_start:
+              func_name_len = previous.total_length - func_start.total_length
+              func_name_len += len(func_start.value)
+              return func_name_len > style.Get('CONTINUATION_INDENT_WIDTH')
+
           opening = _GetOpeningBracket(current)
           if opening:
             arglist_length = (opening.matching_bracket.total_length -

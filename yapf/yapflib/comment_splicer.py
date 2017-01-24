@@ -78,8 +78,7 @@ def SpliceComments(tree):
                     comment_prefix,
                     comment_lineno,
                     comment_column,
-                    standalone=False),
-                prev_leaf[0])
+                    standalone=False), prev_leaf[0])
           elif child.type == token.DEDENT:
             # Comment prefixes on DEDENT nodes also deserve special treatment,
             # because their final placement depends on their prefix.
@@ -124,8 +123,7 @@ def SpliceComments(tree):
                       '\n'.join(before) + '\n',
                       comment_lineno,
                       comment_column,
-                      standalone=True),
-                  ancestor_at_indent)
+                      standalone=True), ancestor_at_indent)
               if after:
                 after_column = len(after[0]) - len(after[0].lstrip())
                 comment_column -= comment_column - after_column
@@ -134,16 +132,14 @@ def SpliceComments(tree):
                         '\n'.join(after) + '\n',
                         after_lineno,
                         comment_column,
-                        standalone=True),
-                    _FindNextAncestor(ancestor_at_indent))
+                        standalone=True), _FindNextAncestor(ancestor_at_indent))
             else:
               pytree_utils.InsertNodesAfter(
                   _CreateCommentsFromPrefix(
                       comment_prefix,
                       comment_lineno,
                       comment_column,
-                      standalone=True),
-                  ancestor_at_indent)
+                      standalone=True), ancestor_at_indent)
           else:
             # Otherwise there are two cases.
             #

@@ -51,9 +51,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
             pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(
-        expected_formatted_code, reformatter.Reformat(
-            uwlines, verify=False))
+    self.assertCodeEqual(expected_formatted_code,
+                         reformatter.Reformat(uwlines, verify=False))
 
   def testVerifyFutureImport(self):
     unformatted_code = textwrap.dedent("""\
@@ -81,9 +80,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
             call_my_function(print)
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(
-        expected_formatted_code, reformatter.Reformat(
-            uwlines, verify=False))
+    self.assertCodeEqual(expected_formatted_code,
+                         reformatter.Reformat(uwlines, verify=False))
 
   def testContinuationLineShouldBeDistinguished(self):
     unformatted_code = textwrap.dedent("""\
@@ -102,9 +100,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
                     pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(
-        expected_formatted_code, reformatter.Reformat(
-            uwlines, verify=False))
+    self.assertCodeEqual(expected_formatted_code,
+                         reformatter.Reformat(uwlines, verify=False))
 
 
 if __name__ == '__main__':

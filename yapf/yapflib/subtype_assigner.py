@@ -313,7 +313,8 @@ def _SetDefaultOrNamedAssignArgListSubtype(node):
       return False
     has_subtype = False
     for child in node.children:
-      has_subtype |= HasDefaultOrNamedAssignSubtype(child)
+      if pytree_utils.NodeName(child) != 'arglist':
+        has_subtype |= HasDefaultOrNamedAssignSubtype(child)
     return has_subtype
 
   if HasDefaultOrNamedAssignSubtype(node):

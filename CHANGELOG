@@ -2,6 +2,14 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.15.2] UNRELEASED
+### Fixed
+- Don't perform a global split when a named assign is part of a function call
+  which itself is an argument to a function call. I.e., don't cause 'a' to
+  split here:
+
+      func(a, b, c, d(x, y, z=42))
+
 ## [0.15.1] 2017-01-21
 ### Fixed
 - Don't insert a space between a type hint and the '=' sign.

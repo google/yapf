@@ -1946,6 +1946,24 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testNamedAssignNotAtEndOfLine(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          if True:
+            with py3compat.open_with_encoding(filename, mode='w',
+                                              encoding=encoding) as fd:
+              pass
+        """)
+    expected_code = textwrap.dedent("""\
+        def _():
+          if True:
+            with py3compat.open_with_encoding(
+                filename, mode='w', encoding=encoding) as fd:
+              pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
