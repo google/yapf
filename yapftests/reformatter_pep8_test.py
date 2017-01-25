@@ -296,6 +296,19 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testSplittingExpressionsInsideSubscripts(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+            df = df[(df['campaign_status'] == 'LIVE') & (df['action_status'] == 'LIVE')]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+            df = df[(df['campaign_status'] == 'LIVE') &
+                    (df['action_status'] == 'LIVE')]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -166,15 +166,33 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
           pytree_utils.SetNodeAnnotation(
               _FirstChildNode(node.children[1]),
               pytree_utils.Annotation.SPLIT_PENALTY, ONE_ELEMENT_ARGUMENT)
+      elif (pytree_utils.NodeName(node.children[0]) == 'LSQB' and
+            (name.endswith('_test') or name.endswith('_expr'))):
+        self._SetStronglyConnected(node.children[1].children[0])
+        self._SetStronglyConnected(node.children[1].children[2])
+
+        # Still allow splitting around the operator.
+        split_before = ((name.endswith('_test') and
+                         style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR')) or
+                        (name.endswith('_expr') and
+                         style.Get('SPLIT_BEFORE_BITWISE_OPERATOR')))
+        if split_before:
+          pytree_utils.SetNodeAnnotation(
+              _LastChildNode(node.children[1].children[1]),
+              pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        else:
+          pytree_utils.SetNodeAnnotation(
+              _FirstChildNode(node.children[1].children[2]),
+              pytree_utils.Annotation.SPLIT_PENALTY, 0)
+
+        # Don't split the ending bracket of a subscript list.
+        self._SetVeryStronglyConnected(node.children[-1])
       elif name not in {
           'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison',
           'atom'
       }:
         # Don't split an argument list with one element if at all possible.
         self._SetStronglyConnected(node.children[1], node.children[2])
-      if pytree_utils.NodeName(node.children[-1]) == 'RSQB':
-        # Don't split the ending bracket of a subscript list.
-        self._SetVeryStronglyConnected(*node.children)
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
     # power ::= atom trailer* ['**' factor]

@@ -9,6 +9,8 @@
   split here:
 
       func(a, b, c, d(x, y, z=42))
+- Allow splitting inside a subscript if it's a logical or bitwise operating.
+  This should keep the subscript mostly contiguous otherwise.
 
 ## [0.15.1] 2017-01-21
 ### Fixed
