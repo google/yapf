@@ -1011,12 +1011,11 @@ class CommandLineTest(unittest.TestCase):
         second_argument_makes_the_line_too_long):
         pass
     """)
-    expected_formatted_pep8_code = textwrap.dedent("""\
-      def overly_long_function_name(
-              first_argument_on_the_same_line, \
-second_argument_makes_the_line_too_long):
-          pass
-    """)
+    # expected_formatted_pep8_code = textwrap.dedent("""\
+    #   def overly_long_function_name(
+    #           first_argument_on_the_same_line, second_argument_makes_the_line_too_long):
+    #       pass
+    # """)
     expected_formatted_fb_code = textwrap.dedent("""\
       def overly_long_function_name(
           first_argument_on_the_same_line, second_argument_makes_the_line_too_long

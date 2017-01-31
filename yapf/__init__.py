@@ -163,7 +163,7 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     source = [line.rstrip() for line in original_source]
-    reformatted_source, changed = yapf_api.FormatCode(
+    reformatted_source, _ = yapf_api.FormatCode(
         py3compat.unicode('\n'.join(source) + '\n'),
         filename='<stdin>',
         style_config=style_config,

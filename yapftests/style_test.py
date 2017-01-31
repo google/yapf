@@ -55,7 +55,7 @@ def _LooksLikePEP8Style(cfg):
 
 
 def _LooksLikeFacebookStyle(cfg):
-  return (cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS'])
+  return cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS']
 
 
 class PredefinedStylesByNameTest(unittest.TestCase):

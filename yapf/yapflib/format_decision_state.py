@@ -629,6 +629,7 @@ def _GetLengthOfSubtype(token, subtype, exclude=None):
 
 
 def _GetOpeningBracket(current):
+  """Get the opening bracket containing the current token."""
   if current.matching_bracket and not current.is_pseudo_paren:
     return current.matching_bracket
   while current:

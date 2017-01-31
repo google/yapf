@@ -303,8 +303,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
 
 def _SetDefaultOrNamedAssignArgListSubtype(node):
+  """Set named assign subtype on elements in a arg list."""
 
   def HasDefaultOrNamedAssignSubtype(node):
+    """Return True if the arg list has a named assign subtype."""
     if isinstance(node, pytree.Leaf):
       if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
           pytree_utils.GetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,

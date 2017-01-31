@@ -230,6 +230,7 @@ def _CanPlaceOnSingleLine(uwline):
 
 
 def _FormatFinalLines(final_lines, verify):
+  """Compose the final output from the finalized lines."""
   formatted_code = []
   for line in final_lines:
     formatted_line = []
@@ -310,7 +311,6 @@ def _AnalyzeSolutionSpace(initial_state):
   heapq.heappush(p_queue, _QueueItem(_OrderedPenalty(0, count), node))
 
   count += 1
-  prev_penalty = 0
   while p_queue:
     item = p_queue[0]
     penalty = item.ordered_penalty.penalty
@@ -325,7 +325,6 @@ def _AnalyzeSolutionSpace(initial_state):
     if node.state in seen:
       continue
 
-    prev_penalty = penalty
     seen.add(node.state)
 
     # FIXME(morbo): Add a 'decision' element?

@@ -19,12 +19,6 @@ import sys
 import unittest
 import yapf
 
-try:
-  from StringIO import StringIO
-except ImportError:  # Python 3
-  # Note: io.StringIO is different in Python 2, so try for python 2 first.
-  from io import StringIO
-
 from yapf.yapflib import py3compat
 
 
@@ -38,7 +32,7 @@ class IO(object):
   class Buffer(object):
 
     def __init__(self):
-      self.string_io = StringIO()
+      self.string_io = py3compat.StringIO()
 
     def write(self, s):
       if py3compat.PY3 and isinstance(s, bytes):
@@ -71,7 +65,7 @@ def captured_output():
 
 @contextmanager
 def patched_input(code):
-  "Monkey patch code as though it were coming from stdin."
+  """Monkey patch code as though it were coming from stdin."""
 
   def lines():
     for line in code.splitlines():
@@ -82,17 +76,17 @@ def patched_input(code):
     return next(lines)
 
   try:
-    raw_input = yapf.py3compat.raw_input
+    orig_raw_import = yapf.py3compat.raw_input
     yapf.py3compat.raw_input = patch_raw_input
     yield
   finally:
-    yapf.py3compat.raw_input = raw_input
+    yapf.py3compat.raw_input = orig_raw_import
 
 
 class RunMainTest(unittest.TestCase):
 
   def testShouldHandleYapfError(self):
-    """run_main should handle YapfError and sys.exit(1)"""
+    """run_main should handle YapfError and sys.exit(1)."""
     expected_message = 'yapf: Input filenames did not match any python files\n'
     sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
@@ -110,40 +104,40 @@ class MainTest(unittest.TestCase):
       yapf.main(['yapf', 'foo.c'])
 
   def testEchoInput(self):
-    code = "a = 1\nb = 2\n"
+    code = 'a = 1\nb = 2\n'
     with patched_input(code):
-      with captured_output() as (out, err):
+      with captured_output() as (out, _):
         ret = yapf.main([])
         self.assertEqual(ret, 0)
         self.assertEqual(out.getvalue(), code)
 
   def testEchoInputWithStyle(self):
-    code = "def f(a = 1):\n    return 2*a\n"
-    chromium_code = "def f(a=1):\n  return 2 * a\n"
+    code = 'def f(a = 1):\n    return 2*a\n'
+    chromium_code = 'def f(a=1):\n  return 2 * a\n'
     with patched_input(code):
-      with captured_output() as (out, err):
+      with captured_output() as (out, _):
         ret = yapf.main(['-', '--style=chromium'])
         self.assertEqual(ret, 0)
         self.assertEqual(out.getvalue(), chromium_code)
 
   def testEchoBadInput(self):
-    bad_syntax = "  a = 1\n"
+    bad_syntax = '  a = 1\n'
     with patched_input(bad_syntax):
-      with captured_output() as (out, err):
-        with self.assertRaisesRegexp(SyntaxError, "unexpected indent"):
+      with captured_output() as (out, _):
+        with self.assertRaisesRegexp(SyntaxError, 'unexpected indent'):
           yapf.main([])
 
   def testHelp(self):
-    with captured_output() as (out, err):
+    with captured_output() as (out, _):
       ret = yapf.main(['-', '--style-help', '--style=pep8'])
       self.assertEqual(ret, 0)
       help_message = out.getvalue()
-      self.assertIn("indent_width=4", help_message)
-      self.assertIn("The number of spaces required before a trailing comment.",
+      self.assertIn('indent_width=4', help_message)
+      self.assertIn('The number of spaces required before a trailing comment.',
                     help_message)
 
   def testVersion(self):
-    with captured_output() as (out, err):
+    with captured_output() as (out, _):
       ret = yapf.main(['-', '--version'])
       self.assertEqual(ret, 0)
       version = 'yapf {}\n'.format(yapf.__version__)
