@@ -97,6 +97,8 @@ _STYLE_HELP = dict(
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
         )        # <--- this bracket is dedented and on a separate line"""),
+    EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
+      Place each dictionary entry onto its own line."""),
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
@@ -134,6 +136,14 @@ _STYLE_HELP = dict(
     SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '&', '|' or '^' rather than
       after."""),
+    SPLIT_BEFORE_DICT_SET_GENERATOR=textwrap.dedent("""\
+      Split before a dictionary or set generator (comp_for). For example, note
+      the split before the 'for':
+
+        foo = {
+            variable: 'Hello world, have a nice day!'
+            for variable in bar if variable != 42
+        }"""),
     SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
       If an argument / parameter list is going to be split, then split before
       the first argument."""),
@@ -184,6 +194,7 @@ def CreatePEP8Style():
       COLUMN_LIMIT=79,
       COALESCE_BRACKETS=False,
       DEDENT_CLOSING_BRACKETS=False,
+      EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
@@ -197,6 +208,7 @@ def CreatePEP8Style():
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_BEFORE_BITWISE_OPERATOR=False,
+      SPLIT_BEFORE_DICT_SET_GENERATOR=True,
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=False,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,

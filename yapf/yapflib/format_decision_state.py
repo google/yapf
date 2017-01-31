@@ -131,13 +131,23 @@ class FormatDecisionState(object):
     if current.must_break_before:
       return True
 
-    if (previous and (style.Get('DEDENT_CLOSING_BRACKETS') or
-                      style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
+    if not previous:
+      return False
+
+    if self.stack[-1].split_before_closing_bracket and current.value in '}]':
+      # Split before the closing bracket if we can.
+      return current.node_split_penalty != split_penalty.UNBREAKABLE
+
+    ###########################################################################
+    # List Splitting
+    if (style.Get('DEDENT_CLOSING_BRACKETS') or
+        style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if bracket.OpensScope():
           if style.Get('COALESCE_BRACKETS'):
             if current.OpensScope():
+              # Prefer to keep all opening brackets together.
               return False
 
           if (not _IsLastScopeInLine(bracket) or
@@ -147,23 +157,21 @@ class FormatDecisionState(object):
             last_token = _LastTokenInLine(bracket.matching_bracket)
 
           if not self._FitsOnLine(bracket, last_token):
+            # Split before the first element if the whole list can't fit on a
+            # single line.
             self.stack[-1].split_before_closing_bracket = True
             return True
 
         elif style.Get('DEDENT_CLOSING_BRACKETS') and current.ClosesScope():
+          # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
-    if self.stack[-1].split_before_closing_bracket and current.value in '}]':
-      # Split if we need to split before the closing bracket.
-      return current.node_split_penalty != split_penalty.UNBREAKABLE
-
-    if not previous:
-      return False
-
-    # TODO(morbo): This should be controlled with a knob.
-    if (format_token.Subtype.DICTIONARY_KEY in current.subtypes and
+    ###########################################################################
+    # Dict/Set Splitting
+    if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
+        format_token.Subtype.DICTIONARY_KEY in current.subtypes and
         not current.is_comment):
-      # Place each dictionary entry on its own line.
+      # Place each dictionary entry onto its own line.
       if previous.value == '{' and previous.previous_token:
         opening = _GetOpeningBracket(previous.previous_token)
         if (opening and opening.value == '(' and opening.previous_token and
@@ -173,49 +181,69 @@ class FormatDecisionState(object):
             return False
       return True
 
-    # TODO(morbo): This should be controlled with a knob.
-    if format_token.Subtype.DICT_SET_GENERATOR in current.subtypes:
+    if (style.Get('SPLIT_BEFORE_DICT_SET_GENERATOR') and
+        format_token.Subtype.DICT_SET_GENERATOR in current.subtypes):
+      # Split before a dict/set generator.
       return True
 
+    if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
+        (previous.is_pseudo_paren and previous.value == '(')):
+      # Split before the dictionary value if we can't fit every dictionary
+      # entry on its own line.
+      if not current.OpensScope():
+        opening = _GetOpeningBracket(current)
+        if not self._EachDictEntryFitsOnOneLine(opening):
+          return True
+
+    if previous.value == '{':
+      # Split if the dict/set cannot fit on one line and ends in a comma.
+      closing = previous.matching_bracket
+      if (not self._FitsOnLine(previous, closing) and
+          closing.previous_token.value == ','):
+        self.stack[-1].split_before_closing_bracket = True
+        return True
+
+    ###########################################################################
+    # Argument List Splitting
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
-          current.value not in ':=,)'):
+          current.value not in ':=,)' and
+          not _IsFunctionDefinition(previous)):
         # If we're going to split the lines because of named arguments, then we
         # want to split after the opening bracket as well. But not when this is
-        # part of function definition.
-        if not _IsFunctionDefinition(previous):
+        # part of a function definition.
+        if previous.value == '(':
           # Make sure we don't split after the opening bracket if the
           # continuation indent is greater than the opening bracket:
           #
           #  a(
           #      b=1,
           #      c=2)
-          if previous.value == '(':
-            if (self._FitsOnLine(previous, previous.matching_bracket) and
-                unwrapped_line.IsSurroundedByBrackets(previous)):
-              # An argument to a function is a function call with named
-              # assigns.
-              return False
+          if (self._FitsOnLine(previous, previous.matching_bracket) and
+              unwrapped_line.IsSurroundedByBrackets(previous)):
+            # An argument to a function is a function call with named
+            # assigns.
+            return False
 
-            func_start = previous.previous_token
-            while func_start and func_start.previous_token:
-              prev = func_start.previous_token
-              if not prev.is_name and prev.value != '.':
-                break
-              func_start = prev
+          func_start = previous.previous_token
+          while func_start and func_start.previous_token:
+            prev = func_start.previous_token
+            if not prev.is_name and prev.value != '.':
+              break
+            func_start = prev
 
-            if func_start:
-              func_name_len = previous.total_length - func_start.total_length
-              func_name_len += len(func_start.value)
-              return func_name_len > style.Get('CONTINUATION_INDENT_WIDTH')
+          if func_start:
+            func_name_len = previous.total_length - func_start.total_length
+            func_name_len += len(func_start.value)
+            return func_name_len > style.Get('CONTINUATION_INDENT_WIDTH')
 
-          opening = _GetOpeningBracket(current)
-          if opening:
-            arglist_length = (opening.matching_bracket.total_length -
-                              opening.total_length + self.stack[-1].indent)
-            return arglist_length > self.column_limit
+        opening = _GetOpeningBracket(current)
+        if opening:
+          arglist_length = (opening.matching_bracket.total_length -
+                            opening.total_length + self.stack[-1].indent)
+          return arglist_length > self.column_limit
 
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
@@ -225,94 +253,6 @@ class FormatDecisionState(object):
         if previous.value in '(,':
           if opening.matching_bracket.previous_token.value == ',':
             return True
-
-    if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
-        (previous.is_pseudo_paren and previous.value == '(')):
-      if not current.OpensScope():
-        opening = _GetOpeningBracket(current)
-        if previous.is_pseudo_paren:
-          # Split before the dictionary value if we can't fit the whole
-          # dictionary on one line.
-          if not self._EachDictEntryFitsOnOneLine(opening):
-            return True
-
-    if (previous.OpensScope() and not current.OpensScope() and
-        format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
-
-      if not current.is_comment:
-        pprevious = previous.previous_token
-        if pprevious and not pprevious.is_keyword and not pprevious.is_name:
-          # We want to split if there's a comment in the container.
-          token = current
-          while token != previous.matching_bracket:
-            if token.is_comment:
-              return True
-            token = token.next_token
-
-      if previous.value == '(':
-        pptoken = previous.previous_token
-        if not pptoken or not pptoken.is_name:
-          # Split after the opening of a tuple if it doesn't fit on the current
-          # line and it's not a function call.
-          if self._FitsOnLine(previous, previous.matching_bracket):
-            return False
-      else:
-        # Split after the opening of a container if it doesn't fit on the
-        # current line or if it has a comment.
-        if not self._FitsOnLine(previous, previous.matching_bracket):
-          return True
-
-    if previous.value == '{':
-      closing = previous.matching_bracket
-      if (not self._FitsOnLine(previous, closing) and
-          closing.previous_token.value == ','):
-        self.stack[-1].split_before_closing_bracket = True
-        return True
-
-    if (format_token.Subtype.COMP_FOR in current.subtypes and
-        format_token.Subtype.COMP_FOR not in previous.subtypes):
-      # Split at the beginning of a list comprehension.
-      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR,
-                                   format_token.Subtype.COMP_IF)
-      if length + self.column > self.column_limit:
-        return True
-
-    if (format_token.Subtype.COMP_IF in current.subtypes and
-        format_token.Subtype.COMP_IF not in previous.subtypes):
-      # Split at the beginning of an if expression.
-      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
-      if length + self.column > self.column_limit:
-        return True
-
-    previous_previous_token = previous.previous_token
-    if (current.is_name and previous_previous_token and
-        previous_previous_token.is_name and previous.value == '('):
-      if not self._FitsOnLine(previous, previous.matching_bracket):
-        if _IsFunctionCallWithArguments(current):
-          # There is a function call, with more than 1 argument, where
-          # the first argument is itself a function call with arguments.
-          # In this specific case, if we split after the first argument's
-          # opening '(', then the formatting will look bad for the rest
-          # of the arguments. Instead, enforce a split before that
-          # argument to keep things looking good.
-          return True
-        elif current.OpensScope():
-          if not self._FitsOnLine(current, current.matching_bracket):
-            # There is a data literal that will need to be split and could mess
-            # up the formatting.
-            return True
-
-    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and current.value in '&|' and
-        previous.lineno < current.lineno):
-      # Retain the split before a bitwise operator.
-      return True
-
-    if (current.is_comment and
-        previous.lineno < current.lineno - current.value.count('\n')):
-      # If a comment comes in the middle of an unwrapped line (like an if
-      # conditional with comments interspersed), then we want to split if the
-      # original comments were on a separate line.
-      return True
 
     if current.is_name and previous.value == ',':
       # If we have a function call within an argument list and it won't fit on
@@ -334,6 +274,82 @@ class FormatDecisionState(object):
         if is_func_call:
           if not self._FitsOnLine(current, opening.matching_bracket):
             return True
+
+    pprevious = previous.previous_token
+    if (current.is_name and pprevious and
+        pprevious.is_name and previous.value == '('):
+      if (not self._FitsOnLine(previous, previous.matching_bracket) and
+          _IsFunctionCallWithArguments(current)):
+        # There is a function call, with more than 1 argument, where the first
+        # argument is itself a function call with arguments.  In this specific
+        # case, if we split after the first argument's opening '(', then the
+        # formatting will look bad for the rest of the arguments. E.g.:
+        #
+        #     outer_function_call(inner_function_call(
+        #         inner_arg1, inner_arg2),
+        #                         outer_arg1, outer_arg2)
+        #
+        # Instead, enforce a split before that argument to keep things looking
+        # good.
+        return True
+
+    if (previous.OpensScope() and not current.OpensScope() and
+        format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
+      if not current.is_comment:
+        if pprevious and not pprevious.is_keyword and not pprevious.is_name:
+          # We want to split if there's a comment in the container.
+          token = current
+          while token != previous.matching_bracket:
+            if token.is_comment:
+              return True
+            token = token.next_token
+
+      if previous.value == '(':
+        pptoken = previous.previous_token
+        if not pptoken or not pptoken.is_name:
+          # Split after the opening of a tuple if it doesn't fit on the current
+          # line and it's not a function call.
+          if self._FitsOnLine(previous, previous.matching_bracket):
+            return False
+      else:
+        # Split after the opening of a container if it doesn't fit on the
+        # current line or if it has a comment.
+        if not self._FitsOnLine(previous, previous.matching_bracket):
+          return True
+
+    ###########################################################################
+    # List Comprehension Splitting
+    if (format_token.Subtype.COMP_FOR in current.subtypes and
+        format_token.Subtype.COMP_FOR not in previous.subtypes):
+      # Split at the beginning of a list comprehension.
+      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR,
+                                   format_token.Subtype.COMP_IF)
+      if length + self.column > self.column_limit:
+        return True
+
+    if (format_token.Subtype.COMP_IF in current.subtypes and
+        format_token.Subtype.COMP_IF not in previous.subtypes):
+      # Split at the beginning of an if expression.
+      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
+      if length + self.column > self.column_limit:
+        return True
+
+    ###########################################################################
+    # Original Formatting Splitting
+    # These checks rely upon the original formatting. This is in order to
+    # attempt to keep hand-written code in the same condition as it was before.
+    # However, this may cause the formatter to fail to be idempotent.
+    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and current.value in '&|' and
+        previous.lineno < current.lineno):
+      # Retain the split before a bitwise operator.
+      return True
+
+    if (current.is_comment and
+        previous.lineno < current.lineno - current.value.count('\n')):
+      # If a comment comes in the middle of an unwrapped line (like an if
+      # conditional with comments interspersed), then we want to split if the
+      # original comments were on a separate line.
+      return True
 
     return False
 

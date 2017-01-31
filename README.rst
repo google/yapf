@@ -350,6 +350,9 @@ Knobs
             end_ts=now(),
         )  # <--- this bracket is dedented and on a separate line
 
+``EACH_DICT_ENTRY_ON_SEPARATE_LINE``
+    Place each dictionary entry onto its own line.
+
 ``I18N_COMMENT``
     The regex for an internationalization comment. The presence of this comment
     stops reformatting of that line, because the comments are required to be
@@ -398,6 +401,17 @@ Knobs
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
     than after.
+
+``SPLIT_BEFORE_DICT_SET_GENERATOR``
+    Split before a dictionary or set generator (comp_for). For example, note
+    the split before the ``for``:
+
+    .. code-block:: python
+
+        foo = {
+            variable: 'Hello world, have a nice day!'
+            for variable in bar if variable != 42
+        }
 
 ``SPLIT_BEFORE_FIRST_ARGUMENT``
     If an argument / parameter list is going to be split, then split before the

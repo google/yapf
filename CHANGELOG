@@ -2,6 +2,14 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.16.0] UNRELEASED
+### Added
+- The `EACH_DICT_ENTRY_ON_SEPARATE_LINE` knob indicates that each dictionary
+  entry should be in separate lines if the full dictionary isn't able to fit on
+  a single line.
+- The `SPLIT_BEFORE_DICT_SET_GENERATOR` knob splits before the `for` part of a
+  dictionary/set generator.
+
 ## [0.15.2] 2017-01-29
 ### Fixed
 - Don't perform a global split when a named assign is part of a function call
