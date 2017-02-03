@@ -121,15 +121,15 @@ _STYLE_HELP = dict(
       The number of columns to use for indentation."""),
     JOIN_MULTIPLE_LINES=textwrap.dedent("""\
       Join short lines into one line. E.g., single line 'if' statements."""),
+    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
+      Insert a space between the ending comma and closing bracket of a list,
+      etc."""),
     SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
       Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment."""),
-    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
-      Insert a space between the ending comma and closing bracket of a list,
-      etc."""),
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
       Split before arguments if the argument list is terminated by a
       comma."""),
@@ -298,15 +298,16 @@ def _BoolConverter(s):
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,
+    CONTINUATION_INDENT_WIDTH=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
+    EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
     INDENT_WIDTH=int,
-    CONTINUATION_INDENT_WIDTH=int,
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     JOIN_MULTIPLE_LINES=_BoolConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
@@ -314,17 +315,18 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACES_BEFORE_COMMENT=int,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
+    SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
-    SPLIT_PENALTY_EXCESS_CHARACTER=int,
+    SPLIT_PENALTY_BEFORE_IF_EXPR=int,
     SPLIT_PENALTY_BITWISE_OPERATOR=int,
+    SPLIT_PENALTY_EXCESS_CHARACTER=int,
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
     SPLIT_PENALTY_IMPORT_NAMES=int,
     SPLIT_PENALTY_LOGICAL_OPERATOR=int,
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
-    SPLIT_PENALTY_BEFORE_IF_EXPR=int,
     USE_TABS=_BoolConverter,)
 
 
