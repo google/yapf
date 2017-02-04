@@ -15,9 +15,10 @@
 
 import io
 import sys
+import os
 
-PY3 = sys.version_info[0] == 3
-PY36 = sys.version_info[0] == 3 and sys.version_info[1] >= 6
+PY3 = sys.version_info[0] >= 3
+PY36 = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
 
 if PY3:
   StringIO = io.StringIO
@@ -76,16 +77,29 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
     encoding: (string) The encoding of the string.
   """
   if PY3:
-    sys.stdout.buffer.write(codecs.encode(s, encoding))
+    sys.stdout.buffer.write(s.encode(encoding))
+  elif sys.platform == 'win32':
+    # On python 2 and Windows universal newline transformation will be in
+    # effect on stdout. Python 2 will not let us avoid the easily because
+    # it happens based on whether the file handle is opened in O_BINARY or
+    # O_TEXT state. However we can tell Windows itself to change the current
+    # mode, and python 2 will follow suit. However we must take care to change
+    # the mode on the actual external stdout not just the current sys.stdout
+    # which may have been monkey-patched inside the python environment.
+    import msvcrt
+    if sys.__stdout__ is sys.stdout:
+      msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+    sys.stdout.write(s.encode(encoding))
   else:
     sys.stdout.write(s.encode(encoding))
 
 
-def unicode(s):
-  """Force conversion of s to unicode."""
-  if PY3:
-    return s
-  else:
+if PY3:
+  unicode = str
+else:
+
+  def unicode(s):
+    """Force conversion of s to unicode."""
     return __builtin__.unicode(s, 'utf-8')
 
 
