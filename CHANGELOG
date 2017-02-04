@@ -9,6 +9,8 @@
   a single line.
 - The `SPLIT_BEFORE_DICT_SET_GENERATOR` knob splits before the `for` part of a
   dictionary/set generator.
+- The `BLANK_LINE_BEFORE_CLASS_DOCSTRING` knob adds a blank line before a
+  class's docstring.
 ### Fixed
 - Split before all entries in a dict/set or list maker when comma-terminated,
   even if there's only one entry.

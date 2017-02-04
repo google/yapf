@@ -301,6 +301,9 @@ Knobs
             def method():
                 pass
 
+``BLANK_LINE_BEFORE_CLASS_DOCSTRING``
+    Insert a blank line before a class-level docstring.
+
 ``COALESCE_BRACKETS``
     Do not split consecutive brackets. Only relevant when
     ``DEDENT_CLOSING_BRACKETS`` is set. For example:

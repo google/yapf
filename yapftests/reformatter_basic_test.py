@@ -1965,6 +1965,64 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testBlankLineBeforeClassDocstring(self):
+    unformatted_code = textwrap.dedent('''\
+        class A:
+
+          """Does something.
+
+          Also, here are some details.
+          """
+
+          def __init__(self):
+            pass
+        ''')
+    expected_code = textwrap.dedent('''\
+        class A:
+          """Does something.
+
+          Also, here are some details.
+          """
+
+          def __init__(self):
+            pass
+        ''')
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, \
+blank_line_before_class_docstring: True}'))
+      unformatted_code = textwrap.dedent('''\
+          class A:
+
+            """Does something.
+
+            Also, here are some details.
+            """
+
+            def __init__(self):
+              pass
+          ''')
+      expected_formatted_code = textwrap.dedent('''\
+          class A:
+
+            """Does something.
+
+            Also, here are some details.
+            """
+
+            def __init__(self):
+              pass
+          ''')
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -444,8 +444,11 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     return 0
 
   if first_token.is_docstring:
+    if (prev_uwline.first.value == 'class' and
+        style.Get('BLANK_LINE_BEFORE_CLASS_DOCSTRING')):
+      # Enforce a blank line before a class's docstring.
+      return ONE_BLANK_LINE
     # The docstring shouldn't have a newline before it.
-    # TODO(morbo): Add a knob to adjust this.
     return NO_BLANK_LINES
 
   prev_last_token = prev_uwline.last
