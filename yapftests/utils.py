@@ -54,6 +54,11 @@ if sys.version_info[0] >= 3:
     """Context manager creating a new temporary file in text mode.
     returns (fileobj, filepath)
     """
+    if sys.version_info < (3, 5):
+      if suffix is None:
+        suffix = ''
+      if prefix is None:
+        prefix = 'tmp'
     (fd, fname) = tempfile.mkstemp(
         suffix=suffix, prefix=prefix, dir=dir, text=text)
     f = open(
