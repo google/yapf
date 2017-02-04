@@ -14,13 +14,14 @@
 # limitations under the License.
 """Tests for yapf.style."""
 
-import contextlib
 import shutil
 import tempfile
 import textwrap
 import unittest
 
 from yapf.yapflib import style
+
+from .utils import TempFileContents
 
 
 class UtilsTest(unittest.TestCase):
@@ -90,14 +91,6 @@ class PredefinedStylesByNameTest(unittest.TestCase):
       self.assertTrue(_LooksLikeFacebookStyle(cfg))
 
 
-@contextlib.contextmanager
-def _TempFileContents(dirname, contents):
-  with tempfile.NamedTemporaryFile(dir=dirname, mode='w') as f:
-    f.write(contents)
-    f.flush()
-    yield f
-
-
 class StyleFromFileTest(unittest.TestCase):
 
   @classmethod
@@ -110,80 +103,80 @@ class StyleFromFileTest(unittest.TestCase):
     shutil.rmtree(cls.test_tmpdir)
 
   def testDefaultBasedOnStyle(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         continuation_indent_width = 20
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnPEP8Style(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = pep8
         continuation_indent_width = 40
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
   def testDefaultBasedOnChromiumStyle(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = chromium
         continuation_indent_width = 30
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 30)
 
   def testDefaultBasedOnGoogleStyle(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = google
         continuation_indent_width = 20
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnFacebookStyle(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = facebook
         continuation_indent_width = 20
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeFacebookStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = chromium
         SPLIT_BEFORE_NAMED_ASSIGNS=False
         split_before_logical_operator = true
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['SPLIT_BEFORE_NAMED_ASSIGNS'], False)
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
   def testStringListOptionValue(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = chromium
         I18N_FUNCTION_CALL = N_, V_, T_
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
-      cfg = style.CreateStyleFromConfig(f.name)
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
 
@@ -193,25 +186,25 @@ class StyleFromFileTest(unittest.TestCase):
       style.CreateStyleFromConfig('/8822/xyznosuchfile')
 
   def testErrorNoStyleSection(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [s]
         indent_width=2
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unable to find section'):
-        style.CreateStyleFromConfig(f.name)
+        style.CreateStyleFromConfig(filepath)
 
   def testErrorUnknownStyleOption(self):
-    cfg = textwrap.dedent('''\
+    cfg = textwrap.dedent(u'''\
         [style]
         indent_width=2
         hummus=2
         ''')
-    with _TempFileContents(self.test_tmpdir, cfg) as f:
+    with TempFileContents(self.test_tmpdir, cfg) as filepath:
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unknown style option'):
-        style.CreateStyleFromConfig(f.name)
+        style.CreateStyleFromConfig(filepath)
 
 
 class StyleFromCommandLine(unittest.TestCase):
