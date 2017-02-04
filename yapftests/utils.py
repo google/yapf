@@ -38,69 +38,39 @@ def stdout_redirector(stream):  # pylint: disable=invalid-name
 #
 # Note: returns a tuple of (io.file_obj, file_path), instead of a file_obj with a
 # .name attribute
-if sys.version_info[0] >= 3:
-  # Note: `buffering` is set to -1 despite documentation of NamedTemporaryFile
-  # says None. This is probably a problem with the python documenation.
-  @contextlib.contextmanager
-  def NamedTempFile(mode='w+b',
-                    buffering=-1,
-                    encoding=None,
-                    errors=None,
-                    newline=None,
-                    suffix=None,
-                    prefix=None,
-                    dir=None,
-                    text=False):
-    """Context manager creating a new temporary file in text mode.
-    returns (fileobj, filepath)
-    """
-    if sys.version_info < (3, 5):
-      if suffix is None:
-        suffix = ''
-      if prefix is None:
-        prefix = 'tmp'
-    (fd, fname) = tempfile.mkstemp(
-        suffix=suffix, prefix=prefix, dir=dir, text=text)
-    f = open(
-        fd,
-        mode=mode,
-        buffering=buffering,
-        encoding=encoding,
-        errors=errors,
-        newline=newline)
-    yield f, fname
-    f.close()
-    os.remove(fname)
-
-else:
-  # Parameters `suffix` and `prefix` can't be set to None, so use values
-  # according to Python 2.7 documentation.
-  @contextlib.contextmanager
-  def NamedTempFile(mode='w+b',
-                    buffering=-1,
-                    encoding=None,
-                    errors=None,
-                    newline=None,
-                    suffix=None,
-                    prefix=None,
-                    dir=None,
-                    text=False):
+#
+# Note: `buffering` is set to -1 despite documentation of NamedTemporaryFile
+# says None. This is probably a problem with the python documenation.
+@contextlib.contextmanager
+def NamedTempFile(mode='w+b',
+                  buffering=-1,
+                  encoding=None,
+                  errors=None,
+                  newline=None,
+                  suffix=None,
+                  prefix=None,
+                  dir=None,
+                  text=False):
+  """Context manager creating a new temporary file in text mode.
+  returns (fileobj, filepath)
+  """
+  if sys.version_info < (3, 5):  # covers also python 2
     if suffix is None:
       suffix = ''
     if prefix is None:
       prefix = 'tmp'
-    (fd, fname) = tempfile.mkstemp(
-        suffix=suffix, prefix=prefix, dir=dir, text=text)
-    f = io.open(
-        fd,
-        mode=mode,
-        buffering=buffering,
-        encoding=encoding,
-        errors=errors,
-        newline=newline)
-    yield f, fname
-    f.close()
-    os.remove(fname)
+  (fd, fname) = tempfile.mkstemp(
+      suffix=suffix, prefix=prefix, dir=dir, text=text)
+  f = io.open(
+      fd,
+      mode=mode,
+      buffering=buffering,
+      encoding=encoding,
+      errors=errors,
+      newline=newline)
+  yield f, fname
+  f.close()
+  os.remove(fname)
 
 
 @contextlib.contextmanager
