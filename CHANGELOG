@@ -9,6 +9,9 @@
   a single line.
 - The `SPLIT_BEFORE_DICT_SET_GENERATOR` knob splits before the `for` part of a
   dictionary/set generator.
+### Fixed
+- Split before all entries in a dict/set or list maker when comma-terminated,
+  even if there's only one entry.
 
 ## [0.15.2] 2017-01-29
 ### Fixed

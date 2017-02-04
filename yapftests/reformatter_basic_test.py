@@ -450,10 +450,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
         foo( ( 1, 2, 3, ) )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        foo((
-            1,
-            2,
-            3,))
+        foo((1, 2, 3,))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -685,9 +682,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         c = [ 42, ]
         ''')
     expected_formatted_code = textwrap.dedent('''\
-        a = {42,}
+        a = {
+            42,
+        }
         b = (42,)
-        c = [42,]
+        c = [
+            42,
+        ]
         ''')
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

@@ -107,9 +107,6 @@ v, w, x, y, z
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDedentTestListGexp(self):
-    # TODO(ambv): Arguably _DetermineMustSplitAnnotation shouldn't enforce
-    # breaks only on the basis of a trailing comma if the entire thing fits
-    # in a single line.
     code = textwrap.dedent("""\
         try:
             pass
@@ -121,11 +118,7 @@ v, w, x, y, z
         try:
             pass
         except (
-            IOError,
-            OSError,
-            LookupError,
-            RuntimeError,
-            OverflowError,
+            IOError, OSError, LookupError, RuntimeError, OverflowError,
         ) as exception:
             pass
         """)

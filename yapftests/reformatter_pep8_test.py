@@ -96,12 +96,12 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
 
   def testSpaceBetweenEndingCommandAndClosingBracket(self):
     unformatted_code = textwrap.dedent("""\
-        a = [
+        a = (
             1,
-        ]
+        )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        a = [1, ]
+        a = (1, )
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -305,6 +305,26 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         def foo():
             df = df[(df['campaign_status'] == 'LIVE') &
                     (df['action_status'] == 'LIVE')]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplitListsAndDictSetMakersIfCommaTerminated(self):
+    unformatted_code = textwrap.dedent("""\
+        DJANGO_TEMPLATES_OPTIONS = {"context_processors": []}
+        DJANGO_TEMPLATES_OPTIONS = {"context_processors": [],}
+        x = ["context_processors"]
+        x = ["context_processors",]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        DJANGO_TEMPLATES_OPTIONS = {"context_processors": []}
+        DJANGO_TEMPLATES_OPTIONS = {
+            "context_processors": [],
+        }
+        x = ["context_processors"]
+        x = [
+            "context_processors",
+        ]
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
