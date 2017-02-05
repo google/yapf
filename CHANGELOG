@@ -14,6 +14,9 @@
 ### Fixed
 - Split before all entries in a dict/set or list maker when comma-terminated,
   even if there's only one entry.
+- Will now try to set O_BINARY mode on stdout under Windows and Python 2.
+- Avoid unneeded newline transformation when writing formatted code to
+  output on (affects only Python 2)
 
 ## [0.15.2] 2017-01-29
 ### Fixed
