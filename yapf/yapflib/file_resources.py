@@ -93,7 +93,7 @@ def WriteReformattedCode(filename,
   """
   if in_place:
     with py3compat.open_with_encoding(
-        filename, mode='w', encoding=encoding) as fd:
+        filename, mode='w', encoding=encoding, newline='') as fd:
       fd.write(reformatted_code)
   else:
     py3compat.EncodeAndWriteToStdout(reformatted_code)

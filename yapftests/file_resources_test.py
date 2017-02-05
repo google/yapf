@@ -14,10 +14,8 @@
 # limitations under the License.
 """Tests for yapf.file_resources."""
 
-import contextlib
 import os
 import shutil
-import sys
 import tempfile
 import unittest
 
@@ -25,15 +23,7 @@ from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 
-
-@contextlib.contextmanager
-def stdout_redirector(stream):  # pylint: disable=invalid-name
-  old_stdout = sys.stdout
-  sys.stdout = stream
-  try:
-    yield
-  finally:
-    sys.stdout = old_stdout
+from .utils import NamedTempFile, stdout_redirector
 
 
 class GetDefaultStyleForDirTest(unittest.TestCase):
@@ -77,7 +67,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
     shutil.rmtree(self.test_tmpdir)
 
   def _make_test_dir(self, name):
-    fullpath = os.path.join(self.test_tmpdir, name)
+    fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
     os.makedirs(fullpath)
     return fullpath
 
@@ -213,13 +203,13 @@ class WriteReformattedCodeTest(unittest.TestCase):
 
   def test_write_to_file(self):
     s = u'foobar\n'
-    with tempfile.NamedTemporaryFile(dir=self.test_tmpdir) as testfile:
+    with NamedTempFile(dir=self.test_tmpdir) as (f, fname):
       file_resources.WriteReformattedCode(
-          testfile.name, s, in_place=True, encoding='utf-8')
-      testfile.flush()
+          fname, s, in_place=True, encoding='utf-8')
+      f.flush()
 
-      with open(testfile.name) as f:
-        self.assertEqual(f.read(), s)
+      with open(fname) as f2:
+        self.assertEqual(f2.read(), s)
 
   def test_write_to_stdout(self):
     s = u'foobar'
