@@ -98,6 +98,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             # on a single line.
             _AppendFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
+            _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
         last_was_colon = pytree_utils.NodeName(child) == 'COLON'
 
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name

@@ -51,6 +51,14 @@ _STYLE_HELP = dict(
       Align closing bracket with visual indentation."""),
     ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
+    ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
+      Allow dictionary keys to exist on multiple lines. For example:
+
+        x = {
+            ('this is the first element of a tuple',
+             'this is the second element of a tuple'):
+                 value,
+        }"""),
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
       Insert a blank line before a 'def' or 'class' immediately nested
       within another 'def' or 'class'. For example:
@@ -193,6 +201,7 @@ def CreatePEP8Style():
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALLOW_MULTILINE_LAMBDAS=False,
+      ALLOW_MULTILINE_DICTIONARY_KEYS=False,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       COALESCE_BRACKETS=False,
@@ -301,6 +310,7 @@ def _BoolConverter(s):
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
+    ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     COALESCE_BRACKETS=_BoolConverter,

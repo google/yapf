@@ -42,42 +42,42 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     # Add: 'f'
     state = format_decision_state.FormatDecisionState(uwline, 0)
     self.assertEqual('f', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
 
     # Add: '('
     state.AddTokenToState(False, True)
     self.assertEqual('(', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
     # Add: 'a'
     state.AddTokenToState(False, True)
     self.assertEqual('a', state.next_token.value)
-    self.assertTrue(state.CanSplit())
+    self.assertTrue(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
     # Add: ','
     state.AddTokenToState(False, True)
     self.assertEqual(',', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
     # Add: 'b'
     state.AddTokenToState(False, True)
     self.assertEqual('b', state.next_token.value)
-    self.assertTrue(state.CanSplit())
+    self.assertTrue(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
     # Add: ')'
     state.AddTokenToState(False, True)
     self.assertEqual(')', state.next_token.value)
-    self.assertTrue(state.CanSplit())
+    self.assertTrue(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
     # Add: ':'
     state.AddTokenToState(False, True)
     self.assertEqual(':', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
     clone = state.Clone()
@@ -95,37 +95,37 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     # Add: 'f'
     state = format_decision_state.FormatDecisionState(uwline, 0)
     self.assertEqual('f', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
 
     # Add: '('
     state.AddTokenToState(True, True)
     self.assertEqual('(', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
 
     # Add: 'a'
     state.AddTokenToState(True, True)
     self.assertEqual('a', state.next_token.value)
-    self.assertTrue(state.CanSplit())
+    self.assertTrue(state.CanSplit(False))
 
     # Add: ','
     state.AddTokenToState(True, True)
     self.assertEqual(',', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
 
     # Add: 'b'
     state.AddTokenToState(True, True)
     self.assertEqual('b', state.next_token.value)
-    self.assertTrue(state.CanSplit())
+    self.assertTrue(state.CanSplit(False))
 
     # Add: ')'
     state.AddTokenToState(True, True)
     self.assertEqual(')', state.next_token.value)
-    self.assertTrue(state.CanSplit())
+    self.assertTrue(state.CanSplit(False))
 
     # Add: ':'
     state.AddTokenToState(True, True)
     self.assertEqual(':', state.next_token.value)
-    self.assertFalse(state.CanSplit())
+    self.assertFalse(state.CanSplit(False))
 
     clone = state.Clone()
     self.assertEqual(repr(state), repr(clone))

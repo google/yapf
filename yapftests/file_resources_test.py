@@ -23,7 +23,7 @@ from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
 
-from .utils import NamedTempFile, stdout_redirector
+from yapftests import utils
 
 
 class GetDefaultStyleForDirTest(unittest.TestCase):
@@ -203,7 +203,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
 
   def test_write_to_file(self):
     s = u'foobar\n'
-    with NamedTempFile(dir=self.test_tmpdir) as (f, fname):
+    with utils.NamedTempFile(dirname=self.test_tmpdir) as (f, fname):
       file_resources.WriteReformattedCode(
           fname, s, in_place=True, encoding='utf-8')
       f.flush()
@@ -214,7 +214,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
   def test_write_to_stdout(self):
     s = u'foobar'
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
-    with stdout_redirector(stream):
+    with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
           None, s, in_place=False, encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
@@ -222,7 +222,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
   def test_write_encoded_to_stdout(self):
     s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
-    with stdout_redirector(stream):
+    with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
           None, s, in_place=False, encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)

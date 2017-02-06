@@ -357,10 +357,10 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
   Returns:
     The updated number of elements in the queue.
   """
-  if newline and not previous_node.state.CanSplit():
+  must_split = previous_node.state.MustSplit()
+  if newline and not previous_node.state.CanSplit(must_split):
     # Don't add a newline if the token cannot be split.
     return count
-  must_split = previous_node.state.MustSplit()
   if not newline and must_split:
     # Don't add a token we must split but where we aren't splitting.
     return count

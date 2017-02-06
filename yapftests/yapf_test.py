@@ -28,7 +28,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-from .utils import TempFileContents, NamedTempFile
+from yapftests import utils
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
@@ -91,7 +91,7 @@ class FormatFileTest(unittest.TestCase):
         if True:
           pass
         """)
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code_pep8, formatted_code)
 
@@ -116,7 +116,7 @@ class FormatFileTest(unittest.TestCase):
 
         if h:    i
         """)
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
 
@@ -139,7 +139,7 @@ class FormatFileTest(unittest.TestCase):
 
         if h: i
         """)
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
 
@@ -167,7 +167,7 @@ class FormatFileTest(unittest.TestCase):
 
         if h: i
         """)
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
 
@@ -183,7 +183,7 @@ class FormatFileTest(unittest.TestCase):
 
           # yapf: enable
       """)
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
 
@@ -209,7 +209,7 @@ class FormatFileTest(unittest.TestCase):
 
         if h:    i
         """)
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(
           filepath, style_config='pep8', lines=[(1, 2)])
       self.assertCodeEqual(expected_formatted_code_lines1and2, formatted_code)
@@ -222,19 +222,19 @@ class FormatFileTest(unittest.TestCase):
         if True:
          pass
         """)
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       diff, _, _ = yapf_api.FormatFile(filepath, print_diff=True)
       self.assertTrue(u'+  pass' in diff)
 
   def testFormatFileInPlace(self):
     unformatted_code = u'True==False\n'
     formatted_code = u'True == False\n'
-    with TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       result, _, _ = yapf_api.FormatFile(filepath, in_place=True)
       self.assertEqual(result, None)
       with open(filepath) as fd:
         if sys.version_info[0] <= 2:
-          self.assertCodeEqual(formatted_code, fd.read().decode("ascii"))
+          self.assertCodeEqual(formatted_code, fd.read().decode('ascii'))
         else:
           self.assertCodeEqual(formatted_code, fd.read())
 
@@ -263,7 +263,7 @@ class FormatFileTest(unittest.TestCase):
             # quark
             'two'] # yapf: disable
         """)
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
 
@@ -274,7 +274,7 @@ class FormatFileTest(unittest.TestCase):
         1]
         # yapf: enable
         """)
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
 
@@ -283,7 +283,7 @@ class FormatFileTest(unittest.TestCase):
         # yapf: disable
         if True: a ; b
         """)
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
 
@@ -302,7 +302,7 @@ class FormatFileTest(unittest.TestCase):
             },
         ]
         """)
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(
           filepath, style_config='chromium')
       self.assertCodeEqual(code, formatted_code)
@@ -322,14 +322,14 @@ class FormatFileTest(unittest.TestCase):
             },
         ]
         """)
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(
           filepath, style_config='chromium')
       self.assertCodeEqual(code, formatted_code)
 
   def testCRLFLineEnding(self):
     code = u'class _():\r\n  pass\r\n'
-    with TempFileContents(self.test_tmpdir, code) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(
           filepath, style_config='chromium')
       self.assertCodeEqual(code, formatted_code)
@@ -372,9 +372,10 @@ class CommandLineTest(unittest.TestCase):
         def foo():
             print('⇒')
         """)
-    with NamedTempFile(dir=self.test_tmpdir, suffix='.py') as (out, out_path):
-      with TempFileContents(
-          self.test_tmpdir, unformatted_code, suffix=".py") as filepath:
+    with utils.NamedTempFile(
+        dirname=self.test_tmpdir, suffix='.py') as (out, _):
+      with utils.TempFileContents(
+          self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
         subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
 
   def testInPlaceReformatting(self):
@@ -386,8 +387,8 @@ class CommandLineTest(unittest.TestCase):
         def foo():
             x = 37
         """)
-    with TempFileContents(
-        self.test_tmpdir, unformatted_code, suffix=".py") as filepath:
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
       p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
       p.wait()
       with io.open(filepath, mode='r', newline='') as fd:
@@ -397,8 +398,8 @@ class CommandLineTest(unittest.TestCase):
   def testInPlaceReformattingBlank(self):
     unformatted_code = u'\n\n'
     expected_formatted_code = u'\n'
-    with TempFileContents(
-        self.test_tmpdir, unformatted_code, suffix=".py") as filepath:
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
       p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
       p.wait()
       with io.open(filepath, mode='r', encoding='utf-8', newline='') as fd:
@@ -408,8 +409,8 @@ class CommandLineTest(unittest.TestCase):
   def testInPlaceReformattingEmpty(self):
     unformatted_code = u''
     expected_formatted_code = u''
-    with TempFileContents(
-        self.test_tmpdir, unformatted_code, suffix=".py") as filepath:
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
       p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
       p.wait()
       with io.open(filepath, mode='r', encoding='utf-8', newline='') as fd:
@@ -464,7 +465,7 @@ class CommandLineTest(unittest.TestCase):
         based_on_style = chromium
         SPACES_BEFORE_COMMENT = 4
         ''')
-    with TempFileContents(self.test_tmpdir, style_file) as stylepath:
+    with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
           expected_formatted_code,
@@ -487,8 +488,9 @@ class CommandLineTest(unittest.TestCase):
             x = 37
         """)
 
-    with NamedTempFile(suffix='.py', dir=self.test_tmpdir) as (out, out_path):
-      with TempFileContents(
+    with utils.NamedTempFile(
+        suffix='.py', dirname=self.test_tmpdir) as (out, _):
+      with utils.TempFileContents(
           self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
         subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
 
@@ -985,7 +987,8 @@ class CommandLineTest(unittest.TestCase):
     """)
     # expected_formatted_pep8_code = textwrap.dedent("""\
     #   def overly_long_function_name(
-    #           first_argument_on_the_same_line, second_argument_makes_the_line_too_long):
+    #           first_argument_on_the_same_line,
+    #           second_argument_makes_the_line_too_long):
     #       pass
     # """)
     expected_formatted_fb_code = textwrap.dedent("""\
@@ -1017,7 +1020,7 @@ class CommandLineTest(unittest.TestCase):
            'second_argument_of_the_thing': "some thing"
        })
        """)
-    with NamedTempFile(dir=self.test_tmpdir, mode='w') as (f, f_name):
+    with utils.NamedTempFile(dirname=self.test_tmpdir, mode='w') as (f, name):
       f.write(
           textwrap.dedent(u'''\
           [style]
@@ -1029,7 +1032,7 @@ class CommandLineTest(unittest.TestCase):
       self.assertYapfReformats(
           unformatted_code,
           expected_formatted_code,
-          extra_options=['--style={0}'.format(f_name)])
+          extra_options=['--style={0}'.format(name)])
 
   def testPseudoParenSpaces(self):
     unformatted_code = textwrap.dedent("""\
@@ -1118,7 +1121,7 @@ class CommandLineTest(unittest.TestCase):
         USE_TABS = true
         INDENT_WIDTH=1
         ''')
-    with TempFileContents(self.test_tmpdir, style_contents) as stylepath:
+    with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
           expected_formatted_code,
@@ -1134,13 +1137,14 @@ class CommandLineTest(unittest.TestCase):
             pass
         """)
 
-    with NamedTempFile(dir=self.test_tmpdir) as (stylefile, stylepath):
+    with utils.NamedTempFile(
+        dirname=self.test_tmpdir) as (stylefile, stylepath):
       p = subprocess.Popen(
-          YAPF_BINARY + ["--style-help"],
+          YAPF_BINARY + ['--style-help'],
           stdout=stylefile,
           stdin=subprocess.PIPE,
           stderr=subprocess.PIPE)
-      reformatted_code, stderrdata = p.communicate()
+      _, stderrdata = p.communicate()
       self.assertEqual(stderrdata, b'')
       self.assertYapfReformats(
           unformatted_code,

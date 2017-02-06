@@ -21,7 +21,7 @@ import unittest
 
 from yapf.yapflib import style
 
-from .utils import TempFileContents
+from yapftests import utils
 
 
 class UtilsTest(unittest.TestCase):
@@ -107,7 +107,7 @@ class StyleFromFileTest(unittest.TestCase):
         [style]
         continuation_indent_width = 20
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
@@ -118,7 +118,7 @@ class StyleFromFileTest(unittest.TestCase):
         based_on_style = pep8
         continuation_indent_width = 40
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
@@ -129,7 +129,7 @@ class StyleFromFileTest(unittest.TestCase):
         based_on_style = chromium
         continuation_indent_width = 30
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 30)
@@ -140,7 +140,7 @@ class StyleFromFileTest(unittest.TestCase):
         based_on_style = google
         continuation_indent_width = 20
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
@@ -151,7 +151,7 @@ class StyleFromFileTest(unittest.TestCase):
         based_on_style = facebook
         continuation_indent_width = 20
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeFacebookStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
@@ -163,7 +163,7 @@ class StyleFromFileTest(unittest.TestCase):
         SPLIT_BEFORE_NAMED_ASSIGNS=False
         split_before_logical_operator = true
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['SPLIT_BEFORE_NAMED_ASSIGNS'], False)
@@ -175,7 +175,7 @@ class StyleFromFileTest(unittest.TestCase):
         based_on_style = chromium
         I18N_FUNCTION_CALL = N_, V_, T_
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
@@ -190,7 +190,7 @@ class StyleFromFileTest(unittest.TestCase):
         [s]
         indent_width=2
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unable to find section'):
         style.CreateStyleFromConfig(filepath)
@@ -201,7 +201,7 @@ class StyleFromFileTest(unittest.TestCase):
         indent_width=2
         hummus=2
         ''')
-    with TempFileContents(self.test_tmpdir, cfg) as filepath:
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unknown style option'):
         style.CreateStyleFromConfig(filepath)

@@ -290,6 +290,17 @@ Knobs
 ``ALLOW_MULTILINE_LAMBDAS``
     Allow lambdas to be formatted on more than one line.
 
+``ALLOW_MULTILINE_DICTIONARY_KEYS``
+    Allow dictionary keys to exist on multiple lines. For example:
+
+    .. code-block:: python
+
+        x = {
+            ('this is the first element of a tuple',
+             'this is the second element of a tuple'):
+                 value,
+        }
+
 ``BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF``
     Insert a blank line before a ``def`` or ``class`` immediately nested within
     another ``def`` or ``class``. For example:

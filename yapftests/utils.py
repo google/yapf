@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for tests"""
+"""Utilities for tests."""
 
-import sys
-import os
-import tempfile
 import contextlib
 import io
+import os
+import sys
+import tempfile
 
 
 @contextlib.contextmanager
@@ -36,8 +36,8 @@ def stdout_redirector(stream):  # pylint: disable=invalid-name
 # second time, even by the same process, unless the same flag is used.
 # Thus we provide a simplifed version ourselfs.
 #
-# Note: returns a tuple of (io.file_obj, file_path), instead of a file_obj with a
-# .name attribute
+# Note: returns a tuple of (io.file_obj, file_path), instead of a file_obj with
+# a .name attribute
 #
 # Note: `buffering` is set to -1 despite documentation of NamedTemporaryFile
 # says None. This is probably a problem with the python documenation.
@@ -49,18 +49,16 @@ def NamedTempFile(mode='w+b',
                   newline=None,
                   suffix=None,
                   prefix=None,
-                  dir=None,
+                  dirname=None,
                   text=False):
-  """Context manager creating a new temporary file in text mode.
-  returns (fileobj, filepath)
-  """
+  """Context manager creating a new temporary file in text mode."""
   if sys.version_info < (3, 5):  # covers also python 2
     if suffix is None:
       suffix = ''
     if prefix is None:
       prefix = 'tmp'
   (fd, fname) = tempfile.mkstemp(
-      suffix=suffix, prefix=prefix, dir=dir, text=text)
+      suffix=suffix, prefix=prefix, dir=dirname, text=text)
   f = io.open(
       fd,
       mode=mode,
@@ -81,7 +79,7 @@ def TempFileContents(dirname,
                      suffix=None):
   # Note: NamedTempFile properly handles unicode encoding when using mode='w'
   with NamedTempFile(
-      dir=dirname, mode='w', encoding=encoding, newline=newline,
+      dirname=dirname, mode='w', encoding=encoding, newline=newline,
       suffix=suffix) as (f, fname):
     f.write(contents)
     f.flush()
