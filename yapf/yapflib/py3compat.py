@@ -14,8 +14,8 @@
 """Utilities for Python2 / Python3 compatibility."""
 
 import io
-import sys
 import os
+import sys
 
 PY3 = sys.version_info[0] >= 3
 PY36 = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
@@ -86,7 +86,7 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
     # mode, and python 2 will follow suit. However we must take care to change
     # the mode on the actual external stdout not just the current sys.stdout
     # which may have been monkey-patched inside the python environment.
-    import msvcrt
+    import msvcrt  # pylint: disable=g-import-not-at-top
     if sys.__stdout__ is sys.stdout:
       msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
     sys.stdout.write(s.encode(encoding))
@@ -95,10 +95,10 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
 
 
 if PY3:
-  unicode = str
+  unicode = str  # pylint: disable=redefined-builtin,invalid-name
 else:
 
-  def unicode(s):
+  def unicode(s):  # pylint: disable=invalid-name
     """Force conversion of s to unicode."""
     return __builtin__.unicode(s, 'utf-8')
 

@@ -2024,8 +2024,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium, \
-blank_line_before_class_docstring: True}'))
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, '
+              'blank_line_before_class_docstring: True}'))
       unformatted_code = textwrap.dedent('''\
           class A:
 
