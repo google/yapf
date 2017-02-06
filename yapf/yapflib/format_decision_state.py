@@ -111,11 +111,25 @@ class FormatDecisionState(object):
             (self.column, repr(self.next_token), self.paren_level,
              '\n\t'.join(repr(s) for s in self.stack) + ']'))
 
-  def CanSplit(self):
-    """Returns True if the line can be split before the next token."""
+  def CanSplit(self, must_split):
+    """Determine if we can split before the next token.
+
+    Arguments:
+      must_split: (bool) A newline was required before this token.
+
+    Returns:
+      True if the line can be split before the next token.
+    """
     current = self.next_token
 
     if current.is_pseudo_paren:
+      return False
+
+    if (format_token.Subtype.DICTIONARY_KEY_PART in current.subtypes and
+        format_token.Subtype.DICTIONARY_KEY not in current.subtypes and
+        not style.Get('ALLOW_MULTILINE_DICTIONARY_KEYS') and not must_split):
+      # In some situations, a dictionary may be multiline, but pylint doesn't
+      # like it. So don't allow it unless forced to.
       return False
 
     return current.can_break_before
@@ -209,8 +223,7 @@ class FormatDecisionState(object):
         format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
-          current.value not in ':=,)' and
-          not _IsFunctionDefinition(previous)):
+          current.value not in ':=,)' and not _IsFunctionDefinition(previous)):
         # If we're going to split the lines because of named arguments, then we
         # want to split after the opening bracket as well. But not when this is
         # part of a function definition.
@@ -276,8 +289,8 @@ class FormatDecisionState(object):
             return True
 
     pprevious = previous.previous_token
-    if (current.is_name and pprevious and
-        pprevious.is_name and previous.value == '('):
+    if (current.is_name and pprevious and pprevious.is_name and
+        previous.value == '('):
       if (not self._FitsOnLine(previous, previous.matching_bracket) and
           _IsFunctionCallWithArguments(current)):
         # There is a function call, with more than 1 argument, where the first

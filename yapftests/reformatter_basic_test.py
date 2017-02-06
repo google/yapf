@@ -1510,6 +1510,38 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testMultilineDictionaryKeys(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium, '
+                                      'allow_multiline_dictionary_keys: true}'))
+      unformatted_code = textwrap.dedent("""\
+          MAP_WITH_LONG_KEYS = {
+              ('lorem ipsum', 'dolor sit amet'):
+                  1,
+              ('consectetur adipiscing elit.', 'Vestibulum mauris justo, ornare eget dolor eget'):
+                  2,
+              ('vehicula convallis nulla. Vestibulum dictum nisl in malesuada finibus.',):
+                  3
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          MAP_WITH_LONG_KEYS = {
+              ('lorem ipsum', 'dolor sit amet'):
+                  1,
+              ('consectetur adipiscing elit.',
+               'Vestibulum mauris justo, ornare eget dolor eget'):
+                   2,
+              ('vehicula convallis nulla. Vestibulum dictum nisl in malesuada finibus.',):
+                  3
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testStableDictionaryFormatting(self):
     try:
       style.SetGlobalStyle(
@@ -1992,8 +2024,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig(
-              '{based_on_style: chromium, \
+          style.CreateStyleFromConfig('{based_on_style: chromium, \
 blank_line_before_class_docstring: True}'))
       unformatted_code = textwrap.dedent('''\
           class A:

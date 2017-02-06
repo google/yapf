@@ -11,6 +11,8 @@
   dictionary/set generator.
 - The `BLANK_LINE_BEFORE_CLASS_DOCSTRING` knob adds a blank line before a
   class's docstring.
+- The `ALLOW_MULTILINE_DICTIONARY_KEYS` knob allows dictionary keys to span
+  more than one line.
 ### Fixed
 - Split before all entries in a dict/set or list maker when comma-terminated,
   even if there's only one entry.
