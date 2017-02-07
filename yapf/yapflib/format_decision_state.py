@@ -125,9 +125,10 @@ class FormatDecisionState(object):
     if current.is_pseudo_paren:
       return False
 
-    if (format_token.Subtype.DICTIONARY_KEY_PART in current.subtypes and
+    if (not must_split and
+        format_token.Subtype.DICTIONARY_KEY_PART in current.subtypes and
         format_token.Subtype.DICTIONARY_KEY not in current.subtypes and
-        not style.Get('ALLOW_MULTILINE_DICTIONARY_KEYS') and not must_split):
+        not style.Get('ALLOW_MULTILINE_DICTIONARY_KEYS')):
       # In some situations, a dictionary may be multiline, but pylint doesn't
       # like it. So don't allow it unless forced to.
       return False
@@ -240,17 +241,8 @@ class FormatDecisionState(object):
             # assigns.
             return False
 
-          func_start = previous.previous_token
-          while func_start and func_start.previous_token:
-            prev = func_start.previous_token
-            if not prev.is_name and prev.value != '.':
-              break
-            func_start = prev
-
-          if func_start:
-            func_name_len = previous.total_length - func_start.total_length
-            func_name_len += len(func_start.value)
-            return func_name_len > style.Get('CONTINUATION_INDENT_WIDTH')
+          column = self.column - self.stack[-1].last_space
+          return column >= style.Get('CONTINUATION_INDENT_WIDTH')
 
         opening = _GetOpeningBracket(current)
         if opening:

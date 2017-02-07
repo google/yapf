@@ -1292,10 +1292,11 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testIfExpressionWithFunctionCall(self):
     code = textwrap.dedent("""\
-      if x or z.y(a,
-                  c,
-                  aaaaaaaaaaaaaaaaaaaaa=aaaaaaaaaaaaaaaaaa,
-                  bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
+      if x or z.y(
+          a,
+          c,
+          aaaaaaaaaaaaaaaaaaaaa=aaaaaaaaaaaaaaaaaa,
+          bbbbbbbbbbbbbbbbbbbbb=bbbbbbbbbbbbbbbbbb):
         pass
       """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)

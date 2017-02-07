@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.16.1] UNRELEASED
+### Fixed
+- Ensure splitting of arguments if there's a named assign present.
+
 ## [0.16.0] 2017-02-05
 ### Added
 - The `EACH_DICT_ENTRY_ON_SEPARATE_LINE` knob indicates that each dictionary

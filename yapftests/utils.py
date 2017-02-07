@@ -79,7 +79,10 @@ def TempFileContents(dirname,
                      suffix=None):
   # Note: NamedTempFile properly handles unicode encoding when using mode='w'
   with NamedTempFile(
-      dirname=dirname, mode='w', encoding=encoding, newline=newline,
+      dirname=dirname,
+      mode='w',
+      encoding=encoding,
+      newline=newline,
       suffix=suffix) as (f, fname):
     f.write(contents)
     f.flush()

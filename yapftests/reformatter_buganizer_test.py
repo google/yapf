@@ -28,6 +28,33 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB35021894(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          labelacl = Env(qa={
+              'read': 'name/some-type-of-very-long-name-for-reading-perms',
+              'modify': 'name/some-other-type-of-very-long-name-for-modifying'
+          },
+                         prod={
+                            'read': 'name/some-type-of-very-long-name-for-reading-perms',
+                            'modify': 'name/some-other-type-of-very-long-name-for-modifying'
+                         })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+          labelacl = Env(
+              qa={
+                  'read': 'name/some-type-of-very-long-name-for-reading-perms',
+                  'modify': 'name/some-other-type-of-very-long-name-for-modifying'
+              },
+              prod={
+                  'read': 'name/some-type-of-very-long-name-for-reading-perms',
+                  'modify': 'name/some-other-type-of-very-long-name-for-modifying'
+              })
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB34682902(self):
     unformatted_code = textwrap.dedent("""\
         logging.info("Mean angular velocity norm: %.3f", np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
