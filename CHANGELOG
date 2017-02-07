@@ -5,6 +5,8 @@
 ## [0.16.1] UNRELEASED
 ### Fixed
 - Ensure splitting of arguments if there's a named assign present.
+- Prefer to coalesce opening brackets if it's not at the beginning of a
+  function call.
 
 ## [0.16.0] 2017-02-05
 ### Added

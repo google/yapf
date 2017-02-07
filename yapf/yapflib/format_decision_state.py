@@ -461,11 +461,18 @@ class FormatDecisionState(object):
 
     # Add a penalty for each increasing newline we add, but don't penalize for
     # splitting before an if-expression or list comprehension.
-    if not must_split and current.value not in {'if', 'for'}:
+    if current.value not in {'if', 'for'}:
       last = self.stack[-1]
       last.num_line_splits += 1
       penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
                   last.num_line_splits)
+
+    if current.OpensScope() and previous.OpensScope():
+      # Prefer to keep opening brackets coalesced (unless it's at the beginning
+      # of a function call).
+      pprev = previous.previous_token
+      if not pprev or not pprev.is_name:
+        penalty += 10
 
     return penalty + 10
 
