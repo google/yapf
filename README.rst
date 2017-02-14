@@ -219,7 +219,7 @@ share several arguments which are described below:
 
 .. code-block:: python
 
-    >>> from yapf.yapf_api import FormatCode  # reformat a string of code
+    >>> from yapf.yapflib.yapf_api import FormatCode  # reformat a string of code
 
     >>> FormatCode("f ( a = 1, b = 2 )")
     'f(a=1, b=2)\n'
@@ -262,7 +262,7 @@ the diff, the default is ``<unknown>``.
 
 .. code-block:: python
 
-    >>> from yapf.yapf_api import FormatFile  # reformat a file
+    >>> from yapf.yapflib.yapf_api import FormatFile  # reformat a file
 
     >>> print(open("foo.py").read())  # contents of file
     a==b
