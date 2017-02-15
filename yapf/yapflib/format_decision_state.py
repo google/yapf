@@ -26,8 +26,6 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
-import copy
-
 from yapf.yapflib import format_token
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
@@ -80,11 +78,20 @@ class FormatDecisionState(object):
     self.newline = False
     self.previous = None
     self.column_limit = style.Get('COLUMN_LIMIT')
-    self._MoveStateToNextToken()
 
   def Clone(self):
-    new = copy.copy(self)
-    new.stack = [copy.copy(state) for state in self.stack]
+    new = FormatDecisionState(self.line, self.first_indent)
+    new.next_token = self.next_token
+    new.column = self.column
+    new.line = self.line
+    new.paren_level = self.paren_level
+    new.start_of_line_level = self.start_of_line_level
+    new.lowest_level_on_line = self.lowest_level_on_line
+    new.ignore_stack_for_comparison = self.ignore_stack_for_comparison
+    new.first_indent = self.first_indent
+    new.newline = self.newline
+    new.previous = self.previous
+    new.stack = [state.Clone() for state in self.stack]
     return new
 
   def __eq__(self, other):
@@ -379,7 +386,7 @@ class FormatDecisionState(object):
     else:
       self._AddTokenOnCurrentLine(dry_run)
 
-    return self._MoveStateToNextToken() + penalty
+    return self.MoveStateToNextToken() + penalty
 
   def _AddTokenOnCurrentLine(self, dry_run):
     """Puts the token on the current line.
@@ -515,7 +522,7 @@ class FormatDecisionState(object):
 
     return top_of_stack.indent
 
-  def _MoveStateToNextToken(self):
+  def MoveStateToNextToken(self):
     """Calculate format decision state information and move onto the next token.
 
     Before moving onto the next token, we first calculate the format decision
@@ -717,7 +724,7 @@ class _ParenState(object):
     self.split_before_closing_bracket = False
     self.num_line_splits = 0
 
-  def __copy__(self):
+  def Clone(self):
     state = _ParenState(self.indent, self.last_space)
     state.closing_scope_indent = self.closing_scope_indent
     state.split_before_closing_bracket = self.split_before_closing_bracket

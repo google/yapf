@@ -13,6 +13,7 @@
 # limitations under the License.
 """Tests for yapf.format_decision_state."""
 
+import copy
 import textwrap
 import unittest
 
@@ -41,6 +42,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
 
     # Add: 'f'
     state = format_decision_state.FormatDecisionState(uwline, 0)
+    state.MoveStateToNextToken()
     self.assertEqual('f', state.next_token.value)
     self.assertFalse(state.CanSplit(False))
 
@@ -80,7 +82,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     self.assertFalse(state.CanSplit(False))
     self.assertFalse(state.MustSplit())
 
-    clone = state.Clone()
+    clone = copy.copy(state)
     self.assertEqual(repr(state), repr(clone))
 
   def testSimpleFunctionDefWithSplitting(self):
@@ -94,6 +96,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
 
     # Add: 'f'
     state = format_decision_state.FormatDecisionState(uwline, 0)
+    state.MoveStateToNextToken()
     self.assertEqual('f', state.next_token.value)
     self.assertFalse(state.CanSplit(False))
 
@@ -127,7 +130,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     self.assertEqual(':', state.next_token.value)
     self.assertFalse(state.CanSplit(False))
 
-    clone = state.Clone()
+    clone = copy.copy(state)
     self.assertEqual(repr(state), repr(clone))
 
 

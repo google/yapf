@@ -22,6 +22,7 @@ as a string.
 
 from __future__ import unicode_literals
 import collections
+import copy
 import heapq
 import re
 
@@ -56,6 +57,7 @@ def Reformat(uwlines, verify=False):
 
     indent_amt = indent_width * uwline.depth
     state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+    state.MoveStateToNextToken()
 
     if not uwline.disable:
       if uwline.first.is_comment:
@@ -84,6 +86,7 @@ def Reformat(uwlines, verify=False):
         # Failsafe mode. If there isn't a solution to the line, then just emit
         # it as is.
         state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+        state.MoveStateToNextToken()
         _RetainHorizontalSpacing(uwline)
         _RetainVerticalSpacing(uwline, prev_uwline)
         _EmitLineUnformatted(state)
