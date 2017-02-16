@@ -1273,7 +1273,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     code = textwrap.dedent("""\
       a = f(
           a="something",
-          b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
+          b=
+          "something requiring comment which is quite long",  # comment about b (pushes line over 79)
           c="something else, about which comment doesn't make sense")
       """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)

@@ -6,6 +6,9 @@
 ### Changed
 - Improved performance of cloning the format decision state object. This
   improved the time in one *large* case from 273.485s to 234.652s.
+- Relax the requirement that a named argument needs to be on one line. Going
+  over the column limit is more of an issue to pylint than putting named args
+  on multiple lines.
 ### Fixed
 - Ensure splitting of arguments if there's a named assign present.
 - Prefer to coalesce opening brackets if it's not at the beginning of a
