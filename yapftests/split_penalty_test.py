@@ -191,18 +191,18 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('[', None),
-        ('a', STRONGLY_CONNECTED),
-        ('for', STRONGLY_CONNECTED),
+        ('a', None),
+        ('for', 0),
         ('a', STRONGLY_CONNECTED),
         ('in', STRONGLY_CONNECTED),
         ('foo', STRONGLY_CONNECTED),
-        ('if', STRONGLY_CONNECTED),
+        ('if', 0),
         ('a', STRONGLY_CONNECTED),
         ('.', UNBREAKABLE),
         ('x', DOTTED_NAME),
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
-        (']', STRONGLY_CONNECTED),
+        (']', None),
     ])
 
   def testFuncCalls(self):
@@ -211,11 +211,11 @@ class SplitPenaltyTest(unittest.TestCase):
     self._CheckPenalties(tree, [
         ('foo', None),
         ('(', UNBREAKABLE),
-        ('1', CONTIGUOUS_LIST),
-        (',', CONTIGUOUS_LIST),
-        ('2', CONTIGUOUS_LIST),
-        (',', CONTIGUOUS_LIST),
-        ('3', CONTIGUOUS_LIST),
+        ('1', None),
+        (',', None),
+        ('2', None),
+        (',', None),
+        ('3', None),
         (')', VERY_STRONGLY_CONNECTED),
     ])
 
@@ -229,11 +229,11 @@ class SplitPenaltyTest(unittest.TestCase):
         ('.', STRONGLY_CONNECTED),
         ('baz', DOTTED_NAME),
         ('(', STRONGLY_CONNECTED),
-        ('1', CONTIGUOUS_LIST),
-        (',', CONTIGUOUS_LIST),
-        ('2', CONTIGUOUS_LIST),
-        (',', CONTIGUOUS_LIST),
-        ('3', CONTIGUOUS_LIST),
+        ('1', None),
+        (',', None),
+        ('2', None),
+        (',', None),
+        ('3', None),
         (')', VERY_STRONGLY_CONNECTED),
     ])
 

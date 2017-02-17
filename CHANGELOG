@@ -9,6 +9,9 @@
 - Relax the requirement that a named argument needs to be on one line. Going
   over the column limit is more of an issue to pylint than putting named args
   on multiple lines.
+- Don't make splitting penalty decisions based on the original formatting. This
+  can and does lead to non-stable formatting, where yapf will reformat the same
+  code in different ways.
 ### Fixed
 - Ensure splitting of arguments if there's a named assign present.
 - Prefer to coalesce opening brackets if it's not at the beginning of a

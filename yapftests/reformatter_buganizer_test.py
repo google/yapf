@@ -140,8 +140,9 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                 'who': 'allin',
                 # This is an entry that has a dictionary in it. It's ugly
                 'something': {
-                    'page':
-                        ['this-is-a-page@xxxxxxxx.com', 'something-for-eml@xxxxxx.com'],
+                    'page': [
+                        'this-is-a-page@xxxxxxxx.com', 'something-for-eml@xxxxxx.com'
+                    ],
                     'bug': ['bugs-go-here5300@xxxxxx.com'],
                     'email': ['sometypeof-email@xxxxxx.com'],
                 },

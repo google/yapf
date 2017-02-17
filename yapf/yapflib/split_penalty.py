@@ -29,7 +29,9 @@ DOTTED_NAME = 2500
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
 
-NOT_TEST = 50
+NOT_TEST = 1300
+AND_TEST = 1200
+OR_TEST = 1100
 COMPARISON_EXPRESSION = 550
 ARITHMETIC_EXPRESSION = 600
 TERM_EXPRESSION = 650
@@ -255,11 +257,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                 pytree_utils.SetNodeAnnotation(
                     last_child_node, pytree_utils.Annotation.SPLIT_PENALTY,
                     VERY_STRONGLY_CONNECTED)
-
-          if _FirstChildNode(trailer).lineno == last_child_node.lineno:
-            # If the trailer was originally on one line, then try to keep it
-            # like that.
-            _SetExpressionPenalty(trailer, CONTIGUOUS_LIST)
         else:
           # If the trailer's children are '()', then make it a strongly
           # connected region.  It's sometimes necessary, though undesirable, to
@@ -289,6 +286,50 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
                                    style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     _SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
+
+  def Visit_or_test(self, node):  # pylint: disable=invalid-name
+    # or_test ::= and_test ('or' and_test)*
+    self.DefaultNodeVisit(node)
+    _SetExpressionPenalty(node, OR_TEST)
+    index = 1
+    while index + 1 < len(node.children):
+      if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index]),
+            pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index + 1]),
+            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
+      else:
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index]),
+            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index + 1]),
+            pytree_utils.Annotation.SPLIT_PENALTY, 0)
+      index += 2
+
+  def Visit_and_test(self, node):  # pylint: disable=invalid-name
+    # and_test ::= not_test ('and' not_test)*
+    self.DefaultNodeVisit(node)
+    _SetExpressionPenalty(node, AND_TEST)
+    index = 1
+    while index + 1 < len(node.children):
+      if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index]),
+            pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index + 1]),
+            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
+      else:
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index]),
+            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
+        pytree_utils.SetNodeAnnotation(
+            _FirstChildNode(node.children[index + 1]),
+            pytree_utils.Annotation.SPLIT_PENALTY, 0)
+      index += 2
 
   def Visit_not_test(self, node):  # pylint: disable=invalid-name
     # not_test ::= 'not' not_test | comparison
@@ -324,8 +365,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     #           '{' [dictsetmaker] '}')
     self.DefaultNodeVisit(node)
     if node.children[0].value == '(':
-      if node.children[0].lineno == node.children[-1].lineno:
-        _SetExpressionPenalty(node, CONTIGUOUS_LIST)
       if node.children[-1].value == ')':
         if pytree_utils.NodeName(node.parent) == 'if_stmt':
           pytree_utils.SetNodeAnnotation(node.children[-1],
@@ -341,10 +380,6 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       rbracket = node.children[-1]
       if len(node.children) == 2:
         _SetUnbreakable(node.children[-1])
-      elif (rbracket.value in ']}' and
-            lbracket.get_lineno() == rbracket.get_lineno() and
-            rbracket.column - lbracket.column < style.Get('COLUMN_LIMIT')):
-        _SetStronglyConnected(*node.children[1:])
 
   ############################################################################
   # Helper methods that set the annotations.

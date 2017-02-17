@@ -1673,8 +1673,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
               if True:
                 if True:
                   if True:
-                    boxes[id_] = np.concatenate(
-                        (points.min(axis=0), qoints.max(axis=0)))
+                    boxes[id_] = np.concatenate((points.min(axis=0),
+                                                 qoints.max(axis=0)))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1954,9 +1954,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     code = textwrap.dedent("""\
         class _():
 
-          @mock.patch.dict(
-              os.environ,
-              {'HTTP_' + xsrf._XSRF_TOKEN_HEADER.replace('-', '_'): 'atoken'})
+          @mock.patch.dict(os.environ, {
+              'HTTP_' + xsrf._XSRF_TOKEN_HEADER.replace('-', '_'): 'atoken'
+          })
           def _():
             pass
 
