@@ -80,6 +80,7 @@ class FormatDecisionState(object):
     self.column_limit = style.Get('COLUMN_LIMIT')
 
   def Clone(self):
+    """Clones a FormatDecisionState object."""
     new = FormatDecisionState(self.line, self.first_indent)
     new.next_token = self.next_token
     new.column = self.column
@@ -102,9 +103,9 @@ class FormatDecisionState(object):
             self.column == other.column and
             self.paren_level == other.paren_level and
             self.start_of_line_level == other.start_of_line_level and
-            self.lowest_level_on_line == other.lowest_level_on_line and (
-                self.ignore_stack_for_comparison or
-                other.ignore_stack_for_comparison or self.stack == other.stack))
+            self.lowest_level_on_line == other.lowest_level_on_line and
+            (self.ignore_stack_for_comparison or
+             other.ignore_stack_for_comparison or self.stack == other.stack))
 
   def __ne__(self, other):
     return not self == other
@@ -323,6 +324,10 @@ class FormatDecisionState(object):
           # line and it's not a function call.
           if self._FitsOnLine(previous, previous.matching_bracket):
             return False
+        elif not self._FitsOnLine(previous, previous.matching_bracket):
+          if (self.column_limit - self.column) / float(self.column_limit) < 0.3:
+            # Try not to squish all of the arguments off to the right.
+            return current.next_token != previous.matching_bracket
       else:
         # Split after the opening of a container if it doesn't fit on the
         # current line or if it has a comment.

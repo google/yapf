@@ -22,7 +22,6 @@ as a string.
 
 from __future__ import unicode_literals
 import collections
-import copy
 import heapq
 import re
 
@@ -273,8 +272,8 @@ class _StateNode(object):
     self.previous = previous
 
   def __repr__(self):  # pragma: no cover
-    return 'StateNode(state=[\n{0}\n], newline={1})'.format(self.state,
-                                                            self.newline)
+    return 'StateNode(state=[\n{0}\n], newline={1})'.format(
+        self.state, self.newline)
 
 
 # A tuple of (penalty, count) that is used to prioritize the BFS. In case of

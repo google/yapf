@@ -91,8 +91,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             else:
               _AppendFirstLeafTokenSubtype(
                   child, format_token.Subtype.DICTIONARY_VALUE)
-          elif (child is not None and (isinstance(child, pytree.Node) or (
-              not child.value.startswith('#') and child.value not in '{:,'))):
+          elif (
+              child is not None and
+              (isinstance(child, pytree.Node) or
+               (not child.value.startswith('#') and child.value not in '{:,'))):
             # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
             # normally want to split before them if the dictionary cannot exist
             # on a single line.

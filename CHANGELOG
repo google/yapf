@@ -16,6 +16,8 @@
 - Ensure splitting of arguments if there's a named assign present.
 - Prefer to coalesce opening brackets if it's not at the beginning of a
   function call.
+- Prefer not to squish all of the elements in a function call over to the
+  right-hand side. Split the arguments instead.
 
 ## [0.16.0] 2017-02-05
 ### Added

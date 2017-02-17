@@ -374,12 +374,9 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
           pytree_utils.SetNodeAnnotation(node.children[-1],
                                          pytree_utils.Annotation.SPLIT_PENALTY,
                                          COMPARISON_EXPRESSION)
-    elif node.children[0].value in '[{':
+    elif node.children[0].value in '[{' and len(node.children) == 2:
       # Keep empty containers together if we can.
-      lbracket = node.children[0]
-      rbracket = node.children[-1]
-      if len(node.children) == 2:
-        _SetUnbreakable(node.children[-1])
+      _SetUnbreakable(node.children[-1])
 
   ############################################################################
   # Helper methods that set the annotations.

@@ -145,8 +145,8 @@ class UnwrappedLine(object):
   def __repr__(self):  # pragma: no cover
     tokens_repr = ','.join(
         ['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
-    return 'UnwrappedLine(depth={0}, tokens=[{1}])'.format(self.depth,
-                                                           tokens_repr)
+    return 'UnwrappedLine(depth={0}, tokens=[{1}])'.format(
+        self.depth, tokens_repr)
 
   ############################################################################
   # Properties                                                               #

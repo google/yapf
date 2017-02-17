@@ -1573,6 +1573,33 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testStableInlinedDictionaryFormatting(self):
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      unformatted_code = textwrap.dedent("""\
+          def _():
+              url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
+                  value, urllib.urlencode({'action': 'update', 'parameter': value}))
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          def _():
+              url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
+                  value, urllib.urlencode({
+                      'action': 'update',
+                      'parameter': value
+                  }))
+          """)
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testDontSplitKeywordValueArguments(self):
     unformatted_code = textwrap.dedent("""\
         def mark_game_scored(gid):

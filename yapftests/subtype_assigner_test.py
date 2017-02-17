@@ -158,7 +158,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          ('3', [format_token.Subtype.NONE]),
          (')', [format_token.Subtype.NONE]),
          ('>>', {format_token.Subtype.BINARY_OPERATOR}),
-         ('1', [format_token.Subtype.NONE])],
+         ('1', [format_token.Subtype.NONE]),],
     ])  # yapf: disable
 
   def testSubscriptColon(self):
@@ -167,14 +167,16 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
-        [('x', [format_token.Subtype.NONE]),
-         ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
-         ('0', [format_token.Subtype.NONE]),
-         (':', {format_token.Subtype.SUBSCRIPT_COLON}),
-         ('42', [format_token.Subtype.NONE]),
-         (':', {format_token.Subtype.SUBSCRIPT_COLON}),
-         ('1', [format_token.Subtype.NONE]),
-         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})],
+        [
+            ('x', [format_token.Subtype.NONE]),
+            ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
+            ('0', [format_token.Subtype.NONE]),
+            (':', {format_token.Subtype.SUBSCRIPT_COLON}),
+            ('42', [format_token.Subtype.NONE]),
+            (':', {format_token.Subtype.SUBSCRIPT_COLON}),
+            ('1', [format_token.Subtype.NONE]),
+            (']', {format_token.Subtype.SUBSCRIPT_BRACKET}),
+        ],
     ])
 
   def testFunctionCallWithStarExpression(self):
@@ -188,7 +190,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          (',', [format_token.Subtype.NONE]),
          ('*', {format_token.Subtype.UNARY_OPERATOR}),
          ('b', [format_token.Subtype.NONE]),
-         (']', [format_token.Subtype.NONE])]
+         (']', [format_token.Subtype.NONE]),],
     ])  # yapf: disable
 
 

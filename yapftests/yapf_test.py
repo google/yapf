@@ -1137,8 +1137,8 @@ class CommandLineTest(unittest.TestCase):
             pass
         """)
 
-    with utils.NamedTempFile(
-        dirname=self.test_tmpdir) as (stylefile, stylepath):
+    with utils.NamedTempFile(dirname=self.test_tmpdir) as (stylefile,
+                                                           stylepath):
       p = subprocess.Popen(
           YAPF_BINARY + ['--style-help'],
           stdout=stylefile,
