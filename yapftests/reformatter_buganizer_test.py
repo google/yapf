@@ -1253,8 +1253,9 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                           an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
           a_long_name_slicing = an_array_with_an_exceedingly_long_name[:
                                                                        ARBITRARY_CONSTANT_A]
-          bad_slice = ("I am a crazy, no good, string whats too long, etc." +
-                       " no really ")[:ARBITRARY_CONSTANT_A]
+          bad_slice = (
+              "I am a crazy, no good, string whats too long, etc." + " no really "
+          )[:ARBITRARY_CONSTANT_A]
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

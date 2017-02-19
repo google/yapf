@@ -29,13 +29,15 @@ DOTTED_NAME = 2500
 STRONGLY_CONNECTED = 2000
 CONTIGUOUS_LIST = 500
 
-NOT_TEST = 1300
-AND_TEST = 1200
 OR_TEST = 1100
-COMPARISON_EXPRESSION = 550
-ARITHMETIC_EXPRESSION = 600
-TERM_EXPRESSION = 650
-ONE_ELEMENT_ARGUMENT = 650
+AND_TEST = 1200
+NOT_TEST = 1300
+COMPARISON_EXPRESSION = 1400
+ARITH_EXPR = 1500
+TERM_EXPR = 1600
+FACTOR = 1700
+POWER = 1800
+ONE_ELEMENT_ARGUMENT = 1900
 
 
 def ComputeSplitPenalties(tree):
@@ -294,19 +296,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     index = 1
     while index + 1 < len(node.children):
       if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index]),
-            pytree_utils.Annotation.SPLIT_PENALTY, 0)
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index + 1]),
-            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
+        _DecrementSplitPenalty(_FirstChildNode(node.children[index]), OR_TEST)
       else:
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index]),
-            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index + 1]),
-            pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        _DecrementSplitPenalty(
+            _FirstChildNode(node.children[index + 1]), OR_TEST)
       index += 2
 
   def Visit_and_test(self, node):  # pylint: disable=invalid-name
@@ -316,19 +309,10 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
     index = 1
     while index + 1 < len(node.children):
       if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index]),
-            pytree_utils.Annotation.SPLIT_PENALTY, 0)
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index + 1]),
-            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
+        _DecrementSplitPenalty(_FirstChildNode(node.children[index]), AND_TEST)
       else:
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index]),
-            pytree_utils.Annotation.SPLIT_PENALTY, STRONGLY_CONNECTED)
-        pytree_utils.SetNodeAnnotation(
-            _FirstChildNode(node.children[index + 1]),
-            pytree_utils.Annotation.SPLIT_PENALTY, 0)
+        _DecrementSplitPenalty(
+            _FirstChildNode(node.children[index + 1]), AND_TEST)
       index += 2
 
   def Visit_not_test(self, node):  # pylint: disable=invalid-name
@@ -352,12 +336,17 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
     # arith_expr ::= term (('+'|'-') term)*
     self.DefaultNodeVisit(node)
-    _SetExpressionPenalty(node, ARITHMETIC_EXPRESSION)
+    _SetExpressionPenalty(node, ARITH_EXPR)
 
   def Visit_term_expr(self, node):  # pylint: disable=invalid-name
     # term ::= factor (('*'|'@'|'/'|'%'|'//') factor)*
     self.DefaultNodeVisit(node)
-    _SetExpressionPenalty(node, TERM_EXPRESSION)
+    _SetExpressionPenalty(node, TERM_EXPR)
+
+  def Visit_factor(self, node):  # pyline: disable=invalid-name
+    # factor ::= ('+'|'-'|'~') factor | power
+    self.DefaultNodeVisit(node)
+    _SetExpressionPenalty(node, FACTOR)
 
   def Visit_atom(self, node):  # pylint: disable=invalid-name
     # atom ::= ('(' [yield_expr|testlist_gexp] ')'
@@ -412,7 +401,7 @@ def _SetVeryStronglyConnected(*nodes):
 def _SetExpressionPenalty(node, penalty):
   """Set a penalty annotation on children nodes."""
 
-  def RecArithmeticExpression(node, first_child_leaf):
+  def RecExpression(node, first_child_leaf):
     if node is first_child_leaf:
       return
 
@@ -426,9 +415,9 @@ def _SetExpressionPenalty(node, penalty):
             node, pytree_utils.Annotation.SPLIT_PENALTY, penalty)
     else:
       for child in node.children:
-        RecArithmeticExpression(child, first_child_leaf)
+        RecExpression(child, first_child_leaf)
 
-  RecArithmeticExpression(node, _FirstChildNode(node))
+  RecExpression(node, _FirstChildNode(node))
 
 
 def _RecAnnotate(tree, annotate_name, annotate_value):
@@ -461,6 +450,14 @@ def _StronglyConnectedCompOp(op):
       op.children[1].value in {'==', 'in'}):
     return True
   return False
+
+
+def _DecrementSplitPenalty(node, amt):
+  penalty = pytree_utils.GetNodeAnnotation(
+      node, pytree_utils.Annotation.SPLIT_PENALTY, default=amt)
+  penalty = penalty - amt if amt < penalty else 0
+  pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.SPLIT_PENALTY,
+                                 penalty)
 
 
 def _AllowBuilderStyleCalls(node):
