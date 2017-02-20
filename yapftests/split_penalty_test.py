@@ -211,9 +211,9 @@ class SplitPenaltyTest(unittest.TestCase):
         ('foo', None),
         ('(', UNBREAKABLE),
         ('1', None),
-        (',', None),
+        (',', UNBREAKABLE),
         ('2', None),
-        (',', None),
+        (',', UNBREAKABLE),
         ('3', None),
         (')', VERY_STRONGLY_CONNECTED),
     ])
@@ -229,9 +229,9 @@ class SplitPenaltyTest(unittest.TestCase):
         ('baz', DOTTED_NAME),
         ('(', STRONGLY_CONNECTED),
         ('1', None),
-        (',', None),
+        (',', UNBREAKABLE),
         ('2', None),
-        (',', None),
+        (',', UNBREAKABLE),
         ('3', None),
         (')', VERY_STRONGLY_CONNECTED),
     ])
