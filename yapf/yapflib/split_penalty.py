@@ -24,20 +24,24 @@ from yapf.yapflib import style
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
-VERY_STRONGLY_CONNECTED = 3000
-DOTTED_NAME = 2500
-STRONGLY_CONNECTED = 2000
-CONTIGUOUS_LIST = 500
+DOTTED_NAME = 4000
+VERY_STRONGLY_CONNECTED = 3500
+STRONGLY_CONNECTED = 3000
 
-OR_TEST = 1100
-AND_TEST = 1200
-NOT_TEST = 1300
-COMPARISON_EXPRESSION = 1400
-ARITH_EXPR = 1500
-TERM_EXPR = 1600
-FACTOR = 1700
-POWER = 1800
-ONE_ELEMENT_ARGUMENT = 1900
+OR_TEST = 1000
+AND_TEST = 1100
+NOT_TEST = 1200
+COMPARISON = 1300
+STAR_EXPR = 1300
+EXPR = 1400
+XOR_EXPR = 1500
+AND_EXPR = 1700
+SHIFT_EXPR = 1800
+ARITH_EXPR = 1900
+TERM_EXPR = 2000
+FACTOR = 2100
+POWER = 2200
+ONE_ELEMENT_ARGUMENT = 2500
 
 
 def ComputeSplitPenalties(tree):
@@ -46,10 +50,10 @@ def ComputeSplitPenalties(tree):
   Arguments:
     tree: the top-level pytree node to annotate with penalties.
   """
-  _TreePenaltyAssigner().Visit(tree)
+  _SplitPenaltyAssigner().Visit(tree)
 
 
-class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
+class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
   """Assigns split penalties to tokens, based on parse tree structure.
 
   Split penalties are attached as annotations to tokens.
@@ -311,7 +315,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
       _SetSplitPenalty(_FirstChildNode(node.children[1]), STRONGLY_CONNECTED)
       _SetSplitPenalty(_FirstChildNode(node.children[2]), STRONGLY_CONNECTED)
     else:
-      _SetExpressionPenalty(node, COMPARISON_EXPRESSION)
+      _SetExpressionPenalty(node, COMPARISON)
 
   def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
     # arith_expr ::= term (('+'|'-') term)*
@@ -338,7 +342,7 @@ class _TreePenaltyAssigner(pytree_visitor.PyTreeVisitor):
         if pytree_utils.NodeName(node.parent) == 'if_stmt':
           _SetSplitPenalty(node.children[-1], UNBREAKABLE)
         else:
-          _SetSplitPenalty(node.children[-1], COMPARISON_EXPRESSION)
+          _SetSplitPenalty(node.children[-1], COMPARISON)
     elif node.children[0].value in '[{' and len(node.children) == 2:
       # Keep empty containers together if we can.
       _SetUnbreakable(node.children[-1])
