@@ -210,7 +210,8 @@ class FormatDecisionState(object):
       return True
 
     if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
-        (previous.is_pseudo_paren and previous.value == '(')):
+        (previous.is_pseudo_paren and previous.value == '(' and
+         not current.is_comment)):
       # Split before the dictionary value if we can't fit every dictionary
       # entry on its own line.
       if not current.OpensScope():

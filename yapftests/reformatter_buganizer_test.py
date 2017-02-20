@@ -28,6 +28,28 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB35212469(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          X = {
+            'retain': {
+                'loadtest':  # This is a comment in the middle of a dictionary entry
+                    ('/some/path/to/a/file/that/is/needed/by/this/process')
+              }
+          }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+          X = {
+              'retain': {
+                  'loadtest':  # This is a comment in the middle of a dictionary entry
+                      ('/some/path/to/a/file/that/is/needed/by/this/process')
+              }
+          }
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB31063453(self):
     unformatted_code = textwrap.dedent("""\
         def _():
