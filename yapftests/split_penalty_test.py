@@ -27,7 +27,6 @@ UNBREAKABLE = split_penalty.UNBREAKABLE
 VERY_STRONGLY_CONNECTED = split_penalty.VERY_STRONGLY_CONNECTED
 DOTTED_NAME = split_penalty.DOTTED_NAME
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
-CONTIGUOUS_LIST = split_penalty.CONTIGUOUS_LIST
 
 
 class SplitPenaltyTest(unittest.TestCase):
