@@ -20,6 +20,7 @@
   right-hand side. Split the arguments instead.
 - We need to split a dictionary value if the first element is a comment anyway,
   so don't force the split here. It's forced elsewhere.
+- Ensure tabs are used for continued indentation when USE_TABS is True.
 
 ## [0.16.0] 2017-02-05
 ### Added
