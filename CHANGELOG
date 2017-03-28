@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.16.2] UNRELEASED
+### Fixed
+- Treat expansion operators ('*', '**') in a similar way to function calls to
+  avoid splitting directly after the opening parenthesis.
+- Increase the penalty for splitting after the start of a tuple.
+
 ## [0.16.1] 2017-03-22
 ### Changed
 - Improved performance of cloning the format decision state object. This

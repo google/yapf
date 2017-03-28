@@ -389,6 +389,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         if pytree_utils.NodeName(node.parent) == 'if_stmt':
           _SetSplitPenalty(node.children[-1], UNBREAKABLE)
         else:
+          if len(node.children) > 2:
+            _SetSplitPenalty(_FirstChildNode(node.children[1]), EXPR)
           _SetSplitPenalty(node.children[-1], ATOM)
     elif node.children[0].value in '[{' and len(node.children) == 2:
       # Keep empty containers together if we can.

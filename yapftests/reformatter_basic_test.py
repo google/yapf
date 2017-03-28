@@ -2084,6 +2084,21 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testTupleCohesion(self):
+    unformatted_code = textwrap.dedent("""\
+        def f():
+          this_is_a_very_long_function_name(an_extremely_long_variable_name, (
+              'a string that may be too long %s' % 'M15'))
+        """)
+    expected_code = textwrap.dedent("""\
+        def f():
+          this_is_a_very_long_function_name(
+              an_extremely_long_variable_name,
+              ('a string that may be too long %s' % 'M15'))
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
