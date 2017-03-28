@@ -14,9 +14,10 @@
 # limitations under the License.
 
 import codecs
-import unittest
-from setuptools import setup, Command
 import sys
+import unittest
+
+from setuptools import setup, Command
 
 import yapf
 

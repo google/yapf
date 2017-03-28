@@ -268,20 +268,23 @@ class FormatDecisionState(object):
           if opening.matching_bracket.previous_token.value == ',':
             return True
 
-    if current.is_name and previous.value == ',':
+    if ((current.is_name or current.value in {'*', '**'}) and
+        previous.value == ','):
       # If we have a function call within an argument list and it won't fit on
       # the remaining line, but it will fit on a line by itself, then go ahead
       # and split before the call.
       opening = _GetOpeningBracket(current)
       if (opening and opening.value == '(' and opening.previous_token and
-          opening.previous_token.is_name):
+          (opening.previous_token.is_name or
+           opening.previous_token.value in {'*', '**'})):
         is_func_call = False
         token = current
         while token:
           if token.value == '(':
             is_func_call = True
             break
-          if not token.is_name and token.value != '.':
+          if (not (token.is_name or token.value in {'*', '**'}) and
+              token.value != '.'):
             break
           token = token.next_token
 
