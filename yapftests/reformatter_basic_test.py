@@ -1163,6 +1163,24 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+    unformatted_code = textwrap.dedent("""\
+        def _():
+          if True:
+            if True:
+              if contract == allow_contract and attr_dict.get(if_attribute) == has_value:
+                return True
+        """)
+    expected_code = textwrap.dedent("""\
+        def _():
+          if True:
+            if True:
+              if contract == allow_contract and attr_dict.get(
+                  if_attribute) == has_value:
+                return True
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
   def testDictSetGenerator(self):
     code = textwrap.dedent("""\
         foo = {
