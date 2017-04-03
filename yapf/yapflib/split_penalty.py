@@ -178,6 +178,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           _SetSplitPenalty(
               _FirstChildNode(node.children[1]), ONE_ELEMENT_ARGUMENT)
       elif (pytree_utils.NodeName(node.children[0]) == 'LSQB' and
+            len(node.children[1].children) > 2 and
             (name.endswith('_test') or name.endswith('_expr'))):
         _SetStronglyConnected(node.children[1].children[0])
         _SetStronglyConnected(node.children[1].children[2])

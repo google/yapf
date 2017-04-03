@@ -8,6 +8,7 @@
   avoid splitting directly after the opening parenthesis.
 - Increase the penalty for splitting after the start of a tuple.
 - Increase penalty for excess characters.
+- Check that we have enough children before trying to access them all.
 
 ## [0.16.1] 2017-03-22
 ### Changed

@@ -249,6 +249,7 @@ def CreateGoogleStyle():
 
 def CreateChromiumStyle():
   style = CreateGoogleStyle()
+  style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
   style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False

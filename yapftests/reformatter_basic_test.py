@@ -2117,6 +2117,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testSubscriptExpression(self):
+    code = textwrap.dedent("""\
+        foo = d[not a]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
