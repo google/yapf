@@ -229,13 +229,13 @@ def _CreateCommentsFromPrefix(comment_prefix,
   while index < len(lines):
     comment_block = []
     while index < len(lines) and lines[index].lstrip().startswith('#'):
-      comment_block.append(lines[index])
+      comment_block.append(lines[index].strip())
       index += 1
 
     if comment_block:
       new_lineno = comment_lineno + index - 1
-      comment_block[0] = comment_block[0].lstrip()
-      comment_block[-1] = comment_block[-1].rstrip('\n')
+      comment_block[0] = comment_block[0].strip()
+      comment_block[-1] = comment_block[-1].strip()
       comment_leaf = pytree.Leaf(
           type=token.COMMENT,
           value='\n'.join(comment_block),

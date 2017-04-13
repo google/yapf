@@ -215,6 +215,18 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testCommentsWithTrailingSpaces(self):
+    unformatted_code = textwrap.dedent("""\
+        # Thing 1    
+        # Thing 2    
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        # Thing 1
+        # Thing 2
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testCommentsInDataLiteral(self):
     code = textwrap.dedent("""\
         def f():

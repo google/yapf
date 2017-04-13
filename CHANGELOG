@@ -9,6 +9,7 @@
 - Increase the penalty for splitting after the start of a tuple.
 - Increase penalty for excess characters.
 - Check that we have enough children before trying to access them all.
+- Remove trailing whitespaces from comments.
 
 ## [0.16.1] 2017-03-22
 ### Changed
