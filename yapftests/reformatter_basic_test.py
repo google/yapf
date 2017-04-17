@@ -2147,6 +2147,33 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testListWithFunctionCalls(self):
+    unformatted_code = textwrap.dedent("""\
+        def foo():
+          return [
+              Bar(
+                  xxx='some string',
+                  yyy='another long string',
+                  zzz='a third long string'), Bar(
+                      xxx='some string',
+                      yyy='another long string',
+                      zzz='a third long string')
+          ]
+        """)
+    expected_code = textwrap.dedent("""\
+        def foo():
+          return [
+              Bar(xxx='some string',
+                  yyy='another long string',
+                  zzz='a third long string'),
+              Bar(xxx='some string',
+                  yyy='another long string',
+                  zzz='a third long string')
+          ]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

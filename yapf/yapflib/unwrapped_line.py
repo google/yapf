@@ -397,19 +397,19 @@ def IsSurroundedByBrackets(tok):
 
     if previous_token.value == '(':
       if paren_count == 0:
-        return True
+        return previous_token
       paren_count += 1
     elif previous_token.value == '{':
       if brace_count == 0:
-        return True
+        return previous_token
       brace_count += 1
     elif previous_token.value == '[':
       if sq_bracket_count == 0:
-        return True
+        return previous_token
       sq_bracket_count += 1
 
     previous_token = previous_token.previous_token
-  return False
+  return None
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})

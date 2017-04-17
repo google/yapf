@@ -189,6 +189,38 @@ class FormatDecisionState(object):
           # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
+    if (current.is_name or current.is_string) and previous.value == ',':
+      # If the list has function calls in it and the full list itself cannot
+      # fit on the line, then we want to split. Otherwise, we'll get something
+      # like this:
+      #
+      #     X = [
+      #         Bar(xxx='some string',
+      #             yyy='another long string',
+      #             zzz='a third long string'), Bar(
+      #                 xxx='some string',
+      #                 yyy='another long string',
+      #                 zzz='a third long string')
+      #     ]
+      #
+      # or when a string formatting syntax.
+      func_call_or_string_format = False
+      if current.is_name:
+        tok = current.next_token
+        while tok and (tok.is_name or tok.value == '.'):
+          tok = tok.next_token
+        func_call_or_string_format = tok.value == '('
+      elif current.is_string:
+        tok = current.next_token
+        while tok and tok.is_string:
+          tok = tok.next_token
+        func_call_or_string_format = tok.value == '%'
+      if func_call_or_string_format:
+        open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
+        if open_bracket and open_bracket.value in '[{':
+          if not self._FitsOnLine(open_bracket, open_bracket.matching_bracket):
+            return True
+
     ###########################################################################
     # Dict/Set Splitting
     if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
