@@ -251,7 +251,7 @@ class FormatDecisionState(object):
             return False
 
           column = self.column - self.stack[-1].last_space
-          return column >= style.Get('CONTINUATION_INDENT_WIDTH')
+          return column > style.Get('CONTINUATION_INDENT_WIDTH')
 
         opening = _GetOpeningBracket(current)
         if opening:

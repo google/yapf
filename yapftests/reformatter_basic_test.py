@@ -1495,6 +1495,17 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+    code = textwrap.dedent("""\
+      def foo():
+        return [
+            Bar(xxx='some string',
+                yyy='another long string',
+                zzz='a third long string')
+        ]
+      """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testCommentColumnLimitOverflow(self):
     code = textwrap.dedent("""\
       def f():
