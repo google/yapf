@@ -28,6 +28,14 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB37460004(self):
+    code = textwrap.dedent("""\
+        assert all(s not in (_SENTINEL, None) for s in
+                   nested_schemas), 'Nested schemas should never contain None/_SENTINEL'
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB36806207(self):
     unformatted_code = textwrap.dedent("""\
         def _():

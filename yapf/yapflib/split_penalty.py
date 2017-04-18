@@ -331,12 +331,12 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     else:
       _IncreasePenalty(node, COMPARISON)
 
-  def Visit_star_expr(self, node):  # pylint: disable-invalid-name
+  def Visit_star_expr(self, node):  # pylint: disable=invalid-name
     # star_expr ::= '*' expr
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, STAR_EXPR)
 
-  def Visit_expr(self, node):  # pylint: disable-invalid-name
+  def Visit_expr(self, node):  # pylint: disable=invalid-name
     # expr ::= xor_expr ('|' xor_expr)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, EXPR)

@@ -214,7 +214,7 @@ class FormatDecisionState(object):
         tok = current.next_token
         while tok and tok.is_string:
           tok = tok.next_token
-        func_call_or_string_format = tok.value == '%'
+        func_call_or_string_format = tok and tok.value == '%'
       if func_call_or_string_format:
         open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
         if open_bracket and open_bracket.value in '[{':
