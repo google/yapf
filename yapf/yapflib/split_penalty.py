@@ -24,6 +24,7 @@ from yapf.yapflib import style
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
+NAMED_ASSIGN = 8500
 DOTTED_NAME = 4000
 VERY_STRONGLY_CONNECTED = 3500
 STRONGLY_CONNECTED = 3000
@@ -141,8 +142,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     while index < len(node.children) - 1:
       child = node.children[index]
       if isinstance(child, pytree.Leaf) and child.value == '=':
-        _SetStronglyConnected(_FirstChildNode(node.children[index]))
-        _SetStronglyConnected(_FirstChildNode(node.children[index + 1]))
+        _SetSplitPenalty(_FirstChildNode(node.children[index]), NAMED_ASSIGN)
+        _SetSplitPenalty(
+            _FirstChildNode(node.children[index + 1]), NAMED_ASSIGN)
       index += 1
 
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name

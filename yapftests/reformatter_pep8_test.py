@@ -329,6 +329,22 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testSplitAroundNamedAssigns(self):
+    unformatted_code = textwrap.dedent("""\
+        class a():
+            def a(): return a(
+             aaaaaaaaaa=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class a():
+            def a():
+                return a(
+                    aaaaaaaaaa=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                )
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
