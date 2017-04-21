@@ -2184,6 +2184,50 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testSplittingBeforeFirstArgumentOnFunctionCall(self):
+    """Tests split_before_first_argument on a function call."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, split_before_first_argument: True}'))
+      unformatted_code = textwrap.dedent("""\
+          a_very_long_function_name("long string with formatting {0:s}".format(
+              "mystring"))
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a_very_long_function_name(
+              "long string with formatting {0:s}".format("mystring"))
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testSplittingBeforeFirstArgumentOnCompoundStatement(self):
+    """Tests split_before_first_argument on a compound statement."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, split_before_first_argument: True}'))
+      unformatted_code = textwrap.dedent("""\
+          if (long_argument_name_1 == 1 or
+              long_argument_name_2 == 2 or
+              long_argument_name_3 == 3 or
+              long_argument_name_4 == 4):
+            pass
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          if (long_argument_name_1 == 1 or long_argument_name_2 == 2 or
+              long_argument_name_3 == 3 or long_argument_name_4 == 4):
+            pass
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()
