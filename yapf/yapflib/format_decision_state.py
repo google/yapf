@@ -214,7 +214,7 @@ class FormatDecisionState(object):
         tok = current.next_token
         while tok and (tok.is_name or tok.value == '.'):
           tok = tok.next_token
-        func_call_or_string_format = tok.value == '('
+        func_call_or_string_format = tok and tok.value == '('
       elif current.is_string:
         tok = current.next_token
         while tok and tok.is_string:
