@@ -15,6 +15,7 @@
 - Trying not to split around the '=' of a named assign.
 - Changed split before the first argument behavior to ignore compound
   statements like if and while, but not function declarations.
+- Changed coalesce brackets not to line split before closing bracket.
 
 ## [0.16.1] 2017-03-22
 ### Changed

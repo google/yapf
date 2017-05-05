@@ -501,7 +501,12 @@ class FormatDecisionState(object):
          previous.previous_token.OpensScope())):
       self.stack[-1].closing_scope_indent = max(
           0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
-      self.stack[-1].split_before_closing_bracket = True
+
+      split_before_closing_bracket = True
+      if style.Get('COALESCE_BRACKETS'):
+        split_before_closing_bracket = False
+
+      self.stack[-1].split_before_closing_bracket = split_before_closing_bracket
 
     # Calculate the split penalty.
     penalty = current.split_penalty
