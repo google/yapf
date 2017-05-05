@@ -2228,6 +2228,37 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testCoalesceBracketsOnDict(self):
+    """Tests coalesce_brackets on a dictionary."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, coalesce_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+          date_time_values = {
+              u'year': year,
+              u'month': month,
+              u'day_of_month': day_of_month,
+              u'hours': hours,
+              u'minutes': minutes,
+              u'seconds': seconds
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          date_time_values = {
+              u'year': year,
+              u'month': month,
+              u'day_of_month': day_of_month,
+              u'hours': hours,
+              u'minutes': minutes,
+              u'seconds': seconds}
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()

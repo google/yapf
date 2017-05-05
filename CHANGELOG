@@ -13,6 +13,7 @@
 - Split before a function call in a list if the full list isn't able to fit on
   a single line.
 - Trying not to split around the '=' of a named assign.
+- Changed coalesce brackets not to line split before closing bracket.
 
 ## [0.16.1] 2017-03-22
 ### Changed
