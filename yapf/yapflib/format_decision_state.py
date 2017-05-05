@@ -161,8 +161,10 @@ class FormatDecisionState(object):
       # Split before the closing bracket if we can.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
-    # Prevent yapf splitting before the first argument in compound statements.
+    # Prevent splitting before the first argument in compound statements
+    # with the exception of function declarations.
     if (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
+        self.line.first.value != 'def' and
         self.line.first.value in _COMPOUND_STMTS):
       return False
 
