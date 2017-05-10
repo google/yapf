@@ -215,20 +215,21 @@ class StyleFromDict(unittest.TestCase):
 
   def testDefaultBasedOnStyle(self):
     config_dict = {
-            'based_on_style':'pep8',
-            'indent_width': '2',
-            'blank_line_before_nested_class_or_def': 'True'
-            } 
+        'based_on_style': 'pep8',
+        'indent_width': '2',
+        'blank_line_before_nested_class_or_def': 'True'
+    }
     cfg = style.CreateStyleFromConfig(config_dict)
     self.assertTrue(_LooksLikeChromiumStyle(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnStyleBadDict(self):
     self.assertRaisesRegexp(style.StyleConfigError, 'Unknown style option',
-                            style.CreateStyleFromConfig, 
+                            style.CreateStyleFromConfig,
                             {'based_on_styl': 'pep8'})
     self.assertRaisesRegexp(style.StyleConfigError, 'not a valid',
-                            style.CreateStyleFromConfig, {'INDENT_WIDTH': 'FOUR'})
+                            style.CreateStyleFromConfig,
+                            {'INDENT_WIDTH': 'FOUR'})
 
 
 class StyleFromCommandLine(unittest.TestCase):
