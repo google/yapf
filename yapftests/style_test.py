@@ -216,8 +216,8 @@ class StyleFromDict(unittest.TestCase):
   def testDefaultBasedOnStyle(self):
     config_dict = {
         'based_on_style': 'pep8',
-        'indent_width': '2',
-        'blank_line_before_nested_class_or_def': 'True'
+        'indent_width': 2,
+        'blank_line_before_nested_class_or_def': True
     }
     cfg = style.CreateStyleFromConfig(config_dict)
     self.assertTrue(_LooksLikeChromiumStyle(cfg))

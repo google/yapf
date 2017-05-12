@@ -394,7 +394,7 @@ def _CreateConfigParserFromConfigDict(config_dict):
   config = py3compat.ConfigParser()
   config.add_section('style')
   for key, value in config_dict.items():
-    config.set('style', key, value)
+    config.set('style', key, str(value))
   return config
 
 
