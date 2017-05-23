@@ -554,7 +554,7 @@ class FormatDecisionState(object):
            previous.previous_token.OpensScope())):
         return max(0,
                    top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
-      return top_of_stack.closing_scope_indent
+      return top_of_stack.indent
 
     if (previous and previous.is_string and current.is_string and
         format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
