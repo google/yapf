@@ -2213,6 +2213,28 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testSplittingBeforeFirstArgumentOnFunctionDefinition(self):
+    """Tests split_before_first_argument on a function definition."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, split_before_first_argument: True}'))
+      unformatted_code = textwrap.dedent("""\
+          def _GetNumberOfSecondsFromElements(year, month, day, hours,
+                                              minutes, seconds, microseconds):
+            return
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          def _GetNumberOfSecondsFromElements(
+              year, month, day, hours, minutes, seconds, microseconds):
+            return
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testSplittingBeforeFirstArgumentOnCompoundStatement(self):
     """Tests split_before_first_argument on a compound statement."""
     try:
@@ -2230,6 +2252,37 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           if (long_argument_name_1 == 1 or long_argument_name_2 == 2 or
               long_argument_name_3 == 3 or long_argument_name_4 == 4):
             pass
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testCoalesceBracketsOnDict(self):
+    """Tests coalesce_brackets on a dictionary."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, coalesce_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+          date_time_values = {
+              u'year': year,
+              u'month': month,
+              u'day_of_month': day_of_month,
+              u'hours': hours,
+              u'minutes': minutes,
+              u'seconds': seconds
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          date_time_values = {
+              u'year': year,
+              u'month': month,
+              u'day_of_month': day_of_month,
+              u'hours': hours,
+              u'minutes': minutes,
+              u'seconds': seconds}
           """)
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,

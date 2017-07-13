@@ -1017,8 +1017,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent("""\
        some_long_function_name_foo({
            'first_argument_of_the_thing': id,
-           'second_argument_of_the_thing': "some thing"
-       })
+           'second_argument_of_the_thing': "some thing"})
        """)
     with utils.NamedTempFile(dirname=self.test_tmpdir, mode='w') as (f, name):
       f.write(

@@ -161,8 +161,10 @@ class FormatDecisionState(object):
       # Split before the closing bracket if we can.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
-    # Prevent yapf splitting before the first argument in compound statements.
+    # Prevent splitting before the first argument in compound statements
+    # with the exception of function declarations.
     if (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
+        self.line.first.value != 'def' and
         self.line.first.value in _COMPOUND_STMTS):
       return False
 
@@ -499,7 +501,12 @@ class FormatDecisionState(object):
          previous.previous_token.OpensScope())):
       self.stack[-1].closing_scope_indent = max(
           0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
-      self.stack[-1].split_before_closing_bracket = True
+
+      split_before_closing_bracket = True
+      if style.Get('COALESCE_BRACKETS'):
+        split_before_closing_bracket = False
+
+      self.stack[-1].split_before_closing_bracket = split_before_closing_bracket
 
     # Calculate the split penalty.
     penalty = current.split_penalty

@@ -375,16 +375,27 @@ def CreateStyleFromConfig(style_config):
     if not def_style:
       return _style
     return _GLOBAL_STYLE_FACTORY()
-  style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
-  if style_factory is not None:
-    return style_factory()
-  if style_config.startswith('{'):
-    # Most likely a style specification from the command line.
-    config = _CreateConfigParserFromConfigString(style_config)
-  else:
-    # Unknown config name: assume it's a file name then.
-    config = _CreateConfigParserFromConfigFile(style_config)
+  if isinstance(style_config, dict):
+    config = _CreateConfigParserFromConfigDict(style_config)
+  elif isinstance(style_config, str):
+    style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
+    if style_factory is not None:
+      return style_factory()
+    if style_config.startswith('{'):
+      # Most likely a style specification from the command line.
+      config = _CreateConfigParserFromConfigString(style_config)
+    else:
+      # Unknown config name: assume it's a file name then.
+      config = _CreateConfigParserFromConfigFile(style_config)
   return _CreateStyleFromConfigParser(config)
+
+
+def _CreateConfigParserFromConfigDict(config_dict):
+  config = py3compat.ConfigParser()
+  config.add_section('style')
+  for key, value in config_dict.items():
+    config.set('style', key, str(value))
+  return config
 
 
 def _CreateConfigParserFromConfigString(config_string):
