@@ -36,6 +36,7 @@ import difflib
 import re
 import sys
 
+from lib2to3.pgen2 import parse
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import blank_line_calculator
@@ -123,7 +124,11 @@ def FormatCode(unformatted_source,
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
   if not unformatted_source.endswith('\n'):
     unformatted_source += '\n'
-  tree = pytree_utils.ParseCodeToTree(unformatted_source)
+
+  try:
+    tree = pytree_utils.ParseCodeToTree(unformatted_source)
+  except parse.ParseError as e:
+    raise parse.ParseError(filename + ': ' + e.message)
 
   # Run passes on the tree, modifying it in place.
   comment_splicer.SpliceComments(tree)

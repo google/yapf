@@ -3,6 +3,8 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.16.2] 2017-05-19
+### Changed
+- Add filename information to a ParseError excetion.
 ### Fixed
 - Treat expansion operators ('*', '**') in a similar way to function calls to
   avoid splitting directly after the opening parenthesis.
@@ -13,16 +15,13 @@
 - Split before a function call in a list if the full list isn't able to fit on
   a single line.
 - Trying not to split around the '=' of a named assign.
-<<<<<<< HEAD
+- Changed split before the first argument behavior to ignore compound
+  statements like if and while, but not function declarations.
+- Changed coalesce brackets not to line split before closing bracket.
 - A token that ends in a continuation marker may have more than one newline in
   it, thus changing its "lineno" value. This can happen if multiple
   continuation markers are used with no intervening tokens. Adjust the line
   number to account for the lines covered by those markers.
-=======
-- Changed split before the first argument behavior to ignore compound
-  statements like if and while, but not function declarations.
-- Changed coalesce brackets not to line split before closing bracket.
->>>>>>> 5683a4c62c710faedcf65142f3636712eaa608e8
 
 ## [0.16.1] 2017-03-22
 ### Changed
