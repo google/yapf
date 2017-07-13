@@ -2290,6 +2290,25 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testSplitAfterComment(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, coalesce_brackets: True, '
+              'dedent_closing_brackets: true}'))
+      code = textwrap.dedent("""\
+          if __name__ == "__main__":
+            with another_resource:
+              account = {
+                  "validUntil":
+                      int(time() + (6 * 7 * 24 * 60 * 60))  # in 6 weeks time
+              }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()

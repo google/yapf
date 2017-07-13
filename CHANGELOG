@@ -22,6 +22,7 @@
   it, thus changing its "lineno" value. This can happen if multiple
   continuation markers are used with no intervening tokens. Adjust the line
   number to account for the lines covered by those markers.
+- Make sure to split after a comment even for "pseudo" parentheses.
 
 ## [0.16.1] 2017-03-22
 ### Changed

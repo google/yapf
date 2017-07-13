@@ -331,7 +331,9 @@ def _SpaceRequiredBetween(left, right):
 
 def _MustBreakBefore(prev_token, cur_token):
   """Return True if a line break is required before the current token."""
-  if prev_token.is_comment:
+  if prev_token.is_comment or (
+      prev_token.previous_token and prev_token.is_pseudo_paren and
+      prev_token.previous_token.is_comment):
     # Must break if the previous token was a comment.
     return True
   if (cur_token.is_string and prev_token.is_string and
