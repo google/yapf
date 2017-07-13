@@ -2,9 +2,17 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.16.2] 2017-05-19
+## [0.16.3] 2017-07-13
 ### Changed
 - Add filename information to a ParseError excetion.
+### Fixed
+- A token that ends in a continuation marker may have more than one newline in
+  it, thus changing its "lineno" value. This can happen if multiple
+  continuation markers are used with no intervening tokens. Adjust the line
+  number to account for the lines covered by those markers.
+- Make sure to split after a comment even for "pseudo" parentheses.
+
+## [0.16.2] 2017-05-19
 ### Fixed
 - Treat expansion operators ('*', '**') in a similar way to function calls to
   avoid splitting directly after the opening parenthesis.
@@ -18,11 +26,6 @@
 - Changed split before the first argument behavior to ignore compound
   statements like if and while, but not function declarations.
 - Changed coalesce brackets not to line split before closing bracket.
-- A token that ends in a continuation marker may have more than one newline in
-  it, thus changing its "lineno" value. This can happen if multiple
-  continuation markers are used with no intervening tokens. Adjust the line
-  number to account for the lines covered by those markers.
-- Make sure to split after a comment even for "pseudo" parentheses.
 
 ## [0.16.1] 2017-03-22
 ### Changed
