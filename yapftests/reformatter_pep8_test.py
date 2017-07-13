@@ -168,8 +168,8 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     expected_formatted_code = textwrap.dedent("""\
         def f():
             def g():
-                while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                       xxxxxxxxxxxxxxxxxxxx(
+                while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa'
+                       and xxxxxxxxxxxxxxxxxxxx(
                            yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
                     pass
         """)
@@ -205,8 +205,8 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                 dosomething(connection)
         """)
     expected_formatted_code = textwrap.dedent("""\
-        if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx or
-                yyyyyyyyyyyyyyyyy):
+        if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx
+                or yyyyyyyyyyyyyyyyy):
             pass
         elif (xxxxxxxxxxxxxxx(
                 aaaaaaaaaaa, bbbbbbbbbbbbbb, cccccccccccc, dddddddddd=None)):
@@ -303,8 +303,8 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
-            df = df[(df['campaign_status'] == 'LIVE') &
-                    (df['action_status'] == 'LIVE')]
+            df = df[(df['campaign_status'] == 'LIVE')
+                    & (df['action_status'] == 'LIVE')]
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
