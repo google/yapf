@@ -1091,6 +1091,15 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testMultipleContinuationMarkers(self):
+    code = textwrap.dedent("""\
+        xyz = \\
+            \\
+            some_thing()
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testEmptyContainers(self):
     code = textwrap.dedent("""\
         flags.DEFINE_list(

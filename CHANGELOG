@@ -13,6 +13,10 @@
 - Split before a function call in a list if the full list isn't able to fit on
   a single line.
 - Trying not to split around the '=' of a named assign.
+- A token that ends in a continuation marker may have more than one newline in
+  it, thus changing its "lineno" value. This can happen if multiple
+  continuation markers are used with no intervening tokens. Adjust the line
+  number to account for the lines covered by those markers.
 
 ## [0.16.1] 2017-03-22
 ### Changed

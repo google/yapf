@@ -130,6 +130,9 @@ def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
   else:
     cur_lineno = cur_tok.lineno
 
+  if prev_tok.value.endswith('\\'):
+    prev_lineno = prev_lineno + prev_tok.value.count('\n')
+
   cur_tok.AdjustNewlinesBefore(cur_lineno - prev_lineno)
 
 
