@@ -40,6 +40,13 @@ function! yapf#YAPF() range
         \ split(system(l:cmd, join(getline(1, '$'), "\n") . "\n"), "\n")
   endif
 
+  if v:shell_error
+    echohl ErrorMsg
+    echomsg printf('"%s" returned error: %s', l:cmd, l:formatted_text[-1])
+    echohl None
+    return
+  endif
+
   " Update the buffer.
   execute '1,' . string(line('$')) . 'delete'
   call setline(1, l:formatted_text)
