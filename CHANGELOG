@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.16.4] Unreleased
+## [0.17.0] Unreleased
+### Added
+- Option `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` prevents adding spaces
+  around selected binary operators, in accordance with the current style guide.
 ### Changed
 - Adjust blank lines on formatting boundaries when using the `--lines` option.
 - Return 1 if a diff changed the code. This is in line with how GNU diff acts.
