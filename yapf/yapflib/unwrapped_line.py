@@ -253,8 +253,9 @@ def _SpaceRequiredBetween(left, right):
     if lval == '**' or rval == '**':
       # Space around the "power" operator.
       return style.Get('SPACES_AROUND_POWER_OPERATOR')
-    # Enforce spaces around binary operators.
-    return True
+    # Enforce spaces around binary operators except the blacklisted ones.
+    blacklist = style.Get('NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS')
+    return lval not in blacklist and rval not in blacklist
   if (_IsUnaryOperator(left) and lval != 'not' and
       (right.is_name or right.is_number or rval == '(')):
     # The previous token was a unary op. No space is desired between it and
