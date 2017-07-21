@@ -365,7 +365,7 @@ class CommandLineTest(unittest.TestCase):
         stderr=subprocess.PIPE)
     reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
     self.assertEqual(stderrdata, b'')
-    self.assertEqual(reformatted_code.decode('utf-8'), expected)
+    self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
 
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -775,6 +775,8 @@ class CommandLineTest(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = line_to_format
+
+
         def f():
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
@@ -797,6 +799,8 @@ class CommandLineTest(unittest.TestCase):
         ''')
     expected_formatted_code = textwrap.dedent('''\
         foo = 42
+
+
         def f():
             email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
         <b>Czar: </b>"""+despot["Nicholas"]+"""<br>
@@ -1041,6 +1045,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
+
           def bar():
             return {msg_id: author for author, msg_id in reader}
         """)

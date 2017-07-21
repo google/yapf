@@ -18,6 +18,7 @@ import unittest
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 from yapftests import yapf_test_helper
 
@@ -275,6 +276,79 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testLinesOnRangeBoundary(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+        def B():  # 4
+          pass  # 5
+
+        def C():
+          pass
+        def D():  # 9
+          pass  # 10
+        def E():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+        def B():  # 4
+          pass  # 5
+
+
+        def C():
+          pass
+
+
+        def D():  # 9
+          pass  # 10
+
+
+        def E():
+          pass
+        """)
+    code, changed = yapf_api.FormatCode(
+        unformatted_code, lines=[(4, 5), (9, 10)])
+    self.assertCodeEqual(expected_formatted_code, code)
+    self.assertTrue(changed)
+
+  def testLinesRangeBoundaryNotOutside(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+        def B():  # 6
+          pass  # 7
+
+
+
+        def C():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+        def B():  # 6
+          pass  # 7
+
+
+
+        def C():
+          pass
+        """)
+    code, changed = yapf_api.FormatCode(unformatted_code, lines=[(6, 7)])
+    self.assertCodeEqual(expected_formatted_code, code)
+    self.assertFalse(changed)
 
 
 if __name__ == '__main__':

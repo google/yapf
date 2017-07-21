@@ -36,12 +36,14 @@ from yapf.yapflib import style
 from yapf.yapflib import verifier
 
 
-def Reformat(uwlines, verify=False):
+def Reformat(uwlines, verify=False, lines=None):
   """Reformat the unwrapped lines.
 
   Arguments:
     uwlines: (list of unwrapped_line.UnwrappedLine) Lines we want to format.
     verify: (bool) True if reformatted code should be verified for syntax.
+    lines: (set of int) The lines which can be modified or None if there is no
+      line range restriction.
 
   Returns:
     A string representing the reformatted code.
@@ -66,14 +68,15 @@ def Reformat(uwlines, verify=False):
       if prev_uwline and prev_uwline.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainVerticalSpacingBetweenTokens(uwline.first, prev_uwline.last)
+        _RetainRequiredVerticalSpacingBetweenTokens(
+            uwline.first, prev_uwline.last, lines)
       if any(tok.is_comment for tok in uwline.tokens):
         _RetainVerticalSpacingBeforeComments(uwline)
 
     if (_LineContainsI18n(uwline) or uwline.disable or
         _LineHasContinuationMarkers(uwline)):
       _RetainHorizontalSpacing(uwline)
-      _RetainVerticalSpacing(uwline, prev_uwline)
+      _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
       _EmitLineUnformatted(state)
     elif _CanPlaceOnSingleLine(uwline) and not any(tok.must_split
                                                    for tok in uwline.tokens):
@@ -87,7 +90,7 @@ def Reformat(uwlines, verify=False):
         state = format_decision_state.FormatDecisionState(uwline, indent_amt)
         state.MoveStateToNextToken()
         _RetainHorizontalSpacing(uwline)
-        _RetainVerticalSpacing(uwline, prev_uwline)
+        _RetainRequiredVerticalSpacing(uwline, prev_uwline, None)
         _EmitLineUnformatted(state)
 
     final_lines.append(uwline)
@@ -101,17 +104,17 @@ def _RetainHorizontalSpacing(uwline):
     tok.RetainHorizontalSpacing(uwline.first.column, uwline.depth)
 
 
-def _RetainVerticalSpacing(cur_uwline, prev_uwline):
+def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
   prev_tok = None
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
   for cur_tok in cur_uwline.tokens:
-    _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok)
+    _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines)
     prev_tok = cur_tok
 
 
-def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
-  """Retain vertical spacing between two tokens."""
+def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
+  """Retain vertical spacing between two tokens if not in editable range."""
   if prev_tok is None:
     return
 
@@ -133,7 +136,16 @@ def _RetainVerticalSpacingBetweenTokens(cur_tok, prev_tok):
   if prev_tok.value.endswith('\\'):
     prev_lineno = prev_lineno + prev_tok.value.count('\n')
 
-  cur_tok.AdjustNewlinesBefore(cur_lineno - prev_lineno)
+  required_newlines = cur_lineno - prev_lineno
+
+  if lines and (cur_lineno in lines or prev_lineno in lines):
+    desired_newlines = cur_tok.whitespace_prefix.count('\n')
+    whitespace_lines = range(prev_lineno + 1, cur_lineno)
+    deletable_lines = len(lines.intersection(whitespace_lines))
+    required_newlines = max(required_newlines - deletable_lines,
+                            desired_newlines)
+
+  cur_tok.AdjustNewlinesBefore(required_newlines)
 
 
 def _RetainVerticalSpacingBeforeComments(uwline):
