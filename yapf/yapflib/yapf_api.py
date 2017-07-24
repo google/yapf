@@ -141,8 +141,9 @@ def FormatCode(unformatted_source,
   for uwl in uwlines:
     uwl.CalculateFormattingInformation()
 
+  lines = _LineRangesToSet(lines)
   _MarkLinesToFormat(uwlines, lines)
-  reformatted_source = reformatter.Reformat(uwlines, verify)
+  reformatted_source = reformatter.Reformat(uwlines, verify, lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
@@ -210,40 +211,25 @@ DISABLE_PATTERN = r'^#.*\byapf:\s*disable\b'
 ENABLE_PATTERN = r'^#.*\byapf:\s*enable\b'
 
 
+def _LineRangesToSet(line_ranges):
+  """Return a set of lines in the range."""
+
+  if line_ranges is None:
+    return None
+
+  line_set = set()
+  for low, high in sorted(line_ranges):
+    line_set.update(range(low, high + 1))
+
+  return line_set
+
+
 def _MarkLinesToFormat(uwlines, lines):
   """Skip sections of code that we shouldn't reformat."""
   if lines:
     for uwline in uwlines:
-      uwline.disable = True
-
-    # Sort and combine overlapping ranges.
-    lines = sorted(lines)
-    line_ranges = [lines[0]] if len(lines[0]) else []
-    index = 1
-    while index < len(lines):
-      current = line_ranges[-1]
-      if lines[index][0] <= current[1]:
-        # The ranges overlap, so combine them.
-        line_ranges[-1] = (current[0], max(lines[index][1], current[1]))
-      else:
-        line_ranges.append(lines[index])
-      index += 1
-
-    # Mark lines to format as not being disabled.
-    index = 0
-    for start, end in sorted(line_ranges):
-      while index < len(uwlines) and uwlines[index].last.lineno < start:
-        index += 1
-      if index >= len(uwlines):
-        break
-
-      while index < len(uwlines):
-        if uwlines[index].lineno > end:
-          break
-        if (uwlines[index].lineno >= start or
-            uwlines[index].last.lineno >= start):
-          uwlines[index].disable = False
-        index += 1
+      uwline.disable = not (
+          lines.intersection(range(uwline.lineno, uwline.last.lineno + 1)))
 
   # Now go through the lines and disable any lines explicitly marked as
   # disabled.
