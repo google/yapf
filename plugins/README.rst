@@ -15,6 +15,7 @@ The ``vim`` plugin allows you to reformat a range of code. Place it into the
 ``.vim/autoload`` directory or use a plugin manager like Plug or Vundle:
 
 .. code-block:: vim
+
      " Plug
      Plug 'google/yapf', { 'rtp': 'plugins/vim', 'for': 'python' }
 
