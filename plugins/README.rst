@@ -38,3 +38,19 @@ It is compatible with both Sublime Text 2 and 3.
 The plugin can be easily installed by using *Sublime Package Control*.
 Check the project page of the plugin for more information:
 https://github.com/jason-kane/PyYapf
+
+===================
+git Pre-Commit Hook
+===================
+
+The ``git`` pre-commit hook automatically formats your Python files before they
+are committed to your local repository. Any changes ``yapf`` makes to the files
+will stay unstaged so that you can diff them manually.
+
+To install, simply download the raw file and copy it into your git hooks directory:
+
+.. code-block:: bash
+
+    # From the root of your git project.
+    curl -o https://raw.githubusercontent.com/google/yapf/master/plugins/pre-commit.sh
+    mv pre-commit.sh .git/hooks/pre-commit
