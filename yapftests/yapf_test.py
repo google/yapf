@@ -492,7 +492,10 @@ class CommandLineTest(unittest.TestCase):
         suffix='.py', dirname=self.test_tmpdir) as (out, _):
       with utils.TempFileContents(
           self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
-        subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
+        try:
+          subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
+        except subprocess.CalledProcessError as e:
+          self.assertEqual(e.returncode, 1)  # Indicates the text changed.
 
   def testReformattingSpecificLines(self):
     unformatted_code = textwrap.dedent("""\

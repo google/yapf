@@ -5,6 +5,7 @@
 ## [0.16.4] Unreleased
 ### Changed
 - Adjust blank lines on formatting boundaries when using the `--lines` option.
+- Return 1 if a diff changed the code. This is in line with how GNU diff acts.
 
 ## [0.16.3] 2017-07-13
 ### Changed
