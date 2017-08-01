@@ -503,7 +503,7 @@ class FormatDecisionState(object):
           0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
 
       split_before_closing_bracket = True
-      if style.Get('COALESCE_BRACKETS'):
+      if style.Get('COALESCE_BRACKETS') and not style.Get('DEDENT_CLOSING_BRACKETS'):
         split_before_closing_bracket = False
 
       self.stack[-1].split_before_closing_bracket = split_before_closing_bracket
