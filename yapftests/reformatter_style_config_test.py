@@ -56,7 +56,6 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-
   def testOperatorStyle(self):
     try:
       sympy_style = style.CreatePEP8Style()
@@ -71,7 +70,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           """)
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style

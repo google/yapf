@@ -39,3 +39,45 @@ It is compatible with both Sublime Text 2 and 3.
 The plugin can be easily installed by using *Sublime Package Control*.
 Check the project page of the plugin for more information:
 https://github.com/jason-kane/PyYapf
+
+
+Textmate 2
+==========
+
+Plugin for ``Textmate 2`` requires ``yapf`` Python package installed on your system:
+
+.. code-block:: shell
+
+    pip install yapf
+
+Also, you will need to activate ``Python`` bundle from ``Preferences >> Bundles``.
+
+Finally, create a ``~/Library/Application Support/TextMate/Bundles/Python.tmbundle/Commands/YAPF.tmCommand``
+file with the following content:
+
+.. code-block:: xml
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	<plist version="1.0">
+	<dict>
+		<key>beforeRunningCommand</key>
+		<string>saveActiveFile</string>
+		<key>command</key>
+		<string>#!/bin/bash
+
+	TPY=${TM_PYTHON:-python}
+
+	"$TPY" "/usr/local/bin/yapf" "$TM_FILEPATH"</string>
+		<key>input</key>
+		<string>document</string>
+		<key>name</key>
+		<string>YAPF</string>
+		<key>scope</key>
+		<string>source.python</string>
+		<key>uuid</key>
+		<string>297D5A82-2616-4950-9905-BD2D1C94D2D4</string>
+	</dict>
+	</plist>
+
+You will see a new menu item ``Bundles > Python > YAPF``.
