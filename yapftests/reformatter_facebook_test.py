@@ -107,7 +107,7 @@ v, w, x, y, z
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDedentTestListGexp(self):
-    code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
         try:
             pass
         except (
@@ -122,8 +122,27 @@ v, w, x, y, z
         ) as exception:
             pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    expected_formatted_code = textwrap.dedent("""\
+        try:
+            pass
+        except (
+            IOError, OSError, LookupError, RuntimeError, OverflowError
+        ) as exception:
+            pass
+
+        try:
+            pass
+        except (
+            IOError,
+            OSError,
+            LookupError,
+            RuntimeError,
+            OverflowError,
+        ) as exception:
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testBrokenIdempotency(self):
     # TODO(ambv): The following behaviour should be fixed.

@@ -258,8 +258,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
 
   def Visit_testlist_gexp(self, node):  # pylint: disable=invalid-name
-    if _ContainsComments(node):
-      _DetermineMustSplitAnnotation(node)
+    _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
@@ -336,6 +335,11 @@ def _AdjustSplitPenalty(uwline):
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
   if not _ContainsComments(node):
+    token = node.parent.leaves().next()
+    if token.value == '(':
+      if sum(1 for ch in node.children
+             if pytree_utils.NodeName(ch) == 'COMMA') < 2:
+        return
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
       return
