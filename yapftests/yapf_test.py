@@ -492,7 +492,10 @@ class CommandLineTest(unittest.TestCase):
         suffix='.py', dirname=self.test_tmpdir) as (out, _):
       with utils.TempFileContents(
           self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
-        subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
+        try:
+          subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
+        except subprocess.CalledProcessError as e:
+          self.assertEqual(e.returncode, 1)  # Indicates the text changed.
 
   def testReformattingSpecificLines(self):
     unformatted_code = textwrap.dedent("""\
@@ -1014,20 +1017,22 @@ class CommandLineTest(unittest.TestCase):
 
   def testCoalesceBrackets(self):
     unformatted_code = textwrap.dedent("""\
-       some_long_function_name_foo({
-           'first_argument_of_the_thing': id,
-           'second_argument_of_the_thing': "some thing"}
-           )""")
+       some_long_function_name_foo(
+           {
+               'first_argument_of_the_thing': id,
+               'second_argument_of_the_thing': "some thing"
+           }
+       )""")
     expected_formatted_code = textwrap.dedent("""\
        some_long_function_name_foo({
            'first_argument_of_the_thing': id,
-           'second_argument_of_the_thing': "some thing"})
+           'second_argument_of_the_thing': "some thing"
+       })
        """)
     with utils.NamedTempFile(dirname=self.test_tmpdir, mode='w') as (f, name):
       f.write(
           textwrap.dedent(u'''\
           [style]
-          based_on_style = facebook
           column_limit=82
           coalesce_brackets = True
           '''))
