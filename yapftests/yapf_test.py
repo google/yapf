@@ -278,6 +278,43 @@ class FormatFileTest(unittest.TestCase):
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
 
+  def testSplittingSemicolonStatements(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def f():
+          x = y + 42 ; z = n * 42
+          if True: a += 1 ; b += 1; c += 1
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def f():
+            x = y + 42
+            z = n * 42
+            if True:
+                a += 1
+                b += 1
+                c += 1
+        """)
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
+      self.assertCodeEqual(expected_formatted_code, formatted_code)
+
+  def testSemicolonStatementsDisabled(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def f():
+          x = y + 42 ; z = n * 42  # yapf: disable
+          if True: a += 1 ; b += 1; c += 1
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def f():
+            x = y + 42 ; z = n * 42  # yapf: disable
+            if True:
+                a += 1
+                b += 1
+                c += 1
+        """)
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
+      self.assertCodeEqual(expected_formatted_code, formatted_code)
+
   def testDisabledSemiColonSeparatedStatements(self):
     code = textwrap.dedent(u"""\
         # yapf: disable

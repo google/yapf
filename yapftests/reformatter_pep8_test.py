@@ -76,24 +76,6 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testSplittingSemicolonStatements(self):
-    unformatted_code = textwrap.dedent("""\
-        def f():
-          x = y + 42 ; z = n * 42
-          if True: a += 1 ; b += 1; c += 1
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        def f():
-            x = y + 42
-            z = n * 42
-            if True:
-                a += 1
-                b += 1
-                c += 1
-        """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
   def testSpaceBetweenEndingCommandAndClosingBracket(self):
     unformatted_code = textwrap.dedent("""\
         a = (

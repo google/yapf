@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.17.1] UNRELEASED
+### Fixed
+- Allow semicolons if the line is disabled.
+
 ## [0.17.0] 2017-08-20
 ### Added
 - Option `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` prevents adding spaces
