@@ -501,6 +501,18 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testB30087363(self):
+    code = textwrap.dedent("""\
+        if False:
+          bar()
+          # This is a comment
+        # This is another comment
+        elif True:
+          foo()
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB29093579(self):
     unformatted_code = textwrap.dedent("""\
         def _():
