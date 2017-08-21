@@ -326,16 +326,6 @@ def _FindAncestorAtIndent(node, indent):
     return _FindAncestorAtIndent(node.parent, indent)
 
 
-def _FindNextAncestor(node):
-  if node.parent is None:
-    return node
-
-  if node.parent.next_sibling is not None:
-    return node.parent.next_sibling
-
-  return _FindNextAncestor(node.parent)
-
-
 def _AnnotateIndents(tree):
   """Annotate the tree with child_indent annotations.
 
