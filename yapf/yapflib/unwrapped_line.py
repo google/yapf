@@ -85,6 +85,31 @@ class UnwrappedLine(object):
       prev_length = token.total_length
       prev_token = token
 
+  def Split(self):
+    """Split the line at semicolons."""
+    if not self.has_semicolon or self.disable:
+      return [self]
+
+    uwlines = []
+    uwline = UnwrappedLine(self.depth)
+    for tok in self._tokens:
+      if tok.value == ';':
+        uwlines.append(uwline)
+        uwline = UnwrappedLine(self.depth)
+      else:
+        uwline.AppendToken(tok)
+
+    if len(uwline.tokens):
+      uwlines.append(uwline)
+
+    for uwline in uwlines:
+      pytree_utils.SetNodeAnnotation(uwline.first.node,
+                                     pytree_utils.Annotation.MUST_SPLIT, True)
+      uwline.first.previous_token = None
+      uwline.last.next_token = None
+
+    return uwlines
+
   ############################################################################
   # Token Access and Manipulation Methods                                    #
   ############################################################################
@@ -175,6 +200,10 @@ class UnwrappedLine(object):
   @property
   def is_comment(self):
     return self.first.is_comment
+
+  @property
+  def has_semicolon(self):
+    return any(tok.value == ';' for tok in self._tokens)
 
 
 def _IsIdNumberStringToken(tok):

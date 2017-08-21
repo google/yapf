@@ -2,7 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.17.0] Unreleased
+## [0.17.1] UNRELEASED
+### Fixed
+- Allow semicolons if the line is disabled.
+
+## [0.17.0] 2017-08-20
 ### Added
 - Option `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` prevents adding spaces
   around selected binary operators, in accordance with the current style guide.
@@ -13,6 +17,7 @@
 - Corrected how `DEDENT_CLOSING_BRACKETS` and `COALESCE_BRACKETS` interacted.
 - Fix return value to return a boolean.
 - Correct vim plugin not to clobber edited code if yapf returns an error.
+- Ensured comma-terminated tuples with multiple elements are split onto separate lines.
 - Fix issue where subsequent comments at decreasing levels of indentation
   were improperly aligned and/or caused output with invalid syntax.
 
