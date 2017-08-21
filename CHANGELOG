@@ -5,6 +5,8 @@
 ## [0.17.1] UNRELEASED
 ### Fixed
 - Allow semicolons if the line is disabled.
+- Fix issue where subsequent comments at decreasing levels of indentation
+  were improperly aligned and/or caused output with invalid syntax.
 
 ## [0.17.0] 2017-08-20
 ### Added
@@ -18,8 +20,6 @@
 - Fix return value to return a boolean.
 - Correct vim plugin not to clobber edited code if yapf returns an error.
 - Ensured comma-terminated tuples with multiple elements are split onto separate lines.
-- Fix issue where subsequent comments at decreasing levels of indentation
-  were improperly aligned and/or caused output with invalid syntax.
 
 ## [0.16.3] 2017-07-13
 ### Changed
