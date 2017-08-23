@@ -7,6 +7,8 @@
 - Allow semicolons if the line is disabled.
 - Fix issue where subsequent comments at decreasing levels of indentation
   were improperly aligned and/or caused output with invalid syntax.
+- Fix issue where specifying a line range removed a needed line before a
+  comment.
 
 ## [0.17.0] 2017-08-20
 ### Added

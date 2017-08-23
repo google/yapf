@@ -1197,6 +1197,32 @@ class CommandLineTest(unittest.TestCase):
           expected_formatted_code,
           extra_options=['--style={0}'.format(stylepath)])
 
+  def testSpacingBeforeComments(self):
+    unformatted_code = textwrap.dedent("""\
+        A = 42
+
+
+        # A comment
+        def x():
+            pass
+        def _():
+            pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        A = 42
+
+
+        # A comment
+        def x():
+            pass
+        def _():
+            pass
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-2'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""
