@@ -459,10 +459,17 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
   def testOpeningAndClosingBrackets(self):
     unformatted_code = textwrap.dedent("""\
+        foo( (1, ) )
+        foo( ( 1, 2, 3  ) )
         foo( ( 1, 2, 3, ) )
         """)
     expected_formatted_code = textwrap.dedent("""\
-        foo((1, 2, 3,))
+        foo((1,))
+        foo((1, 2, 3))
+        foo((
+            1,
+            2,
+            3,))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -2266,23 +2273,26 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           style.CreateStyleFromConfig(
               '{based_on_style: chromium, coalesce_brackets: True}'))
       unformatted_code = textwrap.dedent("""\
-          date_time_values = {
+          date_time_values = (
+              {
+                  u'year': year,
+                  u'month': month,
+                  u'day_of_month': day_of_month,
+                  u'hours': hours,
+                  u'minutes': minutes,
+                  u'seconds': seconds
+              }
+          )
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          date_time_values = ({
               u'year': year,
               u'month': month,
               u'day_of_month': day_of_month,
               u'hours': hours,
               u'minutes': minutes,
               u'seconds': seconds
-          }
-          """)
-      expected_formatted_code = textwrap.dedent("""\
-          date_time_values = {
-              u'year': year,
-              u'month': month,
-              u'day_of_month': day_of_month,
-              u'hours': hours,
-              u'minutes': minutes,
-              u'seconds': seconds}
+          })
           """)
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,

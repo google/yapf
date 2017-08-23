@@ -56,6 +56,26 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testOperatorStyle(self):
+    try:
+      sympy_style = style.CreatePEP8Style()
+      sympy_style['NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS'] = \
+        style._StringSetConverter('*,/')
+      style.SetGlobalStyle(sympy_style)
+      unformatted_code = textwrap.dedent("""\
+          a = 1+2 * 3 - 4 / 5
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a = 1 + 2*3 - 4/5
+          """)
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      style.DEFAULT_STYLE = self.current_style
+
 
 if __name__ == '__main__':
   unittest.main()

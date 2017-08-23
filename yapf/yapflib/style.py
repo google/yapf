@@ -136,6 +136,16 @@ _STYLE_HELP = dict(
       etc."""),
     SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
       Use spaces around the power operator."""),
+    NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent("""\
+      Do not include spaces around selected binary operators. For example:
+
+        1 + 2 * 3 - 4 / 5
+
+      will be formatted as follows when configured with a value "*,/":
+
+        1 + 2*3 - 4/5
+
+      """),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
@@ -216,6 +226,7 @@ def CreatePEP8Style():
       JOIN_MULTIPLE_LINES=True,
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_AROUND_POWER_OPERATOR=False,
+      NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
@@ -300,6 +311,11 @@ def _StringListConverter(s):
   return [part.strip() for part in s.split(',')]
 
 
+def _StringSetConverter(s):
+  """Option value converter for a comma-separated set of strings."""
+  return set(part.strip() for part in s.split(','))
+
+
 def _BoolConverter(s):
   """Option value converter for a boolean."""
   return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
@@ -329,6 +345,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     INDENT_WIDTH=int,
     JOIN_MULTIPLE_LINES=_BoolConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
+    NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
     SPACES_BEFORE_COMMENT=int,

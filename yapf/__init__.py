@@ -38,7 +38,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.16.3'
+__version__ = '0.17.0'
 
 
 def main(argv):
@@ -177,7 +177,7 @@ def main(argv):
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
 
-  FormatFiles(
+  changed = FormatFiles(
       files,
       lines,
       style_config=args.style,
@@ -186,7 +186,7 @@ def main(argv):
       print_diff=args.diff,
       verify=args.verify,
       parallel=args.parallel)
-  return 0
+  return 1 if changed and args.diff else 0
 
 
 def FormatFiles(filenames,

@@ -143,7 +143,8 @@ def FormatCode(unformatted_source,
 
   lines = _LineRangesToSet(lines)
   _MarkLinesToFormat(uwlines, lines)
-  reformatted_source = reformatter.Reformat(uwlines, verify, lines)
+  reformatted_source = reformatter.Reformat(
+      _SplitSemicolons(uwlines), verify, lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
@@ -152,7 +153,7 @@ def FormatCode(unformatted_source,
       unformatted_source, reformatted_source, filename=filename)
 
   if print_diff:
-    return code_diff, code_diff != ''
+    return code_diff, code_diff.strip() != ''
 
   return reformatted_source, True
 
@@ -205,6 +206,13 @@ def ReadFile(filename, logger=None):
     if logger:
       logger(err)
     raise
+
+
+def _SplitSemicolons(uwlines):
+  res = []
+  for uwline in uwlines:
+    res.extend(uwline.Split())
+  return res
 
 
 DISABLE_PATTERN = r'^#.*\byapf:\s*disable\b'

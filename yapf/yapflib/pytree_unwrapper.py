@@ -258,8 +258,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
 
   def Visit_testlist_gexp(self, node):  # pylint: disable=invalid-name
-    if _ContainsComments(node):
-      _DetermineMustSplitAnnotation(node)
+    _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
@@ -281,12 +280,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     if leaf.type in _WHITESPACE_TOKENS:
       self._StartNewLine()
     elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
-      if leaf.value == ';':
-        # Split up multiple statements on one line.
-        self._StartNewLine()
-      else:
-        # Add non-whitespace tokens and comments that aren't empty.
-        self._cur_unwrapped_line.AppendNode(leaf)
+      # Add non-whitespace tokens and comments that aren't empty.
+      self._cur_unwrapped_line.AppendNode(leaf)
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}
@@ -336,6 +331,11 @@ def _AdjustSplitPenalty(uwline):
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
   if not _ContainsComments(node):
+    token = next(node.parent.leaves())
+    if token.value == '(':
+      if sum(1 for ch in node.children
+             if pytree_utils.NodeName(ch) == 'COMMA') < 2:
+        return
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
       return
