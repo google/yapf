@@ -258,8 +258,8 @@ def _FormatFile(filename,
         verify=verify,
         logger=logging.warning)
     if not in_place and reformatted_code:
-      file_resources.WriteReformattedCode(filename, reformatted_code, in_place,
-                                          encoding)
+      file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
+                                          in_place)
     return has_change
   except SyntaxError as e:
     e.filename = filename

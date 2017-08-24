@@ -78,8 +78,8 @@ def GetCommandLineFiles(command_line_file_list, recursive, exclude):
 
 def WriteReformattedCode(filename,
                          reformatted_code,
-                         in_place=False,
-                         encoding=''):
+                         encoding='',
+                         in_place=False):
   """Emit the reformatted code.
 
   Write the reformatted code into the file, if in_place is True. Otherwise,
@@ -88,8 +88,8 @@ def WriteReformattedCode(filename,
   Arguments:
     filename: (unicode) The name of the unformatted file.
     reformatted_code: (unicode) The reformatted code.
-    in_place: (bool) If True, then write the reformatted code to the file.
     encoding: (unicode) The encoding of the file.
+    in_place: (bool) If True, then write the reformatted code to the file.
   """
   if in_place:
     with py3compat.open_with_encoding(
@@ -167,3 +167,12 @@ def IsPythonFile(filename):
     return False
 
   return re.match(r'^#!.*\bpython[23]?\b', first_line)
+
+
+def FileEncoding(filename):
+  """Return the file's encoding."""
+  try:
+    with open(filename, 'rb') as fd:
+      return tokenize.detect_encoding(fd.readline)[0]
+  except IOError:
+    raise
