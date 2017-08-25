@@ -9,6 +9,7 @@
   were improperly aligned and/or caused output with invalid syntax.
 - Fix issue where specifying a line range removed a needed line before a
   comment.
+- Fix spacing between unary operators if one is 'not'.
 
 ## [0.17.0] 2017-08-20
 ### Added

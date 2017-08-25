@@ -327,6 +327,22 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testUnaryOperator(self):
+    unformatted_code = textwrap.dedent("""\
+        if not -3 < x < 3:
+          pass
+        if -3 < x < 3:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if not -3 < x < 3:
+            pass
+        if -3 < x < 3:
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

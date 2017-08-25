@@ -275,6 +275,9 @@ def _SpaceRequiredBetween(left, right):
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary opertor and the unary operator.
     return True
+  if left.is_keyword and _IsUnaryOperator(right):
+    # Handle things like "not -3 < x".
+    return True
   if _IsUnaryOperator(left) and _IsUnaryOperator(right):
     # No space between two unary operators.
     return False
