@@ -137,11 +137,22 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_argument(self, node):  # pylint: disable=invalid-name
     # argument ::= test [comp_for] | test '=' test  # Really [keyword '='] test
     self.DefaultNodeVisit(node)
-
     index = 1
     while index < len(node.children) - 1:
       child = node.children[index]
       if isinstance(child, pytree.Leaf) and child.value == '=':
+        _SetSplitPenalty(_FirstChildNode(node.children[index]), NAMED_ASSIGN)
+        _SetSplitPenalty(
+            _FirstChildNode(node.children[index + 1]), NAMED_ASSIGN)
+      index += 1
+
+  def Visit_tname(self, node):  # pylint: disable=invalid-name
+    # tname ::= NAME [':' test]
+    self.DefaultNodeVisit(node)
+    index = 1
+    while index < len(node.children) - 1:
+      child = node.children[index]
+      if isinstance(child, pytree.Leaf) and child.value == ':':
         _SetSplitPenalty(_FirstChildNode(node.children[index]), NAMED_ASSIGN)
         _SetSplitPenalty(
             _FirstChildNode(node.children[index + 1]), NAMED_ASSIGN)

@@ -262,6 +262,14 @@ def _SpaceRequiredBetween(left, right):
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
     return True
+  if (format_token.Subtype.SUBSCRIPT_COLON in left.subtypes or
+      format_token.Subtype.SUBSCRIPT_COLON in right.subtypes):
+    # A subscript shouldn't have spaces separating its colons.
+    return False
+  if (format_token.Subtype.TYPED_NAME in left.subtypes or
+      format_token.Subtype.TYPED_NAME in right.subtypes):
+    # A typed argument should have a space after the colon.
+    return True
   if left.is_string:
     if (rval == '=' and format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
         right.subtypes):
@@ -293,15 +301,10 @@ def _SpaceRequiredBetween(left, right):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
     return False
-  if (format_token.Subtype.SUBSCRIPT_COLON in left.subtypes or
-      format_token.Subtype.SUBSCRIPT_COLON in right.subtypes):
-    # A subscript shouldn't have spaces separating its colons.
-    return False
   if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes or
       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
-    # However, a typed argument should have a space after the colon.
-    return lval == ':' or style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
+    return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
   if (format_token.Subtype.VARARGS_LIST in left.subtypes or
       format_token.Subtype.VARARGS_LIST in right.subtypes):
     return False

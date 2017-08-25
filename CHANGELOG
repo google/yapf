@@ -3,6 +3,8 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.17.1] UNRELEASED
+### Changed
+- Use spaces around the '=' in a typed name argument to align with 3.6 syntax.
 ### Fixed
 - Allow semicolons if the line is disabled.
 - Fix issue where subsequent comments at decreasing levels of indentation

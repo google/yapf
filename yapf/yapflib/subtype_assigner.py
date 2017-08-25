@@ -48,7 +48,7 @@ def AssignSubtypes(tree):
 # Map tokens in argument lists to their respective subtype.
 _ARGLIST_TOKEN_TO_SUBTYPE = {
     '=': format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
-    ':': format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+    ':': format_token.Subtype.TYPED_NAME,
     '*': format_token.Subtype.VARARGS_STAR,
     '**': format_token.Subtype.KWARGS_STAR_STAR,
 }
@@ -239,11 +239,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #                     | '*' test (',' argument)* [',' '**' test]
     #                     | '**' test)
     self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_tname(self, node):  # pylint: disable=invalid-name
     self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
     # decorator ::=
@@ -270,7 +272,21 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' tname)
     #     | tfpdef ['=' test] (',' tfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    tname = False
+    for child in node.children:
+      if pytree_utils.NodeName(child) == 'tname':
+        tname = True
+        _SetArgListSubtype(child, format_token.Subtype.TYPED_NAME,
+                           format_token.Subtype.TYPED_NAME_ARG_LIST)
+      if not isinstance(child, pytree.Leaf):
+        continue
+      if child.value == ',':
+        tname = False
+      elif child.value == '=' and tname:
+        _AppendTokenSubtype(child, subtype=format_token.Subtype.TYPED_NAME)
+        tname = False
 
   def Visit_varargslist(self, node):  # pylint: disable=invalid-name
     # varargslist ::=
@@ -305,28 +321,26 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                                                   format_token.Subtype.NONE))
 
 
-def _SetDefaultOrNamedAssignArgListSubtype(node):
+def _SetArgListSubtype(node, node_subtype, list_subtype):
   """Set named assign subtype on elements in a arg list."""
 
-  def HasDefaultOrNamedAssignSubtype(node):
+  def HasSubtype(node):
     """Return True if the arg list has a named assign subtype."""
     if isinstance(node, pytree.Leaf):
-      if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
-          pytree_utils.GetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
-                                         set())):
+      if node_subtype in pytree_utils.GetNodeAnnotation(
+          node, pytree_utils.Annotation.SUBTYPE, set()):
         return True
       return False
     has_subtype = False
     for child in node.children:
       if pytree_utils.NodeName(child) != 'arglist':
-        has_subtype |= HasDefaultOrNamedAssignSubtype(child)
+        has_subtype |= HasSubtype(child)
     return has_subtype
 
-  if HasDefaultOrNamedAssignSubtype(node):
+  if HasSubtype(node):
     for child in node.children:
       if pytree_utils.NodeName(child) != 'COMMA':
-        _AppendFirstLeafTokenSubtype(
-            child, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+        _AppendFirstLeafTokenSubtype(child, list_subtype)
 
 
 def _AppendTokenSubtype(node, subtype):

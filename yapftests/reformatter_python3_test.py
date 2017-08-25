@@ -41,7 +41,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
         def x(aaaaaaaaaaaaaaa: int,
               bbbbbbbbbbbbbbbb: str,
               ccccccccccccccc: dict,
-              eeeeeeeeeeeeee: set={1, 2, 3}) -> bool:
+              eeeeeeeeeeeeee: set = {1, 2, 3}) -> bool:
             pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
@@ -161,11 +161,11 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
             pass
         """)
     expected_formatted_code = textwrap.dedent("""\
-        def foo(x: int=42):
+        def foo(x: int = 42):
             pass
 
 
-        def foo2(x: 'int'=42):
+        def foo2(x: 'int' = 42):
             pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
