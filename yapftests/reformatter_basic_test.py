@@ -1590,7 +1590,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                   1,
               ('consectetur adipiscing elit.',
                'Vestibulum mauris justo, ornare eget dolor eget'):
-                   2,
+                  2,
               ('vehicula convallis nulla. Vestibulum dictum nisl in malesuada finibus.',):
                   3
           }

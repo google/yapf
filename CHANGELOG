@@ -12,6 +12,7 @@
 - Fix issue where specifying a line range removed a needed line before a
   comment.
 - Fix spacing between unary operators if one is 'not'.
+- Indent the dictionary value correctly if there's a multi-line key.
 
 ## [0.17.0] 2017-08-20
 ### Added
