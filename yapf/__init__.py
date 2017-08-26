@@ -233,8 +233,7 @@ def FormatFiles(filenames,
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
           executor.submit(_FormatFile, filename, lines, style_config,
-                          no_local_style, in_place, print_diff, verify,
-                          verbose)
+                          no_local_style, in_place, print_diff, verify, verbose)
           for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
@@ -254,7 +253,6 @@ def _FormatFile(filename,
                 print_diff=False,
                 verify=True,
                 verbose=False):
-  logging.info('Reformatting %s', filename)
   if verbose:
     print('Reformatting %s' % filename)
   if style_config is None and not no_local_style:
