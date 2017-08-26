@@ -59,6 +59,8 @@ _STYLE_HELP = dict(
              'this is the second element of a tuple'):
                  value,
         }"""),
+    ALLOW_SPLIT_BEFORE_DICT_VALUE=textwrap.dedent("""\
+      Allow splits before the dictionary value."""),
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
       Insert a blank line before a 'def' or 'class' immediately nested
       within another 'def' or 'class'. For example:
@@ -131,11 +133,6 @@ _STYLE_HELP = dict(
       The number of columns to use for indentation."""),
     JOIN_MULTIPLE_LINES=textwrap.dedent("""\
       Join short lines into one line. E.g., single line 'if' statements."""),
-    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
-      Insert a space between the ending comma and closing bracket of a list,
-      etc."""),
-    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
-      Use spaces around the power operator."""),
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent("""\
       Do not include spaces around selected binary operators. For example:
 
@@ -146,6 +143,11 @@ _STYLE_HELP = dict(
         1 + 2*3 - 4/5
 
       """),
+    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
+      Insert a space between the ending comma and closing bracket of a list,
+      etc."""),
+    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
+      Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
@@ -212,6 +214,7 @@ def CreatePEP8Style():
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
+      ALLOW_SPLIT_BEFORE_DICT_VALUE=True,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       COALESCE_BRACKETS=False,
@@ -332,6 +335,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
+    ALLOW_SPLIT_BEFORE_DICT_VALUE=_BoolConverter,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     COALESCE_BRACKETS=_BoolConverter,
@@ -344,8 +348,8 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     INDENT_DICTIONARY_VALUE=_BoolConverter,
     INDENT_WIDTH=int,
     JOIN_MULTIPLE_LINES=_BoolConverter,
-    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
+    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
     SPACES_BEFORE_COMMENT=int,

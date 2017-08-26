@@ -343,6 +343,94 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testNoSplitBeforeDictValue(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: pep8, '
+                                      'allow_split_before_dict_value: false, '
+                                      'coalesce_brackets: true, '
+                                      'dedent_closing_brackets: true, '
+                                      'each_dict_entry_on_separate_line: true, '
+                                      'split_before_logical_operator: true}'))
+
+      unformatted_code = textwrap.dedent("""\
+          some_dict = {
+              'title': _("I am example data"),
+              'description': _("Lorem ipsum dolor met sit amet elit, si vis pacem para bellum "
+                               "elites nihi very long string."),
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          some_dict = {
+              'title': _("I am example data"),
+              'description': _(
+                  "Lorem ipsum dolor met sit amet elit, si vis pacem para bellum "
+                  "elites nihi very long string."
+              ),
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+
+      unformatted_code = textwrap.dedent("""\
+          X = {'a': 1, 'b': 2, 'key': this_is_a_function_call_that_goes_over_the_column_limit_im_pretty_sure()}
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          X = {
+              'a': 1,
+              'b': 2,
+              'key': this_is_a_function_call_that_goes_over_the_column_limit_im_pretty_sure()
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+
+      unformatted_code = textwrap.dedent("""\
+          attrs = {
+              'category': category,
+              'role': forms.ModelChoiceField(label=_("Role"), required=False, queryset=category_roles, initial=selected_role, empty_label=_("No access"),),
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          attrs = {
+              'category': category,
+              'role': forms.ModelChoiceField(
+                  label=_("Role"),
+                  required=False,
+                  queryset=category_roles,
+                  initial=selected_role,
+                  empty_label=_("No access"),
+              ),
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+
+      unformatted_code = textwrap.dedent("""\
+          css_class = forms.CharField(
+              label=_("CSS class"),
+              required=False,
+              help_text=_("Optional CSS class used to customize this category appearance from templates."),
+          )
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          css_class = forms.CharField(
+              label=_("CSS class"),
+              required=False,
+              help_text=_(
+                  "Optional CSS class used to customize this category appearance from templates."
+              ),
+          )
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 if __name__ == '__main__':
   unittest.main()

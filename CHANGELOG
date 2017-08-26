@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.17.1] UNRELEASED
+## [0.18.0] UNRELEASED
+### Added
+- Option `ALLOW_SPLIT_BEFORE_DICT_VALUE` allows a split before a value. If
+  False, then it won't be split even if it goes over the column limit.
 ### Changed
 - Use spaces around the '=' in a typed name argument to align with 3.6 syntax.
 ### Fixed

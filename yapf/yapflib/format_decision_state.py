@@ -129,6 +129,7 @@ class FormatDecisionState(object):
       True if the line can be split before the next token.
     """
     current = self.next_token
+    previous = current.previous_token
 
     if current.is_pseudo_paren:
       return False
@@ -140,6 +141,24 @@ class FormatDecisionState(object):
       # In some situations, a dictionary may be multiline, but pylint doesn't
       # like it. So don't allow it unless forced to.
       return False
+
+    if (not must_split and
+        format_token.Subtype.DICTIONARY_VALUE in current.subtypes and
+        not style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE')):
+      return False
+
+    if previous and previous.value == '(' and current.value == ')':
+      # Don't split an empty function call list if we aren't splitting before
+      # dict values.
+      token = previous.previous_token
+      while token:
+        prev = token.previous_token
+        if not prev or prev.name not in {'NAME', 'DOT'}:
+          break
+        token = token.previous_token
+      if token and format_token.Subtype.DICTIONARY_VALUE in token.subtypes:
+        if not style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE'):
+          return False
 
     return current.can_break_before
 
@@ -256,7 +275,7 @@ class FormatDecisionState(object):
       if not current.OpensScope():
         opening = _GetOpeningBracket(current)
         if not self._EachDictEntryFitsOnOneLine(opening):
-          return True
+          return style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE')
 
     if previous.value == '{':
       # Split if the dict/set cannot fit on one line and ends in a comma.

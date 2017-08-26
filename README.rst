@@ -301,6 +301,9 @@ Knobs
                  value,
         }
 
+``ALLOW_SPLIT_BEFORE_DICT_VALUE``
+    Allow splits before the dictionary value.
+
 ``BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF``
     Insert a blank line before a ``def`` or ``class`` immediately nested within
     another ``def`` or ``class``. For example:
