@@ -24,6 +24,7 @@
 ### Changed
 - Adjust blank lines on formatting boundaries when using the `--lines` option.
 - Return 1 if a diff changed the code. This is in line with how GNU diff acts.
+- Add `-vv` flag to print out file names as they are processed
 ### Fixed
 - Corrected how `DEDENT_CLOSING_BRACKETS` and `COALESCE_BRACKETS` interacted.
 - Fix return value to return a boolean.
