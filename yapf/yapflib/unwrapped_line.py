@@ -99,7 +99,7 @@ class UnwrappedLine(object):
       else:
         uwline.AppendToken(tok)
 
-    if len(uwline.tokens):
+    if uwline.tokens:
       uwlines.append(uwline)
 
     for uwline in uwlines:

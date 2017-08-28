@@ -152,7 +152,7 @@ def FormatCode(unformatted_source,
       unformatted_source, reformatted_source, filename=filename)
 
   if print_diff:
-    return code_diff, code_diff.strip() != ''
+    return code_diff, code_diff.strip() != ''  # pylint: disable=g-explicit-bool-comparison
 
   return reformatted_source, True
 

@@ -171,8 +171,5 @@ def IsPythonFile(filename):
 
 def FileEncoding(filename):
   """Return the file's encoding."""
-  try:
-    with open(filename, 'rb') as fd:
-      return tokenize.detect_encoding(fd.readline)[0]
-  except IOError:
-    raise
+  with open(filename, 'rb') as fd:
+    return tokenize.detect_encoding(fd.readline)[0]

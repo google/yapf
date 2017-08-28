@@ -119,9 +119,9 @@ def SpliceComments(tree):
             for comment_column, comment_indent, comment_group in comment_groups:
               ancestor_at_indent = _FindAncestorAtIndent(child, comment_indent)
               if ancestor_at_indent.type == token.DEDENT:
-                InsertNodes = pytree_utils.InsertNodesBefore
+                InsertNodes = pytree_utils.InsertNodesBefore  # pylint: disable=invalid-name
               else:
-                InsertNodes = pytree_utils.InsertNodesAfter
+                InsertNodes = pytree_utils.InsertNodesAfter  # pylint: disable=invalid-name
               InsertNodes(
                   _CreateCommentsFromPrefix(
                       '\n'.join(comment_group) + '\n',
