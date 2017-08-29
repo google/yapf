@@ -134,7 +134,7 @@ def ProcessEncoding(original_source, is_tty):
   """
   # Use utf-8 as the defualt and fallback setting
   encoding = 'utf-8'
-  if PY3 and not is_tty:
+  if not is_tty:
     # This pattern is extracted from PEP 263
     pattern = b'^[ \t\v]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)'
     # Encoding comment only appears in the first or second line
