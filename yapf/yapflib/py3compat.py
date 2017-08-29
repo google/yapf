@@ -140,11 +140,14 @@ def ProcessEncoding(original_source, is_tty):
       if match_object:
         encoding = match_object.group(1).decode('utf-8')
         break
-    source = [line.decode(encoding, 'backslashreplace').rstrip()
-              for line in original_source]
+    source = [
+        line.decode(encoding, 'backslashreplace').rstrip()
+        for line in original_source
+    ]
   else:
     source = [line.rstrip() for line in original_source]
   return encoding, source
+
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
 # exist in Python 2 yet. To avoid deprecation warnings, subclass ConfigParser to

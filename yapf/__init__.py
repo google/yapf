@@ -181,8 +181,8 @@ def main(argv):
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    file_resources.WriteReformattedCode('<stdout>', reformatted_source,
-                                        encoding=encoding)
+    file_resources.WriteReformattedCode(
+        '<stdout>', reformatted_source, encoding=encoding)
     return 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
