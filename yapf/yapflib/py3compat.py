@@ -107,6 +107,9 @@ else:
 
   def unicode(s):  # pylint: disable=invalid-name
     """Force conversion of s to unicode."""
+    # Avoid TypeError: decoding Unicode is not supported
+    if isinstance(s, __builtin__.unicode):
+      return s
     return __builtin__.unicode(s, 'utf-8')
 
 
