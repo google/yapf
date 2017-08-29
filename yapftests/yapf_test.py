@@ -383,7 +383,7 @@ class CommandLineTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
-  def assertYapfReformats(self, unformatted, expected, extra_options=None):
+  def assertYapfReformats(self, unformatted, expected, extra_options=None, encoding='utf-8'):
     """Check that yapf reformats the given code as expected.
 
     Invokes yapf in a subprocess, piping the unformatted code into its stdin.
@@ -400,9 +400,9 @@ class CommandLineTest(unittest.TestCase):
         stdout=subprocess.PIPE,
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE)
-    reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
+    reformatted_code, stderrdata = p.communicate(unformatted.encode(encoding))
     self.assertEqual(stderrdata, b'')
-    self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
+    self.assertMultiLineEqual(reformatted_code.decode(encoding), expected)
 
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -473,6 +473,28 @@ class CommandLineTest(unittest.TestCase):
         s = "foo\\nbar"
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
+
+  def testReadFromStdinWithUnicodeEncodingAndEncodingComment(self):
+    unformatted_code = textwrap.dedent(u"""\
+        # coding: utf-8
+        s =   "中文字符"
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        # coding: utf-8
+        s = "中文字符"
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code, encoding='utf-8')
+
+  def testReadFromStdinWithOtherEncodingAndEncodingComment(self):
+    unformatted_code = textwrap.dedent(u"""\
+        # coding: gbk
+        s =   "中文字符"
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        # coding: gbk
+        s = "中文字符"
+        """)
+    self.assertYapfReformats(unformatted_code, expected_formatted_code, encoding='gbk')
 
   def testSetChromiumStyle(self):
     unformatted_code = textwrap.dedent("""\
