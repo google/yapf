@@ -15,6 +15,7 @@
 
 import io
 import os
+import re
 import sys
 
 PY3 = sys.version_info[0] >= 3
@@ -35,6 +36,9 @@ if PY3:
   range = range
   ifilter = filter
   raw_input = input
+
+  def readline():
+    return sys.stdin.buffer.readline()
 
   import configparser
 
@@ -60,6 +64,9 @@ else:
 
   from itertools import ifilter
   raw_input = raw_input
+
+  def readline():
+    return sys.stdin.readline()
 
   import ConfigParser as configparser
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access
@@ -102,6 +109,42 @@ else:
     """Force conversion of s to unicode."""
     return __builtin__.unicode(s, 'utf-8')
 
+
+def ProcessEncoding(original_source, is_tty):
+  """Decode the source code if necessary.
+
+  If the source code reading from stdin is from a file, try to use the
+  encoding specifying in magic encoding comment. Otherwise use utf-8 as
+  the default encoding.
+
+  This decode process only takes effect when source code is from a file
+  feeding to stdin. The file is not necessarily using the same encoding as
+  default locale setting, it would be better to get encoding from comment.
+
+  Arguments:
+    original_source: (list of unicode or bytes) The source code reading from
+      stdin.
+    is_tty: (bool) The encoding of the string.
+
+  Returns:
+    A string representing the source code.
+  """
+  # Use utf-8 as the defualt and fallback setting
+  encoding = 'utf-8'
+  if PY3 and not is_tty:
+    # This pattern is extracted from PEP 263
+    pattern = b'^[ \t\v]*#.*?coding[:=][ \t]*([-_.a-zA-Z0-9]+)'
+    # Encoding comment only appears in the first or second line
+    for line in original_source[:2]:
+      match_object = re.match(pattern, line)
+      if match_object:
+        encoding = match_object.group(1).decode('utf-8')
+        break
+    source = [line.decode(encoding, 'backslashreplace').rstrip()
+              for line in original_source]
+  else:
+    source = [line.rstrip() for line in original_source]
+  return encoding, source
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
 # exist in Python 2 yet. To avoid deprecation warnings, subclass ConfigParser to

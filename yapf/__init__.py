@@ -152,6 +152,7 @@ def main(argv):
       parser.error('cannot use --in-place or --diff flags when reading '
                    'from stdin')
 
+    is_tty = os.isatty(sys.stdin.fileno())
     original_source = []
     while True:
       try:
@@ -159,7 +160,13 @@ def main(argv):
         # user will need to hit 'Ctrl-D' more than once if they're inputting
         # the program by hand. 'raw_input' throws an EOFError exception if
         # 'Ctrl-D' is pressed, which makes it easy to bail out of this loop.
-        original_source.append(py3compat.raw_input())
+        if is_tty:
+          original_source.append(py3compat.raw_input())
+        else:
+          line = py3compat.readline()
+          if not line:
+            break
+          original_source.append(line)
       except EOFError:
         break
 
@@ -167,14 +174,15 @@ def main(argv):
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
-    source = [line.rstrip() for line in original_source]
+    encoding, source = py3compat.ProcessEncoding(original_source, is_tty)
     reformatted_source, _ = yapf_api.FormatCode(
         py3compat.unicode('\n'.join(source) + '\n'),
         filename='<stdin>',
         style_config=style_config,
         lines=lines,
         verify=args.verify)
-    file_resources.WriteReformattedCode('<stdout>', reformatted_source)
+    file_resources.WriteReformattedCode('<stdout>', reformatted_source,
+                                        encoding=encoding)
     return 0
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
