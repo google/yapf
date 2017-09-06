@@ -1223,6 +1223,42 @@ class CommandLineTest(unittest.TestCase):
         expected_formatted_code,
         extra_options=['--lines', '1-2'])
 
+  def testSpacingBeforeCommentsInDicts(self):
+    unformatted_code = textwrap.dedent("""\
+        A=42
+
+        X = {
+            # 'Valid' statuses.
+            PASSED:  # Passed
+                'PASSED',
+            FAILED:  # Failed
+                'FAILED',
+            TIMED_OUT:  # Timed out.
+                'FAILED',
+            BORKED:  # Broken.
+                'BROKEN'
+        }
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        A = 42
+
+        X = {
+            # 'Valid' statuses.
+            PASSED:  # Passed
+                'PASSED',
+            FAILED:  # Failed
+                'FAILED',
+            TIMED_OUT:  # Timed out.
+                'FAILED',
+            BORKED:  # Broken.
+                'BROKEN'
+        }
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--style', 'chromium', '--lines', '1-1'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""

@@ -147,8 +147,13 @@ class FormatToken(object):
   def RetainHorizontalSpacing(self, first_column, depth):
     """Retains a token's horizontal spacing."""
     previous = self.previous_token
-    if previous is None:
+    if not previous:
       return
+
+    if previous.is_pseudo_paren:
+      previous = previous.previous_token
+      if not previous:
+        return
 
     cur_lineno = self.lineno
     prev_lineno = previous.lineno
@@ -174,6 +179,7 @@ class FormatToken(object):
       prev_len = len(previous.value.split('\n')[-1])
       if '\n' in previous.value:
         prev_column = 0  # Last line starts in column 0.
+
     self.spaces_required_before = cur_column - (prev_column + prev_len)
 
   def OpensScope(self):
