@@ -227,6 +227,24 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testContinuationIndentWithAsync(self):
+    if sys.version_info[1] < 5:
+      return
+    unformatted_code = textwrap.dedent("""\
+        async def start_websocket():
+            async with session.ws_connect(
+                r"ws://a_really_long_long_long_long_long_long_url") as ws:
+                pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        async def start_websocket():
+            async with session.ws_connect(
+                    r"ws://a_really_long_long_long_long_long_long_url") as ws:
+                pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

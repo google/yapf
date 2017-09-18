@@ -31,9 +31,6 @@ from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
-_COMPOUND_STMTS = frozenset(
-    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
-
 
 class FormatDecisionState(object):
   """The current state when indenting an unwrapped line.
@@ -184,7 +181,7 @@ class FormatDecisionState(object):
     # with the exception of function declarations.
     if (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
         self.line.first.value != 'def' and
-        self.line.first.value in _COMPOUND_STMTS):
+        _IsCompoundStatement(self.line.first)):
       return False
 
     ###########################################################################
@@ -580,7 +577,7 @@ class FormatDecisionState(object):
         if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
           return top_of_stack.indent
 
-    if (self.line.first.value in _COMPOUND_STMTS and
+    if (_IsCompoundStatement(self.line.first) and
         (not style.Get('DEDENT_CLOSING_BRACKETS') or
          style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
       token_indent = (len(self.line.first.whitespace_prefix.split('\n')[-1]) +
@@ -713,6 +710,16 @@ class FormatDecisionState(object):
     length = current.total_length - entry_start.total_length
     length += len(entry_start.value)
     return length + self.stack[-2].indent <= self.column_limit
+
+
+_COMPOUND_STMTS = frozenset(
+    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
+
+
+def _IsCompoundStatement(token):
+  if token.value == 'async':
+    token = token.next_token
+  return token.value in _COMPOUND_STMTS
 
 
 def _IsFunctionCallWithArguments(token):

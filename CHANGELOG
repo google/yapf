@@ -18,6 +18,8 @@
 - Indent the dictionary value correctly if there's a multi-line key.
 - Don't remove needed spacing before a comment in a dict when in "chromium"
   style.
+- Increase indent for continuation line with same indent as next logical line
+  with 'async with' statement.
 
 ## [0.17.0] 2017-08-20
 ### Added
