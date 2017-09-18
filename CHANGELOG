@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.18.0] UNRELEASED
+## [0.18.0] 2017-09-18
 ### Added
 - Option `ALLOW_SPLIT_BEFORE_DICT_VALUE` allows a split before a value. If
   False, then it won't be split even if it goes over the column limit.
