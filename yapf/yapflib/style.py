@@ -495,8 +495,8 @@ def _CreateStyleFromConfigParser(config):
     try:
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     except ValueError:
-      raise StyleConfigError(
-          "'{}' is not a valid setting for {}.".format(value, option))
+      raise StyleConfigError("'{}' is not a valid setting for {}.".format(
+          value, option))
   return base_style
 
 

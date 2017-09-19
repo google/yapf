@@ -229,8 +229,8 @@ def _MarkLinesToFormat(uwlines, lines):
   """Skip sections of code that we shouldn't reformat."""
   if lines:
     for uwline in uwlines:
-      uwline.disable = not (
-          lines.intersection(range(uwline.lineno, uwline.last.lineno + 1)))
+      uwline.disable = not lines.intersection(
+          range(uwline.lineno, uwline.last.lineno + 1))
 
   # Now go through the lines and disable any lines explicitly marked as
   # disabled.

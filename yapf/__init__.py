@@ -256,8 +256,8 @@ def _FormatFile(filename,
   if verbose:
     print('Reformatting %s' % filename)
   if style_config is None and not no_local_style:
-    style_config = (
-        file_resources.GetDefaultStyleForDir(os.path.dirname(filename)))
+    style_config = file_resources.GetDefaultStyleForDir(
+        os.path.dirname(filename))
   try:
     reformatted_code, encoding, has_change = yapf_api.FormatFile(
         filename,

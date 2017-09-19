@@ -486,18 +486,17 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testNoQueueSeletionInMiddleOfLine(self):
-    # If the queue isn't properly consttructed, then a token in the middle of
-    # the line may be selected as the one with least penalty. The tokens after
-    # that one are then splatted at the end of the line with no formatting.
+    # If the queue isn't properly constructed, then a token in the middle of the
+    # line may be selected as the one with least penalty. The tokens after that
+    # one are then splatted at the end of the line with no formatting.
     # FIXME(morbo): The formatting here isn't ideal.
-    unformatted_code = textwrap.dedent("""\
-        find_symbol(node.type) + "< " + " ".join(find_pattern(n) for n in \
-node.child) + " >"
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        find_symbol(node.type) + "< " + " ".join(find_pattern(n)
-                                                 for n in node.child) + " >"
-        """)
+    unformatted_code = """\
+find_symbol(node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
+"""
+    expected_formatted_code = """\
+find_symbol(
+    node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -744,9 +743,9 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         def f():
 
           def g():
-            while (
-                xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
-                xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
+            while (xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa' and
+                   xxxxxxxxxxxxxxxxxxxxx(
+                       yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
               pass
         ''')
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
@@ -1319,8 +1318,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     code = textwrap.dedent("""\
       a = f(
           a="something",
-          b=
-          "something requiring comment which is quite long",  # comment about b (pushes line over 79)
+          b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
           c="something else, about which comment doesn't make sense")
       """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
