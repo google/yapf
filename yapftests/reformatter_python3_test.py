@@ -116,6 +116,31 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
+  def testAsyncDefSplitBeforeFirstArgument(self):
+    # https://github.com/google/yapf/issues/458
+    if sys.version_info[1] < 5:
+      return
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, SPLIT_BEFORE_FIRST_ARGUMENT: True}'))
+      code = textwrap.dedent("""\
+      async def open_file(
+              file,
+              mode='r',
+              buffering=-1,
+              encoding=None,
+              errors=None,
+              newline=None,
+              closefd=True,
+              opener=None):
+          pass
+      """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
   def testNoSpacesAroundPowerOparator(self):
     try:
       style.SetGlobalStyle(

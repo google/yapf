@@ -180,7 +180,7 @@ class FormatDecisionState(object):
     # Prevent splitting before the first argument in compound statements
     # with the exception of function declarations.
     if (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
-        self.line.first.value != 'def' and
+        not _IsDefStatement(self.line.first) and
         _IsCompoundStatement(self.line.first)):
       return False
 
@@ -720,6 +720,12 @@ def _IsCompoundStatement(token):
   if token.value == 'async':
     token = token.next_token
   return token.value in _COMPOUND_STMTS
+
+
+def _IsDefStatement(token):
+  if token.value == 'async':
+    token = token.next_token
+  return token.value == 'def'
 
 
 def _IsFunctionCallWithArguments(token):
