@@ -9,6 +9,8 @@
 - A non-multiline string may have newlines if it contains continuation markers
   itself. Don't add a newline after the string when retaining the vertical
   space.
+- Take into account the "async" keyword when determining if we must split
+  before the first argument.
 
 ## [0.18.0] 2017-09-18
 ### Added

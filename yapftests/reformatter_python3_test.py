@@ -245,6 +245,73 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testNoSpacesAroundPowerOparator(self):
+    if sys.version_info[1] < 5:
+      return
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, '
+              'dedent_closing_brackets: true, '
+              'coalesce_brackets: false, '
+              'space_between_ending_comma_and_closing_bracket: false, '
+              'split_arguments_when_comma_terminated: true, '
+              'split_before_first_argument: true}'))
+      unformatted_code = """\
+async def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+    pass
+
+async def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
+    pass
+
+def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+    pass
+
+def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
+    pass
+"""
+      expected_formatted_code = """\
+async def open_file(
+        file,
+        mode='r',
+        buffering=-1,
+        encoding=None,
+        errors=None,
+        newline=None,
+        closefd=True,
+        opener=None
+):
+    pass
+
+
+async def run_sync_in_worker_thread(
+        sync_fn, *args, cancellable=False, limiter=None
+):
+    pass
+
+
+def open_file(
+        file,
+        mode='r',
+        buffering=-1,
+        encoding=None,
+        errors=None,
+        newline=None,
+        closefd=True,
+        opener=None
+):
+    pass
+
+
+def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
+    pass
+"""
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 if __name__ == '__main__':
   unittest.main()
