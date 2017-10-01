@@ -1106,6 +1106,15 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testContinuationMarkerAfterStringWithContinuation(self):
+    code = """\
+s = 'foo \\
+    bar' \\
+    .format()
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testEmptyContainers(self):
     code = textwrap.dedent("""\
         flags.DEFINE_list(

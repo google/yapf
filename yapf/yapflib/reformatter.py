@@ -178,7 +178,7 @@ def _EmitLineUnformatted(state):
     previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
 
-    if previous_token.is_multiline_string:
+    if previous_token.is_multiline_string or previous_token.is_string:
       previous_lineno += previous_token.value.count('\n')
 
     if previous_token.is_continuation:
