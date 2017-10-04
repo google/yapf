@@ -11,6 +11,8 @@
   space.
 - Take into account the "async" keyword when determining if we must split
   before the first argument.
+- Increase affinity for "atom" arguments in function calls. This helps prevent
+  lists from being separated when they don't need to be.
 
 ## [0.18.0] 2017-09-18
 ### Added

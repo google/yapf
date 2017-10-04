@@ -28,6 +28,16 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB67312284(self):
+    code = """\
+def _():
+  self.assertEqual(
+      [u'to be published 2', u'to be published 1', u'to be published 0'],
+      [el.text for el in page.first_column_tds])
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB65241516(self):
     unformatted_code = """\
 checkpoint_files = gfile.Glob(os.path.join(TrainTraceDir(unit_key, "*", "*"), embedding_model.CHECKPOINT_FILENAME + "-*"))

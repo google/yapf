@@ -28,6 +28,7 @@ NAMED_ASSIGN = 11000
 DOTTED_NAME = 4000
 VERY_STRONGLY_CONNECTED = 3500
 STRONGLY_CONNECTED = 3000
+CONNECTED = 500
 
 OR_TEST = 1000
 AND_TEST = 1100
@@ -133,6 +134,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == ',':
         _SetUnbreakable(child)
       index += 1
+    for child in node.children:
+      if pytree_utils.NodeName(child) == 'atom':
+        _IncreasePenalty(child, CONNECTED)
 
   def Visit_argument(self, node):  # pylint: disable=invalid-name
     # argument ::= test [comp_for] | test '=' test  # Really [keyword '='] test
