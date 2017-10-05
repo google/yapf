@@ -34,8 +34,8 @@ as the Google Python Style guide with two exceptions:
 - 2 spaces for indentation rather than 4.
 - CamelCase for function and method names rather than words_with_underscores.
 
-The rationale for this is that YAPF was initially developed at Google where these
-two exceptions are still part of the internal Python style guide.
+The rationale for this is that YAPF was initially developed at Google where
+these two exceptions are still part of the internal Python style guide.
 
 Small print
 -----------
