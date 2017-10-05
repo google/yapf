@@ -245,7 +245,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testNoSpacesAroundPowerOparator(self):
+  def testSplittingArguments(self):
     if sys.version_info[1] < 5:
       return
     try:

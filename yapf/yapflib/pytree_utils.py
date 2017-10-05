@@ -269,7 +269,7 @@ def DumpNodeToString(node):
     The string representation.
   """
   if isinstance(node, pytree.Leaf):
-    fmt = ('{name}({value}) [lineno={lineno}, column={column}, ' +
+    fmt = ('{name}({value}) [lineno={lineno}, column={column}, '
            'prefix={prefix}, penalty={penalty}]')
     return fmt.format(
         name=NodeName(node),

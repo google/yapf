@@ -123,7 +123,7 @@ class MainTest(unittest.TestCase):
   def testEchoBadInput(self):
     bad_syntax = '  a = 1\n'
     with patched_input(bad_syntax):
-      with captured_output() as (out, _):
+      with captured_output() as (_, _):
         with self.assertRaisesRegexp(SyntaxError, 'unexpected indent'):
           yapf.main([])
 
