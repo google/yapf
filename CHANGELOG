@@ -13,6 +13,8 @@
   before the first argument.
 - Increase affinity for "atom" arguments in function calls. This helps prevent
   lists from being separated when they don't need to be.
+- Don't place a dictionary argument on its own line if it's the last argument
+  in the function call where that function is part of a builder-style call.
 
 ## [0.18.0] 2017-09-18
 ### Added

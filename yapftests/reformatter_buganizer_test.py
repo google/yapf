@@ -28,6 +28,30 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB66912275(self):
+    unformatted_code = """\
+def _():
+  with self.assertRaisesRegexp(errors.HttpError, 'Invalid'):
+    patch_op = api_client.forwardingRules().patch(
+        project=project_id,
+        region=region,
+        forwardingRule=rule_name,
+        body={'fingerprint': base64.urlsafe_b64encode('invalid_fingerprint')}).execute()
+"""
+    expected_formatted_code = """\
+def _():
+  with self.assertRaisesRegexp(errors.HttpError, 'Invalid'):
+    patch_op = api_client.forwardingRules().patch(
+        project=project_id,
+        region=region,
+        forwardingRule=rule_name,
+        body={
+            'fingerprint': base64.urlsafe_b64encode('invalid_fingerprint')
+        }).execute()
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB67312284(self):
     code = """\
 def _():

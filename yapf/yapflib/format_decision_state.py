@@ -255,7 +255,16 @@ class FormatDecisionState(object):
         if (opening and opening.value == '(' and opening.previous_token and
             opening.previous_token.is_name):
           # This is a dictionary that's an argument to a function.
-          if self._FitsOnLine(previous, previous.matching_bracket):
+          if (self._FitsOnLine(previous, previous.matching_bracket) and
+              previous.matching_bracket.next_token and
+              not previous.matching_bracket.next_token.ClosesScope() and
+              (not opening.matching_bracket.next_token or
+               opening.matching_bracket.next_token.value != '.')):
+            # Don't split before the key if:
+            #   - The dictionary fits on a line, and
+            #   - The dictionary brackets don't have a closing scope after
+            #     them, and
+            #   - The function call isn't part of a builder-style call.
             return False
       return True
 

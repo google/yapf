@@ -225,11 +225,13 @@ class StyleFromDict(unittest.TestCase):
 
   def testDefaultBasedOnStyleBadDict(self):
     self.assertRaisesRegexp(style.StyleConfigError, 'Unknown style option',
-                            style.CreateStyleFromConfig,
-                            {'based_on_styl': 'pep8'})
+                            style.CreateStyleFromConfig, {
+                                'based_on_styl': 'pep8'
+                            })
     self.assertRaisesRegexp(style.StyleConfigError, 'not a valid',
-                            style.CreateStyleFromConfig,
-                            {'INDENT_WIDTH': 'FOUR'})
+                            style.CreateStyleFromConfig, {
+                                'INDENT_WIDTH': 'FOUR'
+                            })
 
 
 class StyleFromCommandLine(unittest.TestCase):
