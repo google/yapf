@@ -177,6 +177,10 @@ class FormatDecisionState(object):
       # Split before the closing bracket if we can.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
+    if current.value == ')' and previous.value == ',' and not _IsSingleElementTuple(
+        current.matching_bracket):
+      return True
+
     # Prevent splitting before the first argument in compound statements
     # with the exception of function declarations.
     if (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
@@ -789,6 +793,20 @@ def _IsLastScopeInLine(current):
     if current and current.OpensScope():
       return False
   return True
+
+
+def _IsSingleElementTuple(token):
+  close = token.matching_bracket
+  token = token.next_token
+  num_commas = 0
+  while token != close:
+    if token.value == ',':
+      num_commas += 1
+    if token.OpensScope():
+      token = token.matching_bracket
+    else:
+      token = token.next_token
+  return num_commas == 1
 
 
 class _ParenState(object):

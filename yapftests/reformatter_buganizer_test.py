@@ -28,6 +28,33 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB32167774(self):
+    unformatted_code = """\
+X = (
+    'is_official',
+    'is_cover',
+    'is_remix',
+    'is_instrumental',
+    'is_live',
+    'has_lyrics',
+    'is_album',
+    'is_compilation',)
+"""
+    expected_formatted_code = """\
+X = (
+    'is_official',
+    'is_cover',
+    'is_remix',
+    'is_instrumental',
+    'is_live',
+    'has_lyrics',
+    'is_album',
+    'is_compilation',
+)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB66912275(self):
     unformatted_code = """\
 def _():
@@ -372,17 +399,18 @@ checkpoint_files = gfile.Glob(
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB31911533(self):
-    code = textwrap.dedent("""\
-        class _():
+    code = """\
+class _():
 
-          @parameterized.NamedParameters(
-              ('IncludingModInfoWithHeaderList', AAAA, aaaa),
-              ('IncludingModInfoWithoutHeaderList', BBBB, bbbbb),
-              ('ExcludingModInfoWithHeaderList', CCCCC, cccc),
-              ('ExcludingModInfoWithoutHeaderList', DDDDD, ddddd),)
-          def _():
-            pass
-        """)
+  @parameterized.NamedParameters(
+      ('IncludingModInfoWithHeaderList', AAAA, aaaa),
+      ('IncludingModInfoWithoutHeaderList', BBBB, bbbbb),
+      ('ExcludingModInfoWithHeaderList', CCCCC, cccc),
+      ('ExcludingModInfoWithoutHeaderList', DDDDD, ddddd),
+  )
+  def _():
+    pass
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1465,16 +1493,17 @@ checkpoint_files = gfile.Glob(
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB14468247(self):
-    unformatted_code = textwrap.dedent("""\
-        call(a=1,
-            b=2,
-        )
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        call(
-            a=1,
-            b=2,)
-        """)
+    unformatted_code = """\
+call(a=1,
+    b=2,
+)
+"""
+    expected_formatted_code = """\
+call(
+    a=1,
+    b=2,
+)
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 

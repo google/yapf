@@ -3,6 +3,9 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.18.1] UNRELEASED
+### Changed
+- Split before the ending bracket of a comma-terminated tuple / argument list
+  if it's not a single element tuple / arg list.
 ### Fixed
 - Prefer to split after a comma in an argument list rather than in the middle
   of an argument.

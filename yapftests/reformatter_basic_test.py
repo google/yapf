@@ -458,19 +458,20 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testOpeningAndClosingBrackets(self):
-    unformatted_code = textwrap.dedent("""\
-        foo( (1, ) )
-        foo( ( 1, 2, 3  ) )
-        foo( ( 1, 2, 3, ) )
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        foo((1,))
-        foo((1, 2, 3))
-        foo((
-            1,
-            2,
-            3,))
-        """)
+    unformatted_code = """\
+foo( (1, ) )
+foo( ( 1, 2, 3  ) )
+foo( ( 1, 2, 3, ) )
+"""
+    expected_formatted_code = """\
+foo((1,))
+foo((1, 2, 3))
+foo((
+    1,
+    2,
+    3,
+))
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
