@@ -166,6 +166,10 @@ _STYLE_HELP = dict(
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
         }"""),
+    SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
+      Split after the opening paren which surrounds an expression if it doesn't
+      fit on a single line.
+      """),
     SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
       If an argument / parameter list is going to be split, then split before
       the first argument."""),
@@ -235,6 +239,7 @@ def CreatePEP8Style():
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_BEFORE_BITWISE_OPERATOR=True,
       SPLIT_BEFORE_DICT_SET_GENERATOR=True,
+      SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=False,
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
@@ -271,6 +276,7 @@ def CreateChromiumStyle():
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
+  style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
   return style
 
 
@@ -358,6 +364,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
+    SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=_BoolConverter,
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
@@ -510,9 +517,10 @@ DEFAULT_STYLE_FACTORY = CreatePEP8Style
 _GLOBAL_STYLE_FACTORY = CreatePEP8Style
 
 # The name of the file to use for global style definition.
-GLOBAL_STYLE = (os.path.join(
-    os.getenv('XDG_CONFIG_HOME') or os.path.expanduser('~/.config'), 'yapf',
-    'style'))
+GLOBAL_STYLE = (
+    os.path.join(
+        os.getenv('XDG_CONFIG_HOME') or os.path.expanduser('~/.config'), 'yapf',
+        'style'))
 
 # The name of the file to use for directory-local style definition.
 LOCAL_STYLE = '.style.yapf'

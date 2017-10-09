@@ -216,6 +216,29 @@ class FormatDecisionState(object):
           # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
+    if (style.Get('SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN') and
+        current.is_name):
+      # An expression that's surrounded by parens gets split after the opening
+      # parenthesis.
+      def SurroundedByParens(token):
+        while token:
+          if token.value == ',':
+            return False
+          if token.value == ')':
+            return not token.next_token
+          if token.OpensScope():
+            token = token.matching_bracket.next_token
+          else:
+            token = token.next_token
+        return False
+
+      if (previous.value == '(' and not previous.is_pseudo_paren and
+          not unwrapped_line.IsSurroundedByBrackets(previous)):
+        pptoken = previous.previous_token
+        if (pptoken and not pptoken.is_name and not pptoken.is_keyword and
+            SurroundedByParens(current)):
+          return True
+
     if (current.is_name or current.is_string) and previous.value == ',':
       # If the list has function calls in it and the full list itself cannot
       # fit on the line, then we want to split. Otherwise, we'll get something
@@ -323,8 +346,9 @@ class FormatDecisionState(object):
 
         opening = _GetOpeningBracket(current)
         if opening:
-          arglist_length = (opening.matching_bracket.total_length -
-                            opening.total_length + self.stack[-1].indent)
+          arglist_length = (
+              opening.matching_bracket.total_length - opening.total_length +
+              self.stack[-1].indent)
           return arglist_length > self.column_limit
 
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
@@ -549,8 +573,9 @@ class FormatDecisionState(object):
     if current.value not in {'if', 'for'}:
       last = self.stack[-1]
       last.num_line_splits += 1
-      penalty += (style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
-                  last.num_line_splits)
+      penalty += (
+          style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
+          last.num_line_splits)
 
     if current.OpensScope() and previous.OpensScope():
       # Prefer to keep opening brackets coalesced (unless it's at the beginning
@@ -593,8 +618,9 @@ class FormatDecisionState(object):
     if (_IsCompoundStatement(self.line.first) and
         (not style.Get('DEDENT_CLOSING_BRACKETS') or
          style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
-      token_indent = (len(self.line.first.whitespace_prefix.split('\n')[-1]) +
-                      style.Get('INDENT_WIDTH'))
+      token_indent = (
+          len(self.line.first.whitespace_prefix.split('\n')[-1]) +
+          style.Get('INDENT_WIDTH'))
       if token_indent == top_of_stack.indent:
         return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
