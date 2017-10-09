@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.18.1] UNRELEASED
+## [0.19.0] UNRELEASED
+### Added
+- Added `SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN` that enforces a split
+  after the opening paren of an expression that's surrounded by parens.
 ### Changed
 - Split before the ending bracket of a comma-terminated tuple / argument list
   if it's not a single element tuple / arg list.

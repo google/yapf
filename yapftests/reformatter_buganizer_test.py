@@ -28,6 +28,27 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB35210166(self):
+    unformatted_code = """\
+def _():
+  query = (
+      m.Fetch(n.Raw('monarch.BorgTask', '/proc/container/memory/usage'), { 'borg_user': borguser, 'borg_job': jobname })
+      | o.Window(m.Align('5m')) | p.GroupBy(['borg_user', 'borg_job', 'borg_cell'], q.Mean()))
+"""
+    expected_formatted_code = """\
+def _():
+  query = (
+      m.Fetch(
+          n.Raw('monarch.BorgTask', '/proc/container/memory/usage'), {
+              'borg_user': borguser,
+              'borg_job': jobname
+          })
+      | o.Window(m.Align('5m'))
+      | p.GroupBy(['borg_user', 'borg_job', 'borg_cell'], q.Mean()))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB32167774(self):
     unformatted_code = """\
 X = (

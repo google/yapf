@@ -133,8 +133,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     # standalone comment and in the case of it coming directly after the
     # funcdef, it is a "top" comment for the whole function.
     # TODO(eliben): add more relevant compound statements here.
-    single_stmt_suite = (node.parent and
-                         pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
+    single_stmt_suite = (
+        node.parent and pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
     is_comment_stmt = pytree_utils.IsCommentStatement(node)
     if single_stmt_suite and not is_comment_stmt:
       self._cur_depth += 1

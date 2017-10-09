@@ -443,6 +443,10 @@ Knobs
             for variable in bar if variable != 42
         }
 
+``SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN``
+    Split after the opening paren which surrounds an expression if it doesn't
+    fit on a single line.
+
 ``SPLIT_BEFORE_FIRST_ARGUMENT``
     If an argument / parameter list is going to be split, then split before the
     first argument.
