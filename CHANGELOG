@@ -21,6 +21,7 @@
   lists from being separated when they don't need to be.
 - Don't place a dictionary argument on its own line if it's the last argument
   in the function call where that function is part of a builder-style call.
+- Append the "var arg" type to a star in a star_expr.
 
 ## [0.18.0] 2017-09-18
 ### Added
