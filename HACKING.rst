@@ -21,7 +21,9 @@ Releasing a new version
 
 * Check it looks OK, install it onto a virtualenv, run tests, run yapf as a tool
 
-* Push to PyPI: python setup.py sdist bdist_wheel upload
+* Build release: python setup.py sdist bdist_wheel
+
+* Push to PyPI: twine upload dist/*
 
 * Test in a clean virtualenv that 'pip install yapf' works with the new version
 
