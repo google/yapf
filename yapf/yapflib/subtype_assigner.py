@@ -150,6 +150,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '*':
         _AppendTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR)
+        _AppendTokenSubtype(child, format_token.Subtype.VARARGS_STAR)
 
   def Visit_expr(self, node):  # pylint: disable=invalid-name
     # expr ::= xor_expr ('|' xor_expr)*

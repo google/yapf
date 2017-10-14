@@ -188,7 +188,8 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         [('[', [format_token.Subtype.NONE]),
          ('a', [format_token.Subtype.NONE]),
          (',', [format_token.Subtype.NONE]),
-         ('*', {format_token.Subtype.UNARY_OPERATOR}),
+         ('*', {format_token.Subtype.UNARY_OPERATOR,
+                format_token.Subtype.VARARGS_STAR}),
          ('b', [format_token.Subtype.NONE]),
          (']', [format_token.Subtype.NONE]),],
     ])  # yapf: disable

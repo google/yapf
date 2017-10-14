@@ -177,8 +177,8 @@ class FormatDecisionState(object):
       # Split before the closing bracket if we can.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
-    if current.value == ')' and previous.value == ',' and not _IsSingleElementTuple(
-        current.matching_bracket):
+    if (current.value == ')' and previous.value == ',' and
+        not _IsSingleElementTuple(current.matching_bracket)):
       return True
 
     # Prevent splitting before the first argument in compound statements
@@ -221,6 +221,7 @@ class FormatDecisionState(object):
       # An expression that's surrounded by parens gets split after the opening
       # parenthesis.
       def SurroundedByParens(token):
+        """Check if it's an expression surrounded by parentheses."""
         while token:
           if token.value == ',':
             return False
@@ -822,6 +823,7 @@ def _IsLastScopeInLine(current):
 
 
 def _IsSingleElementTuple(token):
+  """Check if it's a single-element tuple."""
   close = token.matching_bracket
   token = token.next_token
   num_commas = 0
