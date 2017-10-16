@@ -28,6 +28,36 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB35210351(self):
+    unformatted_code = """\
+def _():
+  config.AnotherRuleThing(
+      'the_title_to_the_thing_here',
+      {'monitorname': 'firefly',
+       'service': ACCOUNTING_THING,
+       'severity': 'the_bug',
+       'monarch_module_name': alerts.TheLabel(qa_module_regexp, invert=True)},
+      fanout,
+      alerts.AlertUsToSomething(
+          GetTheAlertToIt('the_title_to_the_thing_here'),
+          GetNotificationTemplate('your_email_here')))
+"""
+    expected_formatted_code = """\
+def _():
+  config.AnotherRuleThing(
+      'the_title_to_the_thing_here', {
+          'monitorname': 'firefly',
+          'service': ACCOUNTING_THING,
+          'severity': 'the_bug',
+          'monarch_module_name': alerts.TheLabel(qa_module_regexp, invert=True)
+      }, fanout,
+      alerts.AlertUsToSomething(
+          GetTheAlertToIt('the_title_to_the_thing_here'),
+          GetNotificationTemplate('your_email_here')))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB34774905(self):
     unformatted_code = """\
 x=[VarExprType(ir_name=IrName( value='x',
@@ -894,20 +924,21 @@ class _():
         class F():
 
           def f():
-            self.assertDictEqual(accounts, {
-                'foo': {
-                    'account': 'foo',
-                    'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'
-                },
-                'bar': {
-                    'account': 'bar',
-                    'lines': 'l5\\nl6\\nl7'
-                },
-                'wiz': {
-                    'account': 'wiz',
-                    'lines': 'l8'
-                }
-            })
+            self.assertDictEqual(
+                accounts, {
+                    'foo': {
+                        'account': 'foo',
+                        'lines': 'l1\\nl2\\nl3\\n1 line(s) were elided.'
+                    },
+                    'bar': {
+                        'account': 'bar',
+                        'lines': 'l5\\nl6\\nl7'
+                    },
+                    'wiz': {
+                        'account': 'wiz',
+                        'lines': 'l8'
+                    }
+                })
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -972,9 +1003,11 @@ class _():
                    | m.ggggggg(bbbbbbbbbbbbbbb)
                    | m.ppppp(
                        (1 - m.ffffffffffffffff(llllllllllllllllllllll * 1000000, m.vvv))
-                       * m.ddddddddddddddddd(m.vvv)), m.fffff(
-                           m.rrr('mmmmmmmmmmmmmmmm', 'sssssssssssssssssssssss'),
-                           dict(ffffffffffffffff, **{
+                       * m.ddddddddddddddddd(m.vvv)),
+                   m.fffff(
+                       m.rrr('mmmmmmmmmmmmmmmm', 'sssssssssssssssssssssss'),
+                       dict(
+                           ffffffffffffffff, **{
                                'mmmmmm:ssssss':
                                    m.rrrrrrrrrrr('|'.join(iiiiiiiiiiiiii), iiiiii=True)
                            }))

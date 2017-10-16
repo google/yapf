@@ -6,6 +6,8 @@
 ### Changed
 - Take into account a named function argument when determining if we should
   split before the first argument in a function call.
+- Split before the first argument in a function call if the arguments contain a
+  dictionary that doesn't fit on a single line.
 
 ## [0.19.0] 2017-10-14
 ### Added

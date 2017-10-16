@@ -352,6 +352,10 @@ class FormatDecisionState(object):
               self.stack[-1].indent)
           return arglist_length > self.column_limit
 
+    if (current.value not in '{)' and previous.value == '(' and
+        self._ArgumentListHasDictionaryEntry(current)):
+      return True
+
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
       # arguments are terminated by a comma.
@@ -751,6 +755,19 @@ class FormatDecisionState(object):
     length += len(entry_start.value)
     return length + self.stack[-2].indent <= self.column_limit
 
+  def _ArgumentListHasDictionaryEntry(self, token):
+    if _IsArgumentToFunction(token):
+      while token:
+        if token.value == '{':
+          length = token.matching_bracket.total_length - token.total_length
+          return length + self.stack[-2].indent > self.column_limit
+        if token.ClosesScope():
+          break
+        if token.OpensScope():
+          token = token.matching_bracket
+        token = token.next_token
+    return False
+
 
 _COMPOUND_STMTS = frozenset(
     {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
@@ -777,6 +794,14 @@ def _IsFunctionCallWithArguments(token):
       break
     token = token.next_token
   return False
+
+
+def _IsArgumentToFunction(token):
+  bracket = unwrapped_line.IsSurroundedByBrackets(token)
+  if not bracket or bracket.value != '(':
+    return False
+  previous = bracket.previous_token
+  return previous and previous.is_name
 
 
 def _GetLengthOfSubtype(token, subtype, exclude=None):
