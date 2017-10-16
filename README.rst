@@ -90,6 +90,7 @@ Options::
 
     usage: yapf [-h] [-v] [-d | -i] [-r | -l START-END] [-e PATTERN]
                 [--style STYLE] [--style-help] [--no-local-style] [-p]
+                [-vv]
                 [files [files ...]]
 
     Formatter for Python code.
@@ -113,10 +114,12 @@ Options::
                             .style.yapf or setup.cfg file located in one of the
                             parent directories of the source file (or current
                             directory for stdin)
-      --style-help          show style settings and exit
-      --no-local-style      don't search for local style definition (.style.yapf)
+      --style-help          show style settings and exit; this output can be saved
+                            to .style.yapf to make your settings permanent
+      --no-local-style      don't search for local style definition
       -p, --parallel        Run yapf in parallel when formatting multiple files.
                             Requires concurrent.futures in Python 2.X
+      -vv, --verbose        Print out file names while processing
 
 
 Formatting style

@@ -2201,9 +2201,11 @@ s = 'foo \\
   def testEllipses(self):
     unformatted_code = textwrap.dedent("""\
         X=...
+        Y = X if ... else X
         """)
     expected_code = textwrap.dedent("""\
         X = ...
+        Y = X if ... else X
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
