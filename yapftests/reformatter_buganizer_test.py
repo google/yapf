@@ -28,6 +28,35 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB34774905(self):
+    unformatted_code = """\
+x=[VarExprType(ir_name=IrName( value='x',
+expr_type=UnresolvedAttrExprType( atom=UnknownExprType(), attr_name=IrName(
+    value='x', expr_type=UnknownExprType(), usage='UNKNOWN', fqn=None,
+    astn=None), usage='REF'), usage='ATTR', fqn='<attr>.x', astn=None))]
+"""
+    expected_formatted_code = """\
+x = [
+    VarExprType(
+        ir_name=IrName(
+            value='x',
+            expr_type=UnresolvedAttrExprType(
+                atom=UnknownExprType(),
+                attr_name=IrName(
+                    value='x',
+                    expr_type=UnknownExprType(),
+                    usage='UNKNOWN',
+                    fqn=None,
+                    astn=None),
+                usage='REF'),
+            usage='ATTR',
+            fqn='<attr>.x',
+            astn=None))
+]
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB65176185(self):
     code = """\
 xx = zip(*[(a, b) for (a, b, c) in yy])
@@ -1315,9 +1344,10 @@ class _():
         def f():
           if True:
             if True:
-              return aaaa.bbbbbbbbb(ccccccc=dddddddddddddd({
-                  ('eeee', 'ffffffff'): str(j)
-              }))
+              return aaaa.bbbbbbbbb(
+                  ccccccc=dddddddddddddd({
+                      ('eeee', 'ffffffff'): str(j)
+                  }))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

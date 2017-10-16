@@ -773,7 +773,7 @@ def _IsFunctionCallWithArguments(token):
     if token.value == '(':
       token = token.next_token
       return token and token.value != ')'
-    elif token.name not in {'NAME', 'DOT'}:
+    elif token.name not in {'NAME', 'DOT', 'EQUAL'}:
       break
     token = token.next_token
   return False
