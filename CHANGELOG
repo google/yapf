@@ -13,6 +13,8 @@
 - When calculating the split penalty for a "trailer", process the child nodes
   afterwards because their penalties may change. For example if a list
   comprehension is an argument.
+- Don't enforce a split before a comment after the opening of a container if it
+  doesn't it on the current line. We try hard not to move such comments around.
 
 ## [0.19.0] 2017-10-14
 ### Added

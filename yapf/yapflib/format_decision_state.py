@@ -408,16 +408,15 @@ class FormatDecisionState(object):
         return True
 
     if (previous.OpensScope() and not current.OpensScope() and
+        not current.is_comment and
         format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
-      if not current.is_comment:
-        if pprevious and not pprevious.is_keyword and not pprevious.is_name:
-          # We want to split if there's a comment in the container.
-          token = current
-          while token != previous.matching_bracket:
-            if token.is_comment:
-              return True
-            token = token.next_token
-
+      if pprevious and not pprevious.is_keyword and not pprevious.is_name:
+        # We want to split if there's a comment in the container.
+        token = current
+        while token != previous.matching_bracket:
+          if token.is_comment:
+            return True
+          token = token.next_token
       if previous.value == '(':
         pptoken = previous.previous_token
         if not pptoken or not pptoken.is_name:
@@ -431,7 +430,7 @@ class FormatDecisionState(object):
             return current.next_token != previous.matching_bracket
       else:
         # Split after the opening of a container if it doesn't fit on the
-        # current line or if it has a comment.
+        # current line.
         if not self._FitsOnLine(previous, previous.matching_bracket):
           return True
 
@@ -756,6 +755,7 @@ class FormatDecisionState(object):
     return length + self.stack[-2].indent <= self.column_limit
 
   def _ArgumentListHasDictionaryEntry(self, token):
+    """Check if the function argument list has a dictionary as an arg."""
     if _IsArgumentToFunction(token):
       while token:
         if token.value == '{':

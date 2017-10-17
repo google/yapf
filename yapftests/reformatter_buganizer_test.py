@@ -28,6 +28,38 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB66011084(self):
+    unformatted_code = """\
+X = {
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa":  # Comment 1.
+([] if True else [ # Comment 2.
+    "bbbbbbbbbbbbbbbbbbb",  # Comment 3.
+    "cccccccccccccccccccccccc", # Comment 4.
+    "ddddddddddddddddddddddddd", # Comment 5.
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", # Comment 6.
+    "fffffffffffffffffffffffffffffff", # Comment 7.
+    "ggggggggggggggggggggggggggg", # Comment 8.
+    "hhhhhhhhhhhhhhhhhh",  # Comment 9.
+]),
+}
+"""
+    expected_formatted_code = """\
+X = {
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa":  # Comment 1.
+        ([] if True else [  # Comment 2.
+            "bbbbbbbbbbbbbbbbbbb",  # Comment 3.
+            "cccccccccccccccccccccccc",  # Comment 4.
+            "ddddddddddddddddddddddddd",  # Comment 5.
+            "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",  # Comment 6.
+            "fffffffffffffffffffffffffffffff",  # Comment 7.
+            "ggggggggggggggggggggggggggg",  # Comment 8.
+            "hhhhhhhhhhhhhhhhhh",  # Comment 9.
+        ]),
+}
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB67455376(self):
     unformatted_code = """\
 sponge_ids.extend(invocation.id() for invocation in self._client.GetInvocationsByLabels(labels))
@@ -1292,15 +1324,14 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB19073499(self):
-    code = textwrap.dedent("""\
-        instance = (
-            aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
-                'aa': 'context!'
-            }).eeeeeeeeeeeeeeeeeee(
-                {  # Inline comment about why fnord has the value 6.
-                    'fnord': 6
-                }))
-        """)
+    code = """\
+instance = (
+    aaaaaaa.bbbbbbb().ccccccccccccccccc().ddddddddddd({
+        'aa': 'context!'
+    }).eeeeeeeeeeeeeeeeeee({  # Inline comment about why fnord has the value 6.
+        'fnord': 6
+    }))
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
