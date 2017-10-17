@@ -179,7 +179,6 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
-    self.DefaultNodeVisit(node)
     if node.children[0].value == '.':
       self._SetUnbreakableOnChildren(node)
       _SetSplitPenalty(node.children[1], DOTTED_NAME)
@@ -217,6 +216,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       }:
         # Don't split an argument list with one element if at all possible.
         _SetStronglyConnected(node.children[1], node.children[2])
+    self.DefaultNodeVisit(node)
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
     # power ::= atom trailer* ['**' factor]

@@ -490,13 +490,12 @@ foo((
     # If the queue isn't properly constructed, then a token in the middle of the
     # line may be selected as the one with least penalty. The tokens after that
     # one are then splatted at the end of the line with no formatting.
-    # FIXME(morbo): The formatting here isn't ideal.
     unformatted_code = """\
 find_symbol(node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
 """
     expected_formatted_code = """\
-find_symbol(
-    node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
+find_symbol(node.type) + "< " + " ".join(find_pattern(n)
+                                         for n in node.child) + " >"
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
