@@ -2328,6 +2328,27 @@ s = 'foo \\
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testAsyncAsNonKeyword(self):
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+      # In Python 2, async may be used as a non-keyword identifier.
+      code = textwrap.dedent("""\
+          from util import async
+
+
+          class A(object):
+              def foo(self):
+                  async.run()
+
+              def bar(self):
+                  pass
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()
