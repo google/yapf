@@ -435,6 +435,13 @@ ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
+def _IsClassOrDef(uwline):
+  if uwline.first.value in {'class', 'def'}:
+    return True
+
+  return (t.name for t in uwline.tokens[:2]) == ('async', 'def')
+
+
 def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
                                final_lines):
   """Calculate the number of newlines we need to add.
@@ -507,7 +514,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
             pytree_utils.SetNodeAnnotation(
                 first_token.node, pytree_utils.Annotation.NEWLINES, None)
           return NO_BLANK_LINES
-    elif prev_uwline.first.value in {'class', 'def', 'async'}:
+    elif _IsClassOrDef(prev_uwline):
       if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)
