@@ -252,15 +252,17 @@ def _MarkLinesToFormat(uwlines, lines):
 
 
 def _DisableYAPF(line):
-  return (
-      re.search(DISABLE_PATTERN, line.split('\n')[0].strip(), re.IGNORECASE) or
-      re.search(DISABLE_PATTERN, line.split('\n')[-1].strip(), re.IGNORECASE))
+  return (re.search(DISABLE_PATTERN,
+                    line.split('\n')[0].strip(), re.IGNORECASE) or
+          re.search(DISABLE_PATTERN,
+                    line.split('\n')[-1].strip(), re.IGNORECASE))
 
 
 def _EnableYAPF(line):
-  return (
-      re.search(ENABLE_PATTERN, line.split('\n')[0].strip(), re.IGNORECASE) or
-      re.search(ENABLE_PATTERN, line.split('\n')[-1].strip(), re.IGNORECASE))
+  return (re.search(ENABLE_PATTERN,
+                    line.split('\n')[0].strip(), re.IGNORECASE) or
+          re.search(ENABLE_PATTERN,
+                    line.split('\n')[-1].strip(), re.IGNORECASE))
 
 
 def _GetUnifiedDiff(before, after, filename='code'):

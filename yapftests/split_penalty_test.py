@@ -61,8 +61,9 @@ class SplitPenaltyTest(unittest.TestCase):
       if pytree_utils.NodeName(tree) in pytree_utils.NONSEMANTIC_TOKENS:
         return []
       if isinstance(tree, pytree.Leaf):
-        return [(tree.value, pytree_utils.GetNodeAnnotation(
-            tree, pytree_utils.Annotation.SPLIT_PENALTY))]
+        return [(tree.value,
+                 pytree_utils.GetNodeAnnotation(
+                     tree, pytree_utils.Annotation.SPLIT_PENALTY))]
       nodes = []
       for node in tree.children:
         nodes += FlattenRec(node)

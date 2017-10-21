@@ -8,6 +8,8 @@
   split before the first argument in a function call.
 - Split before the first argument in a function call if the arguments contain a
   dictionary that doesn't fit on a single line.
+- Improve splitting of elements in a tuple. We want to split if there's a
+  function call in the tuple that doesn't fit on the line.
 ### Fixed
 - Enforce spaces between ellipses and keywords.
 - When calculating the split penalty for a "trailer", process the child nodes

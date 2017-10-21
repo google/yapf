@@ -797,15 +797,16 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testFunctionCallContinuationLine(self):
-    code = textwrap.dedent("""\
-        class foo:
+    code = """\
+class foo:
 
-          def bar(self, node, name, n=1):
-            if True:
-              if True:
-                return [(aaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(
-                    cccc, ddddddddddddddddddddddddddddddddddddd))]
-        """)
+  def bar(self, node, name, n=1):
+    if True:
+      if True:
+        return [(aaaaaaaaaa,
+                 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb(
+                     cccc, ddddddddddddddddddddddddddddddddddddd))]
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1037,13 +1038,12 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testTrailerOnSingleLine(self):
-    code = textwrap.dedent("""\
-        urlpatterns = patterns('',
-                               url(r'^$', 'homepage_view'),
-                               url(r'^/login/$', 'login_view'),
-                               url(r'^/login/$', 'logout_view'),
-                               url(r'^/user/(?P<username>\\w+)/$', 'profile_view'))
-        """)
+    code = """\
+urlpatterns = patterns('', url(r'^$', 'homepage_view'),
+                       url(r'^/login/$', 'login_view'),
+                       url(r'^/login/$', 'logout_view'),
+                       url(r'^/user/(?P<username>\\w+)/$', 'profile_view'))
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 

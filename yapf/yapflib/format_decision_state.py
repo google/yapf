@@ -256,21 +256,25 @@ class FormatDecisionState(object):
       #
       # or when a string formatting syntax.
       func_call_or_string_format = False
+      tok = current.next_token
       if current.is_name:
-        tok = current.next_token
         while tok and (tok.is_name or tok.value == '.'):
           tok = tok.next_token
         func_call_or_string_format = tok and tok.value == '('
       elif current.is_string:
-        tok = current.next_token
         while tok and tok.is_string:
           tok = tok.next_token
         func_call_or_string_format = tok and tok.value == '%'
       if func_call_or_string_format:
         open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
-        if open_bracket and open_bracket.value in '[{':
-          if not self._FitsOnLine(open_bracket, open_bracket.matching_bracket):
-            return True
+        if open_bracket:
+          if open_bracket.value in '[{':
+            if not self._FitsOnLine(open_bracket,
+                                    open_bracket.matching_bracket):
+              return True
+          elif tok.value == '(':
+            if not self._FitsOnLine(current, tok.matching_bracket):
+              return True
 
     ###########################################################################
     # Dict/Set Splitting
@@ -375,18 +379,21 @@ class FormatDecisionState(object):
           (opening.previous_token.is_name or
            opening.previous_token.value in {'*', '**'})):
         is_func_call = False
-        token = current
-        while token:
-          if token.value == '(':
+        opening = current
+        while opening:
+          if opening.value == '(':
             is_func_call = True
             break
-          if (not (token.is_name or token.value in {'*', '**'}) and
-              token.value != '.'):
+          if (not (opening.is_name or opening.value in {'*', '**'}) and
+              opening.value != '.'):
             break
-          token = token.next_token
+          opening = opening.next_token
 
         if is_func_call:
-          if not self._FitsOnLine(current, opening.matching_bracket):
+          if (not self._FitsOnLine(current, opening.matching_bracket) or
+              (opening.matching_bracket.next_token and
+               opening.matching_bracket.next_token.value != ',' and
+               not opening.matching_bracket.next_token.ClosesScope())):
             return True
 
     pprevious = previous.previous_token

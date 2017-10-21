@@ -28,6 +28,51 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB67935450(self):
+    unformatted_code = """\
+def _():
+  return (
+      (Gauge(
+          metric='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          group_by=group_by + ['metric:process_name'],
+          metric_filter={'metric:process_name': process_name_re}),
+       Gauge(
+           metric='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+           group_by=group_by + ['metric:process_name'],
+           metric_filter={'metric:process_name': process_name_re}))
+      | expr.Join(
+          left_name='start', left_default=0, right_name='end', right_default=0)
+      | m.Point(
+          m.Cond(m.VAL['end'] != 0, m.VAL['end'], k.TimestampMicros() /
+                 1000000L) - m.Cond(m.VAL['start'] != 0, m.VAL['start'],
+                                    m.TimestampMicros() / 1000000L)))
+"""
+    expected_formatted_code = """\
+def _():
+  return (
+      (Gauge(
+          metric='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          group_by=group_by + ['metric:process_name'],
+          metric_filter={
+              'metric:process_name': process_name_re
+          }),
+       Gauge(
+           metric='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+           group_by=group_by + ['metric:process_name'],
+           metric_filter={
+               'metric:process_name': process_name_re
+           }))
+      | expr.Join(
+          left_name='start', left_default=0, right_name='end', right_default=0)
+      | m.Point(
+          m.Cond(m.VAL['end'] != 0, m.VAL['end'],
+                 k.TimestampMicros() / 1000000L) -
+          m.Cond(m.VAL['start'] != 0, m.VAL['start'],
+                 m.TimestampMicros() / 1000000L)))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB66011084(self):
     unformatted_code = """\
 X = {
