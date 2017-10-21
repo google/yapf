@@ -400,7 +400,8 @@ class CommandLineTest(unittest.TestCase):
         stdout=subprocess.PIPE,
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE)
-    reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
+    reformatted_code, stderrdata = p.communicate(
+        unformatted.encode('utf-8-sig'))
     self.assertEqual(stderrdata, b'')
     self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
 

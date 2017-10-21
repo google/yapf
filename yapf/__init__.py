@@ -28,6 +28,7 @@ If no filenames are specified, YAPF reads the code from stdin.
 from __future__ import print_function
 
 import argparse
+import codecs
 import logging
 import os
 import sys
@@ -168,6 +169,13 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     source = [line.rstrip() for line in original_source]
+    # remove any BOM UTF8
+    bom = codecs.BOM_UTF8
+    if py3compat.PY3:
+      bom = bom.decode('utf-8')
+    if source[0].startswith(bom):
+      source[0] = source[0][len(bom):]
+
     reformatted_source, _ = yapf_api.FormatCode(
         py3compat.unicode('\n'.join(source) + '\n'),
         filename='<stdin>',
