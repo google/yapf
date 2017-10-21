@@ -96,7 +96,7 @@ def WriteReformattedCode(filename,
         filename, mode='w', encoding=encoding, newline='') as fd:
       fd.write(reformatted_code)
   else:
-    py3compat.EncodeAndWriteToStdout(reformatted_code)
+    py3compat.EncodeAndWriteToStdout(reformatted_code, encoding=encoding)
 
 
 def LineEnding(lines):
