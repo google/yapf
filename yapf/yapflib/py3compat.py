@@ -34,7 +34,10 @@ if PY3:
 
   range = range
   ifilter = filter
-  raw_input = input
+
+  def raw_input():
+    wrapper = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+    return wrapper.buffer.raw.readall().decode('utf-8')
 
   import configparser
 

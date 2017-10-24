@@ -383,7 +383,11 @@ class CommandLineTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.test_tmpdir)
 
-  def assertYapfReformats(self, unformatted, expected, extra_options=None):
+  def assertYapfReformats(self,
+                          unformatted,
+                          expected,
+                          extra_options=None,
+                          env=None):
     """Check that yapf reformats the given code as expected.
 
     Invokes yapf in a subprocess, piping the unformatted code into its stdin.
@@ -393,13 +397,15 @@ class CommandLineTest(unittest.TestCase):
       unformatted: unformatted code - input to yapf
       expected: expected formatted code at the output of yapf
       extra_options: iterable of extra command-line options to pass to yapf
+      env: dict of environment variables.
     """
     cmdline = YAPF_BINARY + (extra_options or [])
     p = subprocess.Popen(
         cmdline,
         stdout=subprocess.PIPE,
         stdin=subprocess.PIPE,
-        stderr=subprocess.PIPE)
+        stderr=subprocess.PIPE,
+        env=env)
     reformatted_code, stderrdata = p.communicate(unformatted.encode('utf-8'))
     self.assertEqual(stderrdata, b'')
     self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
@@ -1258,6 +1264,17 @@ class CommandLineTest(unittest.TestCase):
         unformatted_code,
         expected_formatted_code,
         extra_options=['--style', 'chromium', '--lines', '1-1'])
+
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
+  def testCP936Encoding(self):
+    unformatted_code = 'print("中文")\n'
+    expected_formatted_code = 'print("中文")\n'
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        env={
+            'PYTHONIOENCODING': 'cp936'
+        })
 
 
 class BadInputTest(unittest.TestCase):

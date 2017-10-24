@@ -154,6 +154,8 @@ def main(argv):
 
     original_source = []
     while True:
+      if sys.stdin.closed:
+        break
       try:
         # Use 'raw_input' instead of 'sys.stdin.read', because otherwise the
         # user will need to hit 'Ctrl-D' more than once if they're inputting
