@@ -237,6 +237,23 @@ class SplitPenaltyTest(unittest.TestCase):
         (')', VERY_STRONGLY_CONNECTED),
     ])
 
+    # Test single generator argument.
+    code = 'max(i for i in xrange(10))\n'
+    tree = self._ParseAndComputePenalties(code)
+    self._CheckPenalties(tree, [
+        ('max', None),
+        ('(', UNBREAKABLE),
+        ('i', 0),
+        ('for', 0),
+        ('i', STRONGLY_CONNECTED),
+        ('in', STRONGLY_CONNECTED),
+        ('xrange', STRONGLY_CONNECTED),
+        ('(', UNBREAKABLE),
+        ('10', STRONGLY_CONNECTED),
+        (')', VERY_STRONGLY_CONNECTED),
+        (')', VERY_STRONGLY_CONNECTED),
+    ])
+
 
 if __name__ == '__main__':
   unittest.main()

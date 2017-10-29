@@ -190,8 +190,13 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       if name in {'argument', 'comparison'}:
         # Don't split an argument list with one element if at all possible.
         _SetStronglyConnected(node.children[1])
-        _SetSplitPenalty(
-            _FirstChildNode(node.children[1]), ONE_ELEMENT_ARGUMENT)
+        if (len(node.children[1].children) > 1 and
+            pytree_utils.NodeName(node.children[1].children[1]) == 'comp_for'):
+          # Don't penalize spliting before a comp_for expression.
+          _SetSplitPenalty(_FirstChildNode(node.children[1]), 0)
+        else:
+          _SetSplitPenalty(
+              _FirstChildNode(node.children[1]), ONE_ELEMENT_ARGUMENT)
       elif (pytree_utils.NodeName(node.children[0]) == 'LSQB' and
             len(node.children[1].children) > 2 and
             (name.endswith('_test') or name.endswith('_expr'))):
