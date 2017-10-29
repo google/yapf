@@ -457,6 +457,60 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testListComprehensionPreferOneLine(self):
+    unformatted_code = textwrap.dedent("""\
+        def given(y):
+            long_variable_name = [
+                long_var_name + 1
+                for long_var_name in ()
+                if long_var_name == 2]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def given(y):
+          long_variable_name = [
+              long_var_name + 1 for long_var_name in () if long_var_name == 2
+          ]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testListComprehensionPreferThreeLinesForLineWrap(self):
+    unformatted_code = textwrap.dedent("""\
+        def given(y):
+            long_variable_name = [
+                long_var_name + 1
+                for long_var_name, number_two in ()
+                if long_var_name == 2 and number_two == 3]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def given(y):
+          long_variable_name = [
+              long_var_name + 1
+              for long_var_name, number_two in ()
+              if long_var_name == 2 and number_two == 3
+          ]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testListComprehensionPreferNoBreakForTrivialExpression(self):
+    unformatted_code = textwrap.dedent("""\
+        def given(y):
+            long_variable_name = [
+                long_var_name
+                for long_var_name, number_two in ()
+                if long_var_name == 2 and number_two == 3]
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def given(y):
+          long_variable_name = [
+              long_var_name for long_var_name, number_two in ()
+              if long_var_name == 2 and number_two == 3
+          ]
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testOpeningAndClosingBrackets(self):
     unformatted_code = """\
 foo( (1, ) )
@@ -887,7 +941,8 @@ class foo:
           if True:
             if True:
               python_files.extend(
-                  os.path.join(filename, f) for f in os.listdir(filename)
+                  os.path.join(filename, f)
+                  for f in os.listdir(filename)
                   if IsPythonFile(os.path.join(filename, f)))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
@@ -1221,7 +1276,8 @@ s = 'foo \\
     code = textwrap.dedent("""\
         foo = {
             variable: 'hello world. How are you today?'
-            for variable in fnord if variable != 37
+            for variable in fnord
+            if variable != 37
         }
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)

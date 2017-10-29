@@ -178,6 +178,9 @@ _STYLE_HELP = dict(
       after."""),
     SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
       Split named assignments onto individual lines."""),
+    SPLIT_COMPLEX_COMPREHENSIONS=textwrap.dedent("""\
+      Set to True to prefer splitting list comprehensions and generators
+      when they have non-trivial expressions and/or filter clauses."""),
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
       The penalty for splitting right after the opening bracket."""),
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
@@ -243,6 +246,7 @@ def CreatePEP8Style():
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
+      SPLIT_COMPLEX_COMPREHENSIONS=False,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
@@ -266,6 +270,7 @@ def CreateGoogleStyle():
   style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
   style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
+  style['SPLIT_COMPLEX_COMPREHENSIONS'] = True
   return style
 
 
@@ -368,6 +373,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
+    SPLIT_COMPLEX_COMPREHENSIONS=_BoolConverter,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,

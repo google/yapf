@@ -10,6 +10,9 @@
   dictionary that doesn't fit on a single line.
 - Improve splitting of elements in a tuple. We want to split if there's a
   function call in the tuple that doesn't fit on the line.
+- Improve splitting of comprehensions and generators. Prefer to keep
+  comprehensions on a single line but if a line-break is required, prefer to
+  split complex expressions and 'if' clauses onto their own lines.
 ### Fixed
 - Enforce spaces between ellipses and keywords.
 - When calculating the split penalty for a "trailer", process the child nodes
