@@ -34,7 +34,8 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [(ft.value, ft.subtypes) for ft in uwl.tokens
+      filtered_values = [(ft.value, ft.subtypes)
+                         for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
