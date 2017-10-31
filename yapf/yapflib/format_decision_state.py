@@ -700,7 +700,7 @@ class FormatDecisionState(object):
 
         # Try to keep trivial expressions on the same line as the comp_for.
         if newline and top_of_stack.HasTrivialExpr():
-          penalty += split_penalty.STRONGLY_CONNECTED
+          penalty += split_penalty.CONNECTED
 
     if (format_token.Subtype.COMP_IF in current.subtypes and
         format_token.Subtype.COMP_IF not in previous.subtypes):
