@@ -1014,15 +1014,8 @@ class _ComprehensionState(object):
     self.has_interior_split = False
 
   def HasTrivialExpr(self):
-    """Returns whether the comp_expr is identical to the first loop variable.
-
-    Example: [a for a in my_list]
-    """
-    # First verify that the comp_expr is one token long, then check that it
-    # exactly matches the first loop variable.
-    return (
-        self.expr_token.next_token.value == 'for' and
-        self.expr_token.value == self.expr_token.next_token.next_token.value)
+    """Returns whether the comp_expr is "trivial" i.e. is a single token."""
+    return self.expr_token.next_token.value == 'for'
 
   @property
   def opening_bracket(self):
