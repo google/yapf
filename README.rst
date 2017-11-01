@@ -461,6 +461,27 @@ Knobs
 ``SPLIT_BEFORE_NAMED_ASSIGNS``
     Split named assignments onto individual lines.
 
+``SPLIT_COMPLEX_COMPREHENSION``
+    For list comprehensions and generator expressions with multiple clauses
+    (e.g mutiple "for" calls, "if" filter expressions) and which need to be
+    reflowed, split each clause onto its own line. For example:
+
+    .. code-block:: python
+
+      result = [
+          a_var + b_var for a_var in xrange(1000) for b_var in xrange(1000)
+          if a_var % b_var]
+
+    would reformat to something like:
+
+    .. code-block:: python
+
+      result = [
+          a_var + b_var
+          for a_var in xrange(1000)
+          for b_var in xrange(1000)
+          if a_var % b_var]
+
 ``SPLIT_PENALTY_AFTER_OPENING_BRACKET``
     The penalty for splitting right after the opening bracket.
 
