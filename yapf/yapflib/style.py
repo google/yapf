@@ -203,6 +203,9 @@ _STYLE_HELP = dict(
     SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the '&', '|', and '^'
       operators."""),
+    SPLIT_PENALTY_COMPREHENSION=textwrap.dedent("""\
+      The penalty for splitting a list comprehension or generator
+      expression."""),
     SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
       The penalty for characters over the column limit."""),
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
@@ -264,6 +267,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
       SPLIT_PENALTY_BITWISE_OPERATOR=300,
+      SPLIT_PENALTY_COMPREHENSION=80,
       SPLIT_PENALTY_EXCESS_CHARACTER=4500,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_IMPORT_NAMES=0,
@@ -284,6 +288,7 @@ def CreateGoogleStyle():
   style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
   style['SPLIT_COMPLEX_COMPREHENSION'] = True
+  style['SPLIT_PENALTY_COMPREHENSION'] = 2100
   return style
 
 
@@ -391,6 +396,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,
     SPLIT_PENALTY_BITWISE_OPERATOR=int,
+    SPLIT_PENALTY_COMPREHENSION=int,
     SPLIT_PENALTY_EXCESS_CHARACTER=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
     SPLIT_PENALTY_IMPORT_NAMES=int,

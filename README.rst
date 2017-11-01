@@ -495,6 +495,9 @@ Knobs
     The penalty of splitting the line around the ``&``, ``|``, and ``^``
     operators.
 
+``SPLIT_PENALTY_COMPREHENSION``
+    The penalty for splitting a list comprehension or generator expression.
+
 ``SPLIT_PENALTY_EXCESS_CHARACTER``
     The penalty for characters over the column limit.
 

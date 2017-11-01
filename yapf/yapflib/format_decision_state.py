@@ -503,8 +503,7 @@ class FormatDecisionState(object):
     else:
       self._AddTokenOnCurrentLine(dry_run)
 
-    if style.Get('SPLIT_COMPLEX_COMPREHENSIONS'):
-      penalty += self._CalculateComprehensionState(newline)
+    penalty += self._CalculateComprehensionState(newline)
 
     return self.MoveStateToNextToken() + penalty
 
@@ -666,7 +665,7 @@ class FormatDecisionState(object):
         last = self.comp_stack.pop()
         # Lightly penalize comprehensions that are split across multiple lines.
         if last.has_interior_split:
-          penalty += 2 * style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') + 20
+          penalty += style.Get('SPLIT_PENALTY_COMPREHENSION')
 
         return penalty
 
@@ -690,7 +689,8 @@ class FormatDecisionState(object):
         #   -->   for b in bar   <--
         #         if a.zut + b.zut
         #     ]
-        if (top_of_stack.has_split_at_for != newline and
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSIONS') and
+            top_of_stack.has_split_at_for != newline and
             (top_of_stack.has_split_at_for or
              not top_of_stack.HasTrivialExpr())):
           penalty += split_penalty.UNBREAKABLE
@@ -699,14 +699,16 @@ class FormatDecisionState(object):
         top_of_stack.has_split_at_for = newline
 
         # Try to keep trivial expressions on the same line as the comp_for.
-        if newline and top_of_stack.HasTrivialExpr():
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSIONS') and
+            newline and top_of_stack.HasTrivialExpr()):
           penalty += split_penalty.CONNECTED
 
     if (format_token.Subtype.COMP_IF in current.subtypes and
         format_token.Subtype.COMP_IF not in previous.subtypes):
       # Penalize breaking at comp_if when it doesn't match the newline structure
       # in the rest of the comprehension.
-      if (top_of_stack.has_split_at_for != newline and
+      if (style.Get('SPLIT_COMPLEX_COMPREHENSIONS') and
+          top_of_stack.has_split_at_for != newline and
           (top_of_stack.has_split_at_for or not top_of_stack.HasTrivialExpr())):
         penalty += split_penalty.UNBREAKABLE
 
