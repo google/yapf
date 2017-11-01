@@ -699,8 +699,8 @@ class FormatDecisionState(object):
         top_of_stack.has_split_at_for = newline
 
         # Try to keep trivial expressions on the same line as the comp_for.
-        if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
-            newline and top_of_stack.HasTrivialExpr()):
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and newline and
+            top_of_stack.HasTrivialExpr()):
           penalty += split_penalty.CONNECTED
 
     if (format_token.Subtype.COMP_IF in current.subtypes and

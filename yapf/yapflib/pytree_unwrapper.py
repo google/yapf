@@ -333,8 +333,7 @@ def _DetermineMustSplitAnnotation(node):
   if not _ContainsComments(node):
     token = next(node.parent.leaves())
     if token.value == '(':
-      if sum(1
-             for ch in node.children
+      if sum(1 for ch in node.children
              if pytree_utils.NodeName(ch) == 'COMMA') < 2:
         return
     if (not isinstance(node.children[-1], pytree.Leaf) or
