@@ -689,7 +689,7 @@ class FormatDecisionState(object):
         #   -->   for b in bar   <--
         #         if a.zut + b.zut
         #     ]
-        if (style.Get('SPLIT_COMPLEX_COMPREHENSIONS') and
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
             top_of_stack.has_split_at_for != newline and
             (top_of_stack.has_split_at_for or
              not top_of_stack.HasTrivialExpr())):
@@ -699,7 +699,7 @@ class FormatDecisionState(object):
         top_of_stack.has_split_at_for = newline
 
         # Try to keep trivial expressions on the same line as the comp_for.
-        if (style.Get('SPLIT_COMPLEX_COMPREHENSIONS') and
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
             newline and top_of_stack.HasTrivialExpr()):
           penalty += split_penalty.CONNECTED
 
@@ -707,7 +707,7 @@ class FormatDecisionState(object):
         format_token.Subtype.COMP_IF not in previous.subtypes):
       # Penalize breaking at comp_if when it doesn't match the newline structure
       # in the rest of the comprehension.
-      if (style.Get('SPLIT_COMPLEX_COMPREHENSIONS') and
+      if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
           top_of_stack.has_split_at_for != newline and
           (top_of_stack.has_split_at_for or not top_of_stack.HasTrivialExpr())):
         penalty += split_penalty.UNBREAKABLE
