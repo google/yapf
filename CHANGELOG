@@ -3,6 +3,11 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.19.1] UNRELEASED
+### Added
+- Improve splitting of comprehensions and generators. Add
+  `SPLIT_PENALTY_COMPREHENSION` knob to control preference for keeping
+  comprehensions on a single line and `SPLIT_COMPLEX_COMPREHENSION` to enable
+  splitting each clause of complex comprehensions onto its own line.
 ### Changed
 - Take into account a named function argument when determining if we should
   split before the first argument in a function call.
@@ -10,9 +15,6 @@
   dictionary that doesn't fit on a single line.
 - Improve splitting of elements in a tuple. We want to split if there's a
   function call in the tuple that doesn't fit on the line.
-- Improve splitting of comprehensions and generators. Prefer to keep
-  comprehensions on a single line but if a line-break is required, prefer to
-  split complex expressions and 'if' clauses onto their own lines.
 ### Fixed
 - Enforce spaces between ellipses and keywords.
 - When calculating the split penalty for a "trailer", process the child nodes
