@@ -474,6 +474,20 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testListComprehensionPreferOneLineOverArithmeticSplit(self):
+    unformatted_code = textwrap.dedent("""\
+        def given(used_identifiers):
+          return (sum(len(identifier)
+                      for identifier in used_identifiers) / len(used_identifiers))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def given(used_identifiers):
+          return (sum(len(identifier) for identifier in used_identifiers) /
+                  len(used_identifiers))
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testListComprehensionPreferThreeLinesForLineWrap(self):
     unformatted_code = textwrap.dedent("""\
         def given(y):
@@ -548,8 +562,8 @@ foo((
 find_symbol(node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
 """
     expected_formatted_code = """\
-find_symbol(node.type) + "< " + " ".join(find_pattern(n)
-                                         for n in node.child) + " >"
+find_symbol(node.type) + "< " + " ".join(
+    find_pattern(n) for n in node.child) + " >"
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
