@@ -121,7 +121,8 @@ def _FindPythonFiles(filenames, recursive, exclude):
         # TODO(morbo): Look into a version of os.walk that can handle recursion.
         python_files.extend(
             os.path.join(dirpath, f)
-            for dirpath, _, filelist in os.walk(filename) for f in filelist
+            for dirpath, _, filelist in os.walk(filename)
+            for f in filelist
             if IsPythonFile(os.path.join(dirpath, f)))
       else:
         raise errors.YapfError(

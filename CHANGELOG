@@ -3,6 +3,11 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.19.1] UNRELEASED
+### Added
+- Improve splitting of comprehensions and generators. Add
+  `SPLIT_PENALTY_COMPREHENSION` knob to control preference for keeping
+  comprehensions on a single line and `SPLIT_COMPLEX_COMPREHENSION` to enable
+  splitting each clause of complex comprehensions onto its own line.
 ### Changed
 - Take into account a named function argument when determining if we should
   split before the first argument in a function call.
@@ -19,6 +24,8 @@
   doesn't it on the current line. We try hard not to move such comments around.
 - Use a TextIOWrapper when reading from stdin in Python3. This is necessary for
   some encodings, like cp936, used on Windows.
+- Remove the penalty for a split before the first argument in a function call
+  where the only argument is a generator expression.
 
 ## [0.19.0] 2017-10-14
 ### Added

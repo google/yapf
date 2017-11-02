@@ -49,6 +49,8 @@ class FormatDecisionState(object):
     previous: The previous format decision state in the decision tree.
     stack: A stack (of _ParenState) keeping track of properties applying to
       parenthesis levels.
+    comp_stack: A stack (of _ComprehensionState) keeping track of properties
+      applying to comprehensions.
     ignore_stack_for_comparison: Ignore the stack of _ParenState for state
       comparison.
   """
@@ -71,6 +73,7 @@ class FormatDecisionState(object):
     self.lowest_level_on_line = 0
     self.ignore_stack_for_comparison = False
     self.stack = [_ParenState(first_indent, first_indent)]
+    self.comp_stack = []
     self.first_indent = first_indent
     self.newline = False
     self.previous = None
@@ -90,6 +93,7 @@ class FormatDecisionState(object):
     new.newline = self.newline
     new.previous = self.previous
     new.stack = [state.Clone() for state in self.stack]
+    new.comp_stack = [state.Clone() for state in self.comp_stack]
     return new
 
   def __eq__(self, other):
@@ -102,7 +106,8 @@ class FormatDecisionState(object):
             self.start_of_line_level == other.start_of_line_level and
             self.lowest_level_on_line == other.lowest_level_on_line and
             (self.ignore_stack_for_comparison or
-             other.ignore_stack_for_comparison or self.stack == other.stack))
+             other.ignore_stack_for_comparison or
+             self.stack == other.stack and self.comp_stack == other.comp_stack))
 
   def __ne__(self, other):
     return not self == other
@@ -498,6 +503,8 @@ class FormatDecisionState(object):
     else:
       self._AddTokenOnCurrentLine(dry_run)
 
+    penalty += self._CalculateComprehensionState(newline)
+
     return self.MoveStateToNextToken() + penalty
 
   def _AddTokenOnCurrentLine(self, dry_run):
@@ -636,6 +643,76 @@ class FormatDecisionState(object):
         return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     return top_of_stack.indent
+
+  def _CalculateComprehensionState(self, newline):
+    """Makes required changes to comprehension state.
+
+    Args:
+      newline: Whether the current token is to be added on a newline.
+
+    Returns:
+      The penalty for the token-newline combination given the current
+      comprehension state.
+    """
+    current = self.next_token
+    previous = current.previous_token
+    top_of_stack = self.comp_stack[-1] if self.comp_stack else None
+    penalty = 0
+
+    if top_of_stack is not None:
+      # Check if the token terminates the current comprehension.
+      if current == top_of_stack.closing_bracket:
+        last = self.comp_stack.pop()
+        # Lightly penalize comprehensions that are split across multiple lines.
+        if last.has_interior_split:
+          penalty += style.Get('SPLIT_PENALTY_COMPREHENSION')
+
+        return penalty
+
+      if newline:
+        top_of_stack.has_interior_split = True
+
+    if (format_token.Subtype.COMP_EXPR in current.subtypes and
+        format_token.Subtype.COMP_EXPR not in previous.subtypes):
+      self.comp_stack.append(_ComprehensionState(current))
+
+      return penalty
+
+    if (current.value == 'for' and
+        format_token.Subtype.COMP_FOR in current.subtypes):
+      if top_of_stack.for_token is not None:
+        # Treat nested comprehensions like normal comp_if expressions.
+        # Example:
+        #     my_comp = [
+        #         a.qux + b.qux
+        #         for a in foo
+        #   -->   for b in bar   <--
+        #         if a.zut + b.zut
+        #     ]
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
+            top_of_stack.has_split_at_for != newline and
+            (top_of_stack.has_split_at_for or
+             not top_of_stack.HasTrivialExpr())):
+          penalty += split_penalty.UNBREAKABLE
+      else:
+        top_of_stack.for_token = current
+        top_of_stack.has_split_at_for = newline
+
+        # Try to keep trivial expressions on the same line as the comp_for.
+        if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and newline and
+            top_of_stack.HasTrivialExpr()):
+          penalty += split_penalty.CONNECTED
+
+    if (format_token.Subtype.COMP_IF in current.subtypes and
+        format_token.Subtype.COMP_IF not in previous.subtypes):
+      # Penalize breaking at comp_if when it doesn't match the newline structure
+      # in the rest of the comprehension.
+      if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
+          top_of_stack.has_split_at_for != newline and
+          (top_of_stack.has_split_at_for or not top_of_stack.HasTrivialExpr())):
+        penalty += split_penalty.UNBREAKABLE
+
+    return penalty
 
   def MoveStateToNextToken(self):
     """Calculate format decision state information and move onto the next token.
@@ -915,3 +992,60 @@ class _ParenState(object):
   def __hash__(self, *args, **kwargs):
     return hash((self.indent, self.last_space, self.closing_scope_indent,
                  self.split_before_closing_bracket, self.num_line_splits))
+
+
+class _ComprehensionState(object):
+  """Maintains the state of list comprehension line-break decisions.
+
+  A stack of _ComprehensionState objects are kept to ensure that list
+  comprehensions are wrapped with well-defined rules.
+
+  Attributes:
+    expr_token: The first token in the comprehension.
+    for_token: The first 'for' token of the comprehension.
+    has_split_at_for: Whether there is a newline immediately before the
+        for_token.
+    has_interior_split: Whether there is a newline within the comprehension.
+        That is, a split somewhere after expr_token or before closing_bracket.
+  """
+
+  def __init__(self, expr_token):
+    self.expr_token = expr_token
+    self.for_token = None
+    self.has_split_at_for = False
+    self.has_interior_split = False
+
+  def HasTrivialExpr(self):
+    """Returns whether the comp_expr is "trivial" i.e. is a single token."""
+    return self.expr_token.next_token.value == 'for'
+
+  @property
+  def opening_bracket(self):
+    return self.expr_token.previous_token
+
+  @property
+  def closing_bracket(self):
+    return self.opening_bracket.matching_bracket
+
+  def Clone(self):
+    clone = _ComprehensionState(self.expr_token)
+    clone.for_token = self.for_token
+    clone.has_split_at_for = self.has_split_at_for
+    clone.has_interior_split = self.has_interior_split
+    return clone
+
+  def __repr__(self):
+    return ('[opening_bracket::%s, for_token::%s, has_split_at_for::%s,'
+            ' has_interior_split::%s, has_trivial_expr::%s]' %
+            (self.opening_bracket, self.for_token, self.has_split_at_for,
+             self.has_interior_split, self.HasTrivialExpr()))
+
+  def __eq__(self, other):
+    return hash(self) == hash(other)
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __hash__(self, *args, **kwargs):
+    return hash((self.expr_token, self.for_token, self.has_split_at_for,
+                 self.has_interior_split))
