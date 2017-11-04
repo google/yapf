@@ -34,7 +34,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
     actual = []
     for uwl in uwlines:
       filtered_values = [
-          ft.value for ft in uwl.tokens
+          ft.value
+          for ft in uwl.tokens
           if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
       ]
       actual.append((uwl.depth, filtered_values))
@@ -299,7 +300,8 @@ class MatchBracketsTest(yapf_test_helper.YAPFTest):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [(ft, ft.matching_bracket) for ft in uwl.tokens
+      filtered_values = [(ft, ft.matching_bracket)
+                         for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)

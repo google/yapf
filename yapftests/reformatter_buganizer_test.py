@@ -279,8 +279,8 @@ checkpoint_files = gfile.Glob(
 
   def testB37460004(self):
     code = textwrap.dedent("""\
-        assert all(s not in (_SENTINEL, None) for s in
-                   nested_schemas), 'Nested schemas should never contain None/_SENTINEL'
+        assert all(s not in (_SENTINEL, None) for s in nested_schemas
+                  ), 'Nested schemas should never contain None/_SENTINEL'
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

@@ -34,7 +34,8 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [(ft.value, ft.subtypes) for ft in uwl.tokens
+      filtered_values = [(ft.value, ft.subtypes)
+                         for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
@@ -111,11 +112,11 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          (':', [format_token.Subtype.NONE])],
         [('return', [format_token.Subtype.NONE]),
          ('{', [format_token.Subtype.NONE]),
-         ('s', [format_token.Subtype.NONE]),
-         ('.', [format_token.Subtype.NONE]),
-         ('lower', [format_token.Subtype.NONE]),
-         ('(', [format_token.Subtype.NONE]),
-         (')', [format_token.Subtype.NONE]),
+         ('s', {format_token.Subtype.COMP_EXPR}),
+         ('.', {format_token.Subtype.COMP_EXPR}),
+         ('lower', {format_token.Subtype.COMP_EXPR}),
+         ('(', {format_token.Subtype.COMP_EXPR}),
+         (')', {format_token.Subtype.COMP_EXPR}),
          ('for', {format_token.Subtype.DICT_SET_GENERATOR,
                   format_token.Subtype.COMP_FOR}),
          ('s', {format_token.Subtype.COMP_FOR}),

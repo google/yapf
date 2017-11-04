@@ -178,6 +178,22 @@ _STYLE_HELP = dict(
       after."""),
     SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
       Split named assignments onto individual lines."""),
+    SPLIT_COMPLEX_COMPREHENSION=textwrap.dedent("""\
+      Set to True to split list comprehensions and generators that have
+      non-trivial expressions and multiple clauses before each of these
+      clauses. For example:
+
+        result = [
+            a_long_var + 100 for a_long_var in xrange(1000)
+            if a_long_var % 10]
+
+      would reformat to something like:
+
+        result = [
+            a_long_var + 100
+            for a_long_var in xrange(1000)
+            if a_long_var % 10]
+      """),
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
       The penalty for splitting right after the opening bracket."""),
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
@@ -187,6 +203,9 @@ _STYLE_HELP = dict(
     SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the '&', '|', and '^'
       operators."""),
+    SPLIT_PENALTY_COMPREHENSION=textwrap.dedent("""\
+      The penalty for splitting a list comprehension or generator
+      expression."""),
     SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
       The penalty for characters over the column limit."""),
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
@@ -243,10 +262,12 @@ def CreatePEP8Style():
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
+      SPLIT_COMPLEX_COMPREHENSION=False,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
       SPLIT_PENALTY_BITWISE_OPERATOR=300,
+      SPLIT_PENALTY_COMPREHENSION=80,
       SPLIT_PENALTY_EXCESS_CHARACTER=4500,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_IMPORT_NAMES=0,
@@ -266,6 +287,8 @@ def CreateGoogleStyle():
   style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
   style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
+  style['SPLIT_COMPLEX_COMPREHENSION'] = True
+  style['SPLIT_PENALTY_COMPREHENSION'] = 2100
   return style
 
 
@@ -368,10 +391,12 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
+    SPLIT_COMPLEX_COMPREHENSION=_BoolConverter,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,
     SPLIT_PENALTY_BITWISE_OPERATOR=int,
+    SPLIT_PENALTY_COMPREHENSION=int,
     SPLIT_PENALTY_EXCESS_CHARACTER=int,
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=int,
     SPLIT_PENALTY_IMPORT_NAMES=int,
