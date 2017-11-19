@@ -203,7 +203,7 @@ def FormatFiles(filenames,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=True,
+                verify=False,
                 parallel=False,
                 verbose=False):
   """Format a list of files.
@@ -253,7 +253,7 @@ def _FormatFile(filename,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=True,
+                verify=False,
                 verbose=False):
   if verbose:
     print('Reformatting %s' % filename)
