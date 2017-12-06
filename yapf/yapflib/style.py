@@ -308,6 +308,7 @@ def CreateFacebookStyle():
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['COLUMN_LIMIT'] = 80
   style['DEDENT_CLOSING_BRACKETS'] = True
+  style['INDENT_DICTIONARY_VALUE'] = True
   style['JOIN_MULTIPLE_LINES'] = False
   style['SPACES_BEFORE_COMMENT'] = 2
   style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
