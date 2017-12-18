@@ -317,7 +317,7 @@ def _SpaceRequiredBetween(left, right):
     return False
   if left.is_keyword and rval == '.' or lval == '.' and right.is_keyword:
     # Add space between keywords and dots.
-    return True
+    return lval != 'None'
   if lval == '.' or rval == '.':
     # Don't place spaces between dots.
     return False

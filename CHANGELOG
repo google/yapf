@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.20.1] UNRELEASED
+### Fixed
+- Don't treat 'None' as a keyword if calling a function on it, like '__ne__()'.
+
 ## [0.20.0] 2017-11-14
 ### Added
 - Improve splitting of comprehensions and generators. Add
