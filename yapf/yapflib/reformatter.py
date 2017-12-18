@@ -439,7 +439,7 @@ def _IsClassOrDef(uwline):
   if uwline.first.value in {'class', 'def'}:
     return True
 
-  return (t.name for t in uwline.tokens[:2]) == ('async', 'def')
+  return [t.value for t in uwline.tokens[:2]] == ['async', 'def']
 
 
 def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,

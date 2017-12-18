@@ -216,6 +216,17 @@ None.__ne__()
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testAsyncFunctionsNested(self):
+    if sys.version_info[1] < 5:
+      return
+    code = textwrap.dedent("""\
+        async def outer():
+            async def inner():
+                pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testKeepTypesIntact(self):
     if sys.version_info[1] < 5:
       return
