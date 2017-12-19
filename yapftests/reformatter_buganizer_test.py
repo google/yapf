@@ -286,43 +286,23 @@ checkpoint_files = gfile.Glob(
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB36806207(self):
-    unformatted_code = textwrap.dedent("""\
-        def _():
-          linearity_data = [[row] for row in [
-              "%.1f mm" % (np.mean(linearity_values["pos_error"]) * 1000.0),
-              "%.1f mm" % (np.max(linearity_values["pos_error"]) * 1000.0),
-              "%.1f mm" % (np.mean(linearity_values["pos_error_chunk_mean"]) * 1000.0),
-              "%.1f mm" % (np.max(linearity_values["pos_error_chunk_max"]) * 1000.0),
-              "%.1f deg" % math.degrees(np.mean(linearity_values["rot_noise"])),
-              "%.1f deg" % math.degrees(np.max(linearity_values["rot_noise"])),
-              "%.1f deg" % math.degrees(np.mean(linearity_values["rot_drift"])),
-              "%.1f deg" % math.degrees(np.max(linearity_values["rot_drift"])),
-              "%.1f%%" % (np.max(linearity_values["pos_discontinuity"]) * 100.0),
-              "%.1f%%" % (np.max(linearity_values["rot_discontinuity"]) * 100.0)
-          ]]
-        """)
-    expected_code = textwrap.dedent("""\
-        def _():
-          linearity_data = [
-              [row]
-              for row in [
-                  "%.1f mm" % (np.mean(linearity_values["pos_error"]) * 1000.0),
-                  "%.1f mm" % (np.max(linearity_values["pos_error"]) * 1000.0),
-                  "%.1f mm" % (
-                      np.mean(linearity_values["pos_error_chunk_mean"]) * 1000.0),
-                  "%.1f mm" % (
-                      np.max(linearity_values["pos_error_chunk_max"]) * 1000.0),
-                  "%.1f deg" % math.degrees(np.mean(linearity_values["rot_noise"])),
-                  "%.1f deg" % math.degrees(np.max(linearity_values["rot_noise"])),
-                  "%.1f deg" % math.degrees(np.mean(linearity_values["rot_drift"])),
-                  "%.1f deg" % math.degrees(np.max(linearity_values["rot_drift"])),
-                  "%.1f%%" % (np.max(linearity_values["pos_discontinuity"]) * 100.0),
-                  "%.1f%%" % (np.max(linearity_values["rot_discontinuity"]) * 100.0)
-              ]
-          ]
-        """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    code = """\
+def _():
+  linearity_data = [[row] for row in [
+      "%.1f mm" % (np.mean(linearity_values["pos_error"]) * 1000.0),
+      "%.1f mm" % (np.max(linearity_values["pos_error"]) * 1000.0),
+      "%.1f mm" % (np.mean(linearity_values["pos_error_chunk_mean"]) * 1000.0),
+      "%.1f mm" % (np.max(linearity_values["pos_error_chunk_max"]) * 1000.0),
+      "%.1f deg" % math.degrees(np.mean(linearity_values["rot_noise"])),
+      "%.1f deg" % math.degrees(np.max(linearity_values["rot_noise"])),
+      "%.1f deg" % math.degrees(np.mean(linearity_values["rot_drift"])),
+      "%.1f deg" % math.degrees(np.max(linearity_values["rot_drift"])),
+      "%.1f%%" % (np.max(linearity_values["pos_discontinuity"]) * 100.0),
+      "%.1f%%" % (np.max(linearity_values["rot_discontinuity"]) * 100.0)
+  ]]
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB36215507(self):
     code = textwrap.dedent("""\

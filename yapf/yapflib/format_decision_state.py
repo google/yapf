@@ -447,23 +447,6 @@ class FormatDecisionState(object):
           return True
 
     ###########################################################################
-    # List Comprehension Splitting
-    if (format_token.Subtype.COMP_FOR in current.subtypes and
-        format_token.Subtype.COMP_FOR not in previous.subtypes):
-      # Split at the beginning of a list comprehension.
-      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_FOR,
-                                   format_token.Subtype.COMP_IF)
-      if length + self.column > self.column_limit:
-        return True
-
-    if (format_token.Subtype.COMP_IF in current.subtypes and
-        format_token.Subtype.COMP_IF not in previous.subtypes):
-      # Split at the beginning of an if expression.
-      length = _GetLengthOfSubtype(current, format_token.Subtype.COMP_IF)
-      if length + self.column > self.column_limit:
-        return True
-
-    ###########################################################################
     # Original Formatting Splitting
     # These checks rely upon the original formatting. This is in order to
     # attempt to keep hand-written code in the same condition as it was before.
