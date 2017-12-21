@@ -113,9 +113,10 @@ Options::
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
                             with style settings. The default is pep8 unless a
-                            .style.yapf or setup.cfg file located in one of the
-                            parent directories of the source file (or current
-                            directory for stdin)
+                            .style.yapf or setup.cfg file located in the same
+                            directory as the source or one of its parent
+                            directories (for stdin, the current directory is
+                            used).
       --style-help          show style settings and exit; this output can be saved
                             to .style.yapf to make your settings permanent
       --no-local-style      don't search for local style definition
