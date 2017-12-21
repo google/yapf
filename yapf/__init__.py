@@ -99,9 +99,10 @@ def main(argv):
       action='store',
       help=('specify formatting style: either a style name (for example "pep8" '
             'or "google"), or the name of a file with style settings. The '
-            'default is pep8 unless a %s or %s file located in one of the '
-            'parent directories of the source file (or current directory for '
-            'stdin)' % (style.LOCAL_STYLE, style.SETUP_CONFIG)))
+            'default is pep8 unless a %s or %s file located in the same '
+            'directory as the source or one of its parent directories '
+            '(for stdin, the current directory is used).' %
+            (style.LOCAL_STYLE, style.SETUP_CONFIG)))
   parser.add_argument(
       '--style-help',
       action='store_true',
