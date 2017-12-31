@@ -3,7 +3,7 @@ YAPF
 ====
 
 .. image:: https://badge.fury.io/py/yapf.svg
-    :target: http://badge.fury.io/py/yapf
+    :target: https://badge.fury.io/py/yapf
     :alt: PyPI version
 
 .. image:: https://travis-ci.org/google/yapf.svg?branch=master
