@@ -11,8 +11,9 @@ found here: https://github.com/paetzke/py-yapf.el
 VIM
 ===
 
-The ``vim`` plugin allows you to reformat a range of code. Place it into the
-``.vim/autoload`` directory or use a plugin manager like Plug or Vundle:
+The ``vim`` plugin allows you to reformat a range of code. Copy ``plugin`` and
+``autoload`` directories into your ~/.vim or use ``:packadd`` in Vim 8. Or use
+a plugin manager like Plug or Vundle:
 
 .. code-block:: vim
 
@@ -29,6 +30,16 @@ You can add key bindings in the ``.vimrc`` file:
 
     map <C-Y> :call yapf#YAPF()<cr>
     imap <C-Y> <c-o>:call yapf#YAPF()<cr>
+
+Alternatively, you can call the command ``YAPF``. If you omit the range, it
+will reformat the whole buffer.
+
+example:
+
+.. code-block:: vim
+
+    :YAPF       " formats whole buffer
+    :'<,'>YAPF  " formats lines selected in visual mode
 
 Sublime Text
 ============
