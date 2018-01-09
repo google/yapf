@@ -20,13 +20,6 @@
 "    map <C-P> :call yapf#YAPF()<cr>
 "    imap <C-P> <c-o>:call yapf#YAPF()<cr>
 "
-" Alternatively, you can call the command YAPF. If you omit the range,
-" it will reformat the whole buffer.
-"
-" example:
-"   :YAPF       " formats whole buffer
-"   :'<,'>YAPF  " formats lines selected in visual mode
-"
 function! yapf#YAPF() range
   " Determine range to format.
   let l:line_ranges = a:firstline . '-' . a:lastline
@@ -54,5 +47,3 @@ function! yapf#YAPF() range
   " Reset cursor to first line of the formatted range.
   call cursor(a:firstline, 1)
 endfunction
-
-command! -range=% YAPF <line1>,<line2>call yapf#YAPF()
