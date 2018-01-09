@@ -17,8 +17,8 @@
 " Place this script in your ~/.vim/autoload directory. You can add accessors to
 " ~/.vimrc, e.g.:
 "
-"    map <C-P> :call yapf#YAPF()<cr>
-"    imap <C-P> <c-o>:call yapf#YAPF()<cr>
+"    map <C-Y> :call yapf#YAPF()<cr>
+"    imap <C-Y> <c-o>:call yapf#YAPF()<cr>
 "
 function! yapf#YAPF() range
   " Determine range to format.
