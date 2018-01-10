@@ -5,6 +5,8 @@
 ## [0.20.1] UNRELEASED
 ### Fixed
 - Don't treat 'None' as a keyword if calling a function on it, like '__ne__()'.
+- use_tabs=True always uses a single tab per indentation level; spaces are
+  used for aligning vertically after that.
 
 ## [0.20.0] 2017-11-14
 ### Added
