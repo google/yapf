@@ -2,11 +2,13 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.20.1] UNRELEASED
+## [0.20.1] 2018-01-13
 ### Fixed
 - Don't treat 'None' as a keyword if calling a function on it, like '__ne__()'.
 - use_tabs=True always uses a single tab per indentation level; spaces are
   used for aligning vertically after that.
+- Relax the split of a paren at the end of an if statement. With
+  `dedent_closing_brackets` option requires that it be able to split there. 
 
 ## [0.20.0] 2017-11-14
 ### Added
@@ -32,8 +34,6 @@
   some encodings, like cp936, used on Windows.
 - Remove the penalty for a split before the first argument in a function call
   where the only argument is a generator expression.
-- Relax the split of a paren at the end of an if statement. With
-  `dedent_closing_brackets` option requires that it be able to split there. 
 
 ## [0.19.0] 2017-10-14
 ### Added
