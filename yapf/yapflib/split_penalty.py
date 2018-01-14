@@ -421,7 +421,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if node.children[0].value == '(':
       if node.children[-1].value == ')':
         if pytree_utils.NodeName(node.parent) == 'if_stmt':
-          _SetSplitPenalty(node.children[-1], UNBREAKABLE)
+          _SetSplitPenalty(node.children[-1], STRONGLY_CONNECTED)
         else:
           if len(node.children) > 2:
             _SetSplitPenalty(_FirstChildNode(node.children[1]), EXPR)

@@ -412,6 +412,21 @@ v, w, x, y, z
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testIfStmtClosingBracket(self):
+    unformatted_code = """\
+if (isinstance(value  , (StopIteration  , StopAsyncIteration  )) and exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs):
+    return False
+"""
+    expected_formatted_code = """\
+if (
+    isinstance(value, (StopIteration, StopAsyncIteration)) and
+    exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs
+):
+    return False
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
