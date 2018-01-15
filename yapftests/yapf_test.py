@@ -1157,22 +1157,46 @@ class CommandLineTest(unittest.TestCase):
         extra_options=['--lines', '1-1', '--style', 'chromium'])
 
   def testUseTabs(self):
-    unformatted_code = textwrap.dedent("""\
-        def foo_function():
-         if True:
-          pass
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        def foo_function():
-        	if True:
-        		pass
-        """)
-    style_contents = textwrap.dedent(u'''\
-        [style]
-        based_on_style = chromium
-        USE_TABS = true
-        INDENT_WIDTH=1
-        ''')
+    unformatted_code = """\
+def foo_function():
+ if True:
+  pass
+"""
+    expected_formatted_code = """\
+def foo_function():
+	if True:
+		pass
+"""
+    style_contents = u"""\
+[style]
+based_on_style = chromium
+USE_TABS = true
+INDENT_WIDTH=1
+"""
+    with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(stylepath)])
+
+  def testUseTabsWith(self):
+    unformatted_code = """\
+def f():
+  return ['hello', 'world',]
+"""
+    expected_formatted_code = """\
+def f():
+	return [
+	    'hello',
+	    'world',
+	]
+"""
+    style_contents = u"""\
+[style]
+based_on_style = chromium
+USE_TABS = true
+INDENT_WIDTH=1
+"""
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,

@@ -43,7 +43,6 @@ class FormatDecisionState(object):
     column: The number of used columns in the current line.
     next_token: The next token to be formatted.
     paren_level: The level of nesting inside (), [], and {}.
-    start_of_line_level: The paren_level at the start of this line.
     lowest_level_on_line: The lowest paren_level on the current line.
     newline: Indicates if a newline is added along the edge to this format
       decision state node.
@@ -70,7 +69,6 @@ class FormatDecisionState(object):
     self.column = first_indent
     self.line = line
     self.paren_level = 0
-    self.start_of_line_level = 0
     self.lowest_level_on_line = 0
     self.ignore_stack_for_comparison = False
     self.stack = [_ParenState(first_indent, first_indent)]
@@ -87,7 +85,7 @@ class FormatDecisionState(object):
     new.column = self.column
     new.line = self.line
     new.paren_level = self.paren_level
-    new.start_of_line_level = self.start_of_line_level
+    new.line.depth = self.line.depth
     new.lowest_level_on_line = self.lowest_level_on_line
     new.ignore_stack_for_comparison = self.ignore_stack_for_comparison
     new.first_indent = self.first_indent
@@ -104,7 +102,7 @@ class FormatDecisionState(object):
     return (self.next_token == other.next_token and
             self.column == other.column and
             self.paren_level == other.paren_level and
-            self.start_of_line_level == other.start_of_line_level and
+            self.line.depth == other.line.depth and
             self.lowest_level_on_line == other.lowest_level_on_line and
             (self.ignore_stack_for_comparison or
              other.ignore_stack_for_comparison or
@@ -115,7 +113,7 @@ class FormatDecisionState(object):
 
   def __hash__(self):
     return hash((self.next_token, self.column, self.paren_level,
-                 self.start_of_line_level, self.lowest_level_on_line))
+                 self.line.depth, self.lowest_level_on_line))
 
   def __repr__(self):
     return ('column::%d, next_token::%s, paren_level::%d, stack::[\n\t%s' %
@@ -544,11 +542,15 @@ class FormatDecisionState(object):
     self.column = self._GetNewlineColumn()
 
     if not dry_run:
-      current.AddWhitespacePrefix(newlines_before=1, spaces=self.column)
+      indent_level = self.line.depth
+      spaces = self.column
+      if spaces:
+        spaces -= indent_level * style.Get('INDENT_WIDTH')
+      current.AddWhitespacePrefix(
+          newlines_before=1, spaces=spaces, indent_level=indent_level)
 
     if not current.is_comment:
       self.stack[-1].last_space = self.column
-    self.start_of_line_level = self.paren_level
     self.lowest_level_on_line = self.paren_level
 
     if (previous.OpensScope() or

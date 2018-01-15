@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.20.2] UNRELEASED
+### Fixed
+- Use tabs when constructing a continuation line when `USE_TABS` is enabled.
+
 ## [0.20.1] 2018-01-13
 ### Fixed
 - Don't treat 'None' as a keyword if calling a function on it, like '__ne__()'.
