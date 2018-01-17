@@ -798,7 +798,7 @@ class FormatDecisionState(object):
              format_token.Subtype.DICTIONARY_VALUE in current.subtypes) or
             ImplicitStringConcatenation(current)):
           # A dictionary entry that cannot fit on a single line shouldn't matter
-          # to this calcuation. If it can't fit on a single line, then the
+          # to this calculation. If it can't fit on a single line, then the
           # opening should be on the same line as the key and the rest on
           # newlines after it. But the other entries should be on single lines
           # if possible.

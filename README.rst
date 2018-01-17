@@ -466,7 +466,7 @@ Knobs
 
 ``SPLIT_COMPLEX_COMPREHENSION``
     For list comprehensions and generator expressions with multiple clauses
-    (e.g mutiple "for" calls, "if" filter expressions) and which need to be
+    (e.g multiple "for" calls, "if" filter expressions) and which need to be
     reflowed, split each clause onto its own line. For example:
 
     .. code-block:: python
