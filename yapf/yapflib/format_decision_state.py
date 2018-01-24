@@ -293,14 +293,13 @@ class FormatDecisionState(object):
           # This is a dictionary that's an argument to a function.
           if (self._FitsOnLine(previous, previous.matching_bracket) and
               previous.matching_bracket.next_token and
-              not previous.matching_bracket.next_token.ClosesScope() and
               (not opening.matching_bracket.next_token or
-               opening.matching_bracket.next_token.value != '.')):
+               opening.matching_bracket.next_token.value != '.') and
+              _ScopeHasNoCommas(previous)):
             # Don't split before the key if:
             #   - The dictionary fits on a line, and
-            #   - The dictionary brackets don't have a closing scope after
-            #     them, and
-            #   - The function call isn't part of a builder-style call.
+            #   - The function call isn't part of a builder-style call and
+            #   - The dictionary has one entry and no trailing comma
             return False
       return True
 
@@ -929,6 +928,19 @@ def _IsSingleElementTuple(token):
     else:
       token = token.next_token
   return num_commas == 1
+
+
+def _ScopeHasNoCommas(token):
+  close = token.matching_bracket
+  token = token.next_token
+  while token != close:
+    if token.value == ',':
+      return False
+    if token.OpensScope():
+      token = token.matching_bracket
+    else:
+      token = token.next_token
+  return True
 
 
 class _ParenState(object):
