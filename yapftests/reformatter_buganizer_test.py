@@ -53,15 +53,11 @@ def _():
       (Gauge(
           metric='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           group_by=group_by + ['metric:process_name'],
-          metric_filter={
-              'metric:process_name': process_name_re
-          }),
+          metric_filter={'metric:process_name': process_name_re}),
        Gauge(
            metric='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
            group_by=group_by + ['metric:process_name'],
-           metric_filter={
-               'metric:process_name': process_name_re
-           }))
+           metric_filter={'metric:process_name': process_name_re}))
       | expr.Join(
           left_name='start', left_default=0, right_name='end', right_default=0)
       | m.Point(
@@ -1741,6 +1737,28 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testB67935687(self):
+    code = textwrap.dedent("""\
+        Fetch(
+            Raw('monarch.BorgTask', '/union/row_operator_action_delay'),
+            {'borg_user': self.borg_user})
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+    unformatted_code = textwrap.dedent("""\
+        shelf_renderer.expand_text = text.translate_to_unicode(
+            expand_text % {
+                'creator': creator
+            })
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        shelf_renderer.expand_text = text.translate_to_unicode(
+            expand_text % {'creator': creator})
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    
 if __name__ == '__main__':
   unittest.main()
