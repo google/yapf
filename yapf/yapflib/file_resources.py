@@ -114,29 +114,41 @@ def LineEnding(lines):
 
 def _FindPythonFiles(filenames, recursive, exclude):
   """Find all Python files."""
+  if exclude and any(e.startswith('./') for e in exclude):
+    raise errors.YapfError("path in '--exclude' should not start with ./")
+
   python_files = []
   for filename in filenames:
+    if filename != '.' and exclude and IsIgnored(filename, exclude):
+      continue
     if os.path.isdir(filename):
       if recursive:
         # TODO(morbo): Look into a version of os.walk that can handle recursion.
-        python_files.extend(
-            os.path.join(dirpath, f)
-            for dirpath, _, filelist in os.walk(filename)
-            for f in filelist
-            if IsPythonFile(os.path.join(dirpath, f)))
+        excluded_dirs = []
+        for dirpath, _, filelist in os.walk(filename):
+          if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
+            excluded_dirs.append(dirpath)
+            continue
+          elif any(dirpath.startswith(e) for e in excluded_dirs):
+            continue
+          for f in filelist:
+            filepath = os.path.join(dirpath, f)
+            if exclude and IsIgnored(filepath, exclude):
+              continue
+            if IsPythonFile(filepath):
+              python_files.append(filepath)
       else:
         raise errors.YapfError(
             "directory specified without '--recursive' flag: %s" % filename)
     elif os.path.isfile(filename):
       python_files.append(filename)
 
-  if exclude:
-    return [
-        f for f in python_files
-        if not any(fnmatch.fnmatch(f, p) for p in exclude)
-    ]
-
   return python_files
+
+
+def IsIgnored(path, exclude):
+  """Return True if filename matches any patterns in exclude."""
+  return any(fnmatch.fnmatch(path.lstrip('./'), e.rstrip('/')) for e in exclude)
 
 
 def IsPythonFile(filename):
