@@ -62,9 +62,11 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
   def setUp(self):
     self.test_tmpdir = tempfile.mkdtemp()
+    self.old_dir = os.getcwd()
 
   def tearDown(self):
     shutil.rmtree(self.test_tmpdir)
+    os.chdir(self.old_dir)
 
   def _make_test_dir(self, name):
     fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
@@ -136,6 +138,43 @@ class GetCommandLineFilesTest(unittest.TestCase):
             os.path.join(tdir2, 'testfile2.py'),
         ]))
 
+  def test_find_with_excluded_dirs(self):
+    tdir1 = self._make_test_dir('test1')
+    tdir2 = self._make_test_dir('test2/testinner/')
+    tdir3 = self._make_test_dir('test3/foo/bar/bas/xxx')
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'),
+        os.path.join(tdir3, 'testfile3.py'),
+    ]
+    _touch_files(files)
+
+    os.chdir(self.test_tmpdir)
+
+    found = sorted(
+        file_resources.GetCommandLineFiles(
+            ['test1', 'test2', 'test3'],
+            recursive=True,
+            exclude=[
+                'test1',
+                'test2/testinner/',
+            ]))
+
+    self.assertEqual(found, ['test3/foo/bar/bas/xxx/testfile3.py'])
+
+    found = sorted(
+        file_resources.GetCommandLineFiles(
+            ['.'], recursive=True, exclude=[
+                'test1',
+                'test3',
+            ]))
+
+    self.assertEqual(found, ['./test2/testinner/testfile2.py'])
+
+  def test_find_with_excluded_current_dir(self):
+    with self.assertRaises(errors.YapfError):
+      file_resources.GetCommandLineFiles([], False, exclude=['./z'])
+
 
 class IsPythonFileTest(unittest.TestCase):
 
@@ -178,6 +217,22 @@ class IsPythonFileTest(unittest.TestCase):
       f.write(u'#! /bin/python2\n')
       f.write(u'# -*- coding: iso-3-14159 -*-\n')
     self.assertFalse(file_resources.IsPythonFile(file1))
+
+
+class IsIgnoredTest(unittest.TestCase):
+
+  def test_root_path(self):
+    self.assertTrue(file_resources.IsIgnored('media', ['media']))
+    self.assertFalse(file_resources.IsIgnored('media', ['media/*']))
+
+  def test_sub_path(self):
+    self.assertTrue(file_resources.IsIgnored('media/a', ['*/a']))
+    self.assertTrue(file_resources.IsIgnored('media/b', ['media/*']))
+    self.assertTrue(file_resources.IsIgnored('media/b/c', ['*/*/c']))
+
+  def test_trailing_slash(self):
+    self.assertTrue(file_resources.IsIgnored('z', ['z']))
+    self.assertTrue(file_resources.IsIgnored('z', ['z/']))
 
 
 class BufferedByteStream(object):
