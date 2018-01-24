@@ -3,6 +3,8 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.20.2] UNRELEASED
+### Changed
+- Improve the speed at which files are excluded by ignoring them earlier.
 ### Fixed
 - Use tabs when constructing a continuation line when `USE_TABS` is enabled.
 
