@@ -7,6 +7,9 @@
 - Improve the speed at which files are excluded by ignoring them earlier.
 ### Fixed
 - Use tabs when constructing a continuation line when `USE_TABS` is enabled.
+- A dictionary entry may not end in a colon, but may be an "unpacking"
+  operation: `**foo`. Take that into accound and don't split after the
+  unpacking operator.
 
 ## [0.20.1] 2018-01-13
 ### Fixed

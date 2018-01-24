@@ -80,28 +80,31 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
     if not comp_for and dict_maker:
       last_was_colon = False
+      unpacking = False
       for child in node.children:
-        if dict_maker:
-          if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+        if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+          _AppendFirstLeafTokenSubtype(child,
+                                       format_token.Subtype.KWARGS_STAR_STAR)
+        if last_was_colon:
+          if style.Get('INDENT_DICTIONARY_VALUE'):
+            _InsertPseudoParentheses(child)
+          else:
             _AppendFirstLeafTokenSubtype(child,
-                                         format_token.Subtype.KWARGS_STAR_STAR)
-          if last_was_colon:
-            if style.Get('INDENT_DICTIONARY_VALUE'):
-              _InsertPseudoParentheses(child)
-            else:
-              _AppendFirstLeafTokenSubtype(
-                  child, format_token.Subtype.DICTIONARY_VALUE)
-          elif (
-              child is not None and
-              (isinstance(child, pytree.Node) or
-               (not child.value.startswith('#') and child.value not in '{:,'))):
-            # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
-            # normally want to split before them if the dictionary cannot exist
-            # on a single line.
+                                         format_token.Subtype.DICTIONARY_VALUE)
+        elif (isinstance(child, pytree.Node) or
+              (not child.value.startswith('#') and child.value not in '{:,')):
+          # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
+          # normally want to split before them if the dictionary cannot exist
+          # on a single line.
+          if not unpacking or _GetFirstLeafNode(child).value == '**':
             _AppendFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
-            _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
+          _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
         last_was_colon = pytree_utils.NodeName(child) == 'COLON'
+        if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+          unpacking = True
+        elif last_was_colon:
+          unpacking = False
 
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name
     # expr_stmt ::= testlist_star_expr (augassign (yield_expr|testlist)

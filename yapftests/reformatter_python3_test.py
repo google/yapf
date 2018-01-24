@@ -330,6 +330,30 @@ def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testDictUnpacking(self):
+    if sys.version_info[1] < 5:
+      return
+    unformatted_code = """\
+class Foo:
+    def foo(self):
+        foofoofoofoofoofoofoofoo('foofoofoofoofoo', {
+
+            'foo': 'foo',
+
+            **foofoofoo
+        })
+"""
+    expected_formatted_code = """\
+class Foo:
+    def foo(self):
+        foofoofoofoofoofoofoofoo('foofoofoofoofoo', {
+            'foo': 'foo',
+            **foofoofoo
+        })
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
