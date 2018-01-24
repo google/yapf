@@ -116,7 +116,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
-  def testNoSpacesAroundPowerOparator(self):
+  def testNoSpacesAroundPowerOperator(self):
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(

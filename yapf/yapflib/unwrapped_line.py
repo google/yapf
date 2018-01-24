@@ -282,7 +282,7 @@ def _SpaceRequiredBetween(left, right):
       # or dot should have a space after it.
       return True
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
-    # Space between the binary opertor and the unary operator.
+    # Space between the binary operator and the unary operator.
     return True
   if left.is_keyword and _IsUnaryOperator(right):
     # Handle things like "not -3 < x".
@@ -324,7 +324,7 @@ def _SpaceRequiredBetween(left, right):
     return False
   if ((lval == '(' and rval == ')') or (lval == '[' and rval == ']') or
       (lval == '{' and rval == '}')):
-    # Empty objects shouldn't be separted by spaces.
+    # Empty objects shouldn't be separated by spaces.
     return False
   if (lval in pytree_utils.OPENING_BRACKETS and
       rval in pytree_utils.OPENING_BRACKETS):
