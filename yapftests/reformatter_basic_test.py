@@ -2116,8 +2116,8 @@ s = 'foo \\
         class _():
 
           @mock.patch.dict(
-              os.environ, {
-              'HTTP_' + xsrf._XSRF_TOKEN_HEADER.replace('-', '_'): 'atoken'})
+              os.environ, 
+              {'HTTP_' + xsrf._XSRF_TOKEN_HEADER.replace('-', '_'): 'atoken'})
           def _():
             pass
 
