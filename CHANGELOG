@@ -3,6 +3,8 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.20.2] UNRELEASED
+### Changed
+- Allow dictionaries to stay on a single line if they only have one entry
 ### Fixed
 - Use tabs when constructing a continuation line when `USE_TABS` is enabled.
 
