@@ -1296,9 +1296,7 @@ INDENT_WIDTH=1
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        env={
-            'PYTHONIOENCODING': 'cp936'
-        })
+        env={'PYTHONIOENCODING': 'cp936'})
 
 
 class BadInputTest(unittest.TestCase):
