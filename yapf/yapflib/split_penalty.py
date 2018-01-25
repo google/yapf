@@ -192,7 +192,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         _SetStronglyConnected(node.children[1])
         if (len(node.children[1].children) > 1 and
             pytree_utils.NodeName(node.children[1].children[1]) == 'comp_for'):
-          # Don't penalize spliting before a comp_for expression.
+          # Don't penalize splitting before a comp_for expression.
           _SetSplitPenalty(_FirstChildNode(node.children[1]), 0)
         else:
           _SetSplitPenalty(

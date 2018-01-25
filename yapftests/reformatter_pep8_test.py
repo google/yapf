@@ -88,7 +88,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testContinuedNonOudentedLine(self):
+  def testContinuedNonOutdentedLine(self):
     code = textwrap.dedent("""\
         class eld(d):
             if str(geom.geom_type).upper(

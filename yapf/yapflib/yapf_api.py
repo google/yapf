@@ -68,7 +68,7 @@ def FormatFile(filename,
 
   Returns:
     Tuple of (reformatted_code, encoding, changed). reformatted_code is None if
-    the file is sucessfully written to (having used in_place). reformatted_code
+    the file is successfully written to (having used in_place). reformatted_code
     is a diff if print_diff is True.
 
   Raises:

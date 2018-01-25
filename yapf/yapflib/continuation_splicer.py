@@ -16,7 +16,7 @@
 The "backslash-newline" continuation marker is shoved into the node's prefix.
 Pull them out and make it into nodes of their own.
 
-  SpliceContinuations(): the main funciton exported by this module.
+  SpliceContinuations(): the main function exported by this module.
 """
 
 from lib2to3 import pytree

@@ -36,7 +36,7 @@ The ultimate goal is that the code YAPF produces is as good as the code that a
 programmer would write if they were following the style guide. It takes away
 some of the drudgery of maintaining your code.
 
-Try out YAPF with this `online demo <https://yapf.herokuapp.com>`_.
+Try out YAPF with this `online demo <https://yapf.now.sh>`_.
 
 .. footer::
 
@@ -466,7 +466,7 @@ Knobs
 
 ``SPLIT_COMPLEX_COMPREHENSION``
     For list comprehensions and generator expressions with multiple clauses
-    (e.g mutiple "for" calls, "if" filter expressions) and which need to be
+    (e.g multiple "for" calls, "if" filter expressions) and which need to be
     reflowed, split each clause onto its own line. For example:
 
     .. code-block:: python

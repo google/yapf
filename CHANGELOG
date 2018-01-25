@@ -4,9 +4,13 @@
 
 ## [0.20.2] UNRELEASED
 ### Changed
+- Improve the speed at which files are excluded by ignoring them earlier.
 - Allow dictionaries to stay on a single line if they only have one entry
 ### Fixed
 - Use tabs when constructing a continuation line when `USE_TABS` is enabled.
+- A dictionary entry may not end in a colon, but may be an "unpacking"
+  operation: `**foo`. Take that into accound and don't split after the
+  unpacking operator.
 
 ## [0.20.1] 2018-01-13
 ### Fixed
@@ -14,7 +18,7 @@
 - use_tabs=True always uses a single tab per indentation level; spaces are
   used for aligning vertically after that.
 - Relax the split of a paren at the end of an if statement. With
-  `dedent_closing_brackets` option requires that it be able to split there. 
+  `dedent_closing_brackets` option requires that it be able to split there.
 
 ## [0.20.0] 2017-11-14
 ### Added
@@ -97,7 +101,7 @@
 
 ## [0.16.3] 2017-07-13
 ### Changed
-- Add filename information to a ParseError excetion.
+- Add filename information to a ParseError exception.
 ### Fixed
 - A token that ends in a continuation marker may have more than one newline in
   it, thus changing its "lineno" value. This can happen if multiple
@@ -182,7 +186,7 @@
 ## [0.15.0] 2017-01-12
 ### Added
 - Keep type annotations intact as much as possible. Don't try to split the over
-  mutliple lines.
+  multiple lines.
 ### Fixed
 - When determining if each element in a dictionary can fit on a single line, we
   are skipping dictionary entries. However, we need to ignore comments in our
