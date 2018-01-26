@@ -931,6 +931,7 @@ def _IsSingleElementTuple(token):
 
 
 def _ScopeHasNoCommas(token):
+  """Check if the scope has no commas."""
   close = token.matching_bracket
   token = token.next_token
   while token != close:
