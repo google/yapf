@@ -281,8 +281,7 @@ class FormatToken(object):
     else:
       prefix = "[uUbB]?[rR]?"
 
-    regex = r'^{prefix}(?P<delim>"""|\'\'\').*(?P=delim)$'.format(
-        prefix=prefix)
+    regex = r'^{prefix}(?P<delim>"""|\'\'\').*(?P=delim)$'.format(prefix=prefix)
     return (self.is_string and
             re.match(regex, self.value, re.DOTALL) is not None)
 
