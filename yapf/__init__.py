@@ -137,7 +137,7 @@ def main(argv):
 
   if args.style_help:
     if style_config is None and not args.no_local_style:
-        style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
+      style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
     style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
     print('[style]')
     for option, docstring in sorted(style.Help().items()):
