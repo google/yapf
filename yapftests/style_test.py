@@ -254,6 +254,14 @@ class StyleFromCommandLine(unittest.TestCase):
     self.assertTrue(_LooksLikeChromiumStyle(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
+  def testDefaultBasedOnExplicitlyUnicodeTypeString(self):
+    cfg = style.CreateStyleFromConfig(u'{}')
+    self.assertIsInstance(cfg, dict)
+
+  def testDefaultBasedOnDetaultTypeString(self):
+    cfg = style.CreateStyleFromConfig('{}')
+    self.assertIsInstance(cfg, dict)
+
   def testDefaultBasedOnStyleBadString(self):
     self.assertRaisesRegexp(style.StyleConfigError, 'Unknown style option',
                             style.CreateStyleFromConfig,

@@ -438,7 +438,7 @@ def CreateStyleFromConfig(style_config):
     return _GLOBAL_STYLE_FACTORY()
   if isinstance(style_config, dict):
     config = _CreateConfigParserFromConfigDict(style_config)
-  elif isinstance(style_config, str):
+  elif isinstance(style_config, py3compat.basestring):
     style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
     if style_factory is not None:
       return style_factory()
