@@ -19,7 +19,6 @@ from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
 from yapf.yapflib import format_token
-from yapf.yapflib import py3compat
 
 
 class FormatTokenTest(unittest.TestCase):
@@ -39,9 +38,6 @@ class FormatTokenTest(unittest.TestCase):
 
     tok = format_token.FormatToken(pytree.Leaf(token.STRING, 'r"""hello"""'))
     self.assertTrue(tok.is_multiline_string)
-
-    tok = format_token.FormatToken(pytree.Leaf(token.STRING, 'f"""hello"""'))
-    self.assertEqual(py3compat.PY3, tok.is_multiline_string)
 
 
 if __name__ == "__main__":

@@ -354,6 +354,19 @@ class Foo:
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testMultilineFormatString(self):
+    if sys.version_info[1] < 6:
+      return
+    code = """\
+# yapf: disable
+(f'''
+  ''')
+# yapf: enable
+"""
+    # https://github.com/google/yapf/issues/513
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
