@@ -32,6 +32,13 @@ class FormatTokenTest(unittest.TestCase):
     self.assertEqual("FormatToken(name=COMMENT, value=# A comment)", str(tok))
     self.assertTrue(tok.is_comment)
 
+  def testIsMultilineString(self):
+    tok = format_token.FormatToken(pytree.Leaf(token.STRING, '"""hello"""'))
+    self.assertTrue(tok.is_multiline_string)
+
+    tok = format_token.FormatToken(pytree.Leaf(token.STRING, 'r"""hello"""'))
+    self.assertTrue(tok.is_multiline_string)
+
 
 if __name__ == "__main__":
   unittest.main()
