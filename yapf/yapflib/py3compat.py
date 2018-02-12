@@ -98,8 +98,10 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
 
 
 if PY3:
+  basestring = str
   unicode = str  # pylint: disable=redefined-builtin,invalid-name
 else:
+  basestring = basestring
 
   def unicode(s):  # pylint: disable=invalid-name
     """Force conversion of s to unicode."""
