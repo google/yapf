@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.20.2] UNRELEASED
+## [0.20.2] 2018-02-12
 ### Changed
 - Improve the speed at which files are excluded by ignoring them earlier.
 - Allow dictionaries to stay on a single line if they only have one entry
