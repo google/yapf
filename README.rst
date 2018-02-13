@@ -439,6 +439,10 @@ Knobs
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
     than after.
 
+``SPLIT_BEFORE_CLOSING_BRACKET``
+    Split before the closing bracket if a list or dict literal doesn't fit on
+    a single line.
+
 ``SPLIT_BEFORE_DICT_SET_GENERATOR``
     Split before a dictionary or set generator (comp_for). For example, note
     the split before the ``for``:
