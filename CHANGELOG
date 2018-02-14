@@ -7,6 +7,8 @@
 - Introduce a new option of formatting multiline literals. Add
   `SPLIT_BEFORE_CLOSING_BRACKET` knob to control whether closing bracket should
   get their own line.
+- Add 'BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION' knob to control the number
+  of blank lines between top-level function and class definitions.
 
 ## [0.20.2] 2018-02-12
 ### Changed

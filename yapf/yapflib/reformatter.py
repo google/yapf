@@ -479,9 +479,9 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
   prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
     if (not indent_depth and first_token.value in {'class', 'def', 'async'}):
-      # Separate a class or function from the module-level docstring with two
-      # blank lines.
-      return TWO_BLANK_LINES
+      # Separate a class or function from the module-level docstring with
+      # appropriate number of blank lines.
+      return 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION')
     if _NoBlankLinesBeforeCurrentToken(prev_last_token.value, first_token,
                                        prev_last_token):
       return NO_BLANK_LINES
@@ -509,7 +509,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
           if final_lines[index - 1].first.value == '@':
             final_lines[index].first.AdjustNewlinesBefore(NO_BLANK_LINES)
           else:
-            prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
+            prev_last_token.AdjustNewlinesBefore(
+                1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION'))
           if first_token.newlines is not None:
             pytree_utils.SetNodeAnnotation(
                 first_token.node, pytree_utils.Annotation.NEWLINES, None)
