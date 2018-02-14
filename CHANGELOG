@@ -9,6 +9,8 @@
   get their own line.
 - Added `CONTINUATION_ALIGN_STYLE` knob to choose continuation alignment style
   when `USE_TABS` is enabled.
+- Add 'BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION' knob to control the number
+  of blank lines between top-level function and class definitions.
 ### Fixed
 - Don't split ellipses.
 

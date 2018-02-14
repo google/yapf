@@ -325,6 +325,19 @@ Knobs
 ``BLANK_LINE_BEFORE_CLASS_DOCSTRING``
     Insert a blank line before a class-level docstring.
 
+``BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION``
+    Sets the number of desired blank lines surrounding top-level function and
+    class definitions. For example:
+
+    .. code-block:: python
+
+        class Foo:
+            pass
+                           # <------ having two blank lines here
+                           # <------ is the default setting
+        class Bar:
+            pass
+
 ``COALESCE_BRACKETS``
     Do not split consecutive brackets. Only relevant when
     ``DEDENT_CLOSING_BRACKETS`` is set. For example:
