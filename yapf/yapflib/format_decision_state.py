@@ -177,7 +177,8 @@ class FormatDecisionState(object):
     if not previous:
       return False
 
-    if self.stack[-1].split_before_closing_bracket and current.value in '}]':
+    if (self.stack[-1].split_before_closing_bracket and
+        current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET')):
       # Split before the closing bracket if we can.
       return current.node_split_penalty != split_penalty.UNBREAKABLE
 
