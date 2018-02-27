@@ -90,6 +90,20 @@ _STYLE_HELP = dict(
          })"""),
     COLUMN_LIMIT=textwrap.dedent("""\
       The column limit."""),
+    CONTINUATION_ALIGNMENT_TYPE=textwrap.dedent("""\
+      The style for continuation alignment. Possible values are:
+
+      - SPACE: Use spaces for continuation alignment. This is default behavior.
+      - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
+        (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH Tabs) for continuation
+        alignment.
+      - LESS: Slightly left if cannot vertically align continuation lines with
+        indent characters.
+      - MORE: Slightly right if cannot vertically align continuation lines with
+        indent characters.
+
+      For options FIXED, LESS and MORE are only available when USE_TABS is
+      enabled."""),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
       Indent width used for line continuations."""),
     DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
@@ -245,6 +259,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       COALESCE_BRACKETS=False,
       COLUMN_LIMIT=79,
+      CONTINUATION_ALIGNMENT_TYPE='SPACE',
       CONTINUATION_INDENT_WIDTH=4,
       DEDENT_CLOSING_BRACKETS=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
@@ -376,6 +391,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,
+    CONTINUATION_ALIGNMENT_TYPE=str,
     CONTINUATION_INDENT_WIDTH=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,

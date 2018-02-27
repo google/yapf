@@ -58,6 +58,29 @@ class Subtype(object):
   TYPED_NAME_ARG_LIST = 20
 
 
+def _TabModeContAlignPadding(spaces):
+  """Build padding string for continuation alignment in tabbed indentation.
+
+  Arguments:
+    spaces: (int) The number of spaces to place before the token for alignment.
+
+  Returns:
+    A string for alignment with style specified by CONTINUATION_ALIGNMENT_TYPE
+    option.
+  """
+  align_type = style.Get('CONTINUATION_ALIGNMENT_TYPE').upper()
+  ts = style.Get('INDENT_WIDTH')
+  if align_type == 'FIXED':
+    if spaces > 0:
+      return '\t' * int(style.Get('CONTINUATION_INDENT_WIDTH') / ts)
+    return ''
+  elif align_type == 'LESS':
+    return '\t' * int(spaces / ts)
+  elif align_type == 'MORE':
+    return '\t' * int((spaces + ts - 1) / ts)
+  return ' ' * spaces
+
+
 class FormatToken(object):
   """A wrapper around pytree Leaf nodes.
 
@@ -123,7 +146,10 @@ class FormatToken(object):
       indent_level: (int) The indentation level.
     """
     if style.Get('USE_TABS'):
-      indent_before = '\t' * indent_level + ' ' * spaces
+      if newlines_before > 0:
+        indent_before = '\t' * indent_level + _TabModeContAlignPadding(spaces)
+      else:
+        indent_before = '\t' * indent_level + ' ' * spaces
     else:
       indent_before = (
           ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
