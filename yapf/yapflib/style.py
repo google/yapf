@@ -90,6 +90,21 @@ _STYLE_HELP = dict(
          })"""),
     COLUMN_LIMIT=textwrap.dedent("""\
       The column limit."""),
+    CONTINUATION_ALIGN_STYLE=textwrap.dedent("""\
+      The style for continuation alignment. Possible values are:
+
+      - SPACE: Use spaces for continuation alignment. This is default behavior.
+      - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
+        (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
+        alignment.
+      - LESS: Slightly left if cannot vertically align continuation lines with
+        indent characters.
+      - VALIGN-RIGHT: Vertically align continuation lines with indent
+        characters. Slightly right (one more indent character) if cannot
+        vertically align continuation lines with indent characters.
+
+      For options FIXED, and VALIGN-RIGHT are only available when USE_TABS is
+      enabled."""),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
       Indent width used for line continuations."""),
     DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
@@ -245,6 +260,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       COALESCE_BRACKETS=False,
       COLUMN_LIMIT=79,
+      CONTINUATION_ALIGN_STYLE='SPACE',
       CONTINUATION_INDENT_WIDTH=4,
       DEDENT_CLOSING_BRACKETS=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
@@ -345,6 +361,18 @@ def _GetStyleFactory(style):
   return None
 
 
+def _ContinuationAlignStyleStringConverter(s):
+  """Option value converter for a continuation align style string."""
+  accepted_styles = ('SPACE', 'FIXED', 'VALIGN-RIGHT')
+  if s:
+    r = s.upper()
+    if r not in accepted_styles:
+      raise ValueError("unknown continuation align style: %r" % (s,))
+  else:
+    r = accepted_styles[0]
+  return r
+
+
 def _StringListConverter(s):
   """Option value converter for a comma-separated list of strings."""
   return [part.strip() for part in s.split(',')]
@@ -376,6 +404,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,
+    CONTINUATION_ALIGN_STYLE=_ContinuationAlignStyleStringConverter,
     CONTINUATION_INDENT_WIDTH=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,

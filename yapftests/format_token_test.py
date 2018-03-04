@@ -21,6 +21,48 @@ from lib2to3.pgen2 import token
 from yapf.yapflib import format_token
 
 
+class TabbedContinuationAlignPaddingTest(unittest.TestCase):
+
+  def testSpace(self):
+    align_style = 'SPACE'
+
+    pad = format_token._TabbedContinuationAlignPadding(0, align_style, 2, 4)
+    self.assertEqual(pad, '')
+
+    pad = format_token._TabbedContinuationAlignPadding(2, align_style, 2, 4)
+    self.assertEqual(pad, ' ' * 2)
+
+    pad = format_token._TabbedContinuationAlignPadding(5, align_style, 2, 4)
+    self.assertEqual(pad, ' ' * 5)
+
+  def testFixed(self):
+    align_style = 'FIXED'
+
+    pad = format_token._TabbedContinuationAlignPadding(0, align_style, 4, 8)
+    self.assertEqual(pad, '')
+
+    pad = format_token._TabbedContinuationAlignPadding(2, align_style, 4, 8)
+    self.assertEqual(pad, "\t" * 2)
+
+    pad = format_token._TabbedContinuationAlignPadding(5, align_style, 4, 8)
+    self.assertEqual(pad, "\t" * 2)
+
+  def testVAlignRight(self):
+    align_style = 'VALIGN-RIGHT'
+
+    pad = format_token._TabbedContinuationAlignPadding(0, align_style, 4, 8)
+    self.assertEqual(pad, '')
+
+    pad = format_token._TabbedContinuationAlignPadding(2, align_style, 4, 8)
+    self.assertEqual(pad, "\t")
+
+    pad = format_token._TabbedContinuationAlignPadding(4, align_style, 4, 8)
+    self.assertEqual(pad, "\t")
+
+    pad = format_token._TabbedContinuationAlignPadding(5, align_style, 4, 8)
+    self.assertEqual(pad, "\t" * 2)
+
+
 class FormatTokenTest(unittest.TestCase):
 
   def testSimple(self):

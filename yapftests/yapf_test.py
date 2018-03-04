@@ -1203,6 +1203,62 @@ INDENT_WIDTH=1
           expected_formatted_code,
           extra_options=['--style={0}'.format(stylepath)])
 
+  def testUseTabsContinuationAlignStyleFixed(self):
+    unformatted_code = """\
+def foo_function(arg1, arg2, arg3):
+  return ['hello', 'world',]
+"""
+    expected_formatted_code = """\
+def foo_function(arg1, arg2,
+		arg3):
+	return [
+			'hello',
+			'world',
+	]
+"""
+    style_contents = u"""\
+[style]
+based_on_style = chromium
+USE_TABS = true
+COLUMN_LIMIT=32
+INDENT_WIDTH=4
+CONTINUATION_INDENT_WIDTH=8
+CONTINUATION_ALIGN_STYLE = fixed
+"""
+    with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(stylepath)])
+
+  def testUseTabsContinuationAlignStyleVAlignRight(self):
+    unformatted_code = """\
+def foo_function(arg1, arg2, arg3):
+  return ['hello', 'world',]
+"""
+    expected_formatted_code = """\
+def foo_function(arg1, arg2,
+					arg3):
+	return [
+			'hello',
+			'world',
+	]
+"""
+    style_contents = u"""\
+[style]
+based_on_style = chromium
+USE_TABS = true
+COLUMN_LIMIT=32
+INDENT_WIDTH=4
+CONTINUATION_INDENT_WIDTH=8
+CONTINUATION_ALIGN_STYLE = valign-right
+"""
+    with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(stylepath)])
+
   def testStyleOutputRoundTrip(self):
     unformatted_code = textwrap.dedent("""\
         def foo_function():
