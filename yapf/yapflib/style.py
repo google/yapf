@@ -158,6 +158,9 @@ _STYLE_HELP = dict(
     SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '&', '|' or '^' rather than
       after."""),
+    SPLIT_BEFORE_CLOSING_BRACKET=textwrap.dedent("""\
+      Split before the closing bracket if a list or dict literal doesn't fit on
+      a single line."""),
     SPLIT_BEFORE_DICT_SET_GENERATOR=textwrap.dedent("""\
       Split before a dictionary or set generator (comp_for). For example, note
       the split before the 'for':
@@ -257,6 +260,7 @@ def CreatePEP8Style():
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_BEFORE_BITWISE_OPERATOR=True,
+      SPLIT_BEFORE_CLOSING_BRACKET=True,
       SPLIT_BEFORE_DICT_SET_GENERATOR=True,
       SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=False,
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
@@ -387,6 +391,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACES_BEFORE_COMMENT=int,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
+    SPLIT_BEFORE_CLOSING_BRACKET=_BoolConverter,
     SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=_BoolConverter,
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
