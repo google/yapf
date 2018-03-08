@@ -351,6 +351,20 @@ Knobs
 ``COLUMN_LIMIT``
     The column limit (or max line-length)
 
+``CONTINUATION_ALIGN_STYLE``
+    The style for continuation alignment. Possible values are:
+
+    - SPACE: Use spaces for continuation alignment. This is default behavior.
+    - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
+      (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
+      alignment.
+    - VALIGN-RIGHT: Vertically align continuation lines with indent characters.
+      Slightly right (one more indent character) if cannot vertically align
+      continuation lines with indent characters.
+
+      For options ``FIXED``, and ``VALIGN-RIGHT`` are only available when
+      ``USE_TABS`` is enabled.
+
 ``CONTINUATION_INDENT_WIDTH``
     Indent width used for line continuations.
 

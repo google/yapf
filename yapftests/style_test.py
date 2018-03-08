@@ -26,6 +26,20 @@ from yapftests import utils
 
 class UtilsTest(unittest.TestCase):
 
+  def testContinuationAlignStyleStringConverter(self):
+    self.assertEqual(style._ContinuationAlignStyleStringConverter(''), 'SPACE')
+    self.assertEqual(
+        style._ContinuationAlignStyleStringConverter('space'), 'SPACE')
+    self.assertEqual(
+        style._ContinuationAlignStyleStringConverter('fixed'), 'FIXED')
+    self.assertEqual(
+        style._ContinuationAlignStyleStringConverter('valign-right'),
+        'VALIGN-RIGHT')
+    with self.assertRaises(ValueError) as ctx:
+      style._ContinuationAlignStyleStringConverter('blahblah')
+    self.assertTrue(
+        "unknown continuation align style: 'blahblah'" in str(ctx.exception))
+
   def testStringListConverter(self):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('foo,bar'), ['foo', 'bar'])
