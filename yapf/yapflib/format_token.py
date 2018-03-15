@@ -58,6 +58,28 @@ class Subtype(object):
   TYPED_NAME_ARG_LIST = 20
 
 
+def _TabbedContinuationAlignPadding(spaces, align_style, tab_width,
+                                    continuation_indent_width):
+  """Build padding string for continuation alignment in tabbed indentation.
+
+  Arguments:
+    spaces: (int) The number of spaces to place before the token for alignment.
+    align_style: (str) The alignment style for continuation lines.
+    tab_width: (int) Number of columns of each tab character.
+    continuation_indent_width: (int) Indent columns for line continuations.
+
+  Returns:
+    A padding string for alignment with style specified by align_style option.
+  """
+  if align_style == 'FIXED':
+    if spaces > 0:
+      return '\t' * int(continuation_indent_width / tab_width)
+    return ''
+  elif align_style == 'VALIGN-RIGHT':
+    return '\t' * int((spaces + tab_width - 1) / tab_width)
+  return ' ' * spaces
+
+
 class FormatToken(object):
   """A wrapper around pytree Leaf nodes.
 
@@ -123,7 +145,12 @@ class FormatToken(object):
       indent_level: (int) The indentation level.
     """
     if style.Get('USE_TABS'):
-      indent_before = '\t' * indent_level + ' ' * spaces
+      if newlines_before > 0:
+        indent_before = '\t' * indent_level + _TabbedContinuationAlignPadding(
+            spaces, style.Get('CONTINUATION_ALIGN_STYLE'),
+            style.Get('INDENT_WIDTH'), style.Get('CONTINUATION_INDENT_WIDTH'))
+      else:
+        indent_before = '\t' * indent_level + ' ' * spaces
     else:
       indent_before = (
           ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
