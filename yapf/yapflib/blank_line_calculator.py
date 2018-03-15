@@ -27,6 +27,7 @@ from lib2to3 import pytree
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
+from yapf.yapflib import style
 
 _NO_BLANK_LINES = 1
 _ONE_BLANK_LINE = 2
@@ -155,7 +156,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     if self.last_was_decorator:
       return _NO_BLANK_LINES
     elif self._IsTopLevel(node):
-      return _TWO_BLANK_LINES
+      return 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION')
     return _ONE_BLANK_LINE
 
   def _SetNumNewlines(self, node, num_newlines):
