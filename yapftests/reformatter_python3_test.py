@@ -367,6 +367,17 @@ class Foo:
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testEllipses(self):
+    if sys.version_info[1] < 6:
+      return
+    code = """\
+def dirichlet(x12345678901234567890123456789012345678901234567890=...) -> None:
+    return
+"""
+    # https://github.com/google/yapf/issues/533
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
