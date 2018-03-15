@@ -161,6 +161,9 @@ class FormatDecisionState(object):
         if not style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE'):
           return False
 
+    if previous and previous.value == '.' and current.value == '.':
+      return False
+
     return current.can_break_before
 
   def MustSplit(self):
