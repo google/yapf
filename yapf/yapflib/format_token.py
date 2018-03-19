@@ -300,13 +300,14 @@ class FormatToken(object):
   @property
   @py3compat.lru_cache()
   def is_multiline_string(self):
+    """A multiline string."""
     if py3compat.PY3:
-      prefix = "("
-      prefix += "r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF"  # strings
-      prefix += "|b|B|br|Br|bR|BR|rb|rB|Rb|RB"  # bytes
-      prefix += ")?"
+      prefix = '('
+      prefix += 'r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF'  # strings
+      prefix += '|b|B|br|Br|bR|BR|rb|rB|Rb|RB'  # bytes
+      prefix += ')?'
     else:
-      prefix = "[uUbB]?[rR]?"
+      prefix = '[uUbB]?[rR]?'
 
     regex = r'^{prefix}(?P<delim>"""|\'\'\').*(?P=delim)$'.format(prefix=prefix)
     return (self.is_string and

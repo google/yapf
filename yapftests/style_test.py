@@ -37,8 +37,8 @@ class UtilsTest(unittest.TestCase):
         'VALIGN-RIGHT')
     with self.assertRaises(ValueError) as ctx:
       style._ContinuationAlignStyleStringConverter('blahblah')
-    self.assertTrue(
-        "unknown continuation align style: 'blahblah'" in str(ctx.exception))
+    self.assertIn("unknown continuation align style: 'blahblah'",
+                  str(ctx.exception))
 
   def testStringListConverter(self):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])

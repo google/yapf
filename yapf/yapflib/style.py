@@ -371,7 +371,7 @@ def _ContinuationAlignStyleStringConverter(s):
   if s:
     r = s.upper()
     if r not in accepted_styles:
-      raise ValueError("unknown continuation align style: %r" % (s,))
+      raise ValueError('unknown continuation align style: %r' % (s,))
   else:
     r = accepted_styles[0]
   return r
