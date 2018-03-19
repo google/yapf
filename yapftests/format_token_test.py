@@ -42,10 +42,10 @@ class TabbedContinuationAlignPaddingTest(unittest.TestCase):
     self.assertEqual(pad, '')
 
     pad = format_token._TabbedContinuationAlignPadding(2, align_style, 4, 8)
-    self.assertEqual(pad, "\t" * 2)
+    self.assertEqual(pad, '\t' * 2)
 
     pad = format_token._TabbedContinuationAlignPadding(5, align_style, 4, 8)
-    self.assertEqual(pad, "\t" * 2)
+    self.assertEqual(pad, '\t' * 2)
 
   def testVAlignRight(self):
     align_style = 'VALIGN-RIGHT'
@@ -54,13 +54,13 @@ class TabbedContinuationAlignPaddingTest(unittest.TestCase):
     self.assertEqual(pad, '')
 
     pad = format_token._TabbedContinuationAlignPadding(2, align_style, 4, 8)
-    self.assertEqual(pad, "\t")
+    self.assertEqual(pad, '\t')
 
     pad = format_token._TabbedContinuationAlignPadding(4, align_style, 4, 8)
-    self.assertEqual(pad, "\t")
+    self.assertEqual(pad, '\t')
 
     pad = format_token._TabbedContinuationAlignPadding(5, align_style, 4, 8)
-    self.assertEqual(pad, "\t" * 2)
+    self.assertEqual(pad, '\t' * 2)
 
 
 class FormatTokenTest(unittest.TestCase):
@@ -70,8 +70,8 @@ class FormatTokenTest(unittest.TestCase):
     self.assertEqual("FormatToken(name=STRING, value='hello world')", str(tok))
     self.assertTrue(tok.is_string)
 
-    tok = format_token.FormatToken(pytree.Leaf(token.COMMENT, "# A comment"))
-    self.assertEqual("FormatToken(name=COMMENT, value=# A comment)", str(tok))
+    tok = format_token.FormatToken(pytree.Leaf(token.COMMENT, '# A comment'))
+    self.assertEqual('FormatToken(name=COMMENT, value=# A comment)', str(tok))
     self.assertTrue(tok.is_comment)
 
   def testIsMultilineString(self):
@@ -82,5 +82,5 @@ class FormatTokenTest(unittest.TestCase):
     self.assertTrue(tok.is_multiline_string)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   unittest.main()
