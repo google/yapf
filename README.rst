@@ -322,6 +322,9 @@ Knobs
             def method():
                 pass
 
+``BLANK_LINE_BEFORE_MODULE_DOCSTRING``
+    Insert a blank line before a module docstring.
+
 ``BLANK_LINE_BEFORE_CLASS_DOCSTRING``
     Insert a blank line before a class-level docstring.
 

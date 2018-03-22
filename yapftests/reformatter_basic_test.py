@@ -2218,6 +2218,59 @@ s = 'foo \\
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testBlankLineBeforeModuleDocstring(self):
+    unformatted_code = textwrap.dedent('''\
+        #!/usr/bin/env python
+        # -*- coding: utf-8 name> -*-
+
+        """Some module docstring."""
+
+
+        def foobar():
+          pass
+        ''')
+    expected_code = textwrap.dedent('''\
+        #!/usr/bin/env python
+        # -*- coding: utf-8 name> -*-
+        """Some module docstring."""
+
+
+        def foobar():
+          pass
+        ''')
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, '
+              'blank_line_before_module_docstring: True}'))
+      unformatted_code = textwrap.dedent('''\
+        #!/usr/bin/env python
+        # -*- coding: utf-8 name> -*-
+        """Some module docstring."""
+
+
+        def foobar():
+            pass
+          ''')
+      expected_formatted_code = textwrap.dedent('''\
+        #!/usr/bin/env python
+        # -*- coding: utf-8 name> -*-
+
+        """Some module docstring."""
+
+
+        def foobar():
+            pass
+          ''')
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testTupleCohesion(self):
     unformatted_code = textwrap.dedent("""\
         def f():
