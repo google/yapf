@@ -473,6 +473,10 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
         style.Get('BLANK_LINE_BEFORE_CLASS_DOCSTRING')):
       # Enforce a blank line before a class's docstring.
       return ONE_BLANK_LINE
+    elif (prev_uwline.first.value.startswith('#') and
+          style.Get('BLANK_LINE_BEFORE_MODULE_DOCSTRING')):
+      # Enforce a blank line before a module's docstring.
+      return ONE_BLANK_LINE
     # The docstring shouldn't have a newline before it.
     return NO_BLANK_LINES
 
