@@ -28,6 +28,26 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB65246454(self):
+    unformatted_code = """\
+class _():
+
+  def _(self):
+    self.assertEqual({i.id
+                      for i in successful_instances},
+                     {i.id
+                      for i in self._statuses.successful_instances})
+"""
+    expected_formatted_code = """\
+class _():
+
+  def _(self):
+    self.assertEqual({i.id for i in successful_instances},
+                     {i.id for i in self._statuses.successful_instances})
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB67935450(self):
     unformatted_code = """\
 def _():
