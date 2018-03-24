@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.26.0] UNRELEASED
+### Added
+- Support additional file exclude patterns in .yapfignore file.
+
 ## [0.25.0] UNRELEASED
 ### Added
 - Added `INDENT_BLANK_LINES` knob to select whether the blank lines are empty
