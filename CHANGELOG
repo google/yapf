@@ -15,6 +15,7 @@
 ### Fixed
 - Attempt to determine if long lambdas are allowed. This can be done on a
   case-by-case basis with a "pylint" disable comment.
+- A comment before a decorator isn't part of the decorator's line.
 
 ## [0.21.0] 2018-03-18
 ### Added

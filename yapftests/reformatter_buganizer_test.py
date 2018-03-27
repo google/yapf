@@ -28,6 +28,18 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB38343525(self):
+    code = """\
+# This does foo.
+@arg.String('some_path_to_a_file', required=True)
+# This does bar.
+@arg.String('some_path_to_a_file', required=True)
+def f():
+  print 1
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB37099651(self):
     unformatted_code = """\
 _MEMCACHE = lazy.MakeLazy(
