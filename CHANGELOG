@@ -14,6 +14,7 @@
   analyzed. This allows tuples to be split more rationally.
 - Adjust splitting penalties around arithmetic operators so that the code can
   flow more freely. The code must flow!
+- Try to meld an argument list's closing parenthesis to the last argument.
 ### Fixed
 - Attempt to determine if long lambdas are allowed. This can be done on a
   case-by-case basis with a "pylint" disable comment.

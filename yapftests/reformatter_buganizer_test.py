@@ -28,6 +28,52 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB65546221(self):
+    unformatted_code = """\
+class _():
+
+  def _():
+    return timedelta(seconds=max(float(time_scale), small_interval) *
+                   1.41 ** min(num_attempts, 9))
+"""
+    expected_formatted_code = """\
+class _():
+
+  def _():
+    return timedelta(
+        seconds=max(float(time_scale), small_interval) *
+        1.41**min(num_attempts, 9))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB65546221(self):
+    unformatted_code = """\
+SUPPORTED_PLATFORMS = (
+    "centos-6",
+    "centos-7",
+    "ubuntu-1204-precise",
+    "ubuntu-1404-trusty",
+    "ubuntu-1604-xenial",
+    "debian-7-wheezy",
+    "debian-8-jessie",
+    "debian-9-stretch",)
+"""
+    expected_formatted_code = """\
+SUPPORTED_PLATFORMS = (
+    "centos-6",
+    "centos-7",
+    "ubuntu-1204-precise",
+    "ubuntu-1404-trusty",
+    "ubuntu-1604-xenial",
+    "debian-7-wheezy",
+    "debian-8-jessie",
+    "debian-9-stretch",
+)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB30500455(self):
     unformatted_code = """\
 INITIAL_SYMTAB = dict([(name, 'exception#' + name) for name in INITIAL_EXCEPTIONS

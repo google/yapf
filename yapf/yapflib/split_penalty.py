@@ -231,6 +231,10 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       }:
         # Don't split an argument list with one element if at all possible.
         _SetStronglyConnected(node.children[1], node.children[2])
+
+      if name == 'arglist':
+        _SetStronglyConnected(node.children[-1])
+
     self.DefaultNodeVisit(node)
 
   def Visit_power(self, node):  # pylint: disable=invalid-name,missing-docstring
