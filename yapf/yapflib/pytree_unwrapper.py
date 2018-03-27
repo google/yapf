@@ -306,6 +306,11 @@ def _MatchBrackets(uwline):
       token.matching_bracket = bracket_stack[-1]
       bracket_stack.pop()
 
+    for bracket in bracket_stack:
+      if pytree_utils.GetOpeningBracket(token.node) == bracket.node:
+        bracket.container_elements.append(token)
+        token.container_opening = bracket
+
 
 def _AdjustSplitPenalty(uwline):
   """Visit the node and adjust the split penalties if needed.

@@ -42,6 +42,7 @@ from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
 from yapf.yapflib import file_resources
+from yapf.yapflib import identify_container
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -133,6 +134,7 @@ def FormatCode(unformatted_source,
   comment_splicer.SpliceComments(tree)
   continuation_splicer.SpliceContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
+  identify_container.IdentifyContainers(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)
 

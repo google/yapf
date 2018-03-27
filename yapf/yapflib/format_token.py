@@ -93,6 +93,10 @@ class FormatToken(object):
       this is the first token in the unwrapped line.
     matching_bracket: If a bracket token ('[', '{', or '(') the matching
       bracket.
+    container_opening: If the object is in a container, this points to its
+      opening bracket.
+    container_elements: If this is the start of a container, a list of the
+      elements in the container.
     whitespace_prefix: The prefix for the whitespace.
     spaces_required_before: The number of spaces required before a token. This
       is a lower-bound for the formatter and not a hard requirement. For
@@ -118,6 +122,8 @@ class FormatToken(object):
     self.next_token = None
     self.previous_token = None
     self.matching_bracket = None
+    self.container_opening = None
+    self.container_elements = []
     self.whitespace_prefix = ''
     self.can_break_before = False
     self.must_break_before = False

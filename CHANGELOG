@@ -6,6 +6,10 @@
 ### Added
 - The `BLANK_LINE_BEFORE_MODULE_DOCSTRING` knob adds a blank line before a
   module's docstring.
+### Changed
+- Improve the heuristic we use to determine when to split at the start of a
+  function call. First check whether or not all elements can fit in the space
+  without wrapping. If not, then we split.
 
 ## [0.21.0] 2018-03-18
 ### Added

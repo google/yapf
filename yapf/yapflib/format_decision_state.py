@@ -439,6 +439,17 @@ class FormatDecisionState(object):
           if self._FitsOnLine(previous, previous.matching_bracket):
             return False
         elif not self._FitsOnLine(previous, previous.matching_bracket):
+          if len(previous.container_elements) == 1:
+            return False
+
+          elements = previous.container_elements + [previous.matching_bracket]
+          i = 1
+          while i < len(elements):
+            if (not elements[i - 1].OpensScope() and
+                not self._FitsOnLine(elements[i - 1], elements[i])):
+              return True
+            i += 1
+
           if (self.column_limit - self.column) / float(self.column_limit) < 0.3:
             # Try not to squish all of the arguments off to the right.
             return current.next_token != previous.matching_bracket

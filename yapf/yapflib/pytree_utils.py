@@ -259,6 +259,28 @@ def RemoveSubtypeAnnotation(node, value):
     SetNodeAnnotation(node, Annotation.SUBTYPE, attr)
 
 
+def GetOpeningBracket(node):
+  """Get opening bracket value from a node.
+
+  Arguments:
+    node: the node.
+
+  Returns:
+    The opening bracket node or None if it couldn't find one.
+  """
+  return getattr(node, _NODE_ANNOTATION_PREFIX + "container_bracket", None)
+
+
+def SetOpeningBracket(node, bracket):
+  """Set opening bracket value for a node.
+
+  Arguments:
+    node: the node.
+    bracket: opening bracket to set.
+  """
+  setattr(node, _NODE_ANNOTATION_PREFIX + "container_bracket", bracket)
+
+
 def DumpNodeToString(node):
   """Dump a string representation of the given node. For debugging.
 
