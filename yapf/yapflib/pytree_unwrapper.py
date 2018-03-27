@@ -222,6 +222,12 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children[index].children:
       self.Visit(child)
 
+  def Visit_decorator(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
+      if pytree_utils.NodeName(child) == 'COMMENT':
+        self._StartNewLine()
+
   def Visit_decorators(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self._StartNewLine()
