@@ -13,6 +13,8 @@
 # limitations under the License.
 """Computation of split penalties before/between tokens."""
 
+import re
+
 from lib2to3 import pytree
 
 from yapf.yapflib import format_token
@@ -111,7 +113,15 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_lambdef(self, node):  # pylint: disable=invalid-name
     # lambdef ::= 'lambda' [varargslist] ':' test
     # Loop over the lambda up to and including the colon.
-    if style.Get('ALLOW_MULTILINE_LAMBDAS'):
+    allow_multiline_lambdas = style.Get('ALLOW_MULTILINE_LAMBDAS')
+    if not allow_multiline_lambdas:
+      for child in node.children:
+        if pytree_utils.NodeName(child) == 'COMMENT':
+          if re.search(r'pylint:.*disable=.*\bg-long-lambda', child.value):
+            allow_multiline_lambdas = True
+            break
+
+    if allow_multiline_lambdas:
       _SetStronglyConnected(node)
     else:
       self._SetUnbreakableOnChildren(node)

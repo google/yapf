@@ -28,6 +28,27 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB37099651(self):
+    unformatted_code = """\
+_MEMCACHE = lazy.MakeLazy(
+    # pylint: disable=g-long-lambda
+    lambda: function.call.mem.clients(FLAGS.some_flag_thingy, default_namespace=_LAZY_MEM_NAMESPACE, allow_pickle=True)
+    # pylint: enable=g-long-lambda
+)
+"""
+    expected_formatted_code = """\
+_MEMCACHE = lazy.MakeLazy(
+    # pylint: disable=g-long-lambda
+    lambda: function.call.mem.clients(
+        FLAGS.some_flag_thingy,
+        default_namespace=_LAZY_MEM_NAMESPACE,
+        allow_pickle=True)
+    # pylint: enable=g-long-lambda
+)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB33228502(self):
     unformatted_code = """\
 def _():
