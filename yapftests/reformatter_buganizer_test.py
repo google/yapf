@@ -28,6 +28,23 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB30500455(self):
+    unformatted_code = """\
+INITIAL_SYMTAB = dict([(name, 'exception#' + name) for name in INITIAL_EXCEPTIONS
+] * [(name, 'type#' + name) for name in INITIAL_TYPES] + [
+    (name, 'function#' + name) for name in INITIAL_FUNCTIONS
+] + [(name, 'const#' + name) for name in INITIAL_CONSTS])
+"""
+    expected_formatted_code = """\
+INITIAL_SYMTAB = dict(
+    [(name, 'exception#' + name) for name in INITIAL_EXCEPTIONS] *
+    [(name, 'type#' + name) for name in INITIAL_TYPES] +
+    [(name, 'function#' + name) for name in INITIAL_FUNCTIONS] +
+    [(name, 'const#' + name) for name in INITIAL_CONSTS])
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB38343525(self):
     code = """\
 # This does foo.
@@ -503,8 +520,8 @@ def _():
     expected_formatted_code = textwrap.dedent("""\
         class _():
           def _():
-            hints.append(('hg tag -f -l -r %s %s # %s' %
-                          (short(ctx.node()), candidatetag, firstline))[:78])
+            hints.append(('hg tag -f -l -r %s %s # %s' % (short(
+                ctx.node()), candidatetag, firstline))[:78])
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

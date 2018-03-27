@@ -396,6 +396,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, SHIFT_EXPR)
 
+  _ARITH_OPS = frozenset({'PLUS', 'MINUS'})
+
   def Visit_arith_expr(self, node):  # pylint: disable=invalid-name
     # arith_expr ::= term (('+'|'-') term)*
     self.DefaultNodeVisit(node)
@@ -404,19 +406,25 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     index = 1
     while index < len(node.children) - 1:
       child = node.children[index]
-      if isinstance(child, pytree.Leaf) and child.value in '+-':
+      if pytree_utils.NodeName(child) in self._ARITH_OPS:
         next_node = _FirstChildNode(node.children[index + 1])
-        _SetSplitPenalty(
-            next_node,
-            pytree_utils.GetNodeAnnotation(
-                next_node, pytree_utils.Annotation.SPLIT_PENALTY, default=0) -
-            100)
+        _SetSplitPenalty(next_node, ARITH_EXPR)
       index += 1
+
+  _TERM_OPS = frozenset({'STAR', 'AT', 'SLASH', 'PERCENT', 'DOUBLESLASH'})
 
   def Visit_term(self, node):  # pylint: disable=invalid-name
     # term ::= factor (('*'|'@'|'/'|'%'|'//') factor)*
-    _IncreasePenalty(node, TERM)
     self.DefaultNodeVisit(node)
+    _IncreasePenalty(node, TERM)
+
+    index = 1
+    while index < len(node.children) - 1:
+      child = node.children[index]
+      if pytree_utils.NodeName(child) in self._TERM_OPS:
+        next_node = _FirstChildNode(node.children[index + 1])
+        _SetSplitPenalty(next_node, TERM)
+      index += 1
 
   def Visit_factor(self, node):  # pyline: disable=invalid-name
     # factor ::= ('+'|'-'|'~') factor | power

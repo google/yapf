@@ -12,6 +12,8 @@
   without wrapping. If not, then we split.
 - Check all of the elements of a tuple. Similarly to how arguments are
   analyzed. This allows tuples to be split more rationally.
+- Adjust splitting penalties around arithmetic operators so that the code can
+  flow more freely. The code must flow!
 ### Fixed
 - Attempt to determine if long lambdas are allowed. This can be done on a
   case-by-case basis with a "pylint" disable comment.
