@@ -307,7 +307,7 @@ def _MatchBrackets(uwline):
       bracket_stack.pop()
 
     for bracket in bracket_stack:
-      if pytree_utils.GetOpeningBracket(token.node) == bracket.node:
+      if id(pytree_utils.GetOpeningBracket(token.node)) == id(bracket.node):
         bracket.container_elements.append(token)
         token.container_opening = bracket
 

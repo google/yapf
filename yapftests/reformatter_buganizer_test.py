@@ -28,6 +28,44 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB33228502(self):
+    unformatted_code = """\
+def _():
+  success_rate_stream_table = module.Precompute(
+      query_function=module.DefineQueryFunction(
+          name='Response error ratio',
+          expression=((m.Fetch(
+                  m.Raw('monarch.BorgTask',
+                        '/corp/travel/trips2/dispatcher/email/response'),
+                  {'borg_job': module_config.job, 'metric:response_type': 'SUCCESS'}),
+               m.Fetch(m.Raw('monarch.BorgTask', '/corp/travel/trips2/dispatcher/email/response'), {'borg_job': module_config.job}))
+              | m.Window(m.Delta('1h'))
+              | m.Join('successes', 'total')
+              | m.Point(m.VAL['successes'] / m.VAL['total']))))
+"""
+    expected_formatted_code = """\
+def _():
+  success_rate_stream_table = module.Precompute(
+      query_function=module.DefineQueryFunction(
+          name='Response error ratio',
+          expression=(
+              (m.Fetch(
+                  m.Raw('monarch.BorgTask',
+                        '/corp/travel/trips2/dispatcher/email/response'), {
+                            'borg_job': module_config.job,
+                            'metric:response_type': 'SUCCESS'
+                        }),
+               m.Fetch(
+                   m.Raw('monarch.BorgTask',
+                         '/corp/travel/trips2/dispatcher/email/response'),
+                   {'borg_job': module_config.job}))
+              | m.Window(m.Delta('1h'))
+              | m.Join('successes', 'total')
+              | m.Point(m.VAL['successes'] / m.VAL['total']))))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB30394228(self):
     code = """\
 class _():

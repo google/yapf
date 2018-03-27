@@ -452,7 +452,7 @@ class FormatDecisionState(object):
 
           if (self.column_limit - self.column) / float(self.column_limit) < 0.3:
             # Try not to squish all of the arguments off to the right.
-            return current.next_token != previous.matching_bracket
+            return True
       else:
         # Split after the opening of a container if it doesn't fit on the
         # current line.

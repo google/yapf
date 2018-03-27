@@ -39,6 +39,9 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
   """_IdentifyContainers - see file-level docstring for detailed description."""
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
+
     if len(node.children) != 3:
       return
     if pytree_utils.NodeName(node.children[0]) != 'LPAR':
@@ -51,6 +54,18 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
     else:
       pytree_utils.SetOpeningBracket(
           _GetFirstLeafNode(node.children[1]), node.children[0])
+
+  def Visit_atom(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
+
+    if len(node.children) != 3:
+      return
+    if pytree_utils.NodeName(node.children[0]) != 'LPAR':
+      return
+
+    for child in node.children[1].children:
+      pytree_utils.SetOpeningBracket(_GetFirstLeafNode(child), node.children[0])
 
 
 def _GetFirstLeafNode(node):
