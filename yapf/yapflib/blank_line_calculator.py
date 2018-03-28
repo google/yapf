@@ -116,7 +116,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     """
     if self.last_was_class_or_function:
       if pytree_utils.NodeName(node) in _PYTHON_STATEMENTS:
-        leaf = _GetFirstChildLeaf(node)
+        leaf = pytree_utils.FirstLeafNode(node)
         self._SetNumNewlines(leaf, self._GetNumNewlines(leaf))
     self.last_was_class_or_function = False
     super(_BlankLineCalculator, self).DefaultNodeVisit(node)
@@ -169,16 +169,10 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
 
 def _StartsInZerothColumn(node):
-  return (_GetFirstChildLeaf(node).column == 0 or
+  return (pytree_utils.FirstLeafNode(node).column == 0 or
           (_AsyncFunction(node) and node.prev_sibling.column == 0))
 
 
 def _AsyncFunction(node):
   return (py3compat.PY3 and node.prev_sibling and
           pytree_utils.NodeName(node.prev_sibling) == 'ASYNC')
-
-
-def _GetFirstChildLeaf(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetFirstChildLeaf(node.children[0])

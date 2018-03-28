@@ -69,6 +69,18 @@ def NodeName(node):
     return pygram.python_grammar.number2symbol[node.type]
 
 
+def FirstLeafNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return FirstLeafNode(node.children[0])
+
+
+def LastLeafNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return LastLeafNode(node.children[-1])
+
+
 # lib2to3 thoughtfully provides pygram.python_grammar_no_print_statement for
 # parsing Python 3 code that wouldn't parse otherwise (when 'print' is used in a
 # context where a keyword is disallowed).

@@ -377,11 +377,6 @@ def _ContainsComments(node):
 
 def _SetMustSplitOnFirstLeaf(node):
   """Set the "must split" annotation on the first leaf node."""
-
-  def FindFirstLeaf(node):
-    if isinstance(node, pytree.Leaf):
-      return node
-    return FindFirstLeaf(node.children[0])
-
   pytree_utils.SetNodeAnnotation(
-      FindFirstLeaf(node), pytree_utils.Annotation.MUST_SPLIT, True)
+      pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.MUST_SPLIT,
+      True)

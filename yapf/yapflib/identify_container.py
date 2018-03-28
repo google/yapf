@@ -50,10 +50,10 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
     if pytree_utils.NodeName(node.children[1]) == 'arglist':
       for child in node.children[1].children:
         pytree_utils.SetOpeningBracket(
-            _GetFirstLeafNode(child), node.children[0])
+            pytree_utils.FirstLeafNode(child), node.children[0])
     else:
       pytree_utils.SetOpeningBracket(
-          _GetFirstLeafNode(node.children[1]), node.children[0])
+          pytree_utils.FirstLeafNode(node.children[1]), node.children[0])
 
   def Visit_atom(self, node):  # pylint: disable=invalid-name
     for child in node.children:
@@ -65,10 +65,5 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
       return
 
     for child in node.children[1].children:
-      pytree_utils.SetOpeningBracket(_GetFirstLeafNode(child), node.children[0])
-
-
-def _GetFirstLeafNode(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetFirstLeafNode(node.children[0])
+      pytree_utils.SetOpeningBracket(
+          pytree_utils.FirstLeafNode(child), node.children[0])

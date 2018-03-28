@@ -96,7 +96,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
           # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
           # normally want to split before them if the dictionary cannot exist
           # on a single line.
-          if not unpacking or _GetFirstLeafNode(child).value == '**':
+          if not unpacking or pytree_utils.FirstLeafNode(child).value == '**':
             _AppendFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
           _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
@@ -384,8 +384,8 @@ def _InsertPseudoParentheses(node):
       comment_node = node.children[-1].clone()
       node.children[-1].remove()
 
-  first = _GetFirstLeafNode(node)
-  last = _GetLastLeafNode(node)
+  first = pytree_utils.FirstLeafNode(node)
+  last = pytree_utils.LastLeafNode(node)
 
   if first == last and first.type == token.COMMENT:
     # A comment was inserted before the value, which is a pytree.Leaf.
@@ -396,8 +396,8 @@ def _InsertPseudoParentheses(node):
     node = new_node
     last.remove()
 
-    first = _GetFirstLeafNode(node)
-    last = _GetLastLeafNode(node)
+    first = pytree_utils.FirstLeafNode(node)
+    last = pytree_utils.LastLeafNode(node)
 
   lparen = pytree.Leaf(
       token.LPAR, u'(', context=('', (first.get_lineno(), first.column - 1)))
@@ -426,15 +426,3 @@ def _InsertPseudoParentheses(node):
     new_node = pytree.Node(syms.atom, [lparen, clone, rparen])
     node.replace(new_node)
     _AppendFirstLeafTokenSubtype(clone, format_token.Subtype.DICTIONARY_VALUE)
-
-
-def _GetFirstLeafNode(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetFirstLeafNode(node.children[0])
-
-
-def _GetLastLeafNode(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetLastLeafNode(node.children[-1])
