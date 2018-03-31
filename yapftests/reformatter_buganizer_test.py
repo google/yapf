@@ -28,7 +28,25 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
-  def testB65546221(self):
+  def testB77329955(self):
+    code = """\
+class _():
+
+  @parameterized.named_parameters(
+      ('ReadyExpiredSuccess', True, True, True, None, None),
+      ('SpannerUpdateFails', True, False, True, None, None),
+      ('ReadyNotExpired', False, True, True, True, None),
+      # ('ReadyNotExpiredNotHealthy', False, True, True, False, True),
+      # ('ReadyNotExpiredNotHealthyErrorFails', False, True, True, False, False
+      # ('ReadyNotExpiredNotHealthyUpdateFails', False, False, True, False, True
+  )
+  def _():
+    pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB65197969(self):
     unformatted_code = """\
 class _():
 
