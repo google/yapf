@@ -35,6 +35,7 @@ def _restore_working_dir():
   finally:
     os.chdir(curdir)
 
+
 class GetDefaultStyleForDirTest(unittest.TestCase):
 
   def setUp(self):
@@ -159,12 +160,10 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files(files)
 
     actual = file_resources.GetCommandLineFiles(
-                [self.test_tmpdir], recursive=True, exclude=['*.test1*'])
+        [self.test_tmpdir], recursive=True, exclude=['*.test1*'])
 
     self.assertEqual(
-        sorted(
-            actual
-        ),
+        sorted(actual),
         sorted([
             os.path.join(tdir2, 'testfile2.py'),
             os.path.join(tdir3, 'testfile3.py'),
@@ -184,9 +183,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
     tdir2 = self._make_test_dir('test_2')
     tdir3 = self._make_test_dir('test.3')
     files = [
-      os.path.join(tdir1, 'testfile1.py'),
-      os.path.join(tdir2, 'testfile2.py'),
-      os.path.join(tdir3, 'testfile3.py'),
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'),
+        os.path.join(tdir3, 'testfile3.py'),
     ]
     _touch_files(files)
 
@@ -196,19 +195,20 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
       os.chdir(self.test_tmpdir)
       actual = file_resources.GetCommandLineFiles(
-        [os.path.relpath(self.test_tmpdir)],
-        recursive=True, exclude=['*.test1*'])
+          [os.path.relpath(self.test_tmpdir)],
+          recursive=True,
+          exclude=['*.test1*'])
 
       self.assertEqual(
-        sorted(
-          actual
-        ),
-        sorted([
-          os.path.join(os.path.relpath(self.test_tmpdir),
-                       os.path.basename(tdir2), 'testfile2.py'),
-          os.path.join(os.path.relpath(self.test_tmpdir),
-                       os.path.basename(tdir3), 'testfile3.py'),
-        ]))
+          sorted(actual),
+          sorted([
+              os.path.join(
+                  os.path.relpath(self.test_tmpdir), os.path.basename(tdir2),
+                  'testfile2.py'),
+              os.path.join(
+                  os.path.relpath(self.test_tmpdir), os.path.basename(tdir3),
+                  'testfile3.py'),
+          ]))
 
   def test_find_with_excluded_dirs(self):
     tdir1 = self._make_test_dir('test1')
