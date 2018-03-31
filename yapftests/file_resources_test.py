@@ -14,6 +14,7 @@
 # limitations under the License.
 """Tests for yapf.file_resources."""
 
+import contextlib
 import os
 import shutil
 import tempfile
@@ -25,6 +26,14 @@ from yapf.yapflib import py3compat
 
 from yapftests import utils
 
+
+@contextlib.contextmanager
+def _restore_working_dir():
+  curdir = os.getcwd()
+  try:
+    yield
+  finally:
+    os.chdir(curdir)
 
 class GetDefaultStyleForDirTest(unittest.TestCase):
 
@@ -136,6 +145,69 @@ class GetCommandLineFilesTest(unittest.TestCase):
         sorted([
             os.path.join(tdir1, 'testfile1.py'),
             os.path.join(tdir2, 'testfile2.py'),
+        ]))
+
+  def test_find_with_excluded_hidden_dirs(self):
+    tdir1 = self._make_test_dir('.test1')
+    tdir2 = self._make_test_dir('test_2')
+    tdir3 = self._make_test_dir('test.3')
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'),
+        os.path.join(tdir3, 'testfile3.py'),
+    ]
+    _touch_files(files)
+
+    actual = file_resources.GetCommandLineFiles(
+                [self.test_tmpdir], recursive=True, exclude=['*.test1*'])
+
+    self.assertEqual(
+        sorted(
+            actual
+        ),
+        sorted([
+            os.path.join(tdir2, 'testfile2.py'),
+            os.path.join(tdir3, 'testfile3.py'),
+        ]))
+
+  def test_find_with_excluded_hidden_dirs_relative(self):
+    """
+    A regression test against a specific case where a hidden directory (one
+    beginning with a period) is being excluded, but it is also an immediate
+    child of the current directory which has been specified in a relative
+    manner.
+
+    At its core, the bug has to do with overzelous stripping of "./foo" so that
+    it removes too much from "./.foo" .
+    """
+    tdir1 = self._make_test_dir('.test1')
+    tdir2 = self._make_test_dir('test_2')
+    tdir3 = self._make_test_dir('test.3')
+    files = [
+      os.path.join(tdir1, 'testfile1.py'),
+      os.path.join(tdir2, 'testfile2.py'),
+      os.path.join(tdir3, 'testfile3.py'),
+    ]
+    _touch_files(files)
+
+    # We must temporarily change the current directory, so that we test against
+    # patterns like ./.test1/file instead of /tmp/foo/.test1/file
+    with _restore_working_dir():
+
+      os.chdir(self.test_tmpdir)
+      actual = file_resources.GetCommandLineFiles(
+        [os.path.relpath(self.test_tmpdir)],
+        recursive=True, exclude=['*.test1*'])
+
+      self.assertEqual(
+        sorted(
+          actual
+        ),
+        sorted([
+          os.path.join(os.path.relpath(self.test_tmpdir),
+                       os.path.basename(tdir2), 'testfile2.py'),
+          os.path.join(os.path.relpath(self.test_tmpdir),
+                       os.path.basename(tdir3), 'testfile3.py'),
         ]))
 
   def test_find_with_excluded_dirs(self):
