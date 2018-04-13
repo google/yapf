@@ -15,4 +15,5 @@
 # pylint: disable=invalid-name
 import yapf
 
+print("YO")
 yapf.run_main()
