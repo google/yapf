@@ -285,7 +285,6 @@ class FormatDecisionState(object):
               return True
 
     ###########################################################################
-    print("DOES THIS DO ANYTHING TO THE CONSOLE AND WHY IS NOTHING SHOWING UP")
 
     # Dict/Set Splitting
     if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
