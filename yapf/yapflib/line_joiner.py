@@ -34,7 +34,7 @@ Note: Because we don't allow the use of a semicolon to separate statements, it
 follows that there can only be at most two lines to join.
 """
 
-from yapf.yapflib import style
+from yapflib import style
 
 _CLASS_OR_FUNC = frozenset({'def', 'class'})
 

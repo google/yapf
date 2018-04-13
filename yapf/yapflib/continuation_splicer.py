@@ -21,7 +21,7 @@ Pull them out and make it into nodes of their own.
 
 from lib2to3 import pytree
 
-from yapf.yapflib import format_token
+from yapflib import format_token
 
 
 def SpliceContinuations(tree):

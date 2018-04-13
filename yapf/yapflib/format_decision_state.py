@@ -26,11 +26,11 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
-from yapf.yapflib import format_token
-from yapf.yapflib import object_state
-from yapf.yapflib import split_penalty
-from yapf.yapflib import style
-from yapf.yapflib import unwrapped_line
+from yapflib import format_token
+from yapflib import object_state
+from yapflib import split_penalty
+from yapflib import style
+from yapflib import unwrapped_line
 
 
 class FormatDecisionState(object):
@@ -285,10 +285,12 @@ class FormatDecisionState(object):
               return True
 
     ###########################################################################
+    print("DOES THIS DO ANYTHING TO THE CONSOLE AND WHY IS NOTHING SHOWING UP")
+
     # Dict/Set Splitting
     if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
         format_token.Subtype.DICTIONARY_KEY in current.subtypes and
-        not current.is_comment):
+        not current.is_comment): 
       # Place each dictionary entry onto its own line.
       if previous.value == '{' and previous.previous_token:
         opening = _GetOpeningBracket(previous.previous_token)
