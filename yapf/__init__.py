@@ -32,6 +32,7 @@ import logging
 import os
 import sys
 
+
 from yapflib import errors
 from yapflib import file_resources
 from yapflib import py3compat
