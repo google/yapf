@@ -17,8 +17,8 @@ import os
 import re
 import textwrap
 
-from yapflib import errors
-from yapflib import py3compat
+from yapf.yapflib import errors
+from yapf.yapflib import py3compat
 
 
 class StyleConfigError(errors.YapfError):

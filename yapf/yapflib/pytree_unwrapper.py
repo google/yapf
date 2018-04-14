@@ -31,10 +31,10 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 
-from yapflib import pytree_utils
-from yapflib import pytree_visitor
-from yapflib import split_penalty
-from yapflib import unwrapped_line
+from yapf.yapflib import pytree_utils
+from yapf.yapflib import pytree_visitor
+from yapf.yapflib import split_penalty
+from yapf.yapflib import unwrapped_line
 
 
 def UnwrapPyTree(tree):

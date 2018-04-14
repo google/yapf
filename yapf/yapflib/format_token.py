@@ -21,9 +21,9 @@ import re
 
 from lib2to3.pgen2 import token
 
-from yapflib import py3compat
-from yapflib import pytree_utils
-from yapflib import style
+from yapf.yapflib import py3compat
+from yapf.yapflib import pytree_utils
+from yapf.yapflib import style
 
 CONTINUATION = token.N_TOKENS
 token.N_TOKENS += 1

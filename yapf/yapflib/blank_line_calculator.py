@@ -22,10 +22,10 @@ Annotations:
   newlines: The number of newlines required before the node.
 """
 
-from yapflib import py3compat
-from yapflib import pytree_utils
-from yapflib import pytree_visitor
-from yapflib import style
+from yapf.yapflib import py3compat
+from yapf.yapflib import pytree_utils
+from yapf.yapflib import pytree_visitor
+from yapf.yapflib import style
 
 _NO_BLANK_LINES = 1
 _ONE_BLANK_LINE = 2

@@ -26,11 +26,11 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
-from yapflib import format_token
-from yapflib import object_state
-from yapflib import split_penalty
-from yapflib import style
-from yapflib import unwrapped_line
+from yapf.yapflib import format_token
+from yapf.yapflib import object_state
+from yapf.yapflib import split_penalty
+from yapf.yapflib import style
+from yapf.yapflib import unwrapped_line
 
 
 class FormatDecisionState(object):
