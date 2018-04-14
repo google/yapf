@@ -13,7 +13,6 @@
 # limitations under the License.
 """Main entry point."""
 # pylint: disable=invalid-name
-import yapf
+import __init__
 
-print("YO")
-yapf.run_main()
+__init__.run_main()

@@ -26,11 +26,11 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
-from yapf.yapflib import format_token
-from yapf.yapflib import object_state
-from yapf.yapflib import split_penalty
-from yapf.yapflib import style
-from yapf.yapflib import unwrapped_line
+from yapflib import format_token
+from yapflib import object_state
+from yapflib import split_penalty
+from yapflib import style
+from yapflib import unwrapped_line
 
 
 class FormatDecisionState(object):
@@ -224,6 +224,7 @@ class FormatDecisionState(object):
           # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
+
     if (style.Get('SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN') and
         current.is_name):
       # An expression that's surrounded by parens gets split after the opening
@@ -285,6 +286,7 @@ class FormatDecisionState(object):
               return True
 
     ###########################################################################
+
     # Dict/Set Splitting
     if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
         format_token.Subtype.DICTIONARY_KEY in current.subtypes and
@@ -397,10 +399,11 @@ class FormatDecisionState(object):
           opening = opening.next_token
 
         if is_func_call:
-          if (not self._FitsOnLine(current, opening.matching_bracket) or
-              (opening.matching_bracket.next_token and
-               opening.matching_bracket.next_token.value != ',' and
-               not opening.matching_bracket.next_token.ClosesScope())):
+          # if (not self._FitsOnLine(current, opening.matching_bracket) \
+          # or((opening.matching_bracket.next_token and \
+          # opening.matching_bracket.next_token.value != ',' and \
+          # not opening.matching_bracket.next_token.ClosesScope()))
+          if (not self._FitsOnLine(current, opening.matching_bracket)):
             return True
 
     pprevious = previous.previous_token
@@ -682,7 +685,6 @@ class FormatDecisionState(object):
         # Lightly penalize comprehensions that are split across multiple lines.
         if last.has_interior_split:
           penalty += style.Get('SPLIT_PENALTY_COMPREHENSION')
-
         return penalty
 
       if newline:

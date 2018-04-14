@@ -28,12 +28,12 @@ import re
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
-from yapf.yapflib import format_decision_state
-from yapf.yapflib import format_token
-from yapf.yapflib import line_joiner
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import style
-from yapf.yapflib import verifier
+from yapflib import format_decision_state
+from yapflib import format_token
+from yapflib import line_joiner
+from yapflib import pytree_utils
+from yapflib import style
+from yapflib import verifier
 
 
 def Reformat(uwlines, verify=False, lines=None):

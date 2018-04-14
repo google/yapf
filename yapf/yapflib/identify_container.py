@@ -19,8 +19,8 @@ to the opening bracket and vice-versa.
   IdentifyContainers(): the main function exported by this module.
 """
 
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
+from yapflib import pytree_utils
+from yapflib import pytree_visitor
 
 
 def IdentifyContainers(tree):
