@@ -399,10 +399,6 @@ class FormatDecisionState(object):
           opening = opening.next_token
 
         if is_func_call:
-          # if (not self._FitsOnLine(current, opening.matching_bracket) \
-          # or((opening.matching_bracket.next_token and \
-          # opening.matching_bracket.next_token.value != ',' and \
-          # not opening.matching_bracket.next_token.ClosesScope()))
           if (not self._FitsOnLine(current, opening.matching_bracket)):
             return True
 

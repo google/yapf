@@ -217,8 +217,8 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
   def testCommentsWithTrailingSpaces(self):
     unformatted_code = textwrap.dedent("""\
-        # Thing 1    
-        # Thing 2    
+        # Thing 1
+        # Thing 2
         """)
     expected_formatted_code = textwrap.dedent("""\
         # Thing 1
@@ -1646,6 +1646,42 @@ s = 'foo \\
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testFunctionCallShort(self):
+      try:
+        unformatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, g(lrotate) % 16),
+                long_function_name(16, g(rrotate) % 16))
+            """)
+        expected_formatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, g(lrotate) % 16),
+                long_function_name(16, g(rrotate) % 16))
+            """)
+        uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+        self.assertCodeEqual(expected_formatted_code,
+                             reformatter.Reformat(uwlines))
+      finally:
+        style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testFunctionCallLong(self):
+    try:
+      unformatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, func(lrotate) % 16),
+                long_function_name(16, func(rrotate) % 16))
+            """)
+      expected_formatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, func(lrotate) % 16),
+                long_function_name(16, func(rrotate) % 16))
+            """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testMultilineDictionaryKeys(self):
     try:
       style.SetGlobalStyle(
@@ -1750,8 +1786,8 @@ s = 'foo \\
 
   def testDontAddBlankLineAfterMultilineString(self):
     code = textwrap.dedent("""\
-      query = '''SELECT id 
-      FROM table 
+      query = '''SELECT id
+      FROM table
       WHERE day in {}'''
       days = ",".join(days)
       """)
