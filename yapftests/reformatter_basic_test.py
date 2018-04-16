@@ -1393,6 +1393,48 @@ s = 'foo \\
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testOverColumnLimitForCertainKeyValuePairsInDict(self):
+    unformatted_code = textwrap.dedent("""\
+      expected = {
+        'aaaaaa': 'bbbbbb',
+        'cccccccccccccccccccccccccccccccccccccccc': 'dddddddddddddddddddddddddddddddddddd',
+        'eeeee': 'ffffff',
+        'ggggggggggggggggggggggggggggggggggggggggggggggggggggg': 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',
+      }
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+      expected = {
+        'aaaaaa': 'bbbbbb',
+        'cccccccccccccccccccccccccccccccccccccccc': 
+            'dddddddddddddddddddddddddddddddddddd',
+        'eeeee': 'ffffff',
+        'ggggggggggggggggggggggggggggggggggggggggggggggggggggg': 
+            'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',
+      }
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testColumnLimitWhereNoKeyValuePairsGoOverLimit(self):
+    unformatted_code = textwrap.dedent("""\
+      expected = {
+        'aaaaaa': 'bbbbbb',
+        'ccccccccccccc': 'ddddddddd',
+        'eeeee': 'ffffff',
+        'ggggggggg': 'hhhhhhhhhhhh',
+      }
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+      expected = {
+        'aaaaaa': 'bbbbbb',
+        'ccccccccccccc': 'ddddddddd',
+        'eeeee': 'ffffff',
+        'ggggggggg': 'hhhhhhhhhhhh',
+      }
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))  
+
   def testEndingComment(self):
     code = textwrap.dedent("""\
       a = f(
