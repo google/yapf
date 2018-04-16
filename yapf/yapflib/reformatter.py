@@ -429,6 +429,7 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
                                  final_lines),
       indent_level=indent_depth)
 
+
 NO_BLANK_LINES = 1
 ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
