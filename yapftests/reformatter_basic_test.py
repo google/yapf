@@ -1424,7 +1424,7 @@ s = 'foo \\
           'ggggggggg': 'hhhhhhhhhhhh',
       }
     """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))  
 
   def testEndingComment(self):
