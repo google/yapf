@@ -1416,16 +1416,16 @@ s = 'foo \\
   #   self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testColumnLimitWhereNoKeyValuePairsGoOverLimit(self):
-    unformatted_code = textwrap.dedent("""\
+    code = textwrap.dedent("""\
       expected = {
-      'aaaaaa': 'bbbbbb',
-      'ccccccccccccc': 'ddddddddd',
-      'eeeee': 'ffffff',
-      'ggggggggg': 'hhhhhhhhhhhh',
+          'aaaaaa': 'bbbbbb',
+          'ccccccccccccc': 'ddddddddd',
+          'eeeee': 'ffffff',
+          'ggggggggg': 'hhhhhhhhhhhh',
       }
     """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))  
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))  
 
   def testEndingComment(self):
     code = textwrap.dedent("""\
