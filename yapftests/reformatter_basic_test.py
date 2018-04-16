@@ -1413,7 +1413,7 @@ s = 'foo \\
       }
     """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(unformatted_formatted_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))
 
   def testColumnLimitWhereNoKeyValuePairsGoOverLimit(self):
     unformatted_code = textwrap.dedent("""\
@@ -1433,7 +1433,7 @@ s = 'foo \\
       }
     """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(unformatted_formatted_code, reformatter.Reformat(uwlines))  
+    self.assertCodeEqual(unformatted_code, reformatter.Reformat(uwlines))  
 
   def testEndingComment(self):
     code = textwrap.dedent("""\
