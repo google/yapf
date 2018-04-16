@@ -213,7 +213,6 @@ class _():
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-
   def testB66011084(self):
     unformatted_code = """\
 X = {

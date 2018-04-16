@@ -224,7 +224,6 @@ class FormatDecisionState(object):
           # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
-
     if (style.Get('SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN') and
         current.is_name):
       # An expression that's surrounded by parens gets split after the opening
