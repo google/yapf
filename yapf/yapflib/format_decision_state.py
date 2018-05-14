@@ -180,6 +180,9 @@ class FormatDecisionState(object):
     if not previous:
       return False
 
+    if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
+      return True
+
     if (self.stack[-1].split_before_closing_bracket and
         current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET')):
       # Split before the closing bracket if we can.
@@ -375,13 +378,6 @@ class FormatDecisionState(object):
         if previous.value in '(,':
           if opening.matching_bracket.previous_token.value == ',':
             return True
-    if style.Get('SPLIT_ARGUMENTS'):
-      # Split before arguments in a function call or definition if the
-      # arguments are terminated by a comma.
-      opening = _GetOpeningBracket(current)
-      if opening and opening.previous_token and opening.previous_token.is_name:
-        if previous.value in '(,' and opening.matching_bracket:
-          return True
 
     if ((current.is_name or current.value in {'*', '**'}) and
         previous.value == ','):
