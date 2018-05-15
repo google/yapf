@@ -6,6 +6,9 @@
 ### Added
 - The `BLANK_LINE_BEFORE_MODULE_DOCSTRING` knob adds a blank line before a
   module's docstring.
+- The `SPLIT_ALL_COMMA_SEPARATED_VALUES` knob causes all lists, tuples, dicts
+  function defs, etc... to split on all values, instead of maximizing the
+  number of elements on each line, when not able to fit on a single line.
 ### Changed
 - Improve the heuristic we use to determine when to split at the start of a
   function call. First check whether or not all elements can fit in the space
