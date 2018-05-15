@@ -126,6 +126,17 @@ Options::
       -vv, --verbose        Print out file names while processing
 
 
+------------
+Return Codes
+------------
+
+Normally YAPF returns zero on successful program termination and non-zero otherwise.
+
+If ``--diff`` is supplied, YAPF returns zero when no changes were necessary, non-zero
+otherwise (including program error). You can use this in a CI workflow to test that code
+has been YAPF-formatted.
+
+
 Formatting style
 ================
 

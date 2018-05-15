@@ -49,7 +49,8 @@ def main(argv):
       in argv[0]).
 
   Returns:
-    0 if there were no changes, non-zero otherwise.
+    Zero on successful program termination, non-zero otherwise.
+    With --diff: zero if there were no changes, non-zero otherwise.
 
   Raises:
     YapfError: if none of the supplied files were Python files.
