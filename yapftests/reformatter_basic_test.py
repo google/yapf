@@ -29,34 +29,36 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testSplittingAllArgs(self):
-      style.SetGlobalStyle(style.CreateStyleFromConfig('{split_all_comma_separated_values: true, column_limit: 40}'))
-      unformatted_code = textwrap.dedent("""\
+    style.SetGlobalStyle(
+        style.CreateStyleFromConfig(
+            '{split_all_comma_separated_values: true, column_limit: 40}'))
+    unformatted_code = textwrap.dedent("""\
           responseDict = {"timestamp": timestamp, "someValue":   value, "whatever": 120}
           """)
-      expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent("""\
           responseDict = {
               "timestamp": timestamp,
               "someValue": value,
               "whatever": 120
           }
           """)
-      unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
           def foo(long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args):
                 pass
           """)
-      expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent("""\
           def foo(long_arg,
                   really_long_arg,
                   really_really_long_arg,
                   cant_keep_all_these_args):
             pass
           """)
-      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-      unformatted_code = textwrap.dedent("""\
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    unformatted_code = textwrap.dedent("""\
           foo_tuple = [long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args]
           """)
-      expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent("""\
           foo_tuple = [
               long_arg,
               really_long_arg,
@@ -64,16 +66,16 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
               cant_keep_all_these_args
           ]
           """)
-      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-      unformatted_code = textwrap.dedent("""\
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    unformatted_code = textwrap.dedent("""\
           foo_tuple = [short, arg]
           """)
-      expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent("""\
           foo_tuple = [short, arg]
           """)
-      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testSimpleFunctionsWithTrailingComments(self):
     unformatted_code = textwrap.dedent("""\
