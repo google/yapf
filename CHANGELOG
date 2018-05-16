@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [0.22.0] 2018-05-15
 ### Added
 - The `BLANK_LINE_BEFORE_MODULE_DOCSTRING` knob adds a blank line before a
   module's docstring.
