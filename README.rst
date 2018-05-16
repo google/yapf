@@ -476,6 +476,10 @@ Knobs
 ``SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED``
     Split before arguments if the argument list is terminated by a comma.
 
+``SPLIT_ALL_COMMA_SEPARATED_VALUES``
+    If a comma separated list (dict, list, tuple, or function def) is on a
+    line that is too long, split such that all elements are on a single line.
+
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
     than after.

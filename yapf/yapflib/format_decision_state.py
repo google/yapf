@@ -180,6 +180,9 @@ class FormatDecisionState(object):
     if not previous:
       return False
 
+    if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
+      return True
+
     if (self.stack[-1].split_before_closing_bracket and
         current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET')):
       # Split before the closing bracket if we can.
