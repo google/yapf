@@ -170,7 +170,8 @@ class GetCommandLineFilesTest(unittest.TestCase):
         ]))
 
   def test_find_with_excluded_hidden_dirs_relative(self):
-    """
+    """Test find with excluded hidden dirs.
+
     A regression test against a specific case where a hidden directory (one
     beginning with a period) is being excluded, but it is also an immediate
     child of the current directory which has been specified in a relative
