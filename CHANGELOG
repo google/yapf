@@ -2,6 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.22.1] UNRELEASED
+### Fixed
+- There's no need to increase N_TOKENS. In fact, it causes other things which
+  use lib2to3 to fail if called from YAPF.
+
 ## [0.22.0] 2018-05-15
 ### Added
 - The `BLANK_LINE_BEFORE_MODULE_DOCSTRING` knob adds a blank line before a

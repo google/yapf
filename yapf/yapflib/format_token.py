@@ -26,7 +26,6 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 
 CONTINUATION = token.N_TOKENS
-token.N_TOKENS += 1
 
 
 class Subtype(object):
