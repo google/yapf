@@ -51,13 +51,13 @@ Installation
 
 To install YAPF from PyPI:
 
-.. code-block::
+.. code-block:: shell
 
     $ pip install yapf
 
 (optional) If you are using Python 2.7 and want to enable multiprocessing:
 
-.. code-block::
+.. code-block:: shell
 
     $ pip install futures
 
@@ -70,7 +70,7 @@ library, installation is not necessary. YAPF supports being run as a directory
 by the Python interpreter. If you cloned/unzipped YAPF into ``DIR``, it's
 possible to run:
 
-.. code-block::
+.. code-block:: shell
 
     $ PYTHONPATH=DIR python DIR/yapf [options] ...
 
@@ -151,7 +151,7 @@ file that specifies the desired style, or a dictionary of key/value pairs.
 The config file is a simple listing of (case-insensitive) ``key = value`` pairs
 with a ``[style]`` heading. For example:
 
-.. code-block::
+.. code-block:: ini
 
     [style]
     based_on_style = pep8
@@ -164,7 +164,7 @@ custom style is based on (think of it like subclassing).
 It's also possible to do the same on the command line with a dictionary. For
 example:
 
-.. code-block::
+.. code-block:: shell
 
     --style='{based_on_style: chromium, indent_width: 4}'
 
@@ -583,6 +583,7 @@ Knobs
 (Potentially) Frequently Asked Questions
 ========================================
 
+--------------------------------------------
 Why does YAPF destroy my awesome formatting?
 --------------------------------------------
 
@@ -624,6 +625,7 @@ To preserve the nice dedented closing brackets, use the
 brackets, including function definitions and calls, are going to use
 that style.  This provides consistency across the formatted codebase.
 
+-------------------------------
 Why Not Improve Existing Tools?
 -------------------------------
 
@@ -632,6 +634,7 @@ designed to come up with the best formatting possible. Existing tools were
 created with different goals in mind, and would require extensive modifications
 to convert to using clang-format's algorithm.
 
+-----------------------------
 Can I Use YAPF In My Program?
 -----------------------------
 
@@ -642,6 +645,7 @@ tool. This means that a tool or IDE plugin is free to use YAPF.
 Gory Details
 ============
 
+----------------
 Algorithm Design
 ----------------
 
