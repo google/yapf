@@ -178,8 +178,8 @@ def IsPythonFile(filename):
   try:
     with py3compat.open_with_encoding(
         filename, mode='r', encoding=encoding) as fd:
-      first_line = fd.readlines()[0]
-  except (IOError, IndexError):
+      first_line = fd.readline(256)
+  except IOError:
     return False
 
   return re.match(r'^#!.*\bpython[23]?\b', first_line)
