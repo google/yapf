@@ -238,7 +238,7 @@ def _CanPlaceOnSingleLine(uwline):
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
   last = uwline.last
   last_index = -1
-  if last.is_pylint_comment:
+  if last.is_pylint_comment or last.is_pytype_comment:
     last = last.previous_token
     last_index = -2
   if last is None:
