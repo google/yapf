@@ -27,12 +27,23 @@ if [ ! "$PYTHON_FILES" ]; then
   exit 0
 fi
 
+########## PIP VERSION #############
 # Verify that yapf is installed; if not, warn and exit.
 if [ -z $(which yapf) ]; then
   echo 'yapf not on path; can not format. Please install yapf:'
   echo '    pip install yapf'
   exit 2
 fi
+######### END PIP VERSION ##########
+
+########## PIPENV VERSION ##########
+# if [ -z $(pipenv run which yapf) ]; then
+#   echo 'yapf not on path; can not format. Please install yapf:'
+#   echo '    pipenv install yapf'
+#   exit 2
+# fi
+###### END PIPENV VERSION ##########
+
 
 # Check for unstaged changes to files in the index.
 CHANGED_FILES=(`git diff --name-only ${PYTHON_FILES[@]}`)
@@ -47,10 +58,20 @@ if [ "$CHANGED_FILES" ]; then
   done
   exit 1
 fi
+
 # Format all staged files, then exit with an error code if any have uncommitted
 # changes.
 echo 'Formatting staged Python files . . .'
+
+########## PIP VERSION #############
 yapf -i -r ${PYTHON_FILES[@]}
+######### END PIP VERSION ##########
+
+########## PIPENV VERSION ##########
+# pipenv run yapf -i -r ${PYTHON_FILES[@]}
+###### END PIPENV VERSION ##########
+
+
 CHANGED_FILES=(`git diff --name-only ${PYTHON_FILES[@]}`)
 if [ "$CHANGED_FILES" ]; then
   echo 'Reformatted staged files. Please review and stage the changes.'
