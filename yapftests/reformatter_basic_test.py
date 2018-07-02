@@ -2493,9 +2493,8 @@ s = 'foo \\
   def testDisableEndingCommaHeuristic(self):
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig(
-              '{based_on_style: chromium,'
-              ' disable_ending_comma_heuristic: True}'))
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' disable_ending_comma_heuristic: True}'))
 
       code = """\
 x = [1, 2, 3, 4, 5, 6, 7,]

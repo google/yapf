@@ -128,7 +128,7 @@ def FormatCode(unformatted_source,
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)
   except parse.ParseError as e:
-    e.message = filename + ': ' + e.message
+    e.msg = filename + ': ' + e.msg
     raise
 
   # Run passes on the tree, modifying it in place.
