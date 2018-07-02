@@ -127,7 +127,8 @@ def main(argv):
       action='store_true',
       help='Print out file names while processing')
 
-  parser.add_argument('files', nargs='*')
+  parser.add_argument(
+      'files', nargs='*', help='Reads from stdin when no files are specified.')
   args = parser.parse_args(argv[1:])
 
   if args.version:
