@@ -6,6 +6,8 @@
 ### Fixed
 - There's no need to increase N_TOKENS. In fact, it causes other things which
   use lib2to3 to fail if called from YAPF.
+- Change the exception message instead of creating a new one that's just a
+  clone.
 
 ## [0.22.0] 2018-05-15
 ### Added

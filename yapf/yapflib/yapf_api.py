@@ -128,7 +128,8 @@ def FormatCode(unformatted_source,
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)
   except parse.ParseError as e:
-    raise parse.ParseError(filename + ': ' + e.message)
+    e.message = filename + ': ' + e.message
+    raise
 
   # Run passes on the tree, modifying it in place.
   comment_splicer.SpliceComments(tree)
