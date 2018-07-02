@@ -415,6 +415,10 @@ Knobs
             end_ts=now(),
         )  # <--- this bracket is dedented and on a separate line
 
+``DISABLE_ENDING_COMMA_HEURISTIC``
+    Disable the heuristic which places each list element on a separate line if
+    the list is comma-terminated.
+
 ``EACH_DICT_ENTRY_ON_SEPARATE_LINE``
     Place each dictionary entry onto its own line.
 

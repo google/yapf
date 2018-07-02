@@ -2,7 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.22.1] UNRELEASED
+## [0.23.0] UNRELEASED
+### Added
+- `DISABLE_ENDING_COMMA_HEURISTIC` is a new knob to disable the heuristic which
+  splits a list onto separate lines if the list is comma-terminated.
 ### Fixed
 - There's no need to increase N_TOKENS. In fact, it causes other things which
   use lib2to3 to fail if called from YAPF.

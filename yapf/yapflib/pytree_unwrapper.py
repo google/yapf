@@ -34,6 +34,7 @@ from lib2to3.pgen2 import token as grammar_token
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
 
@@ -342,6 +343,8 @@ def _AdjustSplitPenalty(uwline):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
+  if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
+    return
   if not _ContainsComments(node):
     token = next(node.parent.leaves())
     if token.value == '(':
