@@ -158,7 +158,7 @@ _STYLE_HELP = dict(
 
         1 + 2 * 3 - 4 / 5
 
-      will be formatted as follows when configured with a value "*,/":
+      will be formatted as follows when configured with *,/:
 
         1 + 2*3 - 4/5
 
