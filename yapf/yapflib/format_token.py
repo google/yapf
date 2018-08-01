@@ -146,9 +146,9 @@ class FormatToken(object):
       without_spaces = without_newline.lstrip(' ')
       height = len(self.whitespace_prefix) - len(without_newline)
       depth = len(without_newline) - len(without_spaces)
-      formatted_whitespace_prefix = ('\n' + ' '*depth)*height
+      formatted_whitespace_prefix = ('\n' + ' ' * depth) * height
       if not formatted_whitespace_prefix:
-        formatted_whitespace_prefix += ' '*depth
+        formatted_whitespace_prefix += ' ' * depth
       formatted_whitespace_prefix += without_spaces
       return formatted_whitespace_prefix
     else:
