@@ -448,6 +448,9 @@ Knobs
 ``INDENT_WIDTH``
     The number of columns to use for indentation.
 
+``INDENT_BLANK_LINES``
+    Set to ``True`` to prefer indented blank lines rather than empty
+
 ``JOIN_MULTIPLE_LINES``
     Join short lines into one line. E.g., single line ``if`` statements.
 

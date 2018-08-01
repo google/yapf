@@ -154,6 +154,8 @@ _STYLE_HELP = dict(
         }"""),
     INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
+    INDENT_BLANK_LINES=textwrap.dedent("""\
+      Indent blank lines."""),
     JOIN_MULTIPLE_LINES=textwrap.dedent("""\
       Join short lines into one line. E.g., single line 'if' statements."""),
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent("""\
@@ -281,6 +283,7 @@ def CreatePEP8Style():
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
       INDENT_WIDTH=4,
+      INDENT_BLANK_LINES=False,
       JOIN_MULTIPLE_LINES=True,
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_AROUND_POWER_OPERATOR=False,
@@ -430,6 +433,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
     INDENT_WIDTH=int,
+    INDENT_BLANK_LINES=_BoolConverter,
     JOIN_MULTIPLE_LINES=_BoolConverter,
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,

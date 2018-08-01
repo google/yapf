@@ -254,7 +254,7 @@ def _FormatFinalLines(final_lines, verify):
     formatted_line = []
     for tok in line.tokens:
       if not tok.is_pseudo_paren:
-        formatted_line.append(tok.whitespace_prefix)
+        formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
       else:
         if (not tok.next_token.whitespace_prefix.startswith('\n') and
