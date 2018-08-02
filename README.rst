@@ -709,6 +709,7 @@ the path through the tree with the lowest cost.
 
 And that's it!
 ----------------------------------------------------------------------------------------------------------------------------------------
-##Contributing change 
+##Contributing
 
-Please read the [CONTRIBUTING.rst](https://github.com/xamuel/yapf/blob/master/CONTRIBUTING.rst)for details on how to contribute to this project.
+Please read the [CONTRIBUTING.rst](https://github.com/xamuel/yapf/blob/master/CONTRIBUTING.rst) for details on how to contribute to this project.
+
