@@ -711,5 +711,5 @@ And that's it!
 ----------------------------------------------------------------------------------------------------------------------------------------
 ##Contributing
 
-Please read the [CONTRIBUTING.rst](https://github.com/xamuel/yapf/blob/master/CONTRIBUTING.rst) for details on how to contribute to this project.
+Please read the [CONTRIBUTING.rst](https://github.com/google/yapf/blob/master/CONTRIBUTING.rst) for details on how to contribute to this project.
 
