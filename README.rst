@@ -708,3 +708,7 @@ Now that we have the tree, we determine what the "best" formatting is by finding
 the path through the tree with the lowest cost.
 
 And that's it!
+----------------------------------------------------------------------------------------------------------------------------------------
+##Contributing change 
+
+Please read the [CONTRIBUTING.rst](https://github.com/xamuel/yapf/blob/master/CONTRIBUTING.rst)for details on how to contribute to this project.
