@@ -6,6 +6,8 @@
 ### Added
 - `DISABLE_ENDING_COMMA_HEURISTIC` is a new knob to disable the heuristic which
   splits a list onto separate lines if the list is comma-terminated.
+- `SPLIT_BEFORE_FIRST_BASE_CLASS` is analagous to SPLIT_BEFORE_FIRST_ARGUMENT
+  but for class definitions.
 ### Fixed
 - There's no need to increase N_TOKENS. In fact, it causes other things which
   use lib2to3 to fail if called from YAPF.

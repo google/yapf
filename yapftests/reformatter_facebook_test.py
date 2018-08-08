@@ -23,7 +23,6 @@ from yapftests import yapf_test_helper
 
 
 class TestsForFacebookStyle(yapf_test_helper.YAPFTest):
-
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateFacebookStyle())

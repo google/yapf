@@ -201,6 +201,9 @@ _STYLE_HELP = dict(
     SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
       If an argument / parameter list is going to be split, then split before
       the first argument."""),
+    SPLIT_BEFORE_FIRST_BASE_CLASS=textwrap.dedent("""\
+      If a list of base classes is going to be split, then split before the
+      first base class."""),
     SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before 'and' or 'or' rather than
       after."""),
@@ -294,6 +297,7 @@ def CreatePEP8Style():
       SPLIT_BEFORE_DICT_SET_GENERATOR=True,
       SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=False,
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
+      SPLIT_BEFORE_FIRST_BASE_CLASS=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
       SPLIT_COMPLEX_COMPREHENSION=False,
@@ -443,6 +447,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=_BoolConverter,
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
+    SPLIT_BEFORE_FIRST_BASE_CLASS=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_NAMED_ASSIGNS=_BoolConverter,
     SPLIT_COMPLEX_COMPREHENSION=_BoolConverter,

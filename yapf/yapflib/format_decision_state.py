@@ -192,17 +192,24 @@ class FormatDecisionState(object):
         not _IsSingleElementTuple(current.matching_bracket)):
       return True
 
-    # Prevent splitting before the first argument in compound statements
-    # with the exception of function declarations.
-    if (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
-        _IsCompoundStatement(self.line.first) and
-        not _IsFunctionDef(self.line.first)):
-      return False
-
     ###########################################################################
     # List Splitting
     if (style.Get('DEDENT_CLOSING_BRACKETS') or
-        style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')):
+        style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') or
+        style.Get('SPLIT_BEFORE_FIRST_BASE_CLASS')):
+  
+      # Prevent splitting before the first argument in compound statements
+      # with the exception of function declarations and classes if configured.
+      # DEDENT_CLOSING_BRACKETS silently implies the SPLIT_BEFORE_FIRST_*
+      # for *all* compound statements.
+      if _IsCompoundStatement(self.line.first) and not (
+          (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
+          _IsFunctionDef(self.line.first)) or
+          (style.Get('SPLIT_BEFORE_FIRST_BASE_CLASS') and
+          _IsClass(self.line.first)) or
+          style.Get('DEDENT_CLOSING_BRACKETS')):
+        return False
+
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if bracket.OpensScope():
@@ -864,6 +871,10 @@ def _IsCompoundStatement(token):
   if token.value == 'async':
     token = token.next_token
   return token.value in _COMPOUND_STMTS
+
+
+def _IsClass(token):
+  return token.value == 'class'
 
 
 def _IsFunctionDef(token):

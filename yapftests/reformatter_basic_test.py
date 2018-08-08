@@ -2416,6 +2416,28 @@ s = 'foo \\
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testSplittingBeforeFirstBaseClassOnClassDefinition(self):
+    """Tests split_before_first_base_class on a function definition."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, split_before_first_base_class: True}'))
+      unformatted_code = textwrap.dedent("""\
+          class _NumberOfSecondsFromElementsGetter(SomeBase, SomeOtherBase,
+                                              SomeThirdBase):
+            pass
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          class _NumberOfSecondsFromElementsGetter(
+              SomeBase, SomeOtherBase, SomeThirdBase):
+            pass
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testCoalesceBracketsOnDict(self):
     """Tests coalesce_brackets on a dictionary."""
     try:

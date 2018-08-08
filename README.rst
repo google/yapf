@@ -511,6 +511,10 @@ Knobs
     If an argument / parameter list is going to be split, then split before the
     first argument.
 
+``SPLIT_BEFORE_FIRST_BASE_CLASS`
+    If a list of base classes is going to be split, then split before the first
+    base class.
+
 ``SPLIT_BEFORE_LOGICAL_OPERATOR``
     Set to ``True`` to prefer splitting before ``and`` or ``or`` rather than
     after.
