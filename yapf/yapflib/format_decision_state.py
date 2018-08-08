@@ -197,17 +197,16 @@ class FormatDecisionState(object):
     if (style.Get('DEDENT_CLOSING_BRACKETS') or
         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') or
         style.Get('SPLIT_BEFORE_FIRST_BASE_CLASS')):
-  
+
       # Prevent splitting before the first argument in compound statements
       # with the exception of function declarations and classes if configured.
       # DEDENT_CLOSING_BRACKETS silently implies the SPLIT_BEFORE_FIRST_*
       # for *all* compound statements.
       if _IsCompoundStatement(self.line.first) and not (
           (style.Get('SPLIT_BEFORE_FIRST_ARGUMENT') and
-          _IsFunctionDef(self.line.first)) or
+           _IsFunctionDef(self.line.first)) or
           (style.Get('SPLIT_BEFORE_FIRST_BASE_CLASS') and
-          _IsClass(self.line.first)) or
-          style.Get('DEDENT_CLOSING_BRACKETS')):
+           _IsClass(self.line.first)) or style.Get('DEDENT_CLOSING_BRACKETS')):
         return False
 
       bracket = current if current.ClosesScope() else previous

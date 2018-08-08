@@ -2421,7 +2421,8 @@ s = 'foo \\
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, split_before_first_base_class: True}'))
+              '{based_on_style: chromium, split_before_first_base_class: True}')
+      )
       unformatted_code = textwrap.dedent("""\
           class _NumberOfSecondsFromElementsGetter(SomeBase, SomeOtherBase,
                                               SomeThirdBase):
