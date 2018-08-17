@@ -59,6 +59,11 @@ class FormatCodeTest(unittest.TestCase):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
+  def testPrintAfterPeriod(self):
+    unformatted_code = textwrap.dedent("""a.print\n""")
+    expected_formatted_code = textwrap.dedent("""a.print\n""")
+    self._Check(unformatted_code, expected_formatted_code)
+
 
 class FormatFileTest(unittest.TestCase):
 
