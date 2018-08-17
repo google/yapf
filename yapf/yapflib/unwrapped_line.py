@@ -317,9 +317,12 @@ def _SpaceRequiredBetween(left, right):
   if lval == '@' and format_token.Subtype.DECORATOR in left.subtypes:
     # Decorators shouldn't be separated from the 'at' sign.
     return False
-  if left.is_keyword and rval == '.' or lval == '.' and right.is_keyword:
+  if left.is_keyword and rval == '.':
     # Add space between keywords and dots.
-    return lval != 'None'
+    return lval != 'None' and lval != 'print'
+  if lval == '.' and right.is_keyword:
+    # Add space between keywords and dots.
+    return rval != 'None' and rval != 'print'
   if lval == '.' or rval == '.':
     # Don't place spaces between dots.
     return False
