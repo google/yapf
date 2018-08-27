@@ -460,7 +460,7 @@ def IsSurroundedByBrackets(tok):
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 _BITWISE_OPERATORS = frozenset({'&', '|', '^'})
-_TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
+_TERM_OPERATORS = frozenset({'*', '/', '%', '//', '@'})
 
 
 def _SplitPenalty(prev_token, cur_token):

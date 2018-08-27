@@ -451,9 +451,6 @@ Knobs
 ``JOIN_MULTIPLE_LINES``
     Join short lines into one line. E.g., single line ``if`` statements.
 
-``SPACES_AROUND_POWER_OPERATOR``
-    Set to ``True`` to prefer using spaces around ``**``.
-
 ``NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS``
     Do not include spaces around selected binary operators. For example:
 
@@ -461,11 +458,14 @@ Knobs
 
         1 + 2 * 3 - 4 / 5
 
-    will be formatted as follows when configured with ``*,/``:
+    will be formatted as follows when configured with ``"*/"``:
 
     .. code-block:: python
 
         1 + 2*3 - 4/5
+
+``SPACES_AROUND_POWER_OPERATOR``
+    Set to ``True`` to prefer using spaces around ``**``.
 
 ``SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN``
     Set to ``True`` to prefer spaces around the assignment operator for default

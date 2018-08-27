@@ -195,7 +195,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
       if (isinstance(child, pytree.Leaf) and
-          child.value in {'*', '/', '%', '//'}):
+          child.value in {'*', '/', '%', '//', '@'}):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
 
   def Visit_factor(self, node):  # pylint: disable=invalid-name

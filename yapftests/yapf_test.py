@@ -1346,6 +1346,23 @@ CONTINUATION_ALIGN_STYLE = valign-right
         extra_options=['--style', 'chromium', '--lines', '1-1'])
 
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
+  def testNoSpacesAroundBinaryOperators(self):
+    unformatted_code = """\
+a = 4-b/c@d**37
+"""
+    expected_formatted_code = """\
+a = 4-b / c@d**37
+"""
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=[
+            '--style',
+            '{based_on_style: pep8, ' +
+            'no_spaces_around_selected_binary_operators: "@,**,-"}',
+        ])
+
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testCP936Encoding(self):
     unformatted_code = 'print("中文")\n'
     expected_formatted_code = 'print("中文")\n'

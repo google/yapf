@@ -282,9 +282,9 @@ def CreatePEP8Style():
       INDENT_DICTIONARY_VALUE=False,
       INDENT_WIDTH=4,
       JOIN_MULTIPLE_LINES=True,
+      NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_AROUND_POWER_OPERATOR=False,
-      NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
@@ -390,12 +390,18 @@ def _ContinuationAlignStyleStringConverter(s):
 
 def _StringListConverter(s):
   """Option value converter for a comma-separated list of strings."""
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
   return [part.strip() for part in s.split(',')]
 
 
 def _StringSetConverter(s):
   """Option value converter for a comma-separated set of strings."""
-  return set(part.strip() for part in s.split(','))
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
+  if ',' in s:
+    return set(part.strip() for part in s.split(','))
+  return set(s.strip())
 
 
 def _BoolConverter(s):
@@ -489,6 +495,7 @@ def CreateStyleFromConfig(style_config):
     if not def_style:
       return _style
     return _GLOBAL_STYLE_FACTORY()
+
   if isinstance(style_config, dict):
     config = _CreateConfigParserFromConfigDict(style_config)
   elif isinstance(style_config, py3compat.basestring):
@@ -519,8 +526,12 @@ def _CreateConfigParserFromConfigString(config_string):
         "Invalid style dict syntax: '{}'.".format(config_string))
   config = py3compat.ConfigParser()
   config.add_section('style')
-  for key, value in re.findall(r'([a-zA-Z0-9_]+)\s*[:=]\s*([a-zA-Z0-9_]+)',
-                               config_string):
+  for key, value, _ in re.findall(
+      r'([a-zA-Z0-9_]+)\s*[:=]\s*' +
+      r'(?:' +
+      r'((?P<quote>[\'"]).*?(?P=quote)|' +
+      r'[a-zA-Z0-9_]+)' +
+      r')', config_string):  # yapf: disable
     config.set('style', key, value)
   return config
 

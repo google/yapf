@@ -13,6 +13,8 @@
   clone.
 - Make sure not to reformat when a line is disabled even if the --lines option
   is specified.
+- The "no spaces around operators" flag wasn't correctly converting strings to
+  sets. Changed the regexp to handle it better.
 
 ## [0.22.0] 2018-05-15
 ### Added
