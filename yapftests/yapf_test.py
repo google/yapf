@@ -1354,6 +1354,30 @@ CONTINUATION_ALIGN_STYLE = valign-right
         expected_formatted_code,
         env={'PYTHONIOENCODING': 'cp936'})
 
+  def testDisableWithLineRanges(self):
+    unformatted_code = """\
+# yapf: disable
+a = [
+    1,
+    2,
+
+    3
+]
+"""
+    expected_formatted_code = """\
+# yapf: disable
+a = [
+    1,
+    2,
+
+    3
+]
+"""
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--style', 'chromium', '--lines', '1-100'])
+
 
 class BadInputTest(unittest.TestCase):
   """Test yapf's behaviour when passed bad input."""

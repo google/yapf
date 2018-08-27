@@ -142,6 +142,8 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
     pass
   elif lines and (cur_lineno in lines or prev_lineno in lines):
     desired_newlines = cur_tok.whitespace_prefix.count('\n')
+    if desired_newlines < required_newlines:
+      desired_newlines = required_newlines
     whitespace_lines = range(prev_lineno + 1, cur_lineno)
     deletable_lines = len(lines.intersection(whitespace_lines))
     required_newlines = max(required_newlines - deletable_lines,
@@ -173,7 +175,6 @@ def _EmitLineUnformatted(state):
     state: (format_decision_state.FormatDecisionState) The format decision
       state.
   """
-  prev_lineno = None
   while state.next_token:
     previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
@@ -184,10 +185,8 @@ def _EmitLineUnformatted(state):
     if previous_token.is_continuation:
       newline = False
     else:
-      newline = (
-          prev_lineno is not None and state.next_token.lineno > previous_lineno)
+      newline = state.next_token.lineno > previous_lineno
 
-    prev_lineno = state.next_token.lineno
     state.AddTokenToState(newline=newline, dry_run=False)
 
 

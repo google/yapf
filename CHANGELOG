@@ -11,6 +11,8 @@
   use lib2to3 to fail if called from YAPF.
 - Change the exception message instead of creating a new one that's just a
   clone.
+- Make sure not to reformat when a line is disabled even if the --lines option
+  is specified.
 
 ## [0.22.0] 2018-05-15
 ### Added

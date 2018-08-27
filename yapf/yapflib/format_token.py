@@ -223,7 +223,8 @@ class FormatToken(object):
     return self.value in pytree_utils.CLOSING_BRACKETS
 
   def __repr__(self):
-    msg = 'FormatToken(name={0}, value={1}'.format(self.name, self.value)
+    msg = 'FormatToken(name={0}, value={1}, lineno={2}'.format(
+        self.name, self.value, self.lineno)
     msg += ', pseudo)' if self.is_pseudo_paren else ')'
     return msg
 
