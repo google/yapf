@@ -194,6 +194,16 @@ _STYLE_HELP = dict(
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
         }"""),
+    SPLIT_BEFORE_DOT=textwrap.dedent("""\
+      Split before the '.' if we need to split a longer expression:
+
+        foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+
+      would reformat to something like:
+
+        foo = ('This is a really long string: {}, {}, {}, {}'
+               .format(a, b, c, d))
+      """),
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
       Split after the opening paren which surrounds an expression if it doesn't
       fit on a single line.
@@ -292,6 +302,7 @@ def CreatePEP8Style():
       SPLIT_BEFORE_BITWISE_OPERATOR=True,
       SPLIT_BEFORE_CLOSING_BRACKET=True,
       SPLIT_BEFORE_DICT_SET_GENERATOR=True,
+      SPLIT_BEFORE_DOT=False,
       SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=False,
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
@@ -334,6 +345,7 @@ def CreateChromiumStyle():
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
+  style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
   return style
 
@@ -447,6 +459,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_CLOSING_BRACKET=_BoolConverter,
     SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
+    SPLIT_BEFORE_DOT=_BoolConverter,
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=_BoolConverter,
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
@@ -527,10 +540,10 @@ def _CreateConfigParserFromConfigString(config_string):
   config = py3compat.ConfigParser()
   config.add_section('style')
   for key, value, _ in re.findall(
-      r'([a-zA-Z0-9_]+)\s*[:=]\s*' +
-      r'(?:' +
-      r'((?P<quote>[\'"]).*?(?P=quote)|' +
-      r'[a-zA-Z0-9_]+)' +
+      r'([a-zA-Z0-9_]+)\s*[:=]\s*'
+      r'(?:'
+      r'((?P<quote>[\'"]).*?(?P=quote)|'
+      r'[a-zA-Z0-9_]+)'
       r')', config_string):  # yapf: disable
     config.set('style', key, value)
   return config

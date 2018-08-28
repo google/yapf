@@ -336,8 +336,8 @@ class FormatDecisionState(object):
     ###########################################################################
     # Argument List Splitting
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
-        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
-        current.subtypes):
+        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in current
+        .subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
           current.value not in ':=,)' and not _IsFunctionDefinition(previous)):
         # If we're going to split the lines because of named arguments, then we

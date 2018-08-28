@@ -503,6 +503,20 @@ Knobs
             for variable in bar if variable != 42
         }
 
+``SPLIT_BEFORE_DOT``
+    Split before the '.' if we need to split a longer expression:
+
+    .. code-block:: python
+
+      foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+
+    would reformat to something like:
+
+    .. code-block:: python
+
+      foo = ('This is a really long string: {}, {}, {}, {}'
+             .format(a, b, c, d))
+
 ``SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN``
     Split after the opening paren which surrounds an expression if it doesn't
     fit on a single line.

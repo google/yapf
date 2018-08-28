@@ -1363,7 +1363,7 @@ a = 4-b / c@d**37
         expected_formatted_code,
         extra_options=[
             '--style',
-            '{based_on_style: pep8, ' +
+            '{based_on_style: pep8, '
             'no_spaces_around_selected_binary_operators: "@,**,-"}',
         ])
 

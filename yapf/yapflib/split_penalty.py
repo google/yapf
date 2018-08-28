@@ -193,8 +193,11 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
     if node.children[0].value == '.':
-      self._SetUnbreakableOnChildren(node)
-      _SetSplitPenalty(node.children[1], DOTTED_NAME)
+      before = style.Get('SPLIT_BEFORE_DOT')
+      _SetSplitPenalty(node.children[0], STRONGLY_CONNECTED
+                       if before else DOTTED_NAME)
+      _SetSplitPenalty(node.children[1], DOTTED_NAME
+                       if before else STRONGLY_CONNECTED)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       _SetSplitPenalty(node.children[1], VERY_STRONGLY_CONNECTED)
@@ -253,7 +256,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         pytree_utils.NodeName(node.children[1]) == 'trailer'):
       # children[1] itself is a whole trailer: we don't want to
       # mark all of it as unbreakable, only its first token: (, [ or .
-      _SetUnbreakable(node.children[1].children[0])
+      first = pytree_utils.FirstLeafNode(node.children[1])
+      if first.value != '.':
+        _SetUnbreakable(node.children[1].children[0])
 
       # A special case when there are more trailers in the sequence. Given:
       #   atom tr1 tr2
@@ -309,10 +314,6 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           # connected region.  It's sometimes necessary, though undesirable, to
           # split the two.
           _SetStronglyConnected(trailer.children[-1])
-
-    # If the original source has a "builder" style calls, then we should allow
-    # the reformatter to retain that.
-    _AllowBuilderStyleCalls(node)
 
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]
@@ -590,23 +591,3 @@ def _DecrementSplitPenalty(node, amt):
 def _SetSplitPenalty(node, penalty):
   pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.SPLIT_PENALTY,
                                  penalty)
-
-
-def _AllowBuilderStyleCalls(node):
-  """Allow splitting before '.' if it's a builder style function call."""
-
-  def RecGetLeaves(node):
-    if isinstance(node, pytree.Leaf):
-      return [node]
-    children = []
-    for child in node.children:
-      children += RecGetLeaves(child)
-    return children
-
-  list_of_children = RecGetLeaves(node)
-  prev_child = None
-  for child in list_of_children:
-    if child.value == '.':
-      if prev_child.lineno != child.lineno:
-        _SetSplitPenalty(child, 0)
-    prev_child = child
