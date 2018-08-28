@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.24.0] UNRELEASED
+### Added
+- Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
+  style" option didn't work as advertised. Lines would split after the dots,
+  not before them regardless of the penalties.
+
 ## [0.23.0] 2018-08-27
 ### Added
 - `DISABLE_ENDING_COMMA_HEURISTIC` is a new knob to disable the heuristic which

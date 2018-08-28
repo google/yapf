@@ -28,6 +28,22 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def test113210278(self):
+    unformatted_code = """\
+def _():
+  aaaaaaaaaaa = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccc(\
+eeeeeeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffffffffffffffffffffff.\
+ggggggggggggggggggggggggggggggggg.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh())
+"""
+    expected_formatted_code = """\
+def _():
+  aaaaaaaaaaa = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccc(
+      eeeeeeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffffffffffffffffffffff
+      .ggggggggggggggggggggggggggggggggg.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh())
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB77923341(self):
     code = """\
 def f():
@@ -845,8 +861,8 @@ class _():
         """)
     expected_formatted_code = textwrap.dedent("""\
         def lulz():
-          return (some_long_module_name.SomeLongClassName.some_long_attribute_name.
-                  some_long_method_name())
+          return (some_long_module_name.SomeLongClassName.some_long_attribute_name
+                  .some_long_method_name())
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -944,8 +960,8 @@ class _():
         def _():
           _xxxxxxxxxxxxxxx(
               aaaaaaaa,
-              bbbbbbbbbbbbbb.cccccccccc[dddddddddddddddddddddddddddd.
-                                        eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
+              bbbbbbbbbbbbbb.cccccccccc[dddddddddddddddddddddddddddd
+                                        .eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1017,8 +1033,8 @@ class _():
     expected_formatted_code = textwrap.dedent("""\
         def _():
           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
-              self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
-              cccccccccccccccccccccccccccccccccccc)
+              self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+              .cccccccccccccccccccccccccccccccccccc)
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
