@@ -28,6 +28,49 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB80484938(self):
+    code = """\
+for sssssss, aaaaaaaaaa in [
+    ('ssssssssssssssssssss', 'sssssssssssssssssssssssss'),
+    ('nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn',
+     'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'),
+    ('pppppppppppppppppppppppppppp', 'pppppppppppppppppppppppppppppppp'),
+    ('wwwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwwwww'),
+    ('sssssssssssssssss', 'sssssssssssssssssssssss'),
+    ('ggggggggggggggggggggggg', 'gggggggggggggggggggggggggggg'),
+    ('ggggggggggggggggg', 'gggggggggggggggggggggg'),
+    ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee')
+]:
+  pass
+
+for sssssss, aaaaaaaaaa in [
+    ('ssssssssssssssssssss', 'sssssssssssssssssssssssss'),
+    ('nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn', 'nnnnnnnnnnnnnnnnnnnnnnnnn'),
+    ('pppppppppppppppppppppppppppp', 'pppppppppppppppppppppppppppppppp'),
+    ('wwwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwwwww'),
+    ('sssssssssssssssss', 'sssssssssssssssssssssss'),
+    ('ggggggggggggggggggggggg', 'gggggggggggggggggggggggggggg'),
+    ('ggggggggggggggggg', 'gggggggggggggggggggggg'),
+    ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee')
+]:
+  pass
+
+for sssssss, aaaaaaaaaa in [
+    ('ssssssssssssssssssss', 'sssssssssssssssssssssssss'),
+    ('nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn',
+     'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'),
+    ('pppppppppppppppppppppppppppp', 'pppppppppppppppppppppppppppppppp'),
+    ('wwwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwwwww'),
+    ('sssssssssssssssss', 'sssssssssssssssssssssss'),
+    ('ggggggggggggggggggggggg', 'gggggggggggggggggggggggggggg'),
+    ('ggggggggggggggggg', 'gggggggggggggggggggggg'),
+    ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee'),
+]:
+  pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB79462249(self):
     code = """\
 foo.bar(baz, [

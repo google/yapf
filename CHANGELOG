@@ -9,6 +9,9 @@
   not before them regardless of the penalties.
 ### Fixed
 - Don't count inner function calls when marking arguments as named assignments.
+- Make sure that tuples and the like are formatted nicely if they all can't fit
+  on a single line. This is similar to how we format function calls within an
+  argument list.
 
 ## [0.23.0] 2018-08-27
 ### Added
