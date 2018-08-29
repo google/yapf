@@ -337,20 +337,24 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
   def HasSubtype(node):
     """Return True if the arg list has a named assign subtype."""
     if isinstance(node, pytree.Leaf):
-      if node_subtype in pytree_utils.GetNodeAnnotation(
-          node, pytree_utils.Annotation.SUBTYPE, set()):
-        return True
-      return False
-    has_subtype = False
-    for child in node.children:
-      if pytree_utils.NodeName(child) != 'arglist':
-        has_subtype |= HasSubtype(child)
-    return has_subtype
+      return node_subtype in pytree_utils.GetNodeAnnotation(
+          node, pytree_utils.Annotation.SUBTYPE, set())
 
-  if HasSubtype(node):
     for child in node.children:
-      if pytree_utils.NodeName(child) != 'COMMA':
-        _AppendFirstLeafTokenSubtype(child, list_subtype)
+      node_name = pytree_utils.NodeName(child)
+      if node_name not in {'atom', 'arglist', 'power'}:
+        if HasSubtype(child):
+          return True
+
+    return False
+
+  if not HasSubtype(node):
+    return
+
+  for child in node.children:
+    node_name = pytree_utils.NodeName(child)
+    if node_name not in {'atom', 'COMMA'}:
+      _AppendFirstLeafTokenSubtype(child, list_subtype)
 
 
 def _AppendTokenSubtype(node, subtype):

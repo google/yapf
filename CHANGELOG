@@ -7,6 +7,8 @@
 - Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
   style" option didn't work as advertised. Lines would split after the dots,
   not before them regardless of the penalties.
+### Fixed
+- Don't count inner function calls when marking arguments as named assignments.
 
 ## [0.23.0] 2018-08-27
 ### Added
