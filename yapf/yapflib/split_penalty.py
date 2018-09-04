@@ -26,7 +26,7 @@ from yapf.yapflib import style
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
-NAMED_ASSIGN = 11000
+NAMED_ASSIGN = 15000
 DOTTED_NAME = 4000
 VERY_STRONGLY_CONNECTED = 3500
 STRONGLY_CONNECTED = 3000
@@ -46,7 +46,8 @@ TERM = 2000
 FACTOR = 2100
 POWER = 2200
 ATOM = 2300
-ONE_ELEMENT_ARGUMENT = 2500
+ONE_ELEMENT_ARGUMENT = 500
+SUBSCRIPT = 6000
 
 
 def ComputeSplitPenalties(tree):
@@ -239,7 +240,12 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           'atom', 'power'
       }:
         # Don't split an argument list with one element if at all possible.
-        _SetStronglyConnected(node.children[1], node.children[2])
+        subtypes = pytree_utils.GetNodeAnnotation(
+            pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.SUBTYPE)
+        if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
+          _IncreasePenalty(node, SUBSCRIPT)
+        else:
+          _SetStronglyConnected(node.children[1], node.children[2])
 
       if name == 'arglist':
         _SetStronglyConnected(node.children[-1])

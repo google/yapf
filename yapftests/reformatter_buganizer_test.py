@@ -28,6 +28,15 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB112711217(self):
+    code = """\
+def _():
+  stats['moderated'] = ~stats.moderation_reason.isin(
+      approved_moderation_reasons)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB112867548(self):
     unformatted_code = """\
 def _():
