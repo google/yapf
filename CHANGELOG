@@ -12,6 +12,7 @@
 - Make sure that tuples and the like are formatted nicely if they all can't fit
   on a single line. This is similar to how we format function calls within an
   argument list.
+- Allow splitting in a subscript if it goes over the line limit.
 
 ## [0.23.0] 2018-08-27
 ### Added
