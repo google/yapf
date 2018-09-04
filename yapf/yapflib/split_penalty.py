@@ -194,10 +194,10 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
     if node.children[0].value == '.':
       before = style.Get('SPLIT_BEFORE_DOT')
-      _SetSplitPenalty(node.children[0], STRONGLY_CONNECTED
-                       if before else DOTTED_NAME)
-      _SetSplitPenalty(node.children[1], DOTTED_NAME
-                       if before else STRONGLY_CONNECTED)
+      _SetSplitPenalty(node.children[0],
+                       STRONGLY_CONNECTED if before else DOTTED_NAME)
+      _SetSplitPenalty(node.children[1],
+                       DOTTED_NAME if before else STRONGLY_CONNECTED)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       _SetSplitPenalty(node.children[1], VERY_STRONGLY_CONNECTED)
@@ -331,6 +331,11 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     _SetSplitPenalty(node.children[0],
                      style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     _SetStronglyConnected(*node.children[1:])
+    self.DefaultNodeVisit(node)
+
+  def Visit_test(self, node):  # pylint: disable=invalid-name
+    # test ::= or_test ['if' or_test 'else' test] | lambdef
+    _IncreasePenalty(node, OR_TEST)
     self.DefaultNodeVisit(node)
 
   def Visit_or_test(self, node):  # pylint: disable=invalid-name
@@ -537,7 +542,7 @@ def _IncreasePenalty(node, amt):
       return
 
     if isinstance(node, pytree.Leaf):
-      if node.value in {'(', 'for', 'if'}:
+      if node.value in {'(', 'for'}:
         return
       penalty = pytree_utils.GetNodeAnnotation(
           node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)

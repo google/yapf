@@ -13,6 +13,7 @@
   on a single line. This is similar to how we format function calls within an
   argument list.
 - Allow splitting in a subscript if it goes over the line limit.
+- Increase the split penalty for an if-expression.
 
 ## [0.23.0] 2018-08-27
 ### Added
