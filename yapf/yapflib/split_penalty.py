@@ -332,12 +332,20 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     _SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
+  def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_for(node)
+
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
     _SetSplitPenalty(node.children[0],
                      style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     _SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
+
+  def Visit_old_comp_if(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_if(node)
 
   def Visit_test(self, node):  # pylint: disable=invalid-name
     # test ::= or_test ['if' or_test 'else' test] | lambdef

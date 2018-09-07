@@ -7,6 +7,9 @@
 - Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
   style" option didn't work as advertised. Lines would split after the dots,
   not before them regardless of the penalties.
+### Changed
+- Support Python 3.7 in the tests. The old "comp_for" and "comp_if" nodes are
+  now "old_comp_for" and "old_comp_if" in lib2to3.
 ### Fixed
 - Don't count inner function calls when marking arguments as named assignments.
 - Make sure that tuples and the like are formatted nicely if they all can't fit

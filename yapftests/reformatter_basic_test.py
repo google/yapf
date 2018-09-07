@@ -16,6 +16,7 @@
 import textwrap
 import unittest
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
@@ -2487,6 +2488,7 @@ my_dict = {
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  @unittest.skipUnless(not py3compat.PY3, 'Requires Python 2.7')
   def testAsyncAsNonKeyword(self):
     try:
       style.SetGlobalStyle(style.CreatePEP8Style())

@@ -315,10 +315,18 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       _AppendSubtypeRec(node.parent.children[0], format_token.Subtype.COMP_EXPR)
     self.DefaultNodeVisit(node)
 
+  def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_for(node)
+
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
     _AppendSubtypeRec(node, format_token.Subtype.COMP_IF)
     self.DefaultNodeVisit(node)
+
+  def Visit_old_comp_if(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_if(node)
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
