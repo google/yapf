@@ -2558,6 +2558,37 @@ x = [1, 2, 3, 4, 5, 6, 7,]
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testDedentClosingBracketsWithTypeAnnotationExceedingLineLength(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' dedent_closing_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+                def function(first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
+                  pass
+
+
+                def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
+                  pass
+                """)
+      expected_formatted_code = textwrap.dedent("""\
+                def function(
+                    first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None
+                ) -> None:
+                  pass
+
+
+                def function(
+                    first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None
+                ) -> None:
+                  pass
+                """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -930,6 +930,7 @@ def _IsFunctionDefinition(current):
 
 
 def _IsLastScopeInLine(current):
+  current = current.matching_bracket
   while current:
     current = current.next_token
     if current and current.OpensScope():
