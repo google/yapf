@@ -395,7 +395,13 @@ def _InsertPseudoParentheses(node):
     # A comment was inserted before the value, which is a pytree.Leaf.
     # Encompass the dictionary's value into an ATOM node.
     last = first.next_sibling
-    new_node = pytree.Node(syms.atom, [first.clone(), last.clone()])
+    last_clone = last.clone()
+    new_node = pytree.Node(syms.atom, [first.clone(), last_clone])
+    for orig_leaf, clone_leaf in zip(last.leaves(), last_clone.leaves()):
+      pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
+      if hasattr(orig_leaf, 'is_pseudo'):
+        clone_leaf.is_pseudo = orig_leaf.is_pseudo
+
     node.replace(new_node)
     node = new_node
     last.remove()
@@ -427,6 +433,8 @@ def _InsertPseudoParentheses(node):
     _AppendFirstLeafTokenSubtype(node, format_token.Subtype.DICTIONARY_VALUE)
   else:
     clone = node.clone()
+    for orig_leaf, clone_leaf in zip(node.leaves(), clone.leaves()):
+      pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
     new_node = pytree.Node(syms.atom, [lparen, clone, rparen])
     node.replace(new_node)
     _AppendFirstLeafTokenSubtype(clone, format_token.Subtype.DICTIONARY_VALUE)
