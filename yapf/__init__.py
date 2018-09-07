@@ -38,7 +38,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.23.0'
+__version__ = '0.24.0'
 
 
 def main(argv):
@@ -145,7 +145,10 @@ def main(argv):
     for option, docstring in sorted(style.Help().items()):
       for line in docstring.splitlines():
         print('#', line and ' ' or '', line, sep='')
-      print(option.lower(), '=', style.Get(option), sep='')
+      option_value = style.Get(option)
+      if isinstance(option_value, set) or isinstance(option_value, list):
+        option_value = ', '.join(option_value)
+      print(option.lower(), '=', option_value, sep='')
       print()
     return 0
 

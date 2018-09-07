@@ -448,6 +448,9 @@ Knobs
 ``INDENT_WIDTH``
     The number of columns to use for indentation.
 
+``INDENT_BLANK_LINES``
+    Set to ``True`` to prefer indented blank lines rather than empty
+
 ``JOIN_MULTIPLE_LINES``
     Join short lines into one line. E.g., single line ``if`` statements.
 
@@ -458,7 +461,7 @@ Knobs
 
         1 + 2 * 3 - 4 / 5
 
-    will be formatted as follows when configured with ``"*/"``:
+    will be formatted as follows when configured with ``*,/``:
 
     .. code-block:: python
 

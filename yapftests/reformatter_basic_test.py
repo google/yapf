@@ -16,6 +16,7 @@
 import textwrap
 import unittest
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
@@ -130,6 +131,40 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     expected_formatted_code = textwrap.dedent("""\
         x = {'a': 37, 'b': 42, 'c': 927}
     """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testIndentBlankLines(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: chromium, indent_blank_lines: true}'))
+      unformatted_code = textwrap.dedent("""\
+          class foo(object):
+
+            def foobar(self):
+
+              pass
+
+            def barfoo(self, x, y):  # bar
+
+              if x:
+
+                return y
+
+
+          def bar():
+
+            return 0
+          """)
+      expected_formatted_code = """class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(self, x, y):  # bar\n    \n    if x:\n      \n      return y\n\n\ndef bar():\n  \n  return 0\n"""
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+    unformatted_code, expected_formatted_code = expected_formatted_code, unformatted_code
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2487,6 +2522,7 @@ my_dict = {
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  @unittest.skipUnless(not py3compat.PY3, 'Requires Python 2.7')
   def testAsyncAsNonKeyword(self):
     try:
       style.SetGlobalStyle(style.CreatePEP8Style())
