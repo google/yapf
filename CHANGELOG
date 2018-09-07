@@ -7,6 +7,8 @@
 - Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
   style" option didn't work as advertised. Lines would split after the dots,
   not before them regardless of the penalties.
+- Added `INDENT_BLANK_LINES` knob to select whether the blank lines are empty
+  or indented consistently with the current block.
 ### Fixed
 - Don't count inner function calls when marking arguments as named assignments.
 - Make sure that tuples and the like are formatted nicely if they all can't fit
