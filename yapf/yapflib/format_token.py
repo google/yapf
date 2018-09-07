@@ -139,6 +139,15 @@ class FormatToken(object):
     else:
       self.value = self.node.value
 
+  @property
+  def formatted_whitespace_prefix(self):
+    if style.Get('INDENT_BLANK_LINES'):
+      without_newlines = self.whitespace_prefix.lstrip('\n')
+      height = len(self.whitespace_prefix) - len(without_newlines)
+      if height:
+        return ('\n' + without_newlines) * height
+    return self.whitespace_prefix
+
   def AddWhitespacePrefix(self, newlines_before, spaces=0, indent_level=0):
     """Register a token's whitespace prefix.
 
