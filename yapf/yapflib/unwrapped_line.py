@@ -317,9 +317,12 @@ def _SpaceRequiredBetween(left, right):
   if lval == '@' and format_token.Subtype.DECORATOR in left.subtypes:
     # Decorators shouldn't be separated from the 'at' sign.
     return False
-  if left.is_keyword and rval == '.' or lval == '.' and right.is_keyword:
+  if left.is_keyword and rval == '.':
     # Add space between keywords and dots.
-    return lval != 'None'
+    return lval != 'None' and lval != 'print'
+  if lval == '.' and right.is_keyword:
+    # Add space between keywords and dots.
+    return rval != 'None' and rval != 'print'
   if lval == '.' or rval == '.':
     # Don't place spaces between dots.
     return False
@@ -415,9 +418,6 @@ def _CanBreakBefore(prev_token, cur_token):
   if prev_token.is_name and cval == '[':
     # Don't break in the middle of an array dereference.
     return False
-  if prev_token.is_name and cval == '.':
-    # Don't break before the '.' in a dotted name.
-    return False
   if cur_token.is_comment and prev_token.lineno == cur_token.lineno:
     # Don't break a comment at the end of the line.
     return False
@@ -460,7 +460,7 @@ def IsSurroundedByBrackets(tok):
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 _BITWISE_OPERATORS = frozenset({'&', '|', '^'})
-_TERM_OPERATORS = frozenset({'*', '/', '%', '//'})
+_TERM_OPERATORS = frozenset({'*', '/', '%', '//', '@'})
 
 
 def _SplitPenalty(prev_token, cur_token):

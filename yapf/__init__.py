@@ -38,7 +38,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.22.0'
+__version__ = '0.23.0'
 
 
 def main(argv):

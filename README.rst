@@ -149,11 +149,11 @@ the predefined styles (e.g., ``pep8`` or ``google``), a path to a configuration
 file that specifies the desired style, or a dictionary of key/value pairs.
 
 The config file is a simple listing of (case-insensitive) ``key = value`` pairs
-with a ``[style]`` heading. For example:
+with a ``[yapf]`` heading. For example:
 
 .. code-block:: ini
 
-    [style]
+    [yapf]
     based_on_style = pep8
     spaces_before_comment = 4
     split_before_logical_operator = true
@@ -454,9 +454,6 @@ Knobs
 ``JOIN_MULTIPLE_LINES``
     Join short lines into one line. E.g., single line ``if`` statements.
 
-``SPACES_AROUND_POWER_OPERATOR``
-    Set to ``True`` to prefer using spaces around ``**``.
-
 ``NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS``
     Do not include spaces around selected binary operators. For example:
 
@@ -464,11 +461,14 @@ Knobs
 
         1 + 2 * 3 - 4 / 5
 
-    will be formatted as follows when configured with ``*,/``:
+    will be formatted as follows when configured with ``"*/"``:
 
     .. code-block:: python
 
         1 + 2*3 - 4/5
+
+``SPACES_AROUND_POWER_OPERATOR``
+    Set to ``True`` to prefer using spaces around ``**``.
 
 ``SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN``
     Set to ``True`` to prefer spaces around the assignment operator for default
@@ -505,6 +505,20 @@ Knobs
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
         }
+
+``SPLIT_BEFORE_DOT``
+    Split before the '.' if we need to split a longer expression:
+
+    .. code-block:: python
+
+      foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+
+    would reformat to something like:
+
+    .. code-block:: python
+
+      foo = ('This is a really long string: {}, {}, {}, {}'
+             .format(a, b, c, d))
 
 ``SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN``
     Split after the opening paren which surrounds an expression if it doesn't

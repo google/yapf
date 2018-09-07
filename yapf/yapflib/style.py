@@ -196,6 +196,16 @@ _STYLE_HELP = dict(
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
         }"""),
+    SPLIT_BEFORE_DOT=textwrap.dedent("""\
+      Split before the '.' if we need to split a longer expression:
+
+        foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+
+      would reformat to something like:
+
+        foo = ('This is a really long string: {}, {}, {}, {}'
+               .format(a, b, c, d))
+      """),
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
       Split after the opening paren which surrounds an expression if it doesn't
       fit on a single line.
@@ -285,9 +295,9 @@ def CreatePEP8Style():
       INDENT_WIDTH=4,
       INDENT_BLANK_LINES=False,
       JOIN_MULTIPLE_LINES=True,
+      NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_AROUND_POWER_OPERATOR=False,
-      NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
@@ -295,6 +305,7 @@ def CreatePEP8Style():
       SPLIT_BEFORE_BITWISE_OPERATOR=True,
       SPLIT_BEFORE_CLOSING_BRACKET=True,
       SPLIT_BEFORE_DICT_SET_GENERATOR=True,
+      SPLIT_BEFORE_DOT=False,
       SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=False,
       SPLIT_BEFORE_FIRST_ARGUMENT=False,
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
@@ -305,7 +316,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
       SPLIT_PENALTY_BITWISE_OPERATOR=300,
       SPLIT_PENALTY_COMPREHENSION=80,
-      SPLIT_PENALTY_EXCESS_CHARACTER=4500,
+      SPLIT_PENALTY_EXCESS_CHARACTER=7000,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_IMPORT_NAMES=0,
       SPLIT_PENALTY_LOGICAL_OPERATOR=300,
@@ -337,6 +348,7 @@ def CreateChromiumStyle():
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
+  style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
   return style
 
@@ -393,12 +405,18 @@ def _ContinuationAlignStyleStringConverter(s):
 
 def _StringListConverter(s):
   """Option value converter for a comma-separated list of strings."""
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
   return [part.strip() for part in s.split(',')]
 
 
 def _StringSetConverter(s):
   """Option value converter for a comma-separated set of strings."""
-  return set(part.strip() for part in s.split(','))
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
+  if ',' in s:
+    return set(part.strip() for part in s.split(','))
+  return set(s.strip())
 
 
 def _BoolConverter(s):
@@ -445,6 +463,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_CLOSING_BRACKET=_BoolConverter,
     SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
+    SPLIT_BEFORE_DOT=_BoolConverter,
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=_BoolConverter,
     SPLIT_BEFORE_FIRST_ARGUMENT=_BoolConverter,
     SPLIT_BEFORE_LOGICAL_OPERATOR=_BoolConverter,
@@ -493,6 +512,7 @@ def CreateStyleFromConfig(style_config):
     if not def_style:
       return _style
     return _GLOBAL_STYLE_FACTORY()
+
   if isinstance(style_config, dict):
     config = _CreateConfigParserFromConfigDict(style_config)
   elif isinstance(style_config, py3compat.basestring):
@@ -523,8 +543,12 @@ def _CreateConfigParserFromConfigString(config_string):
         "Invalid style dict syntax: '{}'.".format(config_string))
   config = py3compat.ConfigParser()
   config.add_section('style')
-  for key, value in re.findall(r'([a-zA-Z0-9_]+)\s*[:=]\s*([a-zA-Z0-9_]+)',
-                               config_string):
+  for key, value, _ in re.findall(
+      r'([a-zA-Z0-9_]+)\s*[:=]\s*'
+      r'(?:'
+      r'((?P<quote>[\'"]).*?(?P=quote)|'
+      r'[a-zA-Z0-9_]+)'
+      r')', config_string):  # yapf: disable
     config.set('style', key, value)
   return config
 

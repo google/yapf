@@ -1373,18 +1373,18 @@ s = 'foo \\
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testRelaxArraySubscriptAffinity(self):
-    code = textwrap.dedent("""\
-        class A(object):
+    code = """\
+class A(object):
 
-          def f(self, aaaaaaaaa, bbbbbbbbbbbbb, row):
-            if True:
-              if True:
-                if True:
-                  if True:
-                    if row[4] is None or row[5] is None:
-                      bbbbbbbbbbbbb['..............'] = row[
-                          5] if row[5] is not None else 5
-        """)
+  def f(self, aaaaaaaaa, bbbbbbbbbbbbb, row):
+    if True:
+      if True:
+        if True:
+          if True:
+            if row[4] is None or row[5] is None:
+              bbbbbbbbbbbbb[
+                  '..............'] = row[5] if row[5] is not None else 5
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -2381,6 +2381,24 @@ s = 'foo \\
         X = ...
         Y = X if ... else X
         """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
+  def testPseudoParens(self):
+    unformatted_code = """\
+my_dict = {
+    'key':  # Some comment about the key
+        {'nested_key': 1, },
+}
+"""
+    expected_code = """\
+my_dict = {
+    'key':  # Some comment about the key
+        {
+            'nested_key': 1,
+        },
+}
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
