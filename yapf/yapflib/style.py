@@ -161,7 +161,7 @@ _STYLE_HELP = dict(
 
         1 + 2 * 3 - 4 / 5
 
-      will be formatted as follows when configured with *,/:
+      will be formatted as follows when configured with "*,/":
 
         1 + 2*3 - 4/5
 
@@ -411,9 +411,7 @@ def _StringSetConverter(s):
   """Option value converter for a comma-separated set of strings."""
   if len(s) > 2 and s[0] in '"\'':
     s = s[1:-1]
-  if ',' in s:
-    return set(part.strip() for part in s.split(','))
-  return set(s.strip())
+  return set(part.strip() for part in s.split(','))
 
 
 def _BoolConverter(s):

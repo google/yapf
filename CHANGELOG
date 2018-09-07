@@ -21,6 +21,7 @@
   split in a function call or other data literal.
 - Cloning a pytree node doesn't transfer its a annotations. Make sure we do
   that so that we don't lose information.
+- Revert change that broke the "no_spaces_around_binary_operators" option.
 
 ## [0.23.0] 2018-08-27
 ### Added
