@@ -402,8 +402,6 @@ def _ContinuationAlignStyleStringConverter(s):
 
 def _StringListConverter(s):
   """Option value converter for a comma-separated list of strings."""
-  if len(s) > 2 and s[0] in '"\'':
-    s = s[1:-1]
   return [part.strip() for part in s.split(',')]
 
 
