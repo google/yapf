@@ -16,6 +16,9 @@
 - Increase the split penalty for an if-expression.
 - Increase penalty for splitting in a subscript so that it's more likely to
   split in a function call or other data literal.
+- Correctly determine if a scope is the last in line. It avoids a wrong
+  computation of the line end when determining if it must split after the
+  opening bracket with `DEDENT_CLOSING_BRACKETS` enabled.
 
 ## [0.23.0] 2018-08-27
 ### Added
