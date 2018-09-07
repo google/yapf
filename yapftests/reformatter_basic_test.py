@@ -157,14 +157,17 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
             return 0
           """)
-      expected_formatted_code = """class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(self, x, y):  # bar\n    \n    if x:\n      \n      return y\n\n\ndef bar():\n  \n  return 0\n"""
+      expected_formatted_code = """\
+class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(self, x, y):  # bar\n    \n    if x:\n      \n      return y\n\n\ndef bar():\n  \n  return 0
+"""
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
-    unformatted_code, expected_formatted_code = expected_formatted_code, unformatted_code
+    unformatted_code, expected_formatted_code = (expected_formatted_code,
+                                                 unformatted_code)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 

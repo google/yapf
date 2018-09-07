@@ -78,25 +78,6 @@ def potato(feeditems, browse_use_case=None):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testB112651423(self):
-    unformatted_code = """\
-def potato(feeditems, browse_use_case=None):
-  for item in turnip:
-    if kumquat:
-      if not feeds_variants.variants['FEEDS_LOAD_PLAYLIST_VIDEOS_FOR_ALL_ITEMS'] and item.video:
-        continue
-"""
-    expected_formatted_code = """\
-def potato(feeditems, browse_use_case=None):
-  for item in turnip:
-    if kumquat:
-      if not feeds_variants.variants[
-          'FEEDS_LOAD_PLAYLIST_VIDEOS_FOR_ALL_ITEMS'] and item.video:
-        continue
-"""
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
   def testB80484938(self):
     code = """\
 for sssssss, aaaaaaaaaa in [

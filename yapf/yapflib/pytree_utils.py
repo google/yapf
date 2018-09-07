@@ -222,7 +222,7 @@ _NODE_ANNOTATION_PREFIX = '_yapf_annotation_'
 def CopyYapfAnnotations(src, dst):
   """Copy all YAPF annotations from the source node to the destination node.
 
-  Argumsnts:
+  Arguments:
     src: the source node.
     dst: the destination node.
   """
