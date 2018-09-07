@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.24.0] UNRELEASED
+## [0.24.0] 2018-09-07
 ### Added
 - Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
   style" option didn't work as advertised. Lines would split after the dots,
