@@ -461,7 +461,7 @@ Knobs
 
         1 + 2 * 3 - 4 / 5
 
-    will be formatted as follows when configured with ``"*/"``:
+    will be formatted as follows when configured with ``*,/``:
 
     .. code-block:: python
 
