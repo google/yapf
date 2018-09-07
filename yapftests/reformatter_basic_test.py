@@ -2350,6 +2350,24 @@ class A(object):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testPseudoParens(self):
+    unformatted_code = """\
+my_dict = {
+    'key':  # Some comment about the key
+        {'nested_key': 1, },
+}
+"""
+    expected_code = """\
+my_dict = {
+    'key':  # Some comment about the key
+        {
+            'nested_key': 1,
+        },
+}
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
   def testSplittingBeforeFirstArgumentOnFunctionCall(self):
     """Tests split_before_first_argument on a function call."""
     try:

@@ -16,6 +16,8 @@
 - Increase the split penalty for an if-expression.
 - Increase penalty for splitting in a subscript so that it's more likely to
   split in a function call or other data literal.
+- Cloning a pytree node doesn't transfer its a annotations. Make sure we do
+  that so that we don't lose information.
 - Correctly determine if a scope is the last in line. It avoids a wrong
   computation of the line end when determining if it must split after the
   opening bracket with `DEDENT_CLOSING_BRACKETS` enabled.

@@ -149,11 +149,11 @@ the predefined styles (e.g., ``pep8`` or ``google``), a path to a configuration
 file that specifies the desired style, or a dictionary of key/value pairs.
 
 The config file is a simple listing of (case-insensitive) ``key = value`` pairs
-with a ``[style]`` heading. For example:
+with a ``[yapf]`` heading. For example:
 
 .. code-block:: ini
 
-    [style]
+    [yapf]
     based_on_style = pep8
     spaces_before_comment = 4
     split_before_logical_operator = true
