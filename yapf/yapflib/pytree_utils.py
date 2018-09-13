@@ -219,6 +219,18 @@ def _InsertNodeAt(new_node, target, after=False):
 _NODE_ANNOTATION_PREFIX = '_yapf_annotation_'
 
 
+def CopyYapfAnnotations(src, dst):
+  """Copy all YAPF annotations from the source node to the destination node.
+
+  Arguments:
+    src: the source node.
+    dst: the destination node.
+  """
+  for annotation in dir(src):
+    if annotation.startswith(_NODE_ANNOTATION_PREFIX):
+      setattr(dst, annotation, getattr(src, annotation, None))
+
+
 def GetNodeAnnotation(node, annotation, default=None):
   """Get annotation value from a node.
 

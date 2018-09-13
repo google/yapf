@@ -28,7 +28,122 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
-  def test113210278(self):
+  def testB112711217(self):
+    code = """\
+def _():
+  stats['moderated'] = ~stats.moderation_reason.isin(
+      approved_moderation_reasons)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB112867548(self):
+    unformatted_code = """\
+def _():
+  return flask.make_response(
+      'Records: {}, Problems: {}, More: {}'.format(
+          process_result.result_ct, process_result.problem_ct,
+          process_result.has_more),
+      httplib.ACCEPTED if process_result.has_more else httplib.OK,
+      {'content-type': _TEXT_CONTEXT_TYPE})
+"""
+    expected_formatted_code = """\
+def _():
+  return flask.make_response(
+      'Records: {}, Problems: {}, More: {}'.format(process_result.result_ct,
+                                                   process_result.problem_ct,
+                                                   process_result.has_more),
+      httplib.ACCEPTED if process_result.has_more else httplib.OK,
+      {'content-type': _TEXT_CONTEXT_TYPE})
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB112651423(self):
+    unformatted_code = """\
+def potato(feeditems, browse_use_case=None):
+  for item in turnip:
+    if kumquat:
+      if not feeds_variants.variants['FEEDS_LOAD_PLAYLIST_VIDEOS_FOR_ALL_ITEMS'] and item.video:
+        continue
+"""
+    expected_formatted_code = """\
+def potato(feeditems, browse_use_case=None):
+  for item in turnip:
+    if kumquat:
+      if not feeds_variants.variants[
+          'FEEDS_LOAD_PLAYLIST_VIDEOS_FOR_ALL_ITEMS'] and item.video:
+        continue
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB80484938(self):
+    code = """\
+for sssssss, aaaaaaaaaa in [
+    ('ssssssssssssssssssss', 'sssssssssssssssssssssssss'),
+    ('nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn',
+     'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'),
+    ('pppppppppppppppppppppppppppp', 'pppppppppppppppppppppppppppppppp'),
+    ('wwwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwwwww'),
+    ('sssssssssssssssss', 'sssssssssssssssssssssss'),
+    ('ggggggggggggggggggggggg', 'gggggggggggggggggggggggggggg'),
+    ('ggggggggggggggggg', 'gggggggggggggggggggggg'),
+    ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee')
+]:
+  pass
+
+for sssssss, aaaaaaaaaa in [
+    ('ssssssssssssssssssss', 'sssssssssssssssssssssssss'),
+    ('nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn', 'nnnnnnnnnnnnnnnnnnnnnnnnn'),
+    ('pppppppppppppppppppppppppppp', 'pppppppppppppppppppppppppppppppp'),
+    ('wwwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwwwww'),
+    ('sssssssssssssssss', 'sssssssssssssssssssssss'),
+    ('ggggggggggggggggggggggg', 'gggggggggggggggggggggggggggg'),
+    ('ggggggggggggggggg', 'gggggggggggggggggggggg'),
+    ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee')
+]:
+  pass
+
+for sssssss, aaaaaaaaaa in [
+    ('ssssssssssssssssssss', 'sssssssssssssssssssssssss'),
+    ('nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn',
+     'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'),
+    ('pppppppppppppppppppppppppppp', 'pppppppppppppppppppppppppppppppp'),
+    ('wwwwwwwwwwwwwwwwwwww', 'wwwwwwwwwwwwwwwwwwwwwwwww'),
+    ('sssssssssssssssss', 'sssssssssssssssssssssss'),
+    ('ggggggggggggggggggggggg', 'gggggggggggggggggggggggggggg'),
+    ('ggggggggggggggggg', 'gggggggggggggggggggggg'),
+    ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee'),
+]:
+  pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB79462249(self):
+    code = """\
+foo.bar(baz, [
+    quux(thud=42),
+    norf,
+])
+foo.bar(baz, [
+    quux(),
+    norf,
+])
+foo.bar(baz, quux(thud=42), aaaaaaaaaaaaaaaaaaaaaa, bbbbbbbbbbbbbbbbbbbbb,
+        ccccccccccccccccccc)
+foo.bar(
+    baz,
+    quux(thud=42),
+    aaaaaaaaaaaaaaaaaaaaaa=1,
+    bbbbbbbbbbbbbbbbbbbbb=2,
+    ccccccccccccccccccc=3)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB113210278(self):
     unformatted_code = """\
 def _():
   aaaaaaaaaaa = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccc(\
@@ -1795,19 +1910,20 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB15597568(self):
-    unformatted_code = textwrap.dedent("""\
-        if True:
-          if True:
-            if True:
-              print(("Return code was %d" + (", and the process timed out." if did_time_out else ".")) % errorcode)
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        if True:
-          if True:
-            if True:
-              print(("Return code was %d" + (", and the process timed out."
-                                             if did_time_out else ".")) % errorcode)
-        """)
+    unformatted_code = """\
+if True:
+  if True:
+    if True:
+      print(("Return code was %d" + (", and the process timed out." if did_time_out else ".")) % errorcode)
+"""
+    expected_formatted_code = """\
+if True:
+  if True:
+    if True:
+      print(("Return code was %d" +
+             (", and the process timed out." if did_time_out else ".")) %
+            errorcode)
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 

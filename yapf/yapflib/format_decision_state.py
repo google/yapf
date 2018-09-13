@@ -44,9 +44,6 @@ class FormatDecisionState(object):
     next_token: The next token to be formatted.
     paren_level: The level of nesting inside (), [], and {}.
     lowest_level_on_line: The lowest paren_level on the current line.
-    newline: Indicates if a newline is added along the edge to this format
-      decision state node.
-    previous: The previous format decision state in the decision tree.
     stack: A stack (of _ParenState) keeping track of properties applying to
       parenthesis levels.
     comp_stack: A stack (of ComprehensionState) keeping track of properties
@@ -74,8 +71,6 @@ class FormatDecisionState(object):
     self.stack = [_ParenState(first_indent, first_indent)]
     self.comp_stack = []
     self.first_indent = first_indent
-    self.newline = False
-    self.previous = None
     self.column_limit = style.Get('COLUMN_LIMIT')
 
   def Clone(self):
@@ -89,8 +84,6 @@ class FormatDecisionState(object):
     new.lowest_level_on_line = self.lowest_level_on_line
     new.ignore_stack_for_comparison = self.ignore_stack_for_comparison
     new.first_indent = self.first_indent
-    new.newline = self.newline
-    new.previous = self.previous
     new.stack = [state.Clone() for state in self.stack]
     new.comp_stack = [state.Clone() for state in self.comp_stack]
     return new
@@ -186,7 +179,8 @@ class FormatDecisionState(object):
     if (self.stack[-1].split_before_closing_bracket and
         current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET')):
       # Split before the closing bracket if we can.
-      return current.node_split_penalty != split_penalty.UNBREAKABLE
+      if format_token.Subtype.SUBSCRIPT_BRACKET not in current.subtypes:
+        return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if (current.value == ')' and previous.value == ',' and
         not _IsSingleElementTuple(current.matching_bracket)):
@@ -286,6 +280,15 @@ class FormatDecisionState(object):
           elif tok.value == '(':
             if not self._FitsOnLine(current, tok.matching_bracket):
               return True
+
+    if current.OpensScope() and previous.value == ',':
+      # If we have a list of tuples, then we can get a similar look as above. If
+      # the full list cannot fit on the line, then we want a split.
+      open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
+      if (open_bracket and open_bracket.value in '[{' and
+          format_token.Subtype.SUBSCRIPT_BRACKET not in open_bracket.subtypes):
+        if not self._FitsOnLine(current, current.matching_bracket):
+          return True
 
     ###########################################################################
     # Dict/Set Splitting
@@ -927,6 +930,7 @@ def _IsFunctionDefinition(current):
 
 
 def _IsLastScopeInLine(current):
+  current = current.matching_bracket
   while current:
     current = current.next_token
     if current and current.OpensScope():

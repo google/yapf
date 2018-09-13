@@ -315,10 +315,18 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       _AppendSubtypeRec(node.parent.children[0], format_token.Subtype.COMP_EXPR)
     self.DefaultNodeVisit(node)
 
+  def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_for(node)
+
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
     _AppendSubtypeRec(node, format_token.Subtype.COMP_IF)
     self.DefaultNodeVisit(node)
+
+  def Visit_old_comp_if(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_if(node)
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
@@ -337,20 +345,24 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
   def HasSubtype(node):
     """Return True if the arg list has a named assign subtype."""
     if isinstance(node, pytree.Leaf):
-      if node_subtype in pytree_utils.GetNodeAnnotation(
-          node, pytree_utils.Annotation.SUBTYPE, set()):
-        return True
-      return False
-    has_subtype = False
-    for child in node.children:
-      if pytree_utils.NodeName(child) != 'arglist':
-        has_subtype |= HasSubtype(child)
-    return has_subtype
+      return node_subtype in pytree_utils.GetNodeAnnotation(
+          node, pytree_utils.Annotation.SUBTYPE, set())
 
-  if HasSubtype(node):
     for child in node.children:
-      if pytree_utils.NodeName(child) != 'COMMA':
-        _AppendFirstLeafTokenSubtype(child, list_subtype)
+      node_name = pytree_utils.NodeName(child)
+      if node_name not in {'atom', 'arglist', 'power'}:
+        if HasSubtype(child):
+          return True
+
+    return False
+
+  if not HasSubtype(node):
+    return
+
+  for child in node.children:
+    node_name = pytree_utils.NodeName(child)
+    if node_name not in {'atom', 'COMMA'}:
+      _AppendFirstLeafTokenSubtype(child, list_subtype)
 
 
 def _AppendTokenSubtype(node, subtype):
@@ -391,7 +403,13 @@ def _InsertPseudoParentheses(node):
     # A comment was inserted before the value, which is a pytree.Leaf.
     # Encompass the dictionary's value into an ATOM node.
     last = first.next_sibling
-    new_node = pytree.Node(syms.atom, [first.clone(), last.clone()])
+    last_clone = last.clone()
+    new_node = pytree.Node(syms.atom, [first.clone(), last_clone])
+    for orig_leaf, clone_leaf in zip(last.leaves(), last_clone.leaves()):
+      pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
+      if hasattr(orig_leaf, 'is_pseudo'):
+        clone_leaf.is_pseudo = orig_leaf.is_pseudo
+
     node.replace(new_node)
     node = new_node
     last.remove()
@@ -423,6 +441,8 @@ def _InsertPseudoParentheses(node):
     _AppendFirstLeafTokenSubtype(node, format_token.Subtype.DICTIONARY_VALUE)
   else:
     clone = node.clone()
+    for orig_leaf, clone_leaf in zip(node.leaves(), clone.leaves()):
+      pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
     new_node = pytree.Node(syms.atom, [lparen, clone, rparen])
     node.replace(new_node)
     _AppendFirstLeafTokenSubtype(clone, format_token.Subtype.DICTIONARY_VALUE)

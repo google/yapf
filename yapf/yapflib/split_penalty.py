@@ -26,7 +26,7 @@ from yapf.yapflib import style
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
 UNBREAKABLE = 1000 * 1000
-NAMED_ASSIGN = 11000
+NAMED_ASSIGN = 15000
 DOTTED_NAME = 4000
 VERY_STRONGLY_CONNECTED = 3500
 STRONGLY_CONNECTED = 3000
@@ -46,7 +46,8 @@ TERM = 2000
 FACTOR = 2100
 POWER = 2200
 ATOM = 2300
-ONE_ELEMENT_ARGUMENT = 2500
+ONE_ELEMENT_ARGUMENT = 500
+SUBSCRIPT = 6000
 
 
 def ComputeSplitPenalties(tree):
@@ -194,10 +195,10 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # trailer ::= '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
     if node.children[0].value == '.':
       before = style.Get('SPLIT_BEFORE_DOT')
-      _SetSplitPenalty(node.children[0], STRONGLY_CONNECTED
-                       if before else DOTTED_NAME)
-      _SetSplitPenalty(node.children[1], DOTTED_NAME
-                       if before else STRONGLY_CONNECTED)
+      _SetSplitPenalty(node.children[0],
+                       STRONGLY_CONNECTED if before else DOTTED_NAME)
+      _SetSplitPenalty(node.children[1],
+                       DOTTED_NAME if before else STRONGLY_CONNECTED)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       _SetSplitPenalty(node.children[1], VERY_STRONGLY_CONNECTED)
@@ -239,7 +240,12 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           'atom', 'power'
       }:
         # Don't split an argument list with one element if at all possible.
-        _SetStronglyConnected(node.children[1], node.children[2])
+        subtypes = pytree_utils.GetNodeAnnotation(
+            pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.SUBTYPE)
+        if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
+          _IncreasePenalty(node, SUBSCRIPT)
+        else:
+          _SetStronglyConnected(node.children[1], node.children[2])
 
       if name == 'arglist':
         _SetStronglyConnected(node.children[-1])
@@ -326,11 +332,24 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     _SetStronglyConnected(*node.children[1:])
     self.DefaultNodeVisit(node)
 
+  def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_for(node)
+
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
     _SetSplitPenalty(node.children[0],
                      style.Get('SPLIT_PENALTY_BEFORE_IF_EXPR'))
     _SetStronglyConnected(*node.children[1:])
+    self.DefaultNodeVisit(node)
+
+  def Visit_old_comp_if(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_if(node)
+
+  def Visit_test(self, node):  # pylint: disable=invalid-name
+    # test ::= or_test ['if' or_test 'else' test] | lambdef
+    _IncreasePenalty(node, OR_TEST)
     self.DefaultNodeVisit(node)
 
   def Visit_or_test(self, node):  # pylint: disable=invalid-name
@@ -537,7 +556,7 @@ def _IncreasePenalty(node, amt):
       return
 
     if isinstance(node, pytree.Leaf):
-      if node.value in {'(', 'for', 'if'}:
+      if node.value in {'(', 'for'}:
         return
       penalty = pytree_utils.GetNodeAnnotation(
           node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)

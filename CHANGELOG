@@ -2,11 +2,38 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.24.0] UNRELEASED
+## [0.25.0] UNRELEASED
+### Added
+- Added `INDENT_BLANK_LINES` knob to select whether the blank lines are empty
+  or indented consistently with the current block.
+### Fixed
+- Correctly determine if a scope is the last in line. It avoids a wrong
+  computation of the line end when determining if it must split after the
+  opening bracket with `DEDENT_CLOSING_BRACKETS` enabled.
+
+## [0.24.0] 2018-09-07
 ### Added
 - Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
   style" option didn't work as advertised. Lines would split after the dots,
   not before them regardless of the penalties.
+### Changed
+- Support Python 3.7 in the tests. The old "comp_for" and "comp_if" nodes are
+  now "old_comp_for" and "old_comp_if" in lib2to3.
+### Fixed
+- Don't count inner function calls when marking arguments as named assignments.
+- Make sure that tuples and the like are formatted nicely if they all can't fit
+  on a single line. This is similar to how we format function calls within an
+  argument list.
+- Allow splitting in a subscript if it goes over the line limit.
+- Increase the split penalty for an if-expression.
+- Increase penalty for splitting in a subscript so that it's more likely to
+  split in a function call or other data literal.
+- Cloning a pytree node doesn't transfer its a annotations. Make sure we do
+  that so that we don't lose information.
+- Revert change that broke the "no_spaces_around_binary_operators" option.
+- The "--style-help" option would output string lists and sets in Python types.
+  If the output was used as a style, then it wouldn't parse those values
+  correctly.
 
 ## [0.23.0] 2018-08-27
 ### Added

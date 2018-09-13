@@ -154,6 +154,8 @@ _STYLE_HELP = dict(
         }"""),
     INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
+    INDENT_BLANK_LINES=textwrap.dedent("""\
+      Indent blank lines."""),
     JOIN_MULTIPLE_LINES=textwrap.dedent("""\
       Join short lines into one line. E.g., single line 'if' statements."""),
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent("""\
@@ -161,7 +163,7 @@ _STYLE_HELP = dict(
 
         1 + 2 * 3 - 4 / 5
 
-      will be formatted as follows when configured with *,/:
+      will be formatted as follows when configured with "*,/":
 
         1 + 2*3 - 4/5
 
@@ -291,6 +293,7 @@ def CreatePEP8Style():
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
       INDENT_WIDTH=4,
+      INDENT_BLANK_LINES=False,
       JOIN_MULTIPLE_LINES=True,
       NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
@@ -313,7 +316,7 @@ def CreatePEP8Style():
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
       SPLIT_PENALTY_BITWISE_OPERATOR=300,
       SPLIT_PENALTY_COMPREHENSION=80,
-      SPLIT_PENALTY_EXCESS_CHARACTER=4500,
+      SPLIT_PENALTY_EXCESS_CHARACTER=7000,
       SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=30,
       SPLIT_PENALTY_IMPORT_NAMES=0,
       SPLIT_PENALTY_LOGICAL_OPERATOR=300,
@@ -402,8 +405,6 @@ def _ContinuationAlignStyleStringConverter(s):
 
 def _StringListConverter(s):
   """Option value converter for a comma-separated list of strings."""
-  if len(s) > 2 and s[0] in '"\'':
-    s = s[1:-1]
   return [part.strip() for part in s.split(',')]
 
 
@@ -411,9 +412,7 @@ def _StringSetConverter(s):
   """Option value converter for a comma-separated set of strings."""
   if len(s) > 2 and s[0] in '"\'':
     s = s[1:-1]
-  if ',' in s:
-    return set(part.strip() for part in s.split(','))
-  return set(s.strip())
+  return set(part.strip() for part in s.split(','))
 
 
 def _BoolConverter(s):
@@ -448,6 +447,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
     INDENT_WIDTH=int,
+    INDENT_BLANK_LINES=_BoolConverter,
     JOIN_MULTIPLE_LINES=_BoolConverter,
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
@@ -540,10 +540,10 @@ def _CreateConfigParserFromConfigString(config_string):
   config = py3compat.ConfigParser()
   config.add_section('style')
   for key, value, _ in re.findall(
-      r'([a-zA-Z0-9_]+)\s*[:=]\s*' +
-      r'(?:' +
-      r'((?P<quote>[\'"]).*?(?P=quote)|' +
-      r'[a-zA-Z0-9_]+)' +
+      r'([a-zA-Z0-9_]+)\s*[:=]\s*'
+      r'(?:'
+      r'((?P<quote>[\'"]).*?(?P=quote)|'
+      r'[a-zA-Z0-9_]+)'
       r')', config_string):  # yapf: disable
     config.set('style', key, value)
   return config
