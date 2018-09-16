@@ -174,6 +174,8 @@ def main(argv):
         original_source.append(py3compat.raw_input())
       except EOFError:
         break
+      except KeyboardInterrupt:
+        return 1
 
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
