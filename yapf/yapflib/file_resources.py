@@ -32,16 +32,18 @@ LF = '\n'
 CRLF = '\r\n'
 
 
-def GetDefaultStyleForDir(dirname):
+def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
   """Return default style name for a given directory.
 
   Looks for .style.yapf or setup.cfg in the parent directories.
 
   Arguments:
     dirname: (unicode) The name of the directory.
+    default_style: The style to return if nothing is found. Defaults to the
+                   global default style ('pep8') unless otherwise specified.
 
   Returns:
-    The filename if found, otherwise return the global default (pep8).
+    The filename if found, otherwise return the default style.
   """
   dirname = os.path.abspath(dirname)
   while True:
@@ -68,7 +70,7 @@ def GetDefaultStyleForDir(dirname):
   if os.path.exists(global_file):
     return global_file
 
-  return style.DEFAULT_STYLE
+  return default_style
 
 
 def GetCommandLineFiles(command_line_file_list, recursive, exclude):
