@@ -13,6 +13,7 @@
 # limitations under the License.
 """Utilities for Python2 / Python3 compatibility."""
 
+import codecs
 import io
 import os
 import sys
@@ -116,3 +117,13 @@ class ConfigParser(configparser.ConfigParser):
 
     def read_file(self, fp, source=None):
       self.readfp(fp, filename=source)
+
+
+def removeBOM(source):
+  """Remove any Byte-order-Mark bytes from the beginning of a file."""
+  bom = codecs.BOM_UTF8
+  if PY3:
+    bom = bom.decode('utf-8')
+  if source.startswith(bom):
+    return source[len(bom):]
+  return source

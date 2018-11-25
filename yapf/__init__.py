@@ -181,6 +181,7 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     source = [line.rstrip() for line in original_source]
+    source[0] = py3compat.removeBOM(source[0])
     reformatted_source, _ = yapf_api.FormatCode(
         py3compat.unicode('\n'.join(source) + '\n'),
         filename='<stdin>',
@@ -190,8 +191,13 @@ def main(argv):
     file_resources.WriteReformattedCode('<stdout>', reformatted_source)
     return 0
 
-  files = file_resources.GetCommandLineFiles(args.files, args.recursive,
-                                             args.exclude)
+  # Get additional exclude patterns from ignorefile
+  exclude_patterns_from_ignore_file = file_resources.GetExcludePatternsForDir(
+      os.getcwd())
+
+  files = file_resources.GetCommandLineFiles(
+      args.files, args.recursive,
+      (args.exclude or []) + exclude_patterns_from_ignore_file)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
 

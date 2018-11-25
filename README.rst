@@ -136,6 +136,14 @@ If ``--diff`` is supplied, YAPF returns zero when no changes were necessary, non
 otherwise (including program error). You can use this in a CI workflow to test that code
 has been YAPF-formatted.
 
+---------------------------------------------
+Excluding files from formatting (.yapfignore)
+---------------------------------------------
+
+In addition to exlude patterns provided on commandline, YAPF looks for additional 
+patterns specified in a file named ``.yapfignore`` located in the working directory from 
+which YAPF is invoked.
+
 
 Formatting style
 ================
