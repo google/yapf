@@ -73,6 +73,12 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
     style_name = file_resources.GetDefaultStyleForDir(test_file)
     self.assertEqual(style_name, 'pep8')
 
+  def test_no_local_style_custom_default(self):
+    test_file = os.path.join(self.test_tmpdir, 'file.py')
+    style_name = file_resources.GetDefaultStyleForDir(
+        test_file, default_style='custom-default')
+    self.assertEqual(style_name, 'custom-default')
+
   def test_with_local_style(self):
     # Create an empty .style.yapf file in test_tmpdir
     style_file = os.path.join(self.test_tmpdir, '.style.yapf')
