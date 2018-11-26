@@ -484,6 +484,11 @@ Knobs
 
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
+    This can be a single value (representing the number of spaces
+    before each trailing comment) or list of of values (representing
+    alignment column values; trailing comments within a block will
+    be aligned to the first column value that is greater than the maximum
+    line length within the block).
 
 ``SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET``
     Insert a space between the ending comma and closing bracket of a list, etc.

@@ -95,6 +95,8 @@ def Reformat(uwlines, verify=False, lines=None):
 
     final_lines.append(uwline)
     prev_uwline = uwline
+
+  _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
 
 
@@ -244,6 +246,128 @@ def _CanPlaceOnSingleLine(uwline):
     return True
   return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
           not any(tok.is_comment for tok in uwline.tokens[:last_index]))
+
+
+def _AlignTrailingComments(final_lines):
+  final_lines_index = 0
+  while final_lines_index < len(final_lines):
+    line = final_lines[final_lines_index]
+    assert line.tokens
+
+    processed_content = False
+
+    for tok in line.tokens:
+      if tok.is_comment and isinstance(tok.spaces_required_before,
+                                       list) and tok.value.startswith('#'):
+        # All trailing comments and comments that appear on a line by themselves in this block
+        # should be indented at the same level. The block is terminated by an empty line or EOF.
+        # Enumerate through each line in the block and calculate the max line length. Once complete,
+        # use the first col value greater than that value and create the necessary for each line
+        # accordingly.
+        all_pc_line_lengths = []  # All pre-comment line lengths
+        max_line_length = 0
+
+        while True:
+          # EOF
+          if final_lines_index + len(all_pc_line_lengths) == len(final_lines):
+            break
+
+          this_line = final_lines[final_lines_index + len(all_pc_line_lengths)]
+
+          # Blank line - note that content is preformatted so we don't need to worry
+          # about spaces/tabs; a blank line will always be '\n\n'.
+          assert this_line.tokens
+          if all_pc_line_lengths and this_line.tokens[
+              0].formatted_whitespace_prefix.startswith('\n\n'):
+            break
+
+          # Calculate the length of each line in this unwrapped line.
+          line_content = ''
+          pc_line_lengths = []
+
+          for line_tok in this_line.tokens:
+            whitespace_prefix = line_tok.formatted_whitespace_prefix
+
+            newline_index = whitespace_prefix.rfind('\n')
+            if newline_index != -1:
+              max_line_length = max(max_line_length, len(line_content))
+              line_content = ''
+
+              whitespace_prefix = whitespace_prefix[newline_index + 1:]
+
+            if line_tok.is_comment:
+              pc_line_lengths.append(len(line_content))
+            else:
+              line_content += "{}{}".format(whitespace_prefix, line_tok.value)
+
+          if pc_line_lengths:
+            max_line_length = max(max_line_length, max(pc_line_lengths))
+
+          all_pc_line_lengths.append(pc_line_lengths)
+
+        # Calculate the aligned column value
+        max_line_length += 2
+
+        aligned_col = None
+        for potential_col in tok.spaces_required_before:
+          if potential_col > max_line_length:
+            aligned_col = potential_col
+            break
+
+        if aligned_col is None:
+          aligned_col = max_line_length
+
+        # Update the comment token values based on the aligned values
+        for all_pc_line_lengths_index, pc_line_lengths in enumerate(
+            all_pc_line_lengths):
+          if not pc_line_lengths:
+            continue
+
+          this_line = final_lines[final_lines_index + all_pc_line_lengths_index]
+
+          pc_line_length_index = 0
+          for line_tok in this_line.tokens:
+            if line_tok.is_comment:
+              assert pc_line_length_index < len(pc_line_lengths)
+              assert pc_line_lengths[pc_line_length_index] < aligned_col
+
+              # Note that there may be newlines embedded in the comments, so
+              # we need to apply a whitespace prefix to each line.
+              whitespace = ' ' * (
+                  aligned_col - pc_line_lengths[pc_line_length_index] - 1)
+              pc_line_length_index += 1
+
+              line_content = []
+
+              for comment_line_index, comment_line in enumerate(
+                  line_tok.value.split('\n')):
+                line_content.append("{}{}".format(whitespace,
+                                                  comment_line.strip()))
+
+                if comment_line_index == 0:
+                  whitespace = ' ' * (aligned_col - 1)
+
+              line_content = '\n'.join(line_content)
+
+              # Account for initial whitespace already slated for the
+              # beginning of the line.
+              existing_whitespace_prefix = line_tok.formatted_whitespace_prefix.lstrip(
+                  '\n')
+
+              if line_content.startswith(existing_whitespace_prefix):
+                line_content = line_content[len(existing_whitespace_prefix):]
+
+              line_tok.value = line_content
+
+          assert pc_line_length_index == len(pc_line_lengths)
+
+        final_lines_index += len(all_pc_line_lengths)
+
+        processed_content = True
+        break
+
+    if not processed_content:
+      final_lines_index += 1
 
 
 def _FormatFinalLines(final_lines, verify):

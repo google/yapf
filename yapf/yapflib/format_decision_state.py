@@ -522,6 +522,11 @@ class FormatDecisionState(object):
     previous = current.previous_token
 
     spaces = current.spaces_required_before
+    if isinstance(spaces, list):
+      # Don't set the value here, as we need to look at the lines near
+      # this one to determine the actual horizontal alignment value.
+      spaces = 0
+
     if not dry_run:
       current.AddWhitespacePrefix(newlines_before=0, spaces=spaces)
 
@@ -742,7 +747,11 @@ class FormatDecisionState(object):
     previous = current.previous_token
     top_of_stack = self.stack[-1]
 
-    if current.spaces_required_before > 2 or self.line.disable:
+    if isinstance(current.spaces_required_before, list):
+      # Don't set the value here, as we need to look at the lines near
+      # this one to determine the actual horizontal alignment value.
+      return 0
+    elif current.spaces_required_before > 2 or self.line.disable:
       return current.spaces_required_before
 
     if current.OpensScope():

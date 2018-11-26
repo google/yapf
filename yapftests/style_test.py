@@ -53,6 +53,15 @@ class UtilsTest(unittest.TestCase):
     self.assertEqual(style._BoolConverter('false'), False)
     self.assertEqual(style._BoolConverter('0'), False)
 
+  def testIntListConverter(self):
+    self.assertEqual(style._IntListConverter("1, 2, 3"), [1, 2, 3])
+    self.assertEqual(style._IntListConverter("[ 1, 2, 3 ]"), [1, 2, 3])
+    self.assertEqual(style._IntListConverter("[ 1, 2, 3, ]"), [1, 2, 3])
+
+  def testIntOrIntListConverter(self):
+    self.assertEqual(style._IntOrIntListConverter("10"), 10)
+    self.assertEqual(style._IntOrIntListConverter("1, 2, 3"), [1, 2, 3])
+
 
 def _LooksLikeChromiumStyle(cfg):
   return (cfg['INDENT_WIDTH'] == 2 and
