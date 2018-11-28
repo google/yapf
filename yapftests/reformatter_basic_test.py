@@ -1255,10 +1255,9 @@ s = 'foo \\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx' 'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'bbbbbbbbbbbbbbbbbbbbbbbbbb' 'cccccccccccccccccccccccccccccccc' 'ddddddddddddddddddddddddddddd')
         """)
     expected_formatted_code = textwrap.dedent("""\
-        a = foo.bar({
-            'xxxxxxxxxxxxxxxxxxxxxxx'
-            'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]
-        } + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
+                     'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} +
+                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                     'bbbbbbbbbbbbbbbbbbbbbbbbbb'
                     'cccccccccccccccccccccccccccccccc'
                     'ddddddddddddddddddddddddddddd')

@@ -28,6 +28,14 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB116825060(self):
+    code = """\
+result_df = pd.DataFrame({LEARNED_CTR_COLUMN: learned_ctr},
+                         index=df_metrics.index)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB112711217(self):
     code = """\
 def _():
@@ -1767,9 +1775,7 @@ instance = (
           if True:
             if True:
               return aaaa.bbbbbbbbb(
-                  ccccccc=dddddddddddddd({
-                      ('eeee', 'ffffffff'): str(j)
-                  }))
+                  ccccccc=dddddddddddddd({('eeee', 'ffffffff'): str(j)}))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
