@@ -6,6 +6,8 @@
 ### Fixed
 - When retrieving the opening bracket make sure that it's actually an opening
   bracket.
+- Don't completely deny a lambda formatting if it goes over the column limit.
+  Split only if absolutely necessary.
 
 ## [0.25.0] 2018-11-25
 ### Added

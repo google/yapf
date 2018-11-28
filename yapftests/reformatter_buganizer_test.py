@@ -28,6 +28,20 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB111764402(self):
+    unformatted_code = """\
+x = self.stubs.stub(video_classification_map,              'read_video_classifications',       (lambda external_ids, **unused_kwargs:                     {external_id: self._get_serving_classification('video') for external_id in external_ids}))
+"""
+    expected_formatted_code = """\
+x = self.stubs.stub(video_classification_map, 'read_video_classifications',
+                    (lambda external_ids, **unused_kwargs: {
+                        external_id: self._get_serving_classification('video')
+                        for external_id in external_ids
+                    }))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB116825060(self):
     code = """\
 result_df = pd.DataFrame({LEARNED_CTR_COLUMN: learned_ctr},
