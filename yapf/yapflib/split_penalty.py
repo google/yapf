@@ -196,9 +196,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if node.children[0].value == '.':
       before = style.Get('SPLIT_BEFORE_DOT')
       _SetSplitPenalty(node.children[0],
-                       STRONGLY_CONNECTED if before else DOTTED_NAME)
+                       VERY_STRONGLY_CONNECTED if before else DOTTED_NAME)
       _SetSplitPenalty(node.children[1],
-                       DOTTED_NAME if before else STRONGLY_CONNECTED)
+                       DOTTED_NAME if before else VERY_STRONGLY_CONNECTED)
     elif len(node.children) == 2:
       # Don't split an empty argument list if at all possible.
       _SetSplitPenalty(node.children[1], VERY_STRONGLY_CONNECTED)
