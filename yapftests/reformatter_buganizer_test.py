@@ -28,6 +28,44 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB117841880(self):
+    code = """\
+def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+    aaaaaaaaaaaaaaaaaaa: AnyStr,
+    bbbbbbbbbbbb: Optional[Sequence[AnyStr]] = None,
+    cccccccccc: AnyStr = cst.DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD,
+    dddddddddd: Sequence[SliceDimension] = (),
+    eeeeeeeeeeee: AnyStr = cst.DEFAULT_CONTROL_NAME,
+    ffffffffffffffffffff: Optional[
+        Callable[[pd.DataFrame], pd.DataFrame]] = None,
+    gggggggggggggg: ooooooooooooo = ooooooooooooo()) -> pd.DataFrame:
+  pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testB111764402(self):
+    unformatted_code = """\
+x = self.stubs.stub(video_classification_map,              'read_video_classifications',       (lambda external_ids, **unused_kwargs:                     {external_id: self._get_serving_classification('video') for external_id in external_ids}))
+"""
+    expected_formatted_code = """\
+x = self.stubs.stub(video_classification_map, 'read_video_classifications',
+                    (lambda external_ids, **unused_kwargs: {
+                        external_id: self._get_serving_classification('video')
+                        for external_id in external_ids
+                    }))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testB116825060(self):
+    code = """\
+result_df = pd.DataFrame({LEARNED_CTR_COLUMN: learned_ctr},
+                         index=df_metrics.index)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB112711217(self):
     code = """\
 def _():
@@ -1767,9 +1805,7 @@ instance = (
           if True:
             if True:
               return aaaa.bbbbbbbbb(
-                  ccccccc=dddddddddddddd({
-                      ('eeee', 'ffffffff'): str(j)
-                  }))
+                  ccccccc=dddddddddddddd({('eeee', 'ffffffff'): str(j)}))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

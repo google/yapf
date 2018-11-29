@@ -2,7 +2,15 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.25.0] UNRELEASED
+## [0.25.1] UNRELEASED
+### Fixed
+- When retrieving the opening bracket make sure that it's actually an opening
+  bracket.
+- Don't completely deny a lambda formatting if it goes over the column limit.
+  Split only if absolutely necessary.
+- Bump up penalty for splitting before a dot ('.').
+
+## [0.25.0] 2018-11-25
 ### Added
 - Added `INDENT_BLANK_LINES` knob to select whether the blank lines are empty
   or indented consistently with the current block.

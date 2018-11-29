@@ -339,8 +339,8 @@ class FormatDecisionState(object):
     ###########################################################################
     # Argument List Splitting
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
-        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in current
-        .subtypes):
+        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
+        current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
           current.value not in ':=,)' and not _IsFunctionDefinition(previous)):
         # If we're going to split the lines because of named arguments, then we
@@ -846,8 +846,8 @@ class FormatDecisionState(object):
       else:
         current = current.next_token
 
-    # At this point, current is the closing bracket. Go back one to get the the
-    # end of the dictionary entry.
+    # At this point, current is the closing bracket. Go back one to get the end
+    # of the dictionary entry.
     current = PreviousNonCommentToken(current)
     length = current.total_length - entry_start.total_length
     length += len(entry_start.value)
@@ -914,7 +914,8 @@ def _GetLengthOfSubtype(token, subtype, exclude=None):
 def _GetOpeningBracket(current):
   """Get the opening bracket containing the current token."""
   if current.matching_bracket and not current.is_pseudo_paren:
-    return current.matching_bracket
+    return current if current.OpensScope() else current.matching_bracket
+
   while current:
     if current.ClosesScope():
       current = current.matching_bracket

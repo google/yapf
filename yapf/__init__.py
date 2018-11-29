@@ -272,6 +272,7 @@ def _FormatFile(filename,
                 print_diff=False,
                 verify=False,
                 verbose=False):
+  """Format an individual file."""
   if verbose:
     print('Reformatting %s' % filename)
   if style_config is None and not no_local_style:
