@@ -837,8 +837,8 @@ class FormatDecisionState(object):
       else:
         current = current.next_token
 
-    # At this point, current is the closing bracket. Go back one to get the the
-    # end of the dictionary entry.
+    # At this point, current is the closing bracket. Go back one to get the end
+    # of the dictionary entry.
     current = PreviousNonCommentToken(current)
     length = current.total_length - entry_start.total_length
     length += len(entry_start.value)

@@ -33,12 +33,14 @@ CRLF = '\r\n'
 
 
 def _GetExcludePatternsFromFile(filename):
+  """Get a list of file patterns to ignore."""
   ignore_patterns = []
   # See if we have a .yapfignore file.
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
-    for line in open(filename, 'r').readlines():
-      if line.strip() and not line.startswith('#'):
-        ignore_patterns.append(line.strip())
+    with open(filename, 'r') as fd:
+      for line in fd:
+        if line.strip() and not line.startswith('#'):
+          ignore_patterns.append(line.strip())
 
     if any(e.startswith('./') for e in ignore_patterns):
       raise errors.YapfError('path in .yapfignore should not start with ./')
@@ -49,15 +51,15 @@ def _GetExcludePatternsFromFile(filename):
 def GetExcludePatternsForDir(dirname):
   """Return patterns of files to exclude from ignorefile in a given directory.
 
-   Looks for .yapfignore in the directory dirname.
+  Looks for .yapfignore in the directory dirname.
 
-   Arguments:
-     dirname: (unicode) The name of the directory.
+  Arguments:
+    dirname: (unicode) The name of the directory.
 
-   Returns:
-     A List of file patterns to exclude if ignore file is found
-     , otherwhise empty List.
-   """
+  Returns:
+    A List of file patterns to exclude if ignore file is found, otherwise empty
+    List.
+  """
   ignore_file = os.path.join(dirname, '.yapfignore')
   return _GetExcludePatternsFromFile(ignore_file)
 
