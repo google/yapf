@@ -257,8 +257,8 @@ def _AlignTrailingComments(final_lines):
     processed_content = False
 
     for tok in line.tokens:
-      if tok.is_comment and isinstance(tok.spaces_required_before,
-                                       list) and tok.value.startswith('#'):
+      if (tok.is_comment and isinstance(tok.spaces_required_before, list) and
+          tok.value.startswith('#')):
         # All trailing comments and comments that appear on a line by themselves in this block
         # should be indented at the same level. The block is terminated by an empty line or EOF.
         # Enumerate through each line in the block and calculate the max line length. Once complete,
@@ -277,8 +277,9 @@ def _AlignTrailingComments(final_lines):
           # Blank line - note that content is preformatted so we don't need to worry
           # about spaces/tabs; a blank line will always be '\n\n'.
           assert this_line.tokens
-          if all_pc_line_lengths and this_line.tokens[
-              0].formatted_whitespace_prefix.startswith('\n\n'):
+          if (all_pc_line_lengths and
+              this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
+             ):
             break
 
           # Calculate the length of each line in this unwrapped line.
