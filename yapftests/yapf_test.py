@@ -1677,6 +1677,48 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
+  def testDisableBlock(self):
+    unformatted_code = textwrap.dedent("""\
+        a() # comment 1
+        b() # comment 2
+
+        # yapf: disable
+        c() # comment 3
+        d()   # comment 4
+        # yapf: enable
+
+        e() # comment 5
+        f() # comment 6
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a()           # comment 1
+        b()           # comment 2
+
+        # yapf: disable
+        c() # comment 3
+        d()   # comment 4
+        # yapf: enable
+
+        e()           # comment 5
+        f()           # comment 6
+        """)
+    self._Check(unformatted_code, expected_formatted_code)
+
+  def testDisabledLine(self):
+    unformatted_code = textwrap.dedent("""\
+        short # comment 1
+        do_not_touch1 # yapf: disable
+        do_not_touch2   # yapf: disable
+        a_longer_statement # comment 2
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        short                   # comment 1
+        do_not_touch1 # yapf: disable
+        do_not_touch2   # yapf: disable
+        a_longer_statement      # comment 2
+        """)
+    self._Check(unformatted_code, expected_formatted_code)
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -283,6 +283,10 @@ def _AlignTrailingComments(final_lines):
              ):
             break
 
+          if this_line.disable:
+            all_pc_line_lengths.append([])
+            continue
+
           # Calculate the length of each line in this unwrapped line.
           line_content = ''
           pc_line_lengths = []
