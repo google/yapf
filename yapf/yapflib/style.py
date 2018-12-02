@@ -176,7 +176,44 @@ _STYLE_HELP = dict(
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
-      The number of spaces required before a trailing comment."""),
+      The number of spaces required before a trailing comment.
+      This can be a single value (representing the number of spaces
+      before each trailing comment) or list of of values (representing
+      alignment column values; trailing comments within a block will
+      be aligned to the first column value that is greater than the maximum
+      line length within the block). For example:
+      
+      With spaces_before_comment=5:
+
+        1 + 1 # Adding values
+
+      will be formatted as:
+
+        1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
+
+      With spaces_before_comment=15, 20:
+
+        1 + 1 # Adding values
+        two + two # More adding
+
+        longer_statement # This is a longer statement
+        short # This is a shorter statement
+
+        a_very_long_statement_that_extends_beyond_the_final_column # Comment
+        short # This is a shorter statement
+
+      will be formatted as:
+
+        1 + 1          # Adding values <-- end of line comments in block aligned to col 15
+        two + two      # More adding
+
+        longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
+        short               # This is a shorter statement
+
+        a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
+        short                                                       # This is a shorter statement
+
+      """),
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
       Split before arguments if the argument list is terminated by a
       comma."""),
@@ -420,6 +457,20 @@ def _BoolConverter(s):
   return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
 
 
+def _IntListConverter(s):
+  """Option value converter for a comma-separated list of integers."""
+  s = s.strip()
+  if s.startswith('[') and s.endswith(']'):
+    s = s[1:-1]
+
+  return [int(part.strip()) for part in s.split(',') if part.strip()]
+
+
+def _IntOrIntListConverter(s):
+  """Option value converter for an integer or list of integers."""
+  return _IntListConverter(s) if ',' in s else int(s)
+
+
 # Different style options need to have their values interpreted differently when
 # read from the config file. This dict maps an option name to a "converter"
 # function that accepts the string read for the option's value from the file and
@@ -453,7 +504,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
-    SPACES_BEFORE_COMMENT=int,
+    SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,

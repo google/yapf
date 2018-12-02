@@ -73,7 +73,19 @@ class UnwrappedLine(object):
         token.spaces_required_before = 1
 
       tok_len = len(token.value) if not token.is_pseudo_paren else 0
-      token.total_length = prev_length + tok_len + token.spaces_required_before
+
+      spaces_required_before = token.spaces_required_before
+      if isinstance(spaces_required_before, list):
+        assert token.is_comment, token
+
+        # If here, we are looking at a comment token that appears on a line
+        # with other tokens (but because it is a comment, it is always the last token).
+        # Rather than specifying the actual number of spaces here, hard code a value of
+        # 0 and then set it later. This logic only works because this comment token is
+        # guaranteed to be the last token in the list.
+        spaces_required_before = 0
+
+      token.total_length = prev_length + tok_len + spaces_required_before
 
       # The split penalty has to be computed before {must|can}_break_before,
       # because these may use it for their decision.
