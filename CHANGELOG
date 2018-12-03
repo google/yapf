@@ -3,6 +3,11 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.25.1] UNRELEASED
+### Changed
+- `SPACES_BEFORE_COMMENT` can now be assigned to a specific value (standard
+  behavior) or a list of column values. When assigned to a list, trailing 
+  comments will be horizontally aligned to the first column value within
+  the list that is greater than the maximum line length in the block.
 ### Fixed
 - When retrieving the opening bracket make sure that it's actually an opening
   bracket.
