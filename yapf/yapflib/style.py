@@ -59,6 +59,9 @@ _STYLE_HELP = dict(
              'this is the second element of a tuple'):
                  value,
         }"""),
+    ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=textwrap.dedent("""\
+      Allow splitting before a default / named assignment in an argument list.
+      """),
     ALLOW_SPLIT_BEFORE_DICT_VALUE=textwrap.dedent("""\
       Allow splits before the dictionary value."""),
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
@@ -314,6 +317,7 @@ def CreatePEP8Style():
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
+      ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
       ALLOW_SPLIT_BEFORE_DICT_VALUE=True,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
@@ -381,6 +385,7 @@ def CreateGoogleStyle():
 def CreateChromiumStyle():
   style = CreateGoogleStyle()
   style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
+  style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
   style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 2
   style['JOIN_MULTIPLE_LINES'] = False
@@ -482,6 +487,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
+    ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DICT_VALUE=_BoolConverter,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,

@@ -436,6 +436,10 @@ def _CanBreakBefore(prev_token, cur_token):
   if format_token.Subtype.UNARY_OPERATOR in prev_token.subtypes:
     # Don't break after a unary token.
     return False
+  if not style.Get('ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'):
+    if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes or
+        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in prev_token.subtypes):
+      return False
   return True
 
 

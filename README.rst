@@ -327,6 +327,9 @@ Knobs
                  value,
         }
 
+``ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS``
+    Allow splitting before a default / named assignment in an argument list.
+
 ``ALLOW_SPLIT_BEFORE_DICT_VALUE``
     Allow splits before the dictionary value.
 

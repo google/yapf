@@ -28,6 +28,19 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB118624921(self):
+    code = """\
+def _():
+  function_call(
+      alert_name='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      time_delta='1h',
+      alert_level='bbbbbbbb',
+      metric='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      bork=foo)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB35417079(self):
     code = """\
 class _():
