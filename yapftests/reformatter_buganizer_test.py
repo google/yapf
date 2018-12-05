@@ -28,6 +28,24 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB120245013(self):
+    unformatted_code = """\
+class Foo(object):
+  def testNoAlertForShortPeriod(self, rutabaga):
+    self.targets[:][streamz_path,self._fillInOtherFields(streamz_path, {streamz_field_of_interest:True})] = series.Counter('1s', '+ 500x10000')
+"""
+    expected_formatted_code = """\
+class Foo(object):
+
+  def testNoAlertForShortPeriod(self, rutabaga):
+    self.targets[:][streamz_path,
+                    self._fillInOtherFields(
+                        streamz_path, {streamz_field_of_interest: True}
+                    )] = series.Counter('1s', '+ 500x10000')
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB117841880(self):
     code = """\
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(

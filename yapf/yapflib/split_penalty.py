@@ -65,6 +65,10 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
   Split penalties are attached as annotations to tokens.
   """
 
+  def Visit(self, node):
+    if not hasattr(node, 'is_pseudo'):  # Ignore pseudo tokens.
+      super(_SplitPenaltyAssigner, self).Visit(node)
+
   def Visit_import_as_names(self, node):  # pyline: disable=invalid-name
     # import_as_names ::= import_as_name (',' import_as_name)* [',']
     self.DefaultNodeVisit(node)
@@ -244,6 +248,13 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
             pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.SUBTYPE)
         if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
           _IncreasePenalty(node, SUBSCRIPT)
+
+          # Bump up the split penalty for the first part of a subscript. We
+          # would rather not split there.
+          first_leaf = pytree_utils.FirstLeafNode(node.children[1])
+          penalty = pytree_utils.GetNodeAnnotation(
+              first_leaf, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
+          _SetSplitPenalty(first_leaf, penalty + CONNECTED)
         else:
           _SetStronglyConnected(node.children[1], node.children[2])
 
@@ -472,7 +483,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     #           '[' [listmaker] ']' |
     #           '{' [dictsetmaker] '}')
     self.DefaultNodeVisit(node)
-    if node.children[0].value == '(':
+    if (node.children[0].value == '(' and
+        not hasattr(node.children[0], 'is_pseudo')):
       if node.children[-1].value == ')':
         if pytree_utils.NodeName(node.parent) == 'if_stmt':
           _SetSplitPenalty(node.children[-1], STRONGLY_CONNECTED)

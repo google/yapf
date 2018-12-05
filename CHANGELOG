@@ -14,6 +14,8 @@
 - Don't completely deny a lambda formatting if it goes over the column limit.
   Split only if absolutely necessary.
 - Bump up penalty for splitting before a dot ('.').
+- Ignore pseudo tokens when calculating split penalties.
+- Increase the penalty for splitting before the first bit of a subscript.
 
 ## [0.25.0] 2018-11-25
 ### Added
