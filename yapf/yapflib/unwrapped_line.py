@@ -528,7 +528,9 @@ def _SplitPenalty(prev_token, cur_token):
     return 0
   if prev_token.is_binary_op:
     # We would rather not split after an equality operator.
-    return 20
+    return split_penalty.CONNECTED
+  if pval == '**' or cval == '**':
+    return split_penalty.STRONGLY_CONNECTED
   if (format_token.Subtype.VARARGS_STAR in prev_token.subtypes or
       format_token.Subtype.KWARGS_STAR_STAR in prev_token.subtypes):
     # Don't split after a varargs * or kwargs **.

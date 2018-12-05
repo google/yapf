@@ -28,6 +28,16 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB73166511(self):
+    code = """\
+def _():
+  if min_std is not None:
+    groundtruth_age_variances = tf.maximum(groundtruth_age_variances,
+                                           min_std**2)
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB118624921(self):
     code = """\
 def _():

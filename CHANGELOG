@@ -25,6 +25,7 @@
   dictionary entry is a container. If so, then it's probably split over
   multiple lines with the opening bracket on the same line as the key.
   Therefore, we shouldn't enforce a split because of that.
+- Increase split penalty around exponent operator.
 
 ## [0.25.0] 2018-11-25
 ### Added
