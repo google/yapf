@@ -8,6 +8,8 @@
   behavior) or a list of column values. When assigned to a list, trailing 
   comments will be horizontally aligned to the first column value within
   the list that is greater than the maximum line length in the block.
+- Don't modify the vertical spacing of a line that has a comment "pylint:
+  disable=line-too-long". The line is expected to be too long.
 ### Fixed
 - When retrieving the opening bracket make sure that it's actually an opening
   bracket.

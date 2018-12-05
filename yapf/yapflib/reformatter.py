@@ -73,16 +73,23 @@ def Reformat(uwlines, verify=False, lines=None):
       if any(tok.is_comment for tok in uwline.tokens):
         _RetainVerticalSpacingBeforeComments(uwline)
 
-    if (_LineContainsI18n(uwline) or uwline.disable or
-        _LineHasContinuationMarkers(uwline)):
+    if uwline.disable or _LineHasContinuationMarkers(uwline):
       _RetainHorizontalSpacing(uwline)
       _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
       _EmitLineUnformatted(state)
+
+    elif (_LineContainsPylintDisableLineTooLong(uwline) or
+          _LineContainsI18n(uwline)):
+      # Don't modify vertical spacing, but fix any horizontal spacing issues.
+      _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
+      _EmitLineUnformatted(state)
+
     elif _CanPlaceOnSingleLine(uwline) and not any(tok.must_split
                                                    for tok in uwline.tokens):
       # The unwrapped line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
+
     else:
       if not _AnalyzeSolutionSpace(state):
         # Failsafe mode. If there isn't a solution to the line, then just emit
@@ -220,6 +227,14 @@ def _LineContainsI18n(uwline):
       index += 1
 
   return False
+
+
+def _LineContainsPylintDisableLineTooLong(uwline):
+  """Return true if there is a "pylint: disable=line-too-long" comment."""
+  return any(
+      re.search(r'\bpylint:\s+disable=line-too-long\b', tok.value)
+      for tok in uwline.tokens
+      if tok.is_comment)
 
 
 def _LineHasContinuationMarkers(uwline):
