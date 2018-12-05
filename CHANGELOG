@@ -16,6 +16,10 @@
 - Bump up penalty for splitting before a dot ('.').
 - Ignore pseudo tokens when calculating split penalties.
 - Increase the penalty for splitting before the first bit of a subscript.
+- Improve splitting before dictionary values. Look more closely to see if the
+  dictionary entry is a container. If so, then it's probably split over
+  multiple lines with the opening bracket on the same line as the key.
+  Therefore, we shouldn't enforce a split because of that.
 
 ## [0.25.0] 2018-11-25
 ### Added

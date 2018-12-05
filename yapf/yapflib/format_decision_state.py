@@ -810,6 +810,21 @@ class FormatDecisionState(object):
         tok = tok.next_token
       return num_strings > 1
 
+    def DictValueIsContainer(opening, closing):
+      if not opening or not closing:
+        return False
+      colon = opening.previous_token
+      while colon:
+        if not colon.is_pseudo_paren:
+          break
+        colon = colon.previous_token
+      if not colon or colon.value != ':':
+        return False
+      key = colon.previous_token
+      if not key:
+        return False
+      return format_token.Subtype.DICTIONARY_KEY_PART in key.subtypes
+
     closing = opening.matching_bracket
     entry_start = opening.next_token
     current = opening.next_token.next_token
@@ -817,10 +832,13 @@ class FormatDecisionState(object):
     while current and current != closing:
       if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
         prev = PreviousNonCommentToken(current)
-        length = prev.total_length - entry_start.total_length
-        length += len(entry_start.value)
-        if length + self.stack[-2].indent >= self.column_limit:
-          return False
+        if prev.value == ',':
+          prev = PreviousNonCommentToken(prev.previous_token)
+        if not DictValueIsContainer(prev.matching_bracket, prev):
+          length = prev.total_length - entry_start.total_length
+          length += len(entry_start.value)
+          if length + self.stack[-2].indent >= self.column_limit:
+            return False
         entry_start = current
       if current.OpensScope():
         if ((current.value == '{' or

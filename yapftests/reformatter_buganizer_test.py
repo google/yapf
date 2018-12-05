@@ -28,6 +28,30 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB120047670(self):
+    unformatted_code = """\
+X = {
+    'NO_PING_COMPONENTS': [
+        79775,          # Releases / FOO API
+        79770,          # Releases / BAZ API
+        79780],         # Releases / MUX API
+
+    'PING_BLOCKED_BUGS': False,
+}
+"""
+    expected_formatted_code = """\
+X = {
+    'NO_PING_COMPONENTS': [
+        79775,  # Releases / FOO API
+        79770,  # Releases / BAZ API
+        79780
+    ],  # Releases / MUX API
+    'PING_BLOCKED_BUGS': False,
+}
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB120245013(self):
     unformatted_code = """\
 class Foo(object):
