@@ -54,13 +54,13 @@ class UtilsTest(unittest.TestCase):
     self.assertEqual(style._BoolConverter('0'), False)
 
   def testIntListConverter(self):
-    self.assertEqual(style._IntListConverter("1, 2, 3"), [1, 2, 3])
-    self.assertEqual(style._IntListConverter("[ 1, 2, 3 ]"), [1, 2, 3])
-    self.assertEqual(style._IntListConverter("[ 1, 2, 3, ]"), [1, 2, 3])
+    self.assertEqual(style._IntListConverter('1, 2, 3'), [1, 2, 3])
+    self.assertEqual(style._IntListConverter('[ 1, 2, 3 ]'), [1, 2, 3])
+    self.assertEqual(style._IntListConverter('[ 1, 2, 3, ]'), [1, 2, 3])
 
   def testIntOrIntListConverter(self):
-    self.assertEqual(style._IntOrIntListConverter("10"), 10)
-    self.assertEqual(style._IntOrIntListConverter("1, 2, 3"), [1, 2, 3])
+    self.assertEqual(style._IntOrIntListConverter('10'), 10)
+    self.assertEqual(style._IntOrIntListConverter('1, 2, 3'), [1, 2, 3])
 
 
 def _LooksLikeChromiumStyle(cfg):
@@ -85,7 +85,7 @@ def _LooksLikeFacebookStyle(cfg):
 class PredefinedStylesByNameTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefault(self):
@@ -117,12 +117,12 @@ class PredefinedStylesByNameTest(unittest.TestCase):
 class StyleFromFileTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     cls.test_tmpdir = tempfile.mkdtemp()
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   @classmethod
-  def tearDownClass(cls):
+  def tearDownClass(cls):  # pylint: disable=g-missing-super-call
     shutil.rmtree(cls.test_tmpdir)
 
   def testDefaultBasedOnStyle(self):
@@ -233,7 +233,7 @@ class StyleFromFileTest(unittest.TestCase):
 class StyleFromDict(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefaultBasedOnStyle(self):
@@ -258,7 +258,7 @@ class StyleFromDict(unittest.TestCase):
 class StyleFromCommandLine(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefaultBasedOnStyle(self):

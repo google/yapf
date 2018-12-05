@@ -181,7 +181,7 @@ _STYLE_HELP = dict(
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
       This can be a single value (representing the number of spaces
-      before each trailing comment) or list of of values (representing
+      before each trailing comment) or list of values (representing
       alignment column values; trailing comments within a block will
       be aligned to the first column value that is greater than the maximum
       line length within the block). For example:

@@ -319,7 +319,7 @@ def _AlignTrailingComments(final_lines):
             if line_tok.is_comment:
               pc_line_lengths.append(len(line_content))
             else:
-              line_content += "{}{}".format(whitespace_prefix, line_tok.value)
+              line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
 
           if pc_line_lengths:
             max_line_length = max(max_line_length, max(pc_line_lengths))
@@ -362,7 +362,7 @@ def _AlignTrailingComments(final_lines):
 
               for comment_line_index, comment_line in enumerate(
                   line_tok.value.split('\n')):
-                line_content.append("{}{}".format(whitespace,
+                line_content.append('{}{}'.format(whitespace,
                                                   comment_line.strip()))
 
                 if comment_line_index == 0:

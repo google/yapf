@@ -229,7 +229,7 @@ class FormatFileTest(unittest.TestCase):
         """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       diff, _, _ = yapf_api.FormatFile(filepath, print_diff=True)
-      self.assertTrue(u'+  pass' in diff)
+      self.assertIn(u'+  pass', diff)
 
   def testFormatFileInPlace(self):
     unformatted_code = u'True==False\n'
@@ -1452,9 +1452,6 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
     formatted_code, _ = yapf_api.FormatCode(
         unformatted_code, style_config=style.SetGlobalStyle(self._OwnStyle()))
     self.assertEqual(expected_formatted_code, formatted_code)
-
-  def setUp(self):
-    self.maxDiff = None
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
