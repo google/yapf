@@ -79,10 +79,11 @@ class UnwrappedLine(object):
         assert token.is_comment, token
 
         # If here, we are looking at a comment token that appears on a line
-        # with other tokens (but because it is a comment, it is always the last token).
-        # Rather than specifying the actual number of spaces here, hard code a value of
-        # 0 and then set it later. This logic only works because this comment token is
-        # guaranteed to be the last token in the list.
+        # with other tokens (but because it is a comment, it is always the last
+        # token).  Rather than specifying the actual number of spaces here,
+        # hard code a value of 0 and then set it later. This logic only works
+        # because this comment token is guaranteed to be the last token in the
+        # list.
         spaces_required_before = 0
 
       token.total_length = prev_length + tok_len + spaces_required_before

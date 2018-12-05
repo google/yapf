@@ -67,10 +67,10 @@ class FormatCodeTest(unittest.TestCase):
 
 class FormatFileTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
   def assertCodeEqual(self, expected_code, code):
@@ -381,11 +381,11 @@ class CommandLineTest(unittest.TestCase):
   """Test how calling yapf from the command line acts."""
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     cls.test_tmpdir = tempfile.mkdtemp()
 
   @classmethod
-  def tearDownClass(cls):
+  def tearDownClass(cls):  # pylint: disable=g-missing-super-call
     shutil.rmtree(cls.test_tmpdir)
 
   def assertYapfReformats(self,

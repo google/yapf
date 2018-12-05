@@ -38,10 +38,10 @@ def _restore_working_dir():
 
 class GetExcludePatternsForDir(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
   def _make_test_dir(self, name):
@@ -62,10 +62,10 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
 class GetDefaultStyleForDirTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
   def test_no_local_style(self):
@@ -100,11 +100,11 @@ def _touch_files(filenames):
 
 class GetCommandLineFilesTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
     self.old_dir = os.getcwd()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
     os.chdir(self.old_dir)
 
@@ -285,10 +285,10 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
 class IsPythonFileTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
   def test_with_py_extension(self):
@@ -358,11 +358,11 @@ class BufferedByteStream(object):
 class WriteReformattedCodeTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     cls.test_tmpdir = tempfile.mkdtemp()
 
   @classmethod
-  def tearDownClass(cls):
+  def tearDownClass(cls):  # pylint: disable=g-missing-super-call
     shutil.rmtree(cls.test_tmpdir)
 
   def test_write_to_file(self):
