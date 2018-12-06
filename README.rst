@@ -140,7 +140,7 @@ has been YAPF-formatted.
 Excluding files from formatting (.yapfignore)
 ---------------------------------------------
 
-In addition to exlude patterns provided on commandline, YAPF looks for additional 
+In addition to exclude patterns provided on commandline, YAPF looks for additional 
 patterns specified in a file named ``.yapfignore`` located in the working directory from 
 which YAPF is invoked.
 
