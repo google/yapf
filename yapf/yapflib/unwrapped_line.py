@@ -27,6 +27,7 @@ from yapf.yapflib import style
 
 from lib2to3.fixer_util import syms as python_symbols
 
+
 class UnwrappedLine(object):
   """Represents a single unwrapped line in the output.
 
