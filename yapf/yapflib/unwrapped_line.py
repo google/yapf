@@ -69,7 +69,7 @@ class UnwrappedLine(object):
     prev_length = self.first.total_length
     for token in self._tokens[1:]:
       if (token.spaces_required_before == 0 and
-          _SpaceRequiredBetween(prev_token, token)):
+          _SpaceRequiredBetween(prev_token, token, self.disable)):
         token.spaces_required_before = 1
 
       tok_len = len(token.value) if not token.is_pseudo_paren else 0
@@ -227,7 +227,7 @@ def _IsUnaryOperator(tok):
   return format_token.Subtype.UNARY_OPERATOR in tok.subtypes
 
 
-def _SpaceRequiredBetween(left, right):
+def _SpaceRequiredBetween(left, right, is_line_disabled):
   """Return True if a space is required between the left and right token."""
   lval = left.value
   rval = right.value
@@ -343,6 +343,23 @@ def _SpaceRequiredBetween(left, right):
       (lval == '{' and rval == '}')):
     # Empty objects shouldn't be separated by spaces.
     return False
+  if ((lval in pytree_utils.OPENING_BRACKETS or
+       rval in pytree_utils.CLOSING_BRACKETS) and not is_line_disabled):
+    if (style.GetOrDefault('SPACES_AROUND_DICT_DELIMITERS', False) and (
+        (lval == '{' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
+        (rval == '}' and
+         _IsDictListTupleDelimiterTok(right, is_opening=False)))):
+      return True
+    if (style.GetOrDefault('SPACES_AROUND_LIST_DELIMITERS', False) and (
+        (lval == '[' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
+        (rval == ']' and
+         _IsDictListTupleDelimiterTok(right, is_opening=False)))):
+      return True
+    if (style.GetOrDefault('SPACES_AROUND_TUPLE_DELIMITERS', False) and (
+        (lval == '(' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
+        (rval == ')' and
+         _IsDictListTupleDelimiterTok(right, is_opening=False)))):
+      return True
   if (lval in pytree_utils.OPENING_BRACKETS and
       rval in pytree_utils.OPENING_BRACKETS):
     # Nested objects' opening brackets shouldn't be separated.
@@ -473,6 +490,33 @@ def IsSurroundedByBrackets(tok):
 
     previous_token = previous_token.previous_token
   return None
+
+
+def _IsDictListTupleDelimiterTok(tok, is_opening):
+  assert tok
+
+  if tok.matching_bracket is None:
+    return False
+
+  if is_opening:
+    open_tok = tok
+    close_tok = tok.matching_bracket
+  else:
+    open_tok = tok.matching_bracket
+    close_tok = tok
+
+  # There must be something in between the tokens
+  if open_tok.next_token == close_tok:
+    return False
+
+  assert open_tok.next_token.node
+  assert open_tok.next_token.node.parent
+
+  return open_tok.next_token.node.parent.type in [
+      281,  # dictsetmaker
+      304,  # listmaker
+      329,  # testlist_gexp
+  ]
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})

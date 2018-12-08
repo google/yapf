@@ -31,6 +31,11 @@ def Get(setting_name):
   return _style[setting_name]
 
 
+def GetOrDefault(setting_name, default_value):
+  """Get a style setting or default value if the setting does not exist."""
+  return _style.get(setting_name, default_value)
+
+
 def Help():
   """Return dict mapping style names to help strings."""
   return _STYLE_HELP
@@ -178,6 +183,36 @@ _STYLE_HELP = dict(
       Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
+    SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '{' and before the ending '}' dict delimiters.
+      
+        {1: 2}
+
+      will be formatted as:
+
+        { 1: 2 }
+
+      """),
+    SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '[' and before the ending ']' list delimiters.
+      
+        [1, 2]
+        
+      will be formatted as:
+      
+        [ 1, 2 ]
+        
+      """),
+    SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '(' and before the ending ')' tuple delimiters.
+      
+        (1, 2, 3)
+        
+      will be formatted as:
+      
+        ( 1, 2, 3 )
+        
+      """),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
       This can be a single value (representing the number of spaces
@@ -340,6 +375,9 @@ def CreatePEP8Style():
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
+      SPACES_AROUND_DICT_DELIMITERS=False,
+      SPACES_AROUND_LIST_DELIMITERS=False,
+      SPACES_AROUND_TUPLE_DELIMITERS=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
@@ -510,6 +548,9 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
+    SPACES_AROUND_DICT_DELIMITERS=_BoolConverter,
+    SPACES_AROUND_LIST_DELIMITERS=_BoolConverter,
+    SPACES_AROUND_TUPLE_DELIMITERS=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,

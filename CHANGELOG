@@ -6,6 +6,9 @@
 ### Added
 - `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS` allows us to split before
   default / named assignments.
+- Added `SPACES_AROUND_LIST_DELIMITERS`, `SPACES_AROUND_DICT_DELIMITERS`,
+  and `SPACES_AROUND_TUPLE_DELIMITERS` to add spaces after the opening-
+  and before the closing-delimiters for lists, dicts, and tuples.
 ### Changed
 - `SPACES_BEFORE_COMMENT` can now be assigned to a specific value (standard
   behavior) or a list of column values. When assigned to a list, trailing 
