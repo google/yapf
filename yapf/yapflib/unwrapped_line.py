@@ -25,6 +25,7 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 
+from lib2to3.fixer_util import syms as python_symbols
 
 class UnwrappedLine(object):
   """Represents a single unwrapped line in the output.
@@ -513,9 +514,9 @@ def _IsDictListTupleDelimiterTok(tok, is_opening):
   assert open_tok.next_token.node.parent
 
   return open_tok.next_token.node.parent.type in [
-      281,  # dictsetmaker
-      304,  # listmaker
-      329,  # testlist_gexp
+      python_symbols.dictsetmaker,
+      python_symbols.listmaker,
+      python_symbols.testlist_gexp,
   ]
 
 
