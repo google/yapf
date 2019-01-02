@@ -494,15 +494,21 @@ Knobs
     line length within the block). For example:
     
     With spaces_before_comment=5:
-    
+
+    .. code-block:: python
+
       1 + 1 # Adding values
     
     will be formatted as:
-    
+
+    .. code-block:: python
+
       1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
     
     With spaces_before_comment=15, 20:
     
+    .. code-block:: python
+
       1 + 1 # Adding values
       two + two # More adding
     
@@ -513,7 +519,9 @@ Knobs
       short # This is a shorter statement
     
     will be formatted as:
-    
+
+    .. code-block:: python
+
       1 + 1          # Adding values <-- end of line comments in block aligned to col 15
       two + two      # More adding
     
@@ -557,14 +565,14 @@ Knobs
 
     .. code-block:: python
 
-      foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+        foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
 
     would reformat to something like:
 
     .. code-block:: python
 
-      foo = ('This is a really long string: {}, {}, {}, {}'
-             .format(a, b, c, d))
+        foo = ('This is a really long string: {}, {}, {}, {}'
+               .format(a, b, c, d))
 
 ``SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN``
     Split after the opening paren which surrounds an expression if it doesn't
