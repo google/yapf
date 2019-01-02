@@ -495,33 +495,41 @@ Knobs
     
     With spaces_before_comment=5:
     
-      1 + 1 # Adding values
+    .. code-block:: python
+    
+        1 + 1 # Adding values
     
     will be formatted as:
     
-      1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
+    .. code-block:: python
+    
+        1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
     
     With spaces_before_comment=15, 20:
     
-      1 + 1 # Adding values
-      two + two # More adding
+    .. code-block:: python
     
-      longer_statement # This is a longer statement
-      short # This is a shorter statement
+        1 + 1 # Adding values
+        two + two # More adding
     
-      a_very_long_statement_that_extends_beyond_the_final_column # Comment
-      short # This is a shorter statement
+        longer_statement # This is a longer statement
+        short # This is a shorter statement
+    
+        a_very_long_statement_that_extends_beyond_the_final_column # Comment
+        short # This is a shorter statement
     
     will be formatted as:
     
-      1 + 1          # Adding values <-- end of line comments in block aligned to col 15
-      two + two      # More adding
+    .. code-block:: python
     
-      longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
-      short               # This is a shorter statement
+        1 + 1          # Adding values <-- end of line comments in block aligned to col 15
+        two + two      # More adding
     
-      a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
-      short                                                       # This is a shorter statement
+        longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
+        short               # This is a shorter statement
+    
+        a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
+        short                                                       # This is a shorter statement
 
 ``SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET``
     Insert a space between the ending comma and closing bracket of a list, etc.
