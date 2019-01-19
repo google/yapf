@@ -437,7 +437,7 @@ def _ContinuationAlignStyleStringConverter(s):
   """Option value converter for a continuation align style string."""
   accepted_styles = ('SPACE', 'FIXED', 'VALIGN-RIGHT')
   if s:
-    r = s.upper()
+    r = s.strip('"\'').replace('_', '-').upper()
     if r not in accepted_styles:
       raise ValueError('unknown continuation align style: %r' % (s,))
   else:
