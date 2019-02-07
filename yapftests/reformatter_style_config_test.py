@@ -82,6 +82,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       pep8_with_precedence['ARITHMETIC_PRECEDENCE_INDICATION'] = True
       style.SetGlobalStyle(pep8_with_precedence)
       unformatted_code = textwrap.dedent("""\
+          1+2
+          (1 + 2) * (3 - (4 / 5))
           a = 1 * 2 + 3 / 4
           b = 1 / 2 - 3 * 4
           c = (1 + 2) * (3 - 4)
@@ -94,6 +96,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           j = (1 * 2 - 3) + 4
           """)
       expected_formatted_code = textwrap.dedent("""\
+          1 + 2
+          (1+2) * (3 - (4/5))
           a = 1*2 + 3/4
           b = 1/2 - 3*4
           c = (1+2) * (3-4)
