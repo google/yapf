@@ -228,14 +228,14 @@ def _IsUnaryOperator(tok):
 
 
 def _IsMOperator(leaf):
-  """ See definition of an m_expr un the python reference:
+  """ See definition of an m_expr in the python reference:
   https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
   """
   return leaf.value in ["*", "@", "//", "%", "/"]
 
 
 def _IsAOperator(leaf):
-  """ See definition of an a_expr un the python reference:
+  """ See definition of an a_expr in the python reference:
   https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
   """
   return leaf.value in ["+", "-"]
