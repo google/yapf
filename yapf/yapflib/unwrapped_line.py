@@ -227,6 +227,82 @@ def _IsUnaryOperator(tok):
   return format_token.Subtype.UNARY_OPERATOR in tok.subtypes
 
 
+def _IsMOperator(leaf):
+  """ See definition of an m_expr un the python reference:
+  https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
+  """
+  return leaf.value in ["*", "@", "//", "%", "/"]
+
+
+def _IsAOperator(leaf):
+  """ See definition of an a_expr un the python reference:
+  https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
+  """
+  return leaf.value in ["+", "-"]
+
+
+def _IsBinaryArithmeticOperator(leaf):
+  return _IsMOperator(leaf) or _IsAOperator(leaf)
+
+
+def _IsIndependentOperator(leaf):
+  """Tests whether the operator's operands are leaf nodes."""
+  siblings = leaf.parent.children
+  return all(map(lambda s: len(s.children) == 0, siblings))
+
+
+def _HasPrecedence(tok):
+  """Determines whether a binary arithmetic operation has higher priority than
+  another operation in the same expression.
+   """
+  node = tok.node
+  try:
+    # We let ancestor be the statement surrounding the operation that tok
+    # is the operator in.
+    ancestor = node.parent.parent
+  except AttributeError:
+    # If there is no such statement then the operator cannot have precedence
+    # over it.
+    return False
+
+  while ancestor is not None:
+    # Search through the ancestor nodes in the parse tree for operators with
+    # lower precedence.
+    predecessor_type = pytree_utils.NodeName(ancestor)
+    if predecessor_type in ["arith_expr", "term"]:
+      # An ancestor "arith_expr" or "term" means we have found an operator
+      # with lower presedence than our tok.
+      return True
+    if predecessor_type != "atom":
+      # We understand the context to look for precedence within as an
+      # arbitrary nesting of "arith_expr", "term", and "atom" nodes. If we
+      # leave this context we have not found a lower presedence operator.
+      return False
+    if hasattr(ancestor, 'parent'):
+      ancestor = ancestor.parent
+    else:
+      ancestor = None
+  return False
+
+
+def _PriorityIndicatingNoSpace(tok):
+  """Determines whether to indicate that an operator has highest presedence in
+  an arithmetic expression by removing spaces around it.
+
+  This is motivated by the advice given for spacing around binary arithmetic
+  operators in PEP8:
+
+  https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
+  """
+  if not _IsBinaryArithmeticOperator(tok.node):
+    # Limit space removal to arithmetic operators
+    return False
+  if not _IsIndependentOperator(tok.node):
+    # Limit space removal to highest priority operators
+    return False
+  return _HasPrecedence(tok)
+
+
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
   lval = left.value
@@ -310,7 +386,15 @@ def _SpaceRequiredBetween(left, right):
       return style.Get('SPACES_AROUND_POWER_OPERATOR')
     # Enforce spaces around binary operators except the blacklisted ones.
     blacklist = style.Get('NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS')
-    return lval not in blacklist and rval not in blacklist
+    if lval in blacklist or rval in blacklist:
+      return False
+    if style.Get('ARITHMETIC_PRECEDENCE_INDICATION'):
+      if _PriorityIndicatingNoSpace(left) or _PriorityIndicatingNoSpace(right):
+        return False
+      else:
+        return True
+    else:
+      return True
   if (_IsUnaryOperator(left) and lval != 'not' and
       (right.is_name or right.is_number or rval == '(')):
     # The previous token was a unary op. No space is desired between it and

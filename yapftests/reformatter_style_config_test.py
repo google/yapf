@@ -76,6 +76,43 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
 
+  def testOperatorPrecedenceStyle(self):
+    try:
+      pep8_with_precedence = style.CreatePEP8Style()
+      pep8_with_precedence['ARITHMETIC_PRECEDENCE_INDICATION'] = True
+      style.SetGlobalStyle(pep8_with_precedence)
+      unformatted_code = textwrap.dedent("""\
+          a = 1 * 2 + 3 / 4
+          b = 1 / 2 - 3 * 4
+          c = (1 + 2) * (3 - 4)
+          d = (1 - 2) / (3 + 4)
+          e = 1 * 2 - 3
+          f = 1 + 2 + 3 + 4
+          g = 1 * 2 * 3 * 4
+          h = 1 + 2 - 3 + 4
+          i = 1 * 2 / 3 * 4
+          j = (1 * 2 - 3) + 4
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          a = 1*2 + 3/4
+          b = 1/2 - 3*4
+          c = (1+2) * (3-4)
+          d = (1-2) / (3+4)
+          e = 1*2 - 3
+          f = 1 + 2 + 3 + 4
+          g = 1 * 2 * 3 * 4
+          h = 1 + 2 - 3 + 4
+          i = 1 * 2 / 3 * 4
+          j = (1*2 - 3) + 4
+          """)
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      style.DEFAULT_STYLE = self.current_style
+
 
 if __name__ == '__main__':
   unittest.main()
