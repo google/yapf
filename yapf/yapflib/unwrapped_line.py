@@ -256,14 +256,10 @@ def _HasPrecedence(tok):
   another operation in the same expression.
    """
   node = tok.node
-  try:
-    # We let ancestor be the statement surrounding the operation that tok
-    # is the operator in.
-    ancestor = node.parent.parent
-  except AttributeError:
-    # If there is no such statement then the operator cannot have precedence
-    # over it.
-    return False
+
+  # We let ancestor be the statement surrounding the operation that tok
+  # is the operator in.
+  ancestor = node.parent.parent
 
   while ancestor is not None:
     # Search through the ancestor nodes in the parse tree for operators with
@@ -278,11 +274,9 @@ def _HasPrecedence(tok):
       # arbitrary nesting of "arith_expr", "term", and "atom" nodes. If we
       # leave this context we have not found a lower presedence operator.
       return False
-    if hasattr(ancestor, 'parent'):
-      ancestor = ancestor.parent
-    else:
-      ancestor = None
-  return False
+    # Under normal usage we expect a complete parse tree to be available and
+    # we will return before we get an AttributeError from the root.
+    ancestor = ancestor.parent
 
 
 def _PriorityIndicatingNoSpace(tok):
