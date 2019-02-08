@@ -26,6 +26,8 @@
   multiple lines with the opening bracket on the same line as the key.
   Therefore, we shouldn't enforce a split because of that.
 - Increase split penalty around exponent operator.
+- Correct spacing when using binary operators on strings with the
+  `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` option enabled.
 
 ## [0.25.0] 2018-11-25
 ### Added

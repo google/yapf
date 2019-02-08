@@ -56,7 +56,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testOperatorStyle(self):
+  def testOperatorNoSpaceStyle(self):
     try:
       sympy_style = style.CreatePEP8Style()
       sympy_style['NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS'] = \
@@ -64,9 +64,11 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       style.SetGlobalStyle(sympy_style)
       unformatted_code = textwrap.dedent("""\
           a = 1+2 * 3 - 4 / 5
+          b = '0' * 1
           """)
       expected_formatted_code = textwrap.dedent("""\
           a = 1 + 2*3 - 4/5
+          b = '0'*1
           """)
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
