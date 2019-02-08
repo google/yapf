@@ -239,11 +239,11 @@ def _HasPrecedence(tok):
     # Search through the ancestor nodes in the parse tree for operators with
     # lower precedence.
     predecessor_type = pytree_utils.NodeName(ancestor)
-    if predecessor_type in ["arith_expr", "term"]:
+    if predecessor_type in ['arith_expr', 'term']:
       # An ancestor "arith_expr" or "term" means we have found an operator
       # with lower presedence than our tok.
       return True
-    if predecessor_type != "atom":
+    if predecessor_type != 'atom':
       # We understand the context to look for precedence within as an
       # arbitrary nesting of "arith_expr", "term", and "atom" nodes. If we
       # leave this context we have not found a lower presedence operator.
