@@ -94,6 +94,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           h = 1 + 2 - 3 + 4
           i = 1 * 2 / 3 * 4
           j = (1 * 2 - 3) + 4
+          k = (1 * 2 * 3) + (4 * 5 * 6 * 7 * 8)
           """)
       expected_formatted_code = textwrap.dedent("""\
           1 + 2
@@ -108,6 +109,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           h = 1 + 2 - 3 + 4
           i = 1 * 2 / 3 * 4
           j = (1*2 - 3) + 4
+          k = (1*2*3) + (4*5*6*7*8)
           """)
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
