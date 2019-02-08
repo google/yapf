@@ -162,6 +162,48 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          ('1', [format_token.Subtype.NONE]),],
     ])  # yapf: disable
 
+  def testArithmeticOperators(self):
+    code = textwrap.dedent("""\
+        x = ((a + (b - 3) * (1 % c) @ d) / 3) // 1
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(uwlines, [
+        [('x', [format_token.Subtype.NONE]),
+         ('=', {format_token.Subtype.ASSIGN_OPERATOR}),
+         ('(', [format_token.Subtype.NONE]),
+         ('(', [format_token.Subtype.NONE]),
+         ('a', [format_token.Subtype.NONE]),
+         ('+', {format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.A_EXPR_OPERATOR}),
+         ('(', [format_token.Subtype.NONE]),
+         ('b', [format_token.Subtype.NONE]),
+         ('-', {format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.A_EXPR_OPERATOR,
+                format_token.Subtype.SIMPLE_EXPRESSION}),
+         ('3', [format_token.Subtype.NONE]),
+         (')', [format_token.Subtype.NONE]),
+         ('*', {format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR}),
+         ('(', [format_token.Subtype.NONE]),
+         ('1', [format_token.Subtype.NONE]),
+         ('%', {format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR,
+                format_token.Subtype.SIMPLE_EXPRESSION}),
+         ('c', [format_token.Subtype.NONE]),
+         (')', [format_token.Subtype.NONE]),
+         ('@', {format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR}),
+         ('d', [format_token.Subtype.NONE]),
+         (')', [format_token.Subtype.NONE]),
+         ('/', {format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR}),
+         ('3', [format_token.Subtype.NONE]),
+         (')', [format_token.Subtype.NONE]),
+         ('//', {format_token.Subtype.BINARY_OPERATOR,
+                 format_token.Subtype.M_EXPR_OPERATOR}),
+         ('1', [format_token.Subtype.NONE]),],
+    ])  # yapf: disable
+
   def testSubscriptColon(self):
     code = textwrap.dedent("""\
         x[0:42:1]
