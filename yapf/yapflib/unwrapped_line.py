@@ -227,12 +227,6 @@ def _IsUnaryOperator(tok):
   return format_token.Subtype.UNARY_OPERATOR in tok.subtypes
 
 
-def _IsIndependentOperator(leaf):
-  """Tests whether the operator's operands are leaf nodes."""
-  siblings = leaf.parent.children
-  return all(map(lambda s: len(s.children) == 0, siblings))
-
-
 def _HasPrecedence(tok):
   """Whether a binary operation has presedence within its context."""
   node = tok.node
@@ -261,11 +255,8 @@ def _HasPrecedence(tok):
 
 def _PriorityIndicatingNoSpace(tok):
   """Whether to remove spaces around an operator due to presedence."""
-  if not tok.is_arithmetic_op:
-    # Limit space removal to arithmetic operators
-    return False
-  if not _IsIndependentOperator(tok.node):
-    # Limit space removal to highest priority operators
+  if not tok.is_arithmetic_op or not tok.is_simple_expr:
+    # Limit space removal to highest priority arithmetic operators
     return False
   return _HasPrecedence(tok)
 

@@ -57,6 +57,7 @@ class Subtype(object):
   DECORATOR = 18
   TYPED_NAME = 19
   TYPED_NAME_ARG_LIST = 20
+  SIMPLE_EXPRESSION = 24
 
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width,
@@ -284,9 +285,27 @@ class FormatToken(object):
 
   @property
   @py3compat.lru_cache()
+  def is_a_expr_op(self):
+    """Token is an a_expr operator."""
+    return Subtype.A_EXPR_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_m_expr_op(self):
+    """Token is an m_expr operator."""
+    return Subtype.M_EXPR_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
   def is_arithmetic_op(self):
     """Token is an arithmetic operator."""
-    return Subtype.A_EXPR_OPERATOR in self.subtypes or Subtype.M_EXPR_OPERATOR in self.subtypes
+    return self.is_a_expr_op or self.is_m_expr_op
+
+  @property
+  @py3compat.lru_cache()
+  def is_simple_expr(self):
+    """Token is an operator in a simple expression."""
+    return Subtype.SIMPLE_EXPRESSION in self.subtypes
 
   @property
   @py3compat.lru_cache()
