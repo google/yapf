@@ -729,6 +729,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testSpaceBetweenStringAndParentheses(self):
+    code = textwrap.dedent("""\
+        b = '0' ('hello')
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testMultilineString(self):
     code = textwrap.dedent("""\
         code = textwrap.dedent('''\
