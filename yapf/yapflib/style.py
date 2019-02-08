@@ -64,6 +64,26 @@ _STYLE_HELP = dict(
       """),
     ALLOW_SPLIT_BEFORE_DICT_VALUE=textwrap.dedent("""\
       Allow splits before the dictionary value."""),
+    ARITHMETIC_PRECEDENCE_INDICATION=textwrap.dedent("""\
+      Let spacing indicate operator precedence. For example:
+
+        a = 1 * 2 + 3 / 4
+        b = 1 / 2 - 3 * 4
+        c = (1 + 2) * (3 - 4)
+        d = (1 - 2) / (3 + 4)
+        e = 1 * 2 - 3
+        f = 1 + 2 + 3 + 4
+
+    will be formatted as follows to indicate precedence:
+
+        a = 1*2 + 3/4
+        b = 1/2 - 3*4
+        c = (1+2) * (3-4)
+        d = (1-2) / (3+4)
+        e = 1*2 - 3
+        f = 1 + 2 + 3 + 4
+
+      """),
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
       Insert a blank line before a 'def' or 'class' immediately nested
       within another 'def' or 'class'. For example:
@@ -319,6 +339,7 @@ def CreatePEP8Style():
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
       ALLOW_SPLIT_BEFORE_DICT_VALUE=True,
+      ARITHMETIC_PRECEDENCE_INDICATION=False,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       BLANK_LINE_BEFORE_MODULE_DOCSTRING=False,
@@ -489,6 +510,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DICT_VALUE=_BoolConverter,
+    ARITHMETIC_PRECEDENCE_INDICATION=_BoolConverter,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     BLANK_LINE_BEFORE_MODULE_DOCSTRING=_BoolConverter,

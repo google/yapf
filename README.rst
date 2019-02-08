@@ -333,6 +333,29 @@ Knobs
 ``ALLOW_SPLIT_BEFORE_DICT_VALUE``
     Allow splits before the dictionary value.
 
+``ARITHMETIC_PRECEDENCE_INDICATION``
+    Let spacing indicate operator precedence. For example:
+
+    .. code-block:: python
+
+        a = 1 * 2 + 3 / 4
+        b = 1 / 2 - 3 * 4
+        c = (1 + 2) * (3 - 4)
+        d = (1 - 2) / (3 + 4)
+        e = 1 * 2 - 3
+        f = 1 + 2 + 3 + 4
+
+    will be formatted as follows to indicate precedence:
+
+    .. code-block:: python
+
+        a = 1*2 + 3/4
+        b = 1/2 - 3*4
+        c = (1+2) * (3-4)
+        d = (1-2) / (3+4)
+        e = 1*2 - 3
+        f = 1 + 2 + 3 + 4
+
 ``BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF``
     Insert a blank line before a ``def`` or ``class`` immediately nested within
     another ``def`` or ``class``. For example:

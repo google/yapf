@@ -187,16 +187,27 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # arith_expr ::= term (('+'|'-') term)*
     for child in node.children:
       self.Visit(child)
-      if isinstance(child, pytree.Leaf) and child.value in '+-':
+      if _IsAExprOperator(child):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        _AppendTokenSubtype(child, format_token.Subtype.A_EXPR_OPERATOR)
+
+    if _IsSimpleExpression(node):
+      for child in node.children:
+        if _IsAExprOperator(child):
+          _AppendTokenSubtype(child, format_token.Subtype.SIMPLE_EXPRESSION)
 
   def Visit_term(self, node):  # pylint: disable=invalid-name
-    # term ::= factor (('*'|'/'|'%'|'//') factor)*
+    # term ::= factor (('*'|'/'|'%'|'//'|'@') factor)*
     for child in node.children:
       self.Visit(child)
-      if (isinstance(child, pytree.Leaf) and
-          child.value in {'*', '/', '%', '//', '@'}):
+      if _IsMExprOperator(child):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        _AppendTokenSubtype(child, format_token.Subtype.M_EXPR_OPERATOR)
+
+    if _IsSimpleExpression(node):
+      for child in node.children:
+        if _IsMExprOperator(child):
+          _AppendTokenSubtype(child, format_token.Subtype.SIMPLE_EXPRESSION)
 
   def Visit_factor(self, node):  # pylint: disable=invalid-name
     # factor ::= ('+'|'-'|'~') factor | power
@@ -446,3 +457,17 @@ def _InsertPseudoParentheses(node):
     new_node = pytree.Node(syms.atom, [lparen, clone, rparen])
     node.replace(new_node)
     _AppendFirstLeafTokenSubtype(clone, format_token.Subtype.DICTIONARY_VALUE)
+
+
+def _IsAExprOperator(node):
+  return isinstance(node, pytree.Leaf) and node.value in {'+', '-'}
+
+
+def _IsMExprOperator(node):
+  return isinstance(node,
+                    pytree.Leaf) and node.value in {'*', '/', '%', '//', '@'}
+
+
+def _IsSimpleExpression(node):
+  """A node with only leafs as children."""
+  return all(map(lambda c: isinstance(c, pytree.Leaf), node.children))

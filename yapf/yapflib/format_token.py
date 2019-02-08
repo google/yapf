@@ -36,6 +36,8 @@ class Subtype(object):
   NONE = 0
   UNARY_OPERATOR = 1
   BINARY_OPERATOR = 2
+  A_EXPR_OPERATOR = 22
+  M_EXPR_OPERATOR = 23
   SUBSCRIPT_COLON = 3
   SUBSCRIPT_BRACKET = 4
   DEFAULT_OR_NAMED_ASSIGN = 5
@@ -55,6 +57,7 @@ class Subtype(object):
   DECORATOR = 18
   TYPED_NAME = 19
   TYPED_NAME_ARG_LIST = 20
+  SIMPLE_EXPRESSION = 24
 
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width,
@@ -279,6 +282,30 @@ class FormatToken(object):
   def is_binary_op(self):
     """Token is a binary operator."""
     return Subtype.BINARY_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_a_expr_op(self):
+    """Token is an a_expr operator."""
+    return Subtype.A_EXPR_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_m_expr_op(self):
+    """Token is an m_expr operator."""
+    return Subtype.M_EXPR_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_arithmetic_op(self):
+    """Token is an arithmetic operator."""
+    return self.is_a_expr_op or self.is_m_expr_op
+
+  @property
+  @py3compat.lru_cache()
+  def is_simple_expr(self):
+    """Token is an operator in a simple expression."""
+    return Subtype.SIMPLE_EXPRESSION in self.subtypes
 
   @property
   @py3compat.lru_cache()

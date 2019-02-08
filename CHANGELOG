@@ -6,6 +6,8 @@
 ### Added
 - `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS` allows us to split before
   default / named assignments.
+- `ARITHMETIC_PRECEDENCE_INDICATION` removes spacing around binary operators
+  if they have higher precedence than other operators in the same expression.
 ### Changed
 - `SPACES_BEFORE_COMMENT` can now be assigned to a specific value (standard
   behavior) or a list of column values. When assigned to a list, trailing 
