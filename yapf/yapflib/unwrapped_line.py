@@ -325,9 +325,9 @@ def _SpaceRequiredBetween(left, right):
       # If there is a type hint, then we don't want to add a space between the
       # equal sign and the hint.
       return False
-    if rval not in '[)]}.':
+    if rval not in '[)]}.' and not right.is_binary_op:
       # A string followed by something other than a subscript, closing bracket,
-      # or dot should have a space after it.
+      # dot, or a binary op should have a space after it.
       return True
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary operator and the unary operator.
