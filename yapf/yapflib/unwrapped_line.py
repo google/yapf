@@ -231,14 +231,14 @@ def _IsMOperator(leaf):
   """ See definition of an m_expr in the python reference:
   https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
   """
-  return leaf.value in ["*", "@", "//", "%", "/"]
+  return leaf.value in ['*', '@', '//', '%', '/']
 
 
 def _IsAOperator(leaf):
   """ See definition of an a_expr in the python reference:
   https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
   """
-  return leaf.value in ["+", "-"]
+  return leaf.value in ['+', '-']
 
 
 def _IsBinaryArithmeticOperator(leaf):
@@ -252,13 +252,11 @@ def _IsIndependentOperator(leaf):
 
 
 def _HasPrecedence(tok):
-  """Determines whether a binary arithmetic operation has higher priority than
-  another operation in the same expression.
-   """
+  """Whether a binary operation has presedence within its context."""
   node = tok.node
 
-  # We let ancestor be the statement surrounding the operation that tok
-  # is the operator in.
+  # We let ancestor be the statement surrounding the operation that tok is the
+  # operator in.
   ancestor = node.parent.parent
 
   while ancestor is not None:
@@ -280,14 +278,7 @@ def _HasPrecedence(tok):
 
 
 def _PriorityIndicatingNoSpace(tok):
-  """Determines whether to indicate that an operator has highest presedence in
-  an arithmetic expression by removing spaces around it.
-
-  This is motivated by the advice given for spacing around binary arithmetic
-  operators in PEP8:
-
-  https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
-  """
+  """Whether to remove spaces around an operator due to presedence."""
   if not _IsBinaryArithmeticOperator(tok.node):
     # Limit space removal to arithmetic operators
     return False
