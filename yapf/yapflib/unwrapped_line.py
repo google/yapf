@@ -227,24 +227,6 @@ def _IsUnaryOperator(tok):
   return format_token.Subtype.UNARY_OPERATOR in tok.subtypes
 
 
-def _IsMOperator(leaf):
-  """ See definition of an m_expr in the python reference:
-  https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
-  """
-  return leaf.value in ['*', '@', '//', '%', '/']
-
-
-def _IsAOperator(leaf):
-  """ See definition of an a_expr in the python reference:
-  https://docs.python.org/3/reference/expressions.html#binary-arithmetic-operations
-  """
-  return leaf.value in ['+', '-']
-
-
-def _IsBinaryArithmeticOperator(leaf):
-  return _IsMOperator(leaf) or _IsAOperator(leaf)
-
-
 def _IsIndependentOperator(leaf):
   """Tests whether the operator's operands are leaf nodes."""
   siblings = leaf.parent.children
@@ -279,7 +261,7 @@ def _HasPrecedence(tok):
 
 def _PriorityIndicatingNoSpace(tok):
   """Whether to remove spaces around an operator due to presedence."""
-  if not _IsBinaryArithmeticOperator(tok.node):
+  if not tok.is_arithmetic_op:
     # Limit space removal to arithmetic operators
     return False
   if not _IsIndependentOperator(tok.node):

@@ -36,6 +36,8 @@ class Subtype(object):
   NONE = 0
   UNARY_OPERATOR = 1
   BINARY_OPERATOR = 2
+  A_EXPR_OPERATOR = 22
+  M_EXPR_OPERATOR = 23
   SUBSCRIPT_COLON = 3
   SUBSCRIPT_BRACKET = 4
   DEFAULT_OR_NAMED_ASSIGN = 5
@@ -279,6 +281,12 @@ class FormatToken(object):
   def is_binary_op(self):
     """Token is a binary operator."""
     return Subtype.BINARY_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_arithmetic_op(self):
+    """Token is an arithmetic operator."""
+    return Subtype.A_EXPR_OPERATOR in self.subtypes or Subtype.M_EXPR_OPERATOR in self.subtypes
 
   @property
   @py3compat.lru_cache()
