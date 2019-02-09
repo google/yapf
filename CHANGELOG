@@ -2,6 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.26.1] UNRELEASED
+### Fixed
+- Parse integer lists correctly, removing quotes if the list is within a
+  string.
+
 ## [0.26.0] 2019-02-08
 ### Added
 - `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS` allows us to split before

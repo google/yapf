@@ -512,7 +512,26 @@ class CommandLineTest(unittest.TestCase):
     style_file = textwrap.dedent(u'''\
         [style]
         based_on_style = chromium
-        SPACES_BEFORE_COMMENT = 4
+        spaces_before_comment = 4
+        ''')
+    with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(stylepath)])
+
+  def testSetCustomStyleSpacesBeforeComment(self):
+    unformatted_code = textwrap.dedent("""\
+        a_very_long_statement_that_extends_way_beyond # Comment
+        short # This is a shorter statement
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a_very_long_statement_that_extends_way_beyond # Comment
+        short                                         # This is a shorter statement
+        """)
+    style_file = textwrap.dedent(u'''\
+        [style]
+        spaces_before_comment = 15, 20
         ''')
     with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
       self.assertYapfReformats(

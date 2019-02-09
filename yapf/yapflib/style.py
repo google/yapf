@@ -189,7 +189,6 @@ _STYLE_HELP = dict(
       will be formatted as follows when configured with "*,/":
 
         1 + 2*3 - 4/5
-
       """),
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
@@ -494,6 +493,8 @@ def _IntListConverter(s):
 
 def _IntOrIntListConverter(s):
   """Option value converter for an integer or list of integers."""
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
   return _IntListConverter(s) if ',' in s else int(s)
 
 
