@@ -431,6 +431,29 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testBitwiseOperandSplitting(self):
+    unformatted_code = """\
+def _():
+    include_values = np.where(
+                (cdffile['Quality_Flag'][:] >= 5) & (
+                cdffile['Day_Night_Flag'][:] == 1) & (
+                cdffile['Longitude'][:] >= select_lon - radius) & (
+                cdffile['Longitude'][:] <= select_lon + radius) & (
+                cdffile['Latitude'][:] >= select_lat - radius) & (
+                cdffile['Latitude'][:] <= select_lat + radius))
+"""
+    expected_code = """\
+def _():
+    include_values = np.where(
+        (cdffile['Quality_Flag'][:] >= 5) & (cdffile['Day_Night_Flag'][:] == 1)
+        & (cdffile['Longitude'][:] >= select_lon - radius)
+        & (cdffile['Longitude'][:] <= select_lon + radius)
+        & (cdffile['Latitude'][:] >= select_lat - radius)
+        & (cdffile['Latitude'][:] <= select_lat + radius))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
