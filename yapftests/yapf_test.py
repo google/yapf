@@ -1460,7 +1460,7 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
   @staticmethod
   def _OwnStyle():
     my_style = style.CreatePEP8Style()
-    my_style["SPACES_BEFORE_COMMENT"] = [
+    my_style['SPACES_BEFORE_COMMENT'] = [
         15,
         25,
         35,

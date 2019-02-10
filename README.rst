@@ -564,9 +564,12 @@ Knobs
     If a comma separated list (dict, list, tuple, or function def) is on a
     line that is too long, split such that all elements are on a single line.
 
-``SPLIT_BEFORE_BITWISE_OPERATOR``
-    Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
-    than after.
+``SPLIT_BEFORE__OPERATOR``
+    Set to True to prefer splitting before '&', '|' or '^' rather than after.
+
+``SPLIT_BEFORE_ARITHMETIC_OPERATOR``
+    Set to True to prefer splitting before '+', '-', '*', '/', '//', or '@'
+    rather than after.
 
 ``SPLIT_BEFORE_CLOSING_BRACKET``
     Split before the closing bracket if a list or dict literal doesn't fit on
@@ -638,6 +641,10 @@ Knobs
 
 ``SPLIT_PENALTY_AFTER_UNARY_OPERATOR``
     The penalty for splitting the line after a unary operator.
+
+``SPLIT_PENALTY_ARITHMETIC_OPERATOR``
+    The penalty of splitting the line around the ``+``, ``-``, ``*``, ``/``,
+    ``//``, ``%``, and ``@`` operators.
 
 ``SPLIT_PENALTY_BEFORE_IF_EXPR``
     The penalty for splitting right before an ``if`` expression.

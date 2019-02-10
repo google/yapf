@@ -165,8 +165,8 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
-            runtime_mins = (
-                program_end_time - program_start_time).total_seconds() / 60.0
+            runtime_mins = (program_end_time -
+                            program_start_time).total_seconds() / 60.0
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -453,6 +453,27 @@ def _():
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
+  def testSplitBeforeArithmeticOperators(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, split_before_arithmetic_operator: true}'))
+
+      unformatted_code = """\
+def _():
+    raise ValueError('This is a long message that ends with an argument: ' + str(42))
+"""
+      expected_formatted_code = """\
+def _():
+    raise ValueError('This is a long message that ends with an argument: '
+                     + str(42))
+"""
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
 
 
 if __name__ == '__main__':

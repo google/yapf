@@ -840,8 +840,8 @@ def _():
     expected_formatted_code = textwrap.dedent("""\
         class _():
           def _():
-            hints.append(('hg tag -f -l -r %s %s # %s' % (short(
-                ctx.node()), candidatetag, firstline))[:78])
+            hints.append(('hg tag -f -l -r %s %s # %s' %
+                          (short(ctx.node()), candidatetag, firstline))[:78])
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -1457,8 +1457,8 @@ class _():
     expected_formatted_code = textwrap.dedent("""\
         def foo():
           if True:
-            return (
-                struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
+            return (struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) +
+                    eeeeeee)
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

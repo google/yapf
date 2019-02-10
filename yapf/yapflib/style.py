@@ -241,6 +241,9 @@ _STYLE_HELP = dict(
       comma."""),
     SPLIT_ALL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
       Split before arguments"""),
+    SPLIT_BEFORE_ARITHMETIC_OPERATOR=textwrap.dedent("""\
+      Set to True to prefer splitting before '+', '-', '*', '/', '//', or '@'
+      rather than after."""),
     SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '&', '|' or '^' rather than
       after."""),
@@ -297,6 +300,9 @@ _STYLE_HELP = dict(
       The penalty for splitting right after the opening bracket."""),
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
       The penalty for splitting the line after a unary operator."""),
+    SPLIT_PENALTY_ARITHMETIC_OPERATOR=textwrap.dedent("""\
+      The penalty of splitting the line around the '+', '-', '*', '/', '//',
+      ``%``, and '@' operators."""),
     SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent("""\
       The penalty for splitting right before an if expression."""),
     SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
@@ -363,6 +369,7 @@ def CreatePEP8Style():
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
+      SPLIT_BEFORE_ARITHMETIC_OPERATOR=False,
       SPLIT_BEFORE_BITWISE_OPERATOR=True,
       SPLIT_BEFORE_CLOSING_BRACKET=True,
       SPLIT_BEFORE_DICT_SET_GENERATOR=True,
@@ -374,6 +381,7 @@ def CreatePEP8Style():
       SPLIT_COMPLEX_COMPREHENSION=False,
       SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
+      SPLIT_PENALTY_ARITHMETIC_OPERATOR=300,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
       SPLIT_PENALTY_BITWISE_OPERATOR=300,
       SPLIT_PENALTY_COMPREHENSION=80,
@@ -536,6 +544,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,
+    SPLIT_BEFORE_ARITHMETIC_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_CLOSING_BRACKET=_BoolConverter,
     SPLIT_BEFORE_DICT_SET_GENERATOR=_BoolConverter,
@@ -547,6 +556,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPLIT_COMPLEX_COMPREHENSION=_BoolConverter,
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=int,
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=int,
+    SPLIT_PENALTY_ARITHMETIC_OPERATOR=int,
     SPLIT_PENALTY_BEFORE_IF_EXPR=int,
     SPLIT_PENALTY_BITWISE_OPERATOR=int,
     SPLIT_PENALTY_COMPREHENSION=int,

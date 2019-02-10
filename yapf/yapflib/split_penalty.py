@@ -439,7 +439,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # arith_expr ::= term (('+'|'-') term)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, ARITH_EXPR)
-    _SetExpressionOperandPenalty(node, self._ARITH_OPS, ARITH_EXPR)
+    _SetExpressionOperandPenalty(node, self._ARITH_OPS)
 
   _TERM_OPS = frozenset({'STAR', 'AT', 'SLASH', 'PERCENT', 'DOUBLESLASH'})
 
@@ -447,7 +447,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # term ::= factor (('*'|'@'|'/'|'%'|'//') factor)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, TERM)
-    _SetExpressionOperandPenalty(node, self._TERM_OPS, TERM)
+    _SetExpressionOperandPenalty(node, self._TERM_OPS)
 
   def Visit_factor(self, node):  # pyline: disable=invalid-name
     # factor ::= ('+'|'-'|'~') factor | power
@@ -548,12 +548,16 @@ def _SetBitwiseOperandPenalty(node, op):
             style.Get('SPLIT_PENALTY_BITWISE_OPERATOR'))
 
 
-def _SetExpressionOperandPenalty(node, ops, penalty):
+def _SetExpressionOperandPenalty(node, ops):
   for index in py3compat.range(1, len(node.children) - 1):
-      child = node.children[index]
-      if pytree_utils.NodeName(child) in ops:
-        next_node = pytree_utils.FirstLeafNode(node.children[index + 1])
-        _SetSplitPenalty(next_node, penalty)
+    child = node.children[index]
+    if pytree_utils.NodeName(child) in ops:
+      if style.Get('SPLIT_BEFORE_ARITHMETIC_OPERATOR'):
+        _SetSplitPenalty(child, style.Get('SPLIT_PENALTY_ARITHMETIC_OPERATOR'))
+      else:
+        _SetSplitPenalty(
+            pytree_utils.FirstLeafNode(node.children[index + 1]),
+            style.Get('SPLIT_PENALTY_ARITHMETIC_OPERATOR'))
 
 
 def _IncreasePenalty(node, amt):

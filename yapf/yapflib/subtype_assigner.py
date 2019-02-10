@@ -470,4 +470,4 @@ def _IsMExprOperator(node):
 
 def _IsSimpleExpression(node):
   """A node with only leafs as children."""
-  return all(map(lambda c: isinstance(c, pytree.Leaf), node.children))
+  return all(isinstance(child, pytree.Leaf) for child in node.children)

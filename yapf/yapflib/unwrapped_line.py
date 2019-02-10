@@ -228,7 +228,7 @@ def _IsUnaryOperator(tok):
 
 
 def _HasPrecedence(tok):
-  """Whether a binary operation has presedence within its context."""
+  """Whether a binary operation has precedence within its context."""
   node = tok.node
 
   # We let ancestor be the statement surrounding the operation that tok is the
@@ -241,12 +241,12 @@ def _HasPrecedence(tok):
     predecessor_type = pytree_utils.NodeName(ancestor)
     if predecessor_type in ['arith_expr', 'term']:
       # An ancestor "arith_expr" or "term" means we have found an operator
-      # with lower presedence than our tok.
+      # with lower precedence than our tok.
       return True
     if predecessor_type != 'atom':
       # We understand the context to look for precedence within as an
       # arbitrary nesting of "arith_expr", "term", and "atom" nodes. If we
-      # leave this context we have not found a lower presedence operator.
+      # leave this context we have not found a lower precedence operator.
       return False
     # Under normal usage we expect a complete parse tree to be available and
     # we will return before we get an AttributeError from the root.
@@ -254,7 +254,7 @@ def _HasPrecedence(tok):
 
 
 def _PriorityIndicatingNoSpace(tok):
-  """Whether to remove spaces around an operator due to presedence."""
+  """Whether to remove spaces around an operator due to precedence."""
   if not tok.is_arithmetic_op or not tok.is_simple_expr:
     # Limit space removal to highest priority arithmetic operators
     return False
@@ -519,7 +519,7 @@ def IsSurroundedByBrackets(tok):
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 _BITWISE_OPERATORS = frozenset({'&', '|', '^'})
-_TERM_OPERATORS = frozenset({'*', '/', '%', '//', '@'})
+_ARITHMETIC_OPERATORS = frozenset({'+', '-', '*', '/', '%', '//', '@'})
 
 
 def _SplitPenalty(prev_token, cur_token):
@@ -568,9 +568,6 @@ def _SplitPenalty(prev_token, cur_token):
   if pval == ',':
     # Breaking after a comma is fine, if need be.
     return 0
-  if prev_token.is_binary_op:
-    # We would rather not split after an equality operator.
-    return split_penalty.CONNECTED
   if pval == '**' or cval == '**':
     return split_penalty.STRONGLY_CONNECTED
   if (format_token.Subtype.VARARGS_STAR in prev_token.subtypes or
@@ -596,6 +593,4 @@ def _SplitPenalty(prev_token, cur_token):
   if cur_token.ClosesScope():
     # Give a slight penalty for splitting before the closing scope.
     return 100
-  if pval in _TERM_OPERATORS or cval in _TERM_OPERATORS:
-    return 50
   return 0
