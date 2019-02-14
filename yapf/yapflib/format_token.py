@@ -342,18 +342,14 @@ class FormatToken(object):
   @property
   @py3compat.lru_cache()
   def is_multiline_string(self):
-    """A multiline string."""
-    if py3compat.PY3:
-      prefix = '('
-      prefix += 'r|u|R|U|f|F|fr|Fr|fR|FR|rf|rF|Rf|RF'  # strings
-      prefix += '|b|B|br|Br|bR|BR|rb|rB|Rb|RB'  # bytes
-      prefix += ')?'
-    else:
-      prefix = '[uUbB]?[rR]?'
+    """Test if this string is a multiline string.
 
-    regex = r'^{prefix}(?P<delim>"""|\'\'\').*(?P=delim)$'.format(prefix=prefix)
-    return (self.is_string and
-            re.match(regex, self.value, re.DOTALL) is not None)
+    Returns:
+      A multiline string always ends with triple quotes, so if it is a string 
+      token, inspect the last 3 characters and return True if it is a triple
+      double or triple single quote mark.
+    """
+    return self.is_string and self.value.endswith(('"""', "'''"))
 
   @property
   @py3compat.lru_cache()
