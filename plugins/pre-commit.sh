@@ -21,8 +21,10 @@
 # is used.
 
 # Find all staged Python files, and exit early if there aren't any.
-PYTHON_FILES=$(git diff --name-only --cached --diff-filter=AM | grep --color=never '.py$')
-if [ -z "${PYTHON_FILES}" ]; then
+PYTHON_FILES=()
+while IFS=$'\n' read -r line; do PYTHON_FILES+=("$line"); done \
+  < <(git diff --name-only --cached --diff-filter=AM | grep --color=never '.py$')
+if [ ${#PYTHON_FILES[@]} -eq 0 ]; then
   exit 0
 fi
 
@@ -45,8 +47,10 @@ fi
 
 
 # Check for unstaged changes to files in the index.
-CHANGED_FILES=$(git diff --name-only "${PYTHON_FILES[@]}")
-if [ -n "${CHANGED_FILES}" ]; then
+CHANGED_FILES=()
+while IFS=$'\n' read -r line; do CHANGED_FILES+=("$line"); done \
+  < <(git diff --name-only "${PYTHON_FILES[@]}")
+if [ ${#CHANGED_FILES[@]} -gt 0 ]; then
   echo 'You have unstaged changes to some files in your commit; skipping '
   echo 'auto-format. Please stage, stash, or revert these changes. You may '
   echo 'find `git stash -k` helpful here.'
@@ -67,8 +71,10 @@ yapf -i -r "${PYTHON_FILES[@]}"
 ###### END PIPENV VERSION ##########
 
 
-CHANGED_FILES=$(git diff --name-only "${PYTHON_FILES[@]}")
-if [ -n "${CHANGED_FILES}" ]; then
+CHANGED_FILES=()
+while IFS=$'\n' read -r line; do CHANGED_FILES+=("$line"); done \
+  < <(git diff --name-only "${PYTHON_FILES[@]}")
+if [ ${#CHANGED_FILES[@]} -gt 0 ]; then
   echo 'Reformatted staged files. Please review and stage the changes.'
   echo 'Files updated: ' "${CHANGED_FILES[@]}"
   exit 1
