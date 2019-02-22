@@ -746,6 +746,31 @@ Can I Use YAPF In My Program?
 Please do! YAPF was designed to be used as a library as well as a command line
 tool. This means that a tool or IDE plugin is free to use YAPF.
 
+-----------------------------------------
+I still get non Pep8 compliant code! Why?
+-----------------------------------------
+
+YAPF tries very hard to be fully PEP 8 compliant. However, it is paramount
+to not risk altering the semantics of your code. Thus, YAPF tries to be as 
+safe as possible and does not change the token stream 
+(e.g., by adding parenthesis).
+All these cases however, can be easily fixed manually. For instance,
+
+.. code-block:: python
+
+    from my_package import my_function_1, my_function_2, my_function_3, my_function_4, my_function_5
+
+    FOO = my_variable_1 + my_variable_2 + my_variable_3 + my_variable_4 + my_variable_5 + my_variable_6 + my_variable_7 + my_variable_8
+
+won't be split, but you can easily get it right by just adding parenthesis:
+
+.. code-block:: python
+
+    from my_package import (my_function_1, my_function_2, my_function_3,
+                            my_function_4, my_function_5)
+
+    FOO = (my_variable_1 + my_variable_2 + my_variable_3 + my_variable_4 +
+           my_variable_5 + my_variable_6 + my_variable_7 + my_variable_8)
 
 Gory Details
 ============
