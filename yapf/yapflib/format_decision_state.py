@@ -359,6 +359,11 @@ class FormatDecisionState(object):
             # assigns.
             return False
 
+          # Don't split if not required
+          if (not style.Get('SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN') and
+              not style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')):
+            return False
+
           column = self.column - self.stack[-1].last_space
           return column > style.Get('CONTINUATION_INDENT_WIDTH')
 
@@ -412,12 +417,14 @@ class FormatDecisionState(object):
     pprevious = previous.previous_token
     if (current.is_name and pprevious and pprevious.is_name and
         previous.value == '('):
+
       if (not self._FitsOnLine(previous, previous.matching_bracket) and
           _IsFunctionCallWithArguments(current)):
         # There is a function call, with more than 1 argument, where the first
-        # argument is itself a function call with arguments.  In this specific
-        # case, if we split after the first argument's opening '(', then the
-        # formatting will look bad for the rest of the arguments. E.g.:
+        # argument is itself a function call with arguments that does not fit
+        # into the line.  In this specific case, if we split after the first
+        # argument's opening '(', then the formatting will look bad for the
+        # rest of the arguments. E.g.:
         #
         #     outer_function_call(inner_function_call(
         #         inner_arg1, inner_arg2),
@@ -425,7 +432,31 @@ class FormatDecisionState(object):
         #
         # Instead, enforce a split before that argument to keep things looking
         # good.
-        return True
+        if (style.Get('SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN') or
+            style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')):
+          return True
+
+        opening = _GetOpeningBracket(current)
+        if (opening and opening.value == '(' and opening.previous_token and
+            (opening.previous_token.is_name or
+             opening.previous_token.value in {'*', '**'})):
+          is_func_call = False
+          opening = current
+          while opening:
+            if opening.value == '(':
+              is_func_call = True
+              break
+            if (not (opening.is_name or opening.value in {'*', '**'}) and
+                opening.value != '.'):
+              break
+            opening = opening.next_token
+
+          if is_func_call:
+            if (not self._FitsOnLine(current, opening.matching_bracket) or
+                (opening.matching_bracket.next_token and
+                 opening.matching_bracket.next_token.value != ',' and
+                 not opening.matching_bracket.next_token.ClosesScope())):
+              return True
 
     if (previous.OpensScope() and not current.OpensScope() and
         not current.is_comment and

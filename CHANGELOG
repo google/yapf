@@ -11,6 +11,9 @@
 - Parse integer lists correctly, removing quotes if the list is within a
   string.
 - Adjust the penalties of bitwise operands for '&' and '^', similar to '|'.
+- Avoid splitting after opening parens if SPLIT_BEFORE_FIRST_ARGUMENT is set
+  to False.
+- Adjust default SPLIT_PENALTY_AFTER_OPENING_BRACKET.
 
 ## [0.26.0] 2019-02-08
 ### Added
@@ -20,7 +23,7 @@
   if they have higher precedence than other operators in the same expression.
 ### Changed
 - `SPACES_BEFORE_COMMENT` can now be assigned to a specific value (standard
-  behavior) or a list of column values. When assigned to a list, trailing 
+  behavior) or a list of column values. When assigned to a list, trailing
   comments will be horizontally aligned to the first column value within
   the list that is greater than the maximum line length in the block.
 - Don't modify the vertical spacing of a line that has a comment "pylint:
