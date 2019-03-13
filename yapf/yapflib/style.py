@@ -125,8 +125,6 @@ _STYLE_HELP = dict(
       - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
         (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
         alignment.
-      - LESS: Slightly left if cannot vertically align continuation lines with
-        indent characters.
       - VALIGN-RIGHT: Vertically align continuation lines with indent
         characters. Slightly right (one more indent character) if cannot
         vertically align continuation lines with indent characters.
