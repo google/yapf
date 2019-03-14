@@ -11,6 +11,7 @@
 - Parse integer lists correctly, removing quotes if the list is within a
   string.
 - Adjust the penalties of bitwise operands for '&' and '^', similar to '|'.
+- Re-enable removal of extra lines on the boundaries of formatted regions.
 
 ## [0.26.0] 2019-02-08
 ### Added
