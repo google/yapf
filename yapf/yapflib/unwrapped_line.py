@@ -526,6 +526,7 @@ def _SplitPenalty(prev_token, cur_token):
   """Return the penalty for breaking the line before the current token."""
   pval = prev_token.value
   cval = cur_token.value
+
   if pval == 'not':
     return split_penalty.UNBREAKABLE
 
@@ -567,6 +568,11 @@ def _SplitPenalty(prev_token, cur_token):
     return style.Get('SPLIT_PENALTY_AFTER_UNARY_OPERATOR')
   if pval == ',':
     # Breaking after a comma is fine, if need be.
+    # But slightly prefer split before named assign
+    if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes or
+        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in
+        cur_token.subtypes):
+      return -30
     return 0
   if pval == '**' or cval == '**':
     return split_penalty.STRONGLY_CONNECTED
