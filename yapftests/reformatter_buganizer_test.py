@@ -1546,7 +1546,7 @@ class _():
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: pep8, split_penalty_import_names: 35}'))
+              '{based_on_style: pep8, split_penalty_import_names: 350}'))
       unformatted_code = textwrap.dedent("""\
           from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
                                                                      long_argument_2)
@@ -2193,8 +2193,8 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
             })
         """)
     expected_formatted_code = textwrap.dedent("""\
-        shelf_renderer.expand_text = text.translate_to_unicode(
-            expand_text % {'creator': creator})
+        shelf_renderer.expand_text = text.translate_to_unicode(expand_text %
+                                                               {'creator': creator})
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))

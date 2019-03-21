@@ -202,7 +202,7 @@ _STYLE_HELP = dict(
       alignment column values; trailing comments within a block will
       be aligned to the first column value that is greater than the maximum
       line length within the block). For example:
-      
+
       With spaces_before_comment=5:
 
         1 + 1 # Adding values
@@ -377,7 +377,7 @@ def CreatePEP8Style():
       SPLIT_BEFORE_LOGICAL_OPERATOR=True,
       SPLIT_BEFORE_NAMED_ASSIGNS=True,
       SPLIT_COMPLEX_COMPREHENSION=False,
-      SPLIT_PENALTY_AFTER_OPENING_BRACKET=30,
+      SPLIT_PENALTY_AFTER_OPENING_BRACKET=300,
       SPLIT_PENALTY_AFTER_UNARY_OPERATOR=10000,
       SPLIT_PENALTY_ARITHMETIC_OPERATOR=300,
       SPLIT_PENALTY_BEFORE_IF_EXPR=0,
