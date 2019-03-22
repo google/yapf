@@ -190,8 +190,10 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx
                 or yyyyyyyyyyyyyyyyy):
             pass
-        elif (xxxxxxxxxxxxxxx(
-                aaaaaaaaaaa, bbbbbbbbbbbbbb, cccccccccccc, dddddddddd=None)):
+        elif (xxxxxxxxxxxxxxx(aaaaaaaaaaa,
+                              bbbbbbbbbbbbbb,
+                              cccccccccccc,
+                              dddddddddd=None)):
             pass
 
 

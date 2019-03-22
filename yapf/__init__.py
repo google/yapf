@@ -195,9 +195,9 @@ def main(argv):
   exclude_patterns_from_ignore_file = file_resources.GetExcludePatternsForDir(
       os.getcwd())
 
-  files = file_resources.GetCommandLineFiles(
-      args.files, args.recursive,
-      (args.exclude or []) + exclude_patterns_from_ignore_file)
+  files = file_resources.GetCommandLineFiles(args.files, args.recursive,
+                                             (args.exclude or []) +
+                                             exclude_patterns_from_ignore_file)
   if not files:
     raise errors.YapfError('Input filenames did not match any python files')
 
