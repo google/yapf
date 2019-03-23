@@ -14,6 +14,7 @@
 - Avoid splitting after opening parens if SPLIT_BEFORE_FIRST_ARGUMENT is set
   to False.
 - Adjust default SPLIT_PENALTY_AFTER_OPENING_BRACKET.
+- Re-enable removal of extra lines on the boundaries of formatted regions.
 
 ## [0.26.0] 2019-02-08
 ### Added

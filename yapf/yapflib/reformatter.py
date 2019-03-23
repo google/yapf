@@ -114,12 +114,21 @@ def _RetainHorizontalSpacing(uwline):
 
 
 def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
+  if cur_uwline.disable and (not prev_uwline or prev_uwline.disable):
+    # If both lines are disabled we aren't allowed to reformat anything.
+    lines = set()
+
   prev_tok = None
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
   for cur_tok in cur_uwline.tokens:
     _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines)
+
     prev_tok = cur_tok
+    if cur_uwline.disable:
+      # After the first token we are acting on a single line. So if it is
+      # disabled we must not reformat.
+      lines = set()
 
 
 def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
@@ -151,8 +160,6 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
     pass
   elif lines and (cur_lineno in lines or prev_lineno in lines):
     desired_newlines = cur_tok.whitespace_prefix.count('\n')
-    if desired_newlines < required_newlines:
-      desired_newlines = required_newlines
     whitespace_lines = range(prev_lineno + 1, cur_lineno)
     deletable_lines = len(lines.intersection(whitespace_lines))
     required_newlines = max(required_newlines - deletable_lines,
