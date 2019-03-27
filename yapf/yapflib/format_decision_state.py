@@ -281,7 +281,8 @@ class FormatDecisionState(object):
             if not self._FitsOnLine(current, tok.matching_bracket):
               return True
 
-    if current.OpensScope() and previous.value == ',':
+    if (current.OpensScope() and previous.value == ',' and
+        format_token.Subtype.DICTIONARY_KEY not in current.next_token.subtypes):
       # If we have a list of tuples, then we can get a similar look as above. If
       # the full list cannot fit on the line, then we want a split.
       open_bracket = unwrapped_line.IsSurroundedByBrackets(current)

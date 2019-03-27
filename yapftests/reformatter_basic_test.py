@@ -2598,6 +2598,59 @@ x = [1, 2, 3, 4, 5, 6, 7,]
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testMultipleDictionariesInList(self):
+    unformatted_code = """\
+class A:
+    def b():
+        d = {
+            "123456": [
+                {
+                    "12": "aa"
+                },
+                {
+                    "12": "bb"
+                },
+                {
+                    "12": "cc",
+                    "1234567890": {
+                        "1234567": [{
+                            "12": "dd",
+                            "12345": "text 1"
+                        }, {
+                            "12": "ee",
+                            "12345": "text 2"
+                        }]
+                    }
+                }
+            ]
+        }
+"""
+    expected_formatted_code = """\
+class A:
+
+  def b():
+    d = {
+        "123456": [{
+            "12": "aa"
+        }, {
+            "12": "bb"
+        }, {
+            "12": "cc",
+            "1234567890": {
+                "1234567": [{
+                    "12": "dd",
+                    "12345": "text 1"
+                }, {
+                    "12": "ee",
+                    "12345": "text 2"
+                }]
+            }
+        }]
+    }
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

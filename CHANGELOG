@@ -15,6 +15,9 @@
   to False.
 - Adjust default SPLIT_PENALTY_AFTER_OPENING_BRACKET.
 - Re-enable removal of extra lines on the boundaries of formatted regions.
+- Adjust list splitting to avoid splitting before a dictionary element, because
+  those are likely to be split anyway. If we do split, it leads to horrible
+  looking code.
 
 ## [0.26.0] 2019-02-08
 ### Added
