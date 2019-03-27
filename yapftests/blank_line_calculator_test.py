@@ -380,6 +380,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         """)
     code, changed = yapf_api.FormatCode(unformatted_code, lines=[(5, 9)])
     self.assertCodeEqual(expected_formatted_code, code)
+    self.assertTrue(changed)
 
   def testLinesRangeRemoveSome(self):
     unformatted_code = textwrap.dedent(u"""\

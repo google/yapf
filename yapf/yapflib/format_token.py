@@ -89,6 +89,7 @@ class FormatToken(object):
   the code.
 
   Attributes:
+    node: The PyTree node this token represents.
     next_token: The token in the unwrapped line after this token or None if this
       is the last token in the unwrapped line.
     previous_token: The token in the unwrapped line before this token or None if
@@ -345,7 +346,7 @@ class FormatToken(object):
     """Test if this string is a multiline string.
 
     Returns:
-      A multiline string always ends with triple quotes, so if it is a string 
+      A multiline string always ends with triple quotes, so if it is a string
       token, inspect the last 3 characters and return True if it is a triple
       double or triple single quote mark.
     """

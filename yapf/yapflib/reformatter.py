@@ -114,6 +114,7 @@ def _RetainHorizontalSpacing(uwline):
 
 
 def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
+  """Retain all vertical spacing between lines."""
   if cur_uwline.disable and (not prev_uwline or prev_uwline.disable):
     # If both lines are disabled we aren't allowed to reformat anything.
     lines = set()
