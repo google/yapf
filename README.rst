@@ -23,14 +23,15 @@ are made to remove lint errors from code. This has some obvious limitations.
 For instance, code that conforms to the PEP 8 guidelines may not be
 reformatted.  But it doesn't mean that the code looks good.
 
-YAPF takes a different approach. It's based off of 'clang-format', developed by
-Daniel Jasper. In essence, the algorithm takes the code and reformats it to the
-best formatting that conforms to the style guide, even if the original code
-didn't violate the style guide. The idea is also similar to the 'gofmt' tool for
-the Go programming language: end all holy wars about formatting - if the whole
-codebase of a project is simply piped through YAPF whenever modifications are
-made, the style remains consistent throughout the project and there's no point
-arguing about style in every code review.
+YAPF takes a different approach. It's based off of `'clang-format' <https://cl
+ang.llvm.org/docs/ClangFormat.html>`_, developed by Daniel Jasper. In essence,
+the algorithm takes the code and reformats it to the best formatting that
+conforms to the style guide, even if the original code didn't violate the
+style guide. The idea is also similar to the `'gofmt' <https://golang.org/cmd/
+gofmt/>`_ tool for the Go programming language: end all holy wars about
+formatting - if the whole codebase of a project is simply piped through YAPF
+whenever modifications are made, the style remains consistent throughout the
+project and there's no point arguing about style in every code review.
 
 The ultimate goal is that the code YAPF produces is as good as the code that a
 programmer would write if they were following the style guide. It takes away
@@ -140,8 +141,8 @@ has been YAPF-formatted.
 Excluding files from formatting (.yapfignore)
 ---------------------------------------------
 
-In addition to exclude patterns provided on commandline, YAPF looks for additional 
-patterns specified in a file named ``.yapfignore`` located in the working directory from 
+In addition to exclude patterns provided on commandline, YAPF looks for additional
+patterns specified in a file named ``.yapfignore`` located in the working directory from
 which YAPF is invoked.
 
 
@@ -182,11 +183,12 @@ indentations.
 YAPF will search for the formatting style in the following manner:
 
 1. Specified on the command line
-2. In the `[style]` section of a `.style.yapf` file in either the current
+2. In the ``[style]`` section of a ``.style.yapf`` file in either the current
    directory or one of its parent directories.
-3. In the `[yapf]` section of a `setup.cfg` file in either the current
+3. In the ``[yapf]`` section of a ``setup.cfg`` file in either the current
    directory or one of its parent directories.
-4. In the `~/.config/yapf/style` file in your home directory.
+4. In the ``[style]`` section of a ``~/.config/yapf/style`` file in your home
+   directory.
 
 If none of those files are found, the default style is used (PEP8).
 
@@ -296,7 +298,7 @@ the diff, the default is ``<unknown>``.
     >>> FormatFile("foo.py")
     ('a == b\n', 'utf-8')
 
-The ``in-place`` argument saves the reformatted code back to the file:
+The ``in_place`` argument saves the reformatted code back to the file:
 
 .. code-block:: python
 
@@ -415,13 +417,14 @@ Knobs
 ``CONTINUATION_ALIGN_STYLE``
     The style for continuation alignment. Possible values are:
 
-    - SPACE: Use spaces for continuation alignment. This is default behavior.
-    - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
+    - ``SPACE``: Use spaces for continuation alignment. This is default
+      behavior.
+    - ``FIXED``: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
       (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
       alignment.
-    - VALIGN-RIGHT: Vertically align continuation lines with indent characters.
-      Slightly right (one more indent character) if cannot vertically align
-      continuation lines with indent characters.
+    - ``VALIGN-RIGHT``: Vertically align continuation lines with indent
+      characters. Slightly right (one more indent character) if cannot
+      vertically align continuation lines with indent characters.
 
       For options ``FIXED``, and ``VALIGN-RIGHT`` are only available when
       ``USE_TABS`` is enabled.
@@ -495,7 +498,7 @@ Knobs
 
         1 + 2 * 3 - 4 / 5
 
-    will be formatted as follows when configured with ``*,/``:
+    will be formatted as follows when configured with ``*``, ``/``:
 
     .. code-block:: python
 
@@ -515,42 +518,42 @@ Knobs
     alignment column values; trailing comments within a block will
     be aligned to the first column value that is greater than the maximum
     line length within the block). For example:
-    
-    With spaces_before_comment=5:
-    
+
+    With ``spaces_before_comment=5``:
+
     .. code-block:: python
-    
+
         1 + 1 # Adding values
-    
+
     will be formatted as:
-    
+
     .. code-block:: python
-    
+
         1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
-    
-    With spaces_before_comment=15, 20:
-    
+
+    With ``spaces_before_comment=15, 20``:
+
     .. code-block:: python
-    
+
         1 + 1 # Adding values
         two + two # More adding
-    
+
         longer_statement # This is a longer statement
         short # This is a shorter statement
-    
+
         a_very_long_statement_that_extends_beyond_the_final_column # Comment
         short # This is a shorter statement
-    
+
     will be formatted as:
-    
+
     .. code-block:: python
-    
+
         1 + 1          # Adding values <-- end of line comments in block aligned to col 15
         two + two      # More adding
-    
+
         longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
         short               # This is a shorter statement
-    
+
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
 
@@ -561,19 +564,21 @@ Knobs
     Split before arguments if the argument list is terminated by a comma.
 
 ``SPLIT_ALL_COMMA_SEPARATED_VALUES``
-    If a comma separated list (dict, list, tuple, or function def) is on a
-    line that is too long, split such that all elements are on a single line.
+    If a comma separated list (``dict``, ``list``, ``tuple``, or function
+    ``def``) is on a line that is too long, split such that all elements
+    are on a single line.
 
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
-    Set to True to prefer splitting before '&', '|' or '^' rather than after.
+    Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
+    than after.
 
 ``SPLIT_BEFORE_ARITHMETIC_OPERATOR``
-    Set to True to prefer splitting before '+', '-', '*', '/', '//', or '@'
-    rather than after.
+    Set to ``True`` to prefer splitting before ``+``, ``-``, ``*``, ``/``, ``//``,
+    or ``@`` rather than after.
 
 ``SPLIT_BEFORE_CLOSING_BRACKET``
-    Split before the closing bracket if a list or dict literal doesn't fit on
-    a single line.
+    Split before the closing bracket if a ``list`` or ``dict`` literal doesn't
+    fit on a single line.
 
 ``SPLIT_BEFORE_DICT_SET_GENERATOR``
     Split before a dictionary or set generator (comp_for). For example, note
@@ -587,7 +592,7 @@ Knobs
         }
 
 ``SPLIT_BEFORE_DOT``
-    Split before the '.' if we need to split a longer expression:
+    Split before the ``.`` if we need to split a longer expression:
 
     .. code-block:: python
 
@@ -617,8 +622,8 @@ Knobs
 
 ``SPLIT_COMPLEX_COMPREHENSION``
     For list comprehensions and generator expressions with multiple clauses
-    (e.g multiple "for" calls, "if" filter expressions) and which need to be
-    reflowed, split each clause onto its own line. For example:
+    (e.g multiple ``for`` calls, ``if`` filter expressions) and which need to
+    be reflowed, split each clause onto its own line. For example:
 
     .. code-block:: python
 
@@ -751,8 +756,8 @@ I still get non Pep8 compliant code! Why?
 -----------------------------------------
 
 YAPF tries very hard to be fully PEP 8 compliant. However, it is paramount
-to not risk altering the semantics of your code. Thus, YAPF tries to be as 
-safe as possible and does not change the token stream 
+to not risk altering the semantics of your code. Thus, YAPF tries to be as
+safe as possible and does not change the token stream
 (e.g., by adding parenthesis).
 All these cases however, can be easily fixed manually. For instance,
 
