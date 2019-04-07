@@ -1172,8 +1172,8 @@ class _():
         class _():
 
           def __repr__(self):
-            return '<session %s on %s>' % (self._id,
-                                           self._stub._stub.rpc_channel().target())  # pylint:disable=protected-access
+            return '<session %s on %s>' % (
+                self._id, self._stub._stub.rpc_channel().target())  # pylint:disable=protected-access
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

@@ -24,6 +24,8 @@
   unreadable formatting, where the remaining arguments were indented far more
   than the dictionary. Fixed so that if the dictionary is the first argument in
   a function call and doesn't fit on a single line, then it forces a split.
+- Improve the connectiveness between items in a list. This prevents random
+  splitting when it's not 100% necessary.
 
 ## [0.26.0] 2019-02-08
 ### Added

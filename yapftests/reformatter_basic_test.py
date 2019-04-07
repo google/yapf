@@ -1346,7 +1346,7 @@ s = 'foo \\
                 return True
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testDictSetGenerator(self):
     code = textwrap.dedent("""\
@@ -1896,8 +1896,8 @@ class A(object):
               if True:
                 if True:
                   if True:
-                    boxes[id_] = np.concatenate((points.min(axis=0),
-                                                 qoints.max(axis=0)))
+                    boxes[id_] = np.concatenate(
+                        (points.min(axis=0), qoints.max(axis=0)))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -2202,7 +2202,7 @@ class A(object):
              not True)
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testNamedAssignNotAtEndOfLine(self):
     unformatted_code = textwrap.dedent("""\
@@ -2220,7 +2220,7 @@ class A(object):
               pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testBlankLineBeforeClassDocstring(self):
     unformatted_code = textwrap.dedent('''\
@@ -2245,7 +2245,7 @@ class A(object):
             pass
         ''')
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
     try:
       style.SetGlobalStyle(
@@ -2301,7 +2301,7 @@ class A(object):
           pass
         ''')
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
     try:
       style.SetGlobalStyle(
@@ -2346,7 +2346,7 @@ class A(object):
               ('a string that may be too long %s' % 'M15'))
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testSubscriptExpression(self):
     code = textwrap.dedent("""\
@@ -2380,7 +2380,7 @@ class A(object):
           ]
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testEllipses(self):
     unformatted_code = textwrap.dedent("""\
@@ -2392,7 +2392,7 @@ class A(object):
         Y = X if ... else X
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testPseudoParens(self):
     unformatted_code = """\
@@ -2410,7 +2410,7 @@ my_dict = {
 }
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
   def testSplittingBeforeFirstArgumentOnFunctionCall(self):
     """Tests split_before_first_argument on a function call."""

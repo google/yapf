@@ -477,6 +477,20 @@ def _():
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testListSplitting(self):
+    unformatted_code = """\
+foo([(1,1), (1,1), (1,1), (1,1), (1,1), (1,1), (1,1),
+     (1,1), (1,1), (1,1), (1,1), (1,1), (1,1), (1,1),
+     (1,10), (1,11), (1, 10), (1,11), (10,11)])
+"""
+    expected_code = """\
+foo([(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+     (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 10), (1, 11), (1, 10),
+     (1, 11), (10, 11)])
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

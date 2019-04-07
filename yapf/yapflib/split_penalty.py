@@ -31,6 +31,7 @@ DOTTED_NAME = 4000
 VERY_STRONGLY_CONNECTED = 3500
 STRONGLY_CONNECTED = 3000
 CONNECTED = 500
+TOGETHER = 100
 
 OR_TEST = 1000
 AND_TEST = 1100
@@ -481,7 +482,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         prev_was_comma = True
       else:
         if prev_was_comma:
-          _SetSplitPenalty(pytree_utils.FirstLeafNode(child), 0)
+          _SetSplitPenalty(pytree_utils.FirstLeafNode(child), TOGETHER)
         prev_was_comma = False
 
   ############################################################################
