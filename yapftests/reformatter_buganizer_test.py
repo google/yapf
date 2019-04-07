@@ -28,6 +28,29 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB124415889(self):
+    code = """\
+class _():
+
+  def run_queue_scanners():
+    return xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
+        {
+            components.NAME.FNOR: True,
+            components.NAME.DEVO: True,
+        },
+        default=False)
+
+  def modules_to_install():
+    modules = DeepCopy(GetDef({}))
+    modules.update({
+        'xxxxxxxxxxxxxxxxxxxx':
+            GetDef('zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz', None),
+    })
+    return modules
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB73166511(self):
     code = """\
 def _():

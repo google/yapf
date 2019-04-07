@@ -416,6 +416,24 @@ class FormatDecisionState(object):
             return True
 
     pprevious = previous.previous_token
+
+    # A function call with a dictionary as its first argument may result in
+    # unreadable formatting if the dictionary spans multiple lines. The
+    # dictionary itself is formatted just fine, but the remaning arguments are
+    # indented too far:
+    #
+    #     function_call({
+    #         KEY_1: 'value one',
+    #         KEY_2: 'value two',
+    #     },
+    #                   default=False)
+    if (current.value == '{' and previous.value == '(' and pprevious and
+        pprevious.is_name):
+      dict_end = current.matching_bracket
+      next_token = dict_end.next_token
+      if next_token.value == ',' and not self._FitsOnLine(current, dict_end):
+        return True
+
     if (current.is_name and pprevious and pprevious.is_name and
         previous.value == '('):
 

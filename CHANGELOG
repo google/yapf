@@ -20,6 +20,10 @@
 - Adjust list splitting to avoid splitting before a dictionary element, because
   those are likely to be split anyway. If we do split, it leads to horrible
   looking code.
+- Dictionary arguments were broken in a recent version. It resulted in
+  unreadable formatting, where the remaining arguments were indented far more
+  than the dictionary. Fixed so that if the dictionary is the first argument in
+  a function call and doesn't fit on a single line, then it forces a split.
 
 ## [0.26.0] 2019-02-08
 ### Added
