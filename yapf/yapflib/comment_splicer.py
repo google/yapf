@@ -152,6 +152,16 @@ def SpliceComments(tree):
                 # parent to insert into. See comments above
                 # _STANDALONE_LINE_NODES for more details.
                 node_with_line_parent = _FindNodeWithStandaloneLineParent(child)
+
+                if pytree_utils.NodeName(
+                    node_with_line_parent.parent) in {'funcdef', 'classdef'}:
+                  # Keep a comment that's not attached to a function or class
+                  # next to the object it is attached to.
+                  comment_end = (
+                      comment_lineno + comment_prefix.rstrip('\n').count('\n'))
+                  if comment_end < node_with_line_parent.lineno - 1:
+                    node_with_line_parent = node_with_line_parent.parent
+
                 pytree_utils.InsertNodesBefore(
                     _CreateCommentsFromPrefix(
                         comment_prefix, comment_lineno, 0, standalone=True),

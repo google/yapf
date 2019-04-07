@@ -28,6 +28,19 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB122541552(self):
+    code = """\
+# pylint: disable=g-explicit-bool-comparison,singleton-comparison
+_QUERY = account.Account.query(account.Account.enabled == True)
+# pylint: enable=g-explicit-bool-comparison,singleton-comparison
+
+
+def _():
+  pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB124415889(self):
     code = """\
 class _():

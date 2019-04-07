@@ -31,6 +31,7 @@ from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 from yapftests import utils
+from yapftests import yapf_test_helper
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
@@ -38,12 +39,12 @@ ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 
-class FormatCodeTest(unittest.TestCase):
+class FormatCodeTest(yapf_test_helper.YAPFTest):
 
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
         unformatted_code, style_config='chromium')
-    self.assertEqual(expected_formatted_code, formatted_code)
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
@@ -1461,7 +1462,7 @@ class DiffIndentTest(unittest.TestCase):
     self._Check(unformatted_code, expected_formatted_code)
 
 
-class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
+class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
   @staticmethod
   def _OwnStyle():
@@ -1476,7 +1477,7 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
         unformatted_code, style_config=style.SetGlobalStyle(self._OwnStyle()))
-    self.assertEqual(expected_formatted_code, formatted_code)
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
@@ -1543,7 +1544,7 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
         func(2) # Line 2
         # Line 3
         func(3)                             # Line 4
-                                        # Line 5 - SpliceComments makes this a new block
+                                        # Line 5
                                     # Line 6
 
         def Func():
@@ -1554,9 +1555,8 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
         func(2)       # Line 2
                       # Line 3
         func(3)       # Line 4
-
-        # Line 5 - SpliceComments makes this a new block
-        # Line 6
+                      # Line 5
+                      # Line 6
 
 
         def Func():

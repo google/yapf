@@ -26,6 +26,8 @@
   a function call and doesn't fit on a single line, then it forces a split.
 - Improve the connectiveness between items in a list. This prevents random
   splitting when it's not 100% necessary.
+- Don't remove a comment attached to a previous object just because it's part
+  of the "prefix" of a function/class node.
 
 ## [0.26.0] 2019-02-08
 ### Added
