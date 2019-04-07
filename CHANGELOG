@@ -7,6 +7,8 @@
 - `SPLIT_BEFORE_ARITHMETIC_OPERATOR` splits before an arithmetic operator when
   set. `SPLIT_PENALTY_ARITHMETIC_OPERATOR` allows you to set the split penalty
   around arithmetic operators.
+### Changed
+- Catch lib2to3's "TokenError" exception and output a nicer message.
 ### Fixed
 - Parse integer lists correctly, removing quotes if the list is within a
   string.

@@ -24,6 +24,8 @@ import tempfile
 import textwrap
 import unittest
 
+from lib2to3.pgen2 import tokenize
+
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
@@ -1427,6 +1429,10 @@ class BadInputTest(unittest.TestCase):
   def testBadSyntax(self):
     code = '  a = 1\n'
     self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
+
+  def testBadCode(self):
+    code = 'x = """hello\n'
+    self.assertRaises(tokenize.TokenError, yapf_api.FormatCode, code)
 
 
 class DiffIndentTest(unittest.TestCase):

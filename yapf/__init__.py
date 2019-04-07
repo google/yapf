@@ -32,6 +32,8 @@ import logging
 import os
 import sys
 
+from lib2to3.pgen2 import tokenize
+
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
@@ -182,12 +184,17 @@ def main(argv):
 
     source = [line.rstrip() for line in original_source]
     source[0] = py3compat.removeBOM(source[0])
-    reformatted_source, _ = yapf_api.FormatCode(
-        py3compat.unicode('\n'.join(source) + '\n'),
-        filename='<stdin>',
-        style_config=style_config,
-        lines=lines,
-        verify=args.verify)
+
+    try:
+      reformatted_source, _ = yapf_api.FormatCode(
+          py3compat.unicode('\n'.join(source) + '\n'),
+          filename='<stdin>',
+          style_config=style_config,
+          lines=lines,
+          verify=args.verify)
+    except tokenize.TokenError as e:
+      raise errors.YapfError('%s:%s' % (e.args[1][0], e.args[0]))
+
     file_resources.WriteReformattedCode('<stdout>', reformatted_source)
     return 0
 
@@ -291,6 +298,8 @@ def _FormatFile(filename,
       file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
                                           in_place)
     return has_change
+  except tokenize.TokenError as e:
+    raise errors.YapfError('%s:%s:%s' % (filename, e.args[1][0], e.args[0]))
   except SyntaxError as e:
     e.filename = filename
     raise
