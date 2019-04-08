@@ -396,6 +396,7 @@ def CreateGoogleStyle():
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['COLUMN_LIMIT'] = 80
+  style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 4
   style['I18N_COMMENT'] = r'#\..*'
   style['I18N_FUNCTION_CALL'] = ['N_', '_']

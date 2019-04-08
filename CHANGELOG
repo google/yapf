@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.28.0] UNRELEASED
+### Changed
+- Set `INDENT_DICTIONARY_VALUE` for Google style.
+
 ## [0.27.0] 2019-04-07
 ### Added
 - `SPLIT_BEFORE_ARITHMETIC_OPERATOR` splits before an arithmetic operator when
