@@ -491,6 +491,47 @@ foo([(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testNoBlankLineBeforeNestedFuncOrClass(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, '
+              'blank_line_before_nested_class_or_def: false}'))
+
+      unformatted_code = '''\
+def normal_function():
+    """Return the nested function."""
+
+    def nested_function():
+        """Do nothing just nest within."""
+
+        @nested(klass)
+        class nested_class():
+            pass
+
+        pass
+
+    return nested_function
+'''
+      expected_formatted_code = '''\
+def normal_function():
+    """Return the nested function."""
+    def nested_function():
+        """Do nothing just nest within."""
+        @nested(klass)
+        class nested_class():
+            pass
+
+        pass
+
+    return nested_function
+'''
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
 
 if __name__ == '__main__':
   unittest.main()
