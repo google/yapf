@@ -176,6 +176,20 @@ class FormatDecisionState(object):
     if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
       return True
 
+    if style.Get(
+        'SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES') and previous.value == ',':
+      # Avoid breaking in a container that fits in the current line if possible
+      opening = _GetOpeningBracket(current)
+
+      # Can't find opening bracket, behave the same way as
+      # SPLIT_ALL_COMMA_SEPARATED_VALUES
+      if not opening:
+        return True
+
+      matching_bracket = opening.matching_bracket
+      # If the container doesn't fit in the current line, must split
+      return not self._ContainerFitsOnStartLine(opening)
+
     if (self.stack[-1].split_before_closing_bracket and
         current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET')):
       # Split before the closing bracket if we can.
@@ -370,10 +384,7 @@ class FormatDecisionState(object):
 
         opening = _GetOpeningBracket(current)
         if opening:
-          arglist_length = (
-              opening.matching_bracket.total_length - opening.total_length +
-              self.stack[-1].indent)
-          return arglist_length > self.column_limit
+          return not self._ContainerFitsOnStartLine(opening)
 
     if (current.value not in '{)' and previous.value == '(' and
         self._ArgumentListHasDictionaryEntry(current)):
@@ -934,6 +945,15 @@ class FormatDecisionState(object):
           token = token.matching_bracket
         token = token.next_token
     return False
+
+  def _ContainerFitsOnStartLine(self, opening):
+    """Check if the container can fit on its starting line.
+
+      Arguments:
+        opening: (FormatToken) The unwrapped line we're currently processing.
+    """
+    return (opening.matching_bracket.total_length - opening.total_length +
+            self.stack[-1].indent) <= self.column_limit
 
 
 _COMPOUND_STMTS = frozenset(
