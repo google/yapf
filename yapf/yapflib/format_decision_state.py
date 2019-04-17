@@ -186,7 +186,6 @@ class FormatDecisionState(object):
       if not opening:
         return True
 
-      matching_bracket = opening.matching_bracket
       # If the container doesn't fit in the current line, must split
       return not self._ContainerFitsOnStartLine(opening)
 

@@ -178,6 +178,18 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+    # Exercise the case where there's no opening bracket (for a, b)
+    unformatted_code = textwrap.dedent("""\
+          a, b = f(
+              a_very_long_parameter, yet_another_one, and_another)
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          a, b = f(
+              a_very_long_parameter, yet_another_one, and_another)
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testSimpleFunctionsWithTrailingComments(self):
     unformatted_code = textwrap.dedent("""\
         def g():  # Trailing comment
