@@ -5,7 +5,7 @@
 ## [0.27.1] UNRELEASED
 ### Added
 - New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
-  `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with comma
+  `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with a comma
   fits in its starting line, then the subexpression is not split (thus avoiding
   unnecessary splits).
 ### Changed
