@@ -3,6 +3,11 @@
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.27.1] UNRELEASED
+### Added
+- New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
+  `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with comma
+  fits in its starting line, then the subexpression is not split (thus avoiding
+  unnecessary splits).
 ### Changed
 - Set `INDENT_DICTIONARY_VALUE` for Google style.
 ### Fixed
