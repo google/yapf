@@ -568,6 +568,27 @@ Knobs
     ``def``) is on a line that is too long, split such that all elements
     are on a single line.
 
+``SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES``
+    Variation on ``SPLIT_ALL_COMMA_SEPARATED_VALUES`` in which, if a
+    subexpression with a comma fits in its starting line, then the
+    subexpression is not split. This avoids splits like the one for
+    ``b`` in this code:
+
+    .. code-block:: python
+
+    abcdef(
+        aReallyLongThing: int,
+        b: [Int,
+            Int])
+   
+    With the new knob this is split as:
+
+    .. code-block:: python
+
+    abcdef(
+        aReallyLongThing: int,
+        b: [Int, Int])
+
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
     than after.

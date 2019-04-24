@@ -43,6 +43,8 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
               "whatever": 120
           }
           """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
     unformatted_code = textwrap.dedent("""\
           def foo(long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args):
                 pass
@@ -74,6 +76,116 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
           """)
     expected_formatted_code = textwrap.dedent("""\
           foo_tuple = [short, arg]
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    # There is a test for split_all_top_level_comma_separated_values, with
+    # different expected value
+    unformatted_code = textwrap.dedent("""\
+          someLongFunction(this_is_a_very_long_parameter,
+              abc=(a, this_will_just_fit_xxxxxxx))
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          someLongFunction(
+              this_is_a_very_long_parameter,
+              abc=(a,
+                   this_will_just_fit_xxxxxxx))
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testSplittingTopLevelAllArgs(self):
+    style.SetGlobalStyle(
+        style.CreateStyleFromConfig(
+            '{split_all_top_level_comma_separated_values: true, column_limit: 40}'
+        ))
+    # Works the same way as split_all_comma_separated_values
+    unformatted_code = textwrap.dedent("""\
+          responseDict = {"timestamp": timestamp, "someValue":   value, "whatever": 120}
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          responseDict = {
+              "timestamp": timestamp,
+              "someValue": value,
+              "whatever": 120
+          }
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    # Works the same way as split_all_comma_separated_values
+    unformatted_code = textwrap.dedent("""\
+          def foo(long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args):
+                pass
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          def foo(long_arg,
+                  really_long_arg,
+                  really_really_long_arg,
+                  cant_keep_all_these_args):
+            pass
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    # Works the same way as split_all_comma_separated_values
+    unformatted_code = textwrap.dedent("""\
+          foo_tuple = [long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args]
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          foo_tuple = [
+              long_arg,
+              really_long_arg,
+              really_really_long_arg,
+              cant_keep_all_these_args
+          ]
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    # Works the same way as split_all_comma_separated_values
+    unformatted_code = textwrap.dedent("""\
+          foo_tuple = [short, arg]
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          foo_tuple = [short, arg]
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    # There is a test for split_all_comma_separated_values, with different
+    # expected value
+    unformatted_code = textwrap.dedent("""\
+          someLongFunction(this_is_a_very_long_parameter,
+              abc=(a, this_will_just_fit_xxxxxxx))
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          someLongFunction(
+              this_is_a_very_long_parameter,
+              abc=(a, this_will_just_fit_xxxxxxx))
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    actual_formatted_code = reformatter.Reformat(uwlines)
+    self.assertEqual(40, len(actual_formatted_code.splitlines()[-1]))
+    self.assertCodeEqual(expected_formatted_code, actual_formatted_code)
+
+    unformatted_code = textwrap.dedent("""\
+          someLongFunction(this_is_a_very_long_parameter,
+              abc=(a, this_will_not_fit_xxxxxxxxx))
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          someLongFunction(
+              this_is_a_very_long_parameter,
+              abc=(a,
+                   this_will_not_fit_xxxxxxxxx))
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    # Exercise the case where there's no opening bracket (for a, b)
+    unformatted_code = textwrap.dedent("""\
+          a, b = f(
+              a_very_long_parameter, yet_another_one, and_another)
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          a, b = f(
+              a_very_long_parameter, yet_another_one, and_another)
           """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
