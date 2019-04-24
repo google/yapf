@@ -566,8 +566,9 @@ Knobs
 
 ``SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES``
     Variation on ``SPLIT_ALL_COMMA_SEPARATED_VALUES`` in which, if a
-    subexpression with comma fits in its starting line, then the subexpression
-    is not split. This avoids splits like the one for ``b`` in this code:
+    subexpression with a comma fits in its starting line, then the
+    subexpression is not split. This avoids splits like the one for
+    ``b`` in this code:
 
     .. code-block:: python
 
