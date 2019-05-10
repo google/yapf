@@ -149,7 +149,7 @@ def main(argv):
         print('#', line and ' ' or '', line, sep='')
       option_value = style.Get(option)
       if isinstance(option_value, set) or isinstance(option_value, list):
-        option_value = ', '.join(option_value)
+        option_value = ', '.join(map(str, option_value))
       print(option.lower(), '=', option_value, sep='')
       print()
     return 0
