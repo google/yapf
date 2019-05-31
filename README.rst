@@ -575,19 +575,19 @@ Knobs
     ``b`` in this code:
 
     .. code-block:: python
-
-    abcdef(
-        aReallyLongThing: int,
-        b: [Int,
-            Int])
+      
+      abcdef(
+          aReallyLongThing: int,
+          b: [Int,
+              Int])
    
     With the new knob this is split as:
 
     .. code-block:: python
-
-    abcdef(
-        aReallyLongThing: int,
-        b: [Int, Int])
+      
+      abcdef(
+          aReallyLongThing: int,
+          b: [Int, Int])
 
 ``SPLIT_BEFORE_BITWISE_OPERATOR``
     Set to ``True`` to prefer splitting before ``&``, ``|`` or ``^`` rather
