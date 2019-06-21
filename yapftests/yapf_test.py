@@ -862,7 +862,6 @@ x = {
         expected_formatted_code,
         extra_options=['--lines', '1-1'])
 
-
   def testRetainingSemicolonsWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent("""\
         a = line_to_format
