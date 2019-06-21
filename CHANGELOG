@@ -13,6 +13,9 @@
 ### Fixed
 - `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False` wasn't honored because the
   number of newlines was erroneously calculated beforehand.
+- Lambda expressions shouldn't have an increased split penalty applied to the
+  'lambda' keyword. This prevents them from being properly formatted when they're
+  arguments to functions.
 
 ## [0.27.0] 2019-04-07
 ### Added

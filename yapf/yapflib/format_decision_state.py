@@ -950,7 +950,7 @@ class FormatDecisionState(object):
 
     Arguments:
       opening: (FormatToken) The unwrapped line we're currently processing.
-      
+
     Returns:
       True if the container fits on the start line.
     """

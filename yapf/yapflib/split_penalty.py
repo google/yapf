@@ -129,9 +129,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
             break
 
     if allow_multiline_lambdas:
-      _SetStronglyConnected(node)
+      _SetExpressionPenalty(node, STRONGLY_CONNECTED)
     else:
-      _SetVeryStronglyConnected(node)
+      _SetExpressionPenalty(node, VERY_STRONGLY_CONNECTED)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'

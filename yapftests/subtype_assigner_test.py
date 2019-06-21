@@ -159,7 +159,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          ('3', [format_token.Subtype.NONE]),
          (')', [format_token.Subtype.NONE]),
          ('>>', {format_token.Subtype.BINARY_OPERATOR}),
-         ('1', [format_token.Subtype.NONE]), ],
+         ('1', [format_token.Subtype.NONE]),],
     ])  # yapf: disable
 
   def testArithmeticOperators(self):
@@ -201,7 +201,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          (')', [format_token.Subtype.NONE]),
          ('//', {format_token.Subtype.BINARY_OPERATOR,
                  format_token.Subtype.M_EXPR_OPERATOR}),
-         ('1', [format_token.Subtype.NONE]), ],
+         ('1', [format_token.Subtype.NONE]),],
     ])  # yapf: disable
 
   def testSubscriptColon(self):
@@ -234,7 +234,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
          ('*', {format_token.Subtype.UNARY_OPERATOR,
                 format_token.Subtype.VARARGS_STAR}),
          ('b', [format_token.Subtype.NONE]),
-         (']', [format_token.Subtype.NONE]), ],
+         (']', [format_token.Subtype.NONE]),],
     ])  # yapf: disable
 
 

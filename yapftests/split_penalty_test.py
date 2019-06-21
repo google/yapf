@@ -139,7 +139,7 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
       """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
-        ('lambda', VERY_STRONGLY_CONNECTED),
+        ('lambda', None),
         ('a', VERY_STRONGLY_CONNECTED),
         (',', VERY_STRONGLY_CONNECTED),
         ('b', VERY_STRONGLY_CONNECTED),
@@ -180,7 +180,7 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
         (',', None),
         ('y', None),
         ('(', UNBREAKABLE),
-        ('lambda', VERY_STRONGLY_CONNECTED),
+        ('lambda', STRONGLY_CONNECTED),
         ('a', VERY_STRONGLY_CONNECTED),
         (':', VERY_STRONGLY_CONNECTED),
         ('23', VERY_STRONGLY_CONNECTED),
