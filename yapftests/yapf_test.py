@@ -840,6 +840,29 @@ class CommandLineTest(unittest.TestCase):
     self.assertYapfReformats(
         unformatted_code, unformatted_code, extra_options=['--lines', '2-2'])
 
+  def testVerticalSpacingWithCommentWithContinuationMarkers(self):
+    unformatted_code = """\
+# \\
+# \\
+# \\
+
+x = {
+}
+"""
+    expected_formatted_code = """\
+# \\
+# \\
+# \\
+
+x = {
+}
+"""
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1'])
+
+
   def testRetainingSemicolonsWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent("""\
         a = line_to_format

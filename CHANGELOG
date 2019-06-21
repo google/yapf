@@ -16,6 +16,7 @@
 - Lambda expressions shouldn't have an increased split penalty applied to the
   'lambda' keyword. This prevents them from being properly formatted when they're
   arguments to functions.
+- A comment with continuation markers (??) shouldn't mess with the lineno count.
 
 ## [0.27.0] 2019-04-07
 ### Added

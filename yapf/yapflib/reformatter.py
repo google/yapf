@@ -122,6 +122,7 @@ def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
   prev_tok = None
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
+
   for cur_tok in cur_uwline.tokens:
     _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines)
 
@@ -152,7 +153,7 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
   else:
     cur_lineno = cur_tok.lineno
 
-  if prev_tok.value.endswith('\\'):
+  if not prev_tok.is_comment and prev_tok.value.endswith('\\'):
     prev_lineno += prev_tok.value.count('\n')
 
   required_newlines = cur_lineno - prev_lineno
