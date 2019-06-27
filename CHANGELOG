@@ -17,6 +17,9 @@
   'lambda' keyword. This prevents them from being properly formatted when they're
   arguments to functions.
 - A comment with continuation markers (??) shouldn't mess with the lineno count.
+- Only emit unformatted if the "disable long line" is at the end of the line.
+  Otherwise we could mess up formatting for containers which have them
+  interspersed with code.
 
 ## [0.27.0] 2019-04-07
 ### Added

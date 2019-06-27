@@ -240,10 +240,7 @@ def _LineContainsI18n(uwline):
 
 def _LineContainsPylintDisableLineTooLong(uwline):
   """Return true if there is a "pylint: disable=line-too-long" comment."""
-  return any(
-      re.search(r'\bpylint:\s+disable=line-too-long\b', tok.value)
-      for tok in uwline.tokens
-      if tok.is_comment)
+  return re.search(r'\bpylint:\s+disable=line-too-long\b', uwline.last.value)
 
 
 def _LineHasContinuationMarkers(uwline):

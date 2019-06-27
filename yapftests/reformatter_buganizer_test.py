@@ -28,6 +28,19 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB132886019(self):
+    code = """\
+X = {
+    'some_dict_key':
+        frozenset([
+            # pylint: disable=line-too-long
+            '//this/path/is/really/too/long/for/this/line/and/probably/should/be/split',
+        ]),
+}
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB26521719(self):
     code = """\
 class _():
