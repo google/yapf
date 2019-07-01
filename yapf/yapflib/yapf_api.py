@@ -202,6 +202,12 @@ def ReadFile(filename, logger=None):
     if logger:
       logger(err)
     raise
+  except UnicodeDecodeError as err:  # pragma: no cover
+    if logger:
+      logger("Could not parse {}! Consider excluding this file with --exclude."
+             .format(filename))
+      logger(err)
+    raise
 
 
 def _SplitSemicolons(uwlines):
