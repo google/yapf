@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.27.1] UNRELEASED
+## [0.28.0] UNRELEASED
 ### Added
 - New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
   `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with a comma
@@ -20,6 +20,8 @@
 - Only emit unformatted if the "disable long line" is at the end of the line.
   Otherwise we could mess up formatting for containers which have them
   interspersed with code.
+- Fix a potential race condition by using the correct style for opening a file
+  which may not exist.
 
 ## [0.27.0] 2019-04-07
 ### Added

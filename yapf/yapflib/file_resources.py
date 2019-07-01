@@ -86,8 +86,12 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
 
     # See if we have a setup.cfg file with a '[yapf]' section.
     config_file = os.path.join(dirname, style.SETUP_CONFIG)
-    if os.path.exists(config_file):
-      with open(config_file) as fd:
+    try:
+      fd = open(config_file)
+    except IOError:
+      pass  # It's okay if it's not there.
+    else:
+      with fd:
         config = py3compat.ConfigParser()
         config.read_file(fd)
         if config.has_section('yapf'):
