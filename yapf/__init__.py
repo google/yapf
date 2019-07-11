@@ -151,6 +151,9 @@ def main(argv):
       if isinstance(option_value, set) or isinstance(option_value, list):
         option_value = ', '.join(map(str, option_value))
       print(option.lower(), '=', option_value, sep='')
+      if isinstance(option_value, set) or isinstance(option_value, list):
+        option_value = " .".join(map(str, option_value))
+      print(option.lower(), '=', option_value, sep='')
       print()
     return 0
 
