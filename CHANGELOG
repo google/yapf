@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.28.0] UNRELEASED
+## [0.28.0] 2019-07-11
 ### Added
 - New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
   `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with a comma
