@@ -28,6 +28,19 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB122455211(self):
+    unformatted_code = """\
+_zzzzzzzzzzzzzzzzzzzz = Union[sssssssssssssssssssss.pppppppppppppppp,
+                     sssssssssssssssssssss.pppppppppppppppppppppppppppp]
+"""
+    expected_formatted_code = """\
+_zzzzzzzzzzzzzzzzzzzz = Union[
+    sssssssssssssssssssss.pppppppppppppppp,
+    sssssssssssssssssssss.pppppppppppppppppppppppppppp]
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testB119300344(self):
     code = """\
 def _GenerateStatsEntries(
@@ -168,10 +181,10 @@ class Foo(object):
 class Foo(object):
 
   def testNoAlertForShortPeriod(self, rutabaga):
-    self.targets[:][streamz_path,
-                    self._fillInOtherFields(
-                        streamz_path, {streamz_field_of_interest: True}
-                    )] = series.Counter('1s', '+ 500x10000')
+    self.targets[:][
+        streamz_path,
+        self._fillInOtherFields(streamz_path, {streamz_field_of_interest: True}
+                               )] = series.Counter('1s', '+ 500x10000')
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -184,8 +197,8 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
     cccccccccc: AnyStr = cst.DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD,
     dddddddddd: Sequence[SliceDimension] = (),
     eeeeeeeeeeee: AnyStr = cst.DEFAULT_CONTROL_NAME,
-    ffffffffffffffffffff: Optional[
-        Callable[[pd.DataFrame], pd.DataFrame]] = None,
+    ffffffffffffffffffff: Optional[Callable[[pd.DataFrame],
+                                            pd.DataFrame]] = None,
     gggggggggggggg: ooooooooooooo = ooooooooooooo()
 ) -> pd.DataFrame:
   pass

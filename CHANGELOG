@@ -7,6 +7,8 @@
 - Collect a parameter list into a single object. This allows us to track how a
   parameter list is formatted, keeping state along the way. This helps when
   supporting Python 3 type annotations.
+### Fixed
+- Format subscript lists so that splits are essentially free after a comma.
 
 ## [0.28.0] 2019-07-11
 ### Added
