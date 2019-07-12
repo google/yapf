@@ -43,7 +43,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     self.assertEqual(list_of_expected, actual)
 
   def testFuncDefDefaultAssign(self):
-    self.maxDiff = None
+    self.maxDiff = None  # pylint: disable=invalid-name
     code = textwrap.dedent(r"""
         def foo(a=37, *b, **c):
           return -x[:42]

@@ -299,7 +299,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
                        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
     tname = False
-    if not len(node.children):
+    if not node.children:
       return
 
     _AppendFirstLeafTokenSubtype(node.children[0],

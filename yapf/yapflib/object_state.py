@@ -24,7 +24,6 @@ from __future__ import print_function
 
 from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
-from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 
 
@@ -90,6 +89,9 @@ class ParameterListState(object):
 
   Attributes:
     opening_bracket: The opening bracket of the parameter list.
+    closing_bracket: The closing bracket of the parameter list.
+    has_typed_return: True if the function definition has a typed return.
+    has_default_values: True if the parameters have default values.
     has_split_before_first_param: Whether there is a newline before the first
       parameter.
     opening_column: The position of the opening parameter before a newline.
@@ -120,6 +122,7 @@ class ParameterListState(object):
 
   @py3compat.lru_cache()
   def LastParamFitsOnLine(self, indent):
+    """Return true if the last parameter fits on a single line."""
     if not self.has_typed_return:
       return False
     last_param = self.parameters[-1].first_token
@@ -162,6 +165,7 @@ class Parameter(object):
   Attributes:
     first_token: (format_token.FormatToken) First token of parameter.
     last_token: (format_token.FormatToken) Last token of parameter.
+    has_default_value: (boolean) True if the parameter has a default value
   """
 
   def __init__(self, first_token, last_token):
@@ -171,6 +175,7 @@ class Parameter(object):
   @property
   @py3compat.lru_cache()
   def has_default_value(self):
+    """Returns true if the parameter has a default value."""
     tok = self.first_token
     while tok != self.last_token:
       if format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in tok.subtypes:
