@@ -28,6 +28,17 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB119300344(self):
+    code = """\
+def _GenerateStatsEntries(
+    process_id: Text,
+    timestamp: Optional[rdfvalue.RDFDatetime] = None
+) -> Sequence[stats_values.StatsStoreEntry]:
+  pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB132886019(self):
     code = """\
 X = {
@@ -175,7 +186,8 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
     eeeeeeeeeeee: AnyStr = cst.DEFAULT_CONTROL_NAME,
     ffffffffffffffffffff: Optional[
         Callable[[pd.DataFrame], pd.DataFrame]] = None,
-    gggggggggggggg: ooooooooooooo = ooooooooooooo()) -> pd.DataFrame:
+    gggggggggggggg: ooooooooooooo = ooooooooooooo()
+) -> pd.DataFrame:
   pass
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
@@ -1110,7 +1122,8 @@ class _():
             return 1
 
           def xxxxx(
-              self, yyyyy,
+              self,
+              yyyyy,
               zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
             return 1
         """)

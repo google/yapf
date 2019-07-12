@@ -358,8 +358,12 @@ def _SpaceRequiredBetween(left, right):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
     return False
-  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes or
-      format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes):
+  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes and
+      format_token.Subtype.TYPED_NAME not in right.subtypes):
+    # A named argument or default parameter shouldn't have spaces around it.
+    return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
+  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes and
+      format_token.Subtype.TYPED_NAME not in left.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
     return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
   if (format_token.Subtype.VARARGS_LIST in left.subtypes or

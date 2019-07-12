@@ -280,6 +280,15 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
 
+  def Visit_parameters(self, node):  # pylint: disable=invalid-name
+    # parameters ::= '(' [typedargslist] ')'
+    self._ProcessArgLists(node)
+    if len(node.children) > 2:
+      _AppendFirstLeafTokenSubtype(node.children[1],
+                                   format_token.Subtype.PARAMETER_START)
+      _AppendLastLeafTokenSubtype(node.children[-2],
+                                  format_token.Subtype.PARAMETER_STOP)
+
   def Visit_typedargslist(self, node):  # pylint: disable=invalid-name
     # typedargslist ::=
     #     ((tfpdef ['=' test] ',')*
@@ -290,16 +299,35 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
                        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
     tname = False
-    for child in node.children:
+    if not len(node.children):
+      return
+
+    _AppendFirstLeafTokenSubtype(node.children[0],
+                                 format_token.Subtype.PARAMETER_START)
+    _AppendLastLeafTokenSubtype(node.children[-1],
+                                format_token.Subtype.PARAMETER_STOP)
+
+    i = 1
+    tname = pytree_utils.NodeName(node.children[0]) == 'tname'
+    while i < len(node.children):
+      prev_child = node.children[i - 1]
+      child = node.children[i]
+      i += 1
+
+      if pytree_utils.NodeName(prev_child) == 'COMMA':
+        _AppendFirstLeafTokenSubtype(child,
+                                     format_token.Subtype.PARAMETER_START)
+      elif pytree_utils.NodeName(child) == 'COMMA':
+        _AppendLastLeafTokenSubtype(prev_child,
+                                    format_token.Subtype.PARAMETER_STOP)
+
       if pytree_utils.NodeName(child) == 'tname':
         tname = True
         _SetArgListSubtype(child, format_token.Subtype.TYPED_NAME,
                            format_token.Subtype.TYPED_NAME_ARG_LIST)
-      if not isinstance(child, pytree.Leaf):
-        continue
-      if child.value == ',':
+      elif pytree_utils.NodeName(child) == 'COMMA':
         tname = False
-      elif child.value == '=' and tname:
+      elif pytree_utils.NodeName(child) == 'EQUAL' and tname:
         _AppendTokenSubtype(child, subtype=format_token.Subtype.TYPED_NAME)
         tname = False
 
@@ -388,6 +416,14 @@ def _AppendFirstLeafTokenSubtype(node, subtype):
     _AppendTokenSubtype(node, subtype)
     return
   _AppendFirstLeafTokenSubtype(node.children[0], subtype)
+
+
+def _AppendLastLeafTokenSubtype(node, subtype):
+  """Append the last leaf token's subtypes."""
+  if isinstance(node, pytree.Leaf):
+    _AppendTokenSubtype(node, subtype)
+    return
+  _AppendLastLeafTokenSubtype(node.children[-1], subtype)
 
 
 def _AppendSubtypeRec(node, subtype, force=True):
