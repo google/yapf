@@ -144,6 +144,12 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
     # arglist ::= argument (',' argument)* [',']
+    if pytree_utils.NodeName(node.children[0]) == 'STAR':
+      # Python 3 treats a star expression as a specific expression type.
+      # Process it in that method.
+      self.Visit_star_expr(node)
+      return
+
     self.DefaultNodeVisit(node)
 
     for index in py3compat.range(1, len(node.children)):

@@ -329,6 +329,9 @@ def _SpaceRequiredBetween(left, right):
       # A string followed by something other than a subscript, closing bracket,
       # dot, or a binary op should have a space after it.
       return True
+    if format_token.Subtype.SUBSCRIPT_BRACKET in right.subtypes:
+      # It's legal to do this in Python: 'hello'[a]
+      return False
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary operator and the unary operator.
     return True

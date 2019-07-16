@@ -9,6 +9,7 @@
   supporting Python 3 type annotations.
 ### Fixed
 - Format subscript lists so that splits are essentially free after a comma.
+- Don't add a space between a string and its subscript.
 
 ## [0.28.0] 2019-07-11
 ### Added
