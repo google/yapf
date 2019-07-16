@@ -404,6 +404,7 @@ def CreateGoogleStyle():
   style['INDENT_WIDTH'] = 4
   style['I18N_COMMENT'] = r'#\..*'
   style['I18N_FUNCTION_CALL'] = ['N_', '_']
+  style['JOIN_MULTIPLE_LINES'] = False
   style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
   style['SPLIT_BEFORE_DICT_SET_GENERATOR'] = False
@@ -419,7 +420,6 @@ def CreateChromiumStyle():
   style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
   style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 2
-  style['JOIN_MULTIPLE_LINES'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
