@@ -10,6 +10,8 @@
 ### Fixed
 - Format subscript lists so that splits are essentially free after a comma.
 - Don't add a space between a string and its subscript.
+- Extend discovery of '.style.yapf' & 'setup.cfg' files to search the root
+  directory as well.
 
 ## [0.28.0] 2019-07-11
 ### Added
