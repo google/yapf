@@ -37,12 +37,12 @@ def _restore_working_dir():
 
 @contextlib.contextmanager
 def _exists_mocked_in_module(module, mock_implementation):
-    unmocked_exists = getattr(module, 'exists')
-    setattr(module, 'exists', mock_implementation)
-    try:
-        yield
-    finally:
-        setattr(module, 'exists', unmocked_exists)
+  unmocked_exists = getattr(module, 'exists')
+  setattr(module, 'exists', mock_implementation)
+  try:
+    yield
+  finally:
+    setattr(module, 'exists', unmocked_exists)
 
 
 class GetExcludePatternsForDir(unittest.TestCase):
@@ -124,8 +124,10 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
 
     # Fake placing only a style file at the root by mocking `os.path.exists`.
     style_file = os.path.join(rootdir, '.style.yapf')
+
     def mock_exists_implementation(path):
       return path == style_file
+
     with _exists_mocked_in_module(file_resources.os.path,
                                   mock_exists_implementation):
       # Both files should find the style file at the root.
