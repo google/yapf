@@ -35,6 +35,15 @@ def _restore_working_dir():
   finally:
     os.chdir(curdir)
 
+@contextlib.contextmanager
+def _exists_mocked_in_module(module, mock_implementation):
+    unmocked_exists = getattr(module, 'exists')
+    setattr(module, 'exists', mock_implementation)
+    try:
+        yield
+    finally:
+        setattr(module, 'exists', unmocked_exists)
+
 
 class GetExcludePatternsForDir(unittest.TestCase):
 
@@ -91,6 +100,41 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
     test_filename = os.path.join(self.test_tmpdir, 'dir1', 'file.py')
     self.assertEqual(style_file,
                      file_resources.GetDefaultStyleForDir(test_filename))
+
+  def test_setup_config(self):
+    # An empty setup.cfg file should not be used
+    setup_config = os.path.join(self.test_tmpdir, 'setup.cfg')
+    open(setup_config, 'w').close()
+
+    test_dir = os.path.join(self.test_tmpdir, 'dir1')
+    style_name = file_resources.GetDefaultStyleForDir(test_dir)
+    self.assertEqual(style_name, 'pep8')
+
+    # One with a '[yapf]' section should be used
+    with open(setup_config, 'w') as f:
+      f.write('[yapf]\n')
+    self.assertEqual(setup_config,
+                     file_resources.GetDefaultStyleForDir(test_dir))
+
+  def test_local_style_at_root(self):
+    # Test behavior of files located on the root, and under root.
+    rootdir = os.path.abspath(os.path.sep)
+    test_dir_at_root = os.path.join(rootdir, 'dir1')
+    test_dir_under_root = os.path.join(rootdir, 'dir1', 'dir2')
+
+    # Fake placing only a style file at the root by mocking `os.path.exists`.
+    style_file = os.path.join(rootdir, '.style.yapf')
+    def mock_exists_implementation(path):
+      return path == style_file
+    with _exists_mocked_in_module(file_resources.os.path,
+                                  mock_exists_implementation):
+      # Both files should find the style file at the root.
+      default_style_at_root = file_resources.GetDefaultStyleForDir(
+          test_dir_at_root)
+      self.assertEqual(style_file, default_style_at_root)
+      default_style_under_root = file_resources.GetDefaultStyleForDir(
+          test_dir_under_root)
+      self.assertEqual(style_file, default_style_under_root)
 
 
 def _touch_files(filenames):
