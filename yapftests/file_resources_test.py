@@ -35,6 +35,7 @@ def _restore_working_dir():
   finally:
     os.chdir(curdir)
 
+
 @contextlib.contextmanager
 def _exists_mocked_in_module(module, mock_implementation):
   unmocked_exists = getattr(module, 'exists')
