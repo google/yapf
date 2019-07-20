@@ -28,6 +28,16 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testB137580392(self):
+    code = """\
+def _create_testing_simulator_and_sink(
+) -> Tuple[_batch_simulator:_batch_simulator.BatchSimulator,
+           _batch_simulator.SimulationSink]:
+  pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
   def testB73279849(self):
     unformatted_code = """\
 class A:

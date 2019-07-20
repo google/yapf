@@ -887,6 +887,11 @@ class FormatDecisionState(object):
         # and we've already split before the first parameter.
         penalty += split_penalty.STRONGLY_CONNECTED
 
+      return penalty
+
+    if not param_list.parameters:
+      return penalty
+
     if newline:
       if self._FitsOnLine(param_list.parameters[0].first_token,
                           _LastTokenInLine(param_list.closing_bracket)):

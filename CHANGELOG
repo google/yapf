@@ -12,6 +12,8 @@
 - Don't add a space between a string and its subscript.
 - Extend discovery of '.style.yapf' & 'setup.cfg' files to search the root
   directory as well.
+- Make sure we have parameters before we start calculating penalties for
+  splitting them.
 
 ## [0.28.0] 2019-07-11
 ### Added
