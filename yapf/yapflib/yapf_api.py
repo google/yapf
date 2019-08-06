@@ -204,8 +204,8 @@ def ReadFile(filename, logger=None):
     raise
   except UnicodeDecodeError as err:  # pragma: no cover
     if logger:
-      logger("Could not parse {}! Consider excluding this file with --exclude."
-             .format(filename))
+      logger('Could not parse %s! Consider excluding this file with --exclude.',
+             filename)
       logger(err)
     raise
 
