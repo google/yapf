@@ -290,7 +290,7 @@ def _FormatFile(filename,
                 quiet=False,
                 verbose=False):
   """Format an individual file."""
-  if verbose:
+  if verbose and not quiet:
     print('Reformatting %s' % filename)
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
