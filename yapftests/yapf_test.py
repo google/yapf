@@ -1710,12 +1710,12 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def MyFunc(
-                arg1,                     # Desc 1
-                arg2,                     # Desc 2
-                a_longer_var_name,        # Desc 3
-                arg4,
-                arg5,                     # Desc 5
-                arg6,
+            arg1,               # Desc 1
+            arg2,               # Desc 2
+            a_longer_var_name,  # Desc 3
+            arg4,
+            arg5,               # Desc 5
+            arg6,
         ):
             pass
         """)

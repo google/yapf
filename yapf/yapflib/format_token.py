@@ -36,28 +36,30 @@ class Subtype(object):
   NONE = 0
   UNARY_OPERATOR = 1
   BINARY_OPERATOR = 2
-  A_EXPR_OPERATOR = 22
-  M_EXPR_OPERATOR = 23
-  SUBSCRIPT_COLON = 3
-  SUBSCRIPT_BRACKET = 4
-  DEFAULT_OR_NAMED_ASSIGN = 5
-  DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 6
-  VARARGS_LIST = 7
-  VARARGS_STAR = 8
-  KWARGS_STAR_STAR = 9
-  ASSIGN_OPERATOR = 10
-  DICTIONARY_KEY = 11
-  DICTIONARY_KEY_PART = 12
-  DICTIONARY_VALUE = 13
-  DICT_SET_GENERATOR = 14
-  COMP_EXPR = 21
-  COMP_FOR = 15
-  COMP_IF = 16
-  FUNC_DEF = 17
-  DECORATOR = 18
-  TYPED_NAME = 19
-  TYPED_NAME_ARG_LIST = 20
+  A_EXPR_OPERATOR = 3
+  M_EXPR_OPERATOR = 4
+  SUBSCRIPT_COLON = 5
+  SUBSCRIPT_BRACKET = 6
+  DEFAULT_OR_NAMED_ASSIGN = 7
+  DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 8
+  VARARGS_LIST = 9
+  VARARGS_STAR = 10
+  KWARGS_STAR_STAR = 11
+  ASSIGN_OPERATOR = 12
+  DICTIONARY_KEY = 13
+  DICTIONARY_KEY_PART = 14
+  DICTIONARY_VALUE = 15
+  DICT_SET_GENERATOR = 16
+  COMP_EXPR = 17
+  COMP_FOR = 18
+  COMP_IF = 19
+  FUNC_DEF = 20
+  DECORATOR = 21
+  TYPED_NAME = 22
+  TYPED_NAME_ARG_LIST = 23
   SIMPLE_EXPRESSION = 24
+  PARAMETER_START = 25
+  PARAMETER_STOP = 26
 
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width,
@@ -96,6 +98,8 @@ class FormatToken(object):
       this is the first token in the unwrapped line.
     matching_bracket: If a bracket token ('[', '{', or '(') the matching
       bracket.
+    parameters: If this and its following tokens make up a parameter list, then
+      this is a list of those parameters.
     container_opening: If the object is in a container, this points to its
       opening bracket.
     container_elements: If this is the start of a container, a list of the
@@ -125,6 +129,7 @@ class FormatToken(object):
     self.next_token = None
     self.previous_token = None
     self.matching_bracket = None
+    self.parameters = []
     self.container_opening = None
     self.container_elements = []
     self.whitespace_prefix = ''

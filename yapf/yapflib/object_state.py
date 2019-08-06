@@ -22,6 +22,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from yapf.yapflib import format_token
+from yapf.yapflib import py3compat
+from yapf.yapflib import style
+
 
 class ComprehensionState(object):
   """Maintains the state of list comprehension formatting decisions.
@@ -33,9 +37,9 @@ class ComprehensionState(object):
     expr_token: The first token in the comprehension.
     for_token: The first 'for' token of the comprehension.
     has_split_at_for: Whether there is a newline immediately before the
-        for_token.
+      for_token.
     has_interior_split: Whether there is a newline within the comprehension.
-        That is, a split somewhere after expr_token or before closing_bracket.
+      That is, a split somewhere after expr_token or before closing_bracket.
   """
 
   def __init__(self, expr_token):
@@ -78,3 +82,122 @@ class ComprehensionState(object):
   def __hash__(self, *args, **kwargs):
     return hash((self.expr_token, self.for_token, self.has_split_at_for,
                  self.has_interior_split))
+
+
+class ParameterListState(object):
+  """Maintains the state of function parameter list formatting decisions.
+
+  Attributes:
+    opening_bracket: The opening bracket of the parameter list.
+    closing_bracket: The closing bracket of the parameter list.
+    has_typed_return: True if the function definition has a typed return.
+    has_default_values: True if the parameters have default values.
+    has_split_before_first_param: Whether there is a newline before the first
+      parameter.
+    opening_column: The position of the opening parameter before a newline.
+    parameters: A list of parameter objects (Parameter).
+    split_before_closing_bracket: Split before the closing bracket. Sometimes
+      needed if the indentation would collide.
+  """
+
+  def __init__(self, opening_bracket, newline, opening_column):
+    self.opening_bracket = opening_bracket
+    self.has_split_before_first_param = newline
+    self.opening_column = opening_column
+    self.parameters = opening_bracket.parameters
+    self.split_before_closing_bracket = False
+
+  @property
+  def closing_bracket(self):
+    return self.opening_bracket.matching_bracket
+
+  @property
+  def has_typed_return(self):
+    return self.closing_bracket.next_token.value == '->'
+
+  @property
+  @py3compat.lru_cache()
+  def has_default_values(self):
+    return any(param.has_default_value for param in self.parameters)
+
+  @py3compat.lru_cache()
+  def LastParamFitsOnLine(self, indent):
+    """Return true if the last parameter fits on a single line."""
+    if not self.has_typed_return:
+      return False
+    last_param = self.parameters[-1].first_token
+    last_token = self.opening_bracket.matching_bracket
+    while not last_token.is_comment and last_token.next_token:
+      last_token = last_token.next_token
+    total_length = last_token.total_length
+    total_length -= last_param.total_length - len(last_param.value)
+    return total_length + indent <= style.Get('COLUMN_LIMIT')
+
+  def Clone(self):
+    clone = ParameterListState(self.opening_bracket,
+                               self.has_split_before_first_param,
+                               self.opening_column)
+    clone.split_before_closing_bracket = self.split_before_closing_bracket
+    clone.parameters = [param.Clone() for param in self.parameters]
+    return clone
+
+  def __repr__(self):
+    return ('[opening_bracket::%s, has_split_before_first_param::%s, '
+            'opening_column::%d]' %
+            (self.opening_bracket, self.has_split_before_first_param,
+             self.opening_column))
+
+  def __eq__(self, other):
+    return hash(self) == hash(other)
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __hash__(self, *args, **kwargs):
+    return hash(
+        (self.opening_bracket, self.has_split_before_first_param,
+         self.opening_column, (hash(param) for param in self.parameters)))
+
+
+class Parameter(object):
+  """A parameter in a parameter list.
+
+  Attributes:
+    first_token: (format_token.FormatToken) First token of parameter.
+    last_token: (format_token.FormatToken) Last token of parameter.
+    has_default_value: (boolean) True if the parameter has a default value
+  """
+
+  def __init__(self, first_token, last_token):
+    self.first_token = first_token
+    self.last_token = last_token
+
+  @property
+  @py3compat.lru_cache()
+  def has_default_value(self):
+    """Returns true if the parameter has a default value."""
+    tok = self.first_token
+    while tok != self.last_token:
+      if format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in tok.subtypes:
+        return True
+      if tok.OpensScope():
+        tok = tok.matching_bracket
+      else:
+        tok = tok.next_token
+    return False
+
+  def Clone(self):
+    return Parameter(self.first_token, self.last_token)
+
+  def __repr__(self):
+    return '[first_token::%s, last_token:%s]' % (self.first_token,
+                                                 self.last_token)
+
+  def __eq__(self, other):
+    return hash(self) == hash(other)
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __hash__(self, *args, **kwargs):
+    return hash((self.first_token, self.last_token))

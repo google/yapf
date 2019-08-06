@@ -48,6 +48,8 @@ class FormatDecisionState(object):
       parenthesis levels.
     comp_stack: A stack (of ComprehensionState) keeping track of properties
       applying to comprehensions.
+    param_list_stack: A stack (of ParameterListState) keeping track of
+      properties applying to function parameter lists.
     ignore_stack_for_comparison: Ignore the stack of _ParenState for state
       comparison.
   """
@@ -70,6 +72,7 @@ class FormatDecisionState(object):
     self.ignore_stack_for_comparison = False
     self.stack = [_ParenState(first_indent, first_indent)]
     self.comp_stack = []
+    self.param_list_stack = []
     self.first_indent = first_indent
     self.column_limit = style.Get('COLUMN_LIMIT')
 
@@ -86,6 +89,7 @@ class FormatDecisionState(object):
     new.first_indent = self.first_indent
     new.stack = [state.Clone() for state in self.stack]
     new.comp_stack = [state.Clone() for state in self.comp_stack]
+    new.param_list_stack = [state.Clone() for state in self.param_list_stack]
     return new
 
   def __eq__(self, other):
@@ -98,8 +102,9 @@ class FormatDecisionState(object):
             self.line.depth == other.line.depth and
             self.lowest_level_on_line == other.lowest_level_on_line and
             (self.ignore_stack_for_comparison or
-             other.ignore_stack_for_comparison or
-             self.stack == other.stack and self.comp_stack == other.comp_stack))
+             other.ignore_stack_for_comparison or self.stack == other.stack and
+             self.comp_stack == other.comp_stack and
+             self.param_list_stack == other.param_list_stack))
 
   def __ne__(self, other):
     return not self == other
@@ -559,6 +564,8 @@ class FormatDecisionState(object):
     Returns:
       The penalty of splitting after the current token.
     """
+    self._PushParameterListState(newline)
+
     penalty = 0
     if newline:
       penalty = self._AddTokenOnNewline(dry_run, must_split)
@@ -566,6 +573,7 @@ class FormatDecisionState(object):
       self._AddTokenOnCurrentLine(dry_run)
 
     penalty += self._CalculateComprehensionState(newline)
+    penalty += self._CalculateParameterListState(newline)
 
     return self.MoveStateToNextToken() + penalty
 
@@ -801,6 +809,105 @@ class FormatDecisionState(object):
 
     return penalty
 
+  def _PushParameterListState(self, newline):
+    """Push a new parameter list state for a function definition.
+
+    Args:
+      newline: Whether the current token is to be added on a newline.
+    """
+    current = self.next_token
+    previous = current.previous_token
+
+    if _IsFunctionDefinition(previous):
+      first_param_column = previous.total_length + self.stack[-2].indent
+      self.param_list_stack.append(
+          object_state.ParameterListState(previous, newline,
+                                          first_param_column))
+
+  def _CalculateParameterListState(self, newline):
+    """Makes required changes to parameter list state.
+
+    Args:
+      newline: Whether the current token is to be added on a newline.
+
+    Returns:
+      The penalty for the token-newline combination given the current
+      parameter state.
+    """
+    current = self.next_token
+    previous = current.previous_token
+    penalty = 0
+
+    if _IsFunctionDefinition(previous):
+      first_param_column = previous.total_length + self.stack[-2].indent
+      if not newline:
+        param_list = self.param_list_stack[-1]
+        if param_list.parameters and param_list.has_typed_return:
+          last_param = param_list.parameters[-1].first_token
+          last_token = _LastTokenInLine(previous.matching_bracket)
+          total_length = last_token.total_length
+          total_length -= last_param.total_length - len(last_param.value)
+          if total_length + self.column > self.column_limit:
+            # If we need to split before the trailing code of a function
+            # definition with return types, then also split before the opening
+            # parameter so that the trailing bit isn't indented on a line by
+            # itself:
+            #
+            #   def rrrrrrrrrrrrrrrrrrrrrr(ccccccccccccccccccccccc: Tuple[Text]
+            #                              ) -> List[Tuple[Text, Text]]:
+            #       pass
+            penalty += split_penalty.VERY_STRONGLY_CONNECTED
+        return penalty
+
+      if first_param_column <= self.column:
+        # Make sure we don't split after the opening bracket if the
+        # continuation indent is greater than the opening bracket:
+        #
+        #   a(
+        #       b=1,
+        #       c=2)
+        penalty += split_penalty.VERY_STRONGLY_CONNECTED
+      return penalty
+
+    if not self.param_list_stack:
+      return penalty
+
+    param_list = self.param_list_stack[-1]
+    if current == self.param_list_stack[-1].closing_bracket:
+      self.param_list_stack.pop()  # We're done with this state.
+      if newline and param_list.has_typed_return:
+        if param_list.split_before_closing_bracket:
+          penalty -= split_penalty.STRONGLY_CONNECTED
+        elif param_list.LastParamFitsOnLine(self.column):
+          penalty += split_penalty.STRONGLY_CONNECTED
+
+      if (not newline and param_list.has_typed_return and
+          param_list.has_split_before_first_param):
+        # Prefer splitting before the closing bracket if there's a return type
+        # and we've already split before the first parameter.
+        penalty += split_penalty.STRONGLY_CONNECTED
+
+      return penalty
+
+    if not param_list.parameters:
+      return penalty
+
+    if newline:
+      if self._FitsOnLine(param_list.parameters[0].first_token,
+                          _LastTokenInLine(param_list.closing_bracket)):
+        penalty += split_penalty.STRONGLY_CONNECTED
+
+    if (not newline and style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and
+        param_list.has_default_values and
+        current != param_list.parameters[0].first_token and
+        current != param_list.closing_bracket and
+        format_token.Subtype.PARAMETER_START in current.subtypes):
+      # If we want to split before parameters when there are named assigns,
+      # then add a penalty for not splitting.
+      penalty += split_penalty.STRONGLY_CONNECTED
+
+    return penalty
+
   def _GetNewlineColumn(self):
     """Return the new column on the newline."""
     current = self.next_token
@@ -841,7 +948,18 @@ class FormatDecisionState(object):
           len(self.line.first.whitespace_prefix.split('\n')[-1]) +
           style.Get('INDENT_WIDTH'))
       if token_indent == top_of_stack.indent:
-        return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
+        if self.param_list_stack and _IsFunctionDef(self.line.first):
+          last_param = self.param_list_stack[-1]
+          if (last_param.LastParamFitsOnLine(token_indent) and
+              not last_param.LastParamFitsOnLine(
+                  token_indent + style.Get('CONTINUATION_INDENT_WIDTH'))):
+            self.param_list_stack[-1].split_before_closing_bracket = True
+            return token_indent
+
+          if not last_param.LastParamFitsOnLine(token_indent):
+            self.param_list_stack[-1].split_before_closing_bracket = True
+            return token_indent
+        return token_indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     return top_of_stack.indent
 

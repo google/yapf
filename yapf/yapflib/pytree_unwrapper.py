@@ -31,6 +31,8 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 
+from yapf.yapflib import format_token
+from yapf.yapflib import object_state
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
@@ -108,6 +110,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     if self._cur_unwrapped_line.tokens:
       self._unwrapped_lines.append(self._cur_unwrapped_line)
       _MatchBrackets(self._cur_unwrapped_line)
+      _IdentifyParameterLists(self._cur_unwrapped_line)
       _AdjustSplitPenalty(self._cur_unwrapped_line)
     self._cur_unwrapped_line = unwrapped_line.UnwrappedLine(self._cur_depth)
 
@@ -318,6 +321,39 @@ def _MatchBrackets(uwline):
       if id(pytree_utils.GetOpeningBracket(token.node)) == id(bracket.node):
         bracket.container_elements.append(token)
         token.container_opening = bracket
+
+
+def _IdentifyParameterLists(uwline):
+  """Visit the node to create a state for parameter lists.
+
+  For instance, a parameter is considered an "object" with its first and last
+  token uniquely identifying the object.
+
+  Arguments:
+    uwline: (UnwrappedLine) An unwrapped line.
+  """
+  func_stack = []
+  param_stack = []
+  for tok in uwline.tokens:
+    # Identify parameter list objects.
+    if format_token.Subtype.FUNC_DEF in tok.subtypes:
+      assert tok.next_token.value == '('
+      func_stack.append(tok.next_token)
+      continue
+
+    if func_stack and tok.value == ')':
+      if tok == func_stack[-1].matching_bracket:
+        func_stack.pop()
+      continue
+
+    # Identify parameter objects.
+    if format_token.Subtype.PARAMETER_START in tok.subtypes:
+      param_stack.append(tok)
+
+    # Not "elif", a parameter could be a single token.
+    if param_stack and format_token.Subtype.PARAMETER_STOP in tok.subtypes:
+      start = param_stack.pop()
+      func_stack[-1].parameters.append(object_state.Parameter(start, tok))
 
 
 def _AdjustSplitPenalty(uwline):

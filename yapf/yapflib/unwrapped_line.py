@@ -329,6 +329,9 @@ def _SpaceRequiredBetween(left, right):
       # A string followed by something other than a subscript, closing bracket,
       # dot, or a binary op should have a space after it.
       return True
+    if format_token.Subtype.SUBSCRIPT_BRACKET in right.subtypes:
+      # It's legal to do this in Python: 'hello'[a]
+      return False
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary operator and the unary operator.
     return True
@@ -358,8 +361,12 @@ def _SpaceRequiredBetween(left, right):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
     return False
-  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes or
-      format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes):
+  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes and
+      format_token.Subtype.TYPED_NAME not in right.subtypes):
+    # A named argument or default parameter shouldn't have spaces around it.
+    return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
+  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes and
+      format_token.Subtype.TYPED_NAME not in left.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
     return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
   if (format_token.Subtype.VARARGS_LIST in left.subtypes or

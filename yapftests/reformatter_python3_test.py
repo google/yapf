@@ -238,7 +238,7 @@ None.__ne__()
         """)
     expected_formatted_code = textwrap.dedent("""\
         def _ReduceAbstractContainers(
-                self, *args: Optional[automation_converter.PyiCollectionAbc]
+            self, *args: Optional[automation_converter.PyiCollectionAbc]
         ) -> List[automation_converter.PyiCollectionAbc]:
             pass
         """)
@@ -290,33 +290,33 @@ def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
 """
       expected_formatted_code = """\
 async def open_file(
-        file,
-        mode='r',
-        buffering=-1,
-        encoding=None,
-        errors=None,
-        newline=None,
-        closefd=True,
-        opener=None
+    file,
+    mode='r',
+    buffering=-1,
+    encoding=None,
+    errors=None,
+    newline=None,
+    closefd=True,
+    opener=None
 ):
     pass
 
 
 async def run_sync_in_worker_thread(
-        sync_fn, *args, cancellable=False, limiter=None
+    sync_fn, *args, cancellable=False, limiter=None
 ):
     pass
 
 
 def open_file(
-        file,
-        mode='r',
-        buffering=-1,
-        encoding=None,
-        errors=None,
-        newline=None,
-        closefd=True,
-        opener=None
+    file,
+    mode='r',
+    buffering=-1,
+    encoding=None,
+    errors=None,
+    newline=None,
+    closefd=True,
+    opener=None
 ):
     pass
 
@@ -375,6 +375,26 @@ def dirichlet(x12345678901234567890123456789012345678901234567890=...) -> None:
     return
 """
     # https://github.com/google/yapf/issues/533
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testFunctionTypedReturnNextLine(self):
+    code = """\
+def _GenerateStatsEntries(
+    process_id: Text,
+    timestamp: Optional[ffffffff.FFFFFFFFFFF] = None
+) -> Sequence[ssssssssssss.SSSSSSSSSSSSSSS]:
+    pass
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testFunctionTypedReturnSameLine(self):
+    code = """\
+def rrrrrrrrrrrrrrrrrrrrrr(
+        ccccccccccccccccccccccc: Tuple[Text, Text]) -> List[Tuple[Text, Text]]:
+    pass
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 

@@ -144,6 +144,12 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
     # arglist ::= argument (',' argument)* [',']
+    if pytree_utils.NodeName(node.children[0]) == 'STAR':
+      # Python 3 treats a star expression as a specific expression type.
+      # Process it in that method.
+      self.Visit_star_expr(node)
+      return
+
     self.DefaultNodeVisit(node)
 
     for index in py3compat.range(1, len(node.children)):
@@ -250,10 +256,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
           # Bump up the split penalty for the first part of a subscript. We
           # would rather not split there.
-          first_leaf = pytree_utils.FirstLeafNode(node.children[1])
-          penalty = pytree_utils.GetNodeAnnotation(
-              first_leaf, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
-          _SetSplitPenalty(first_leaf, penalty + CONNECTED)
+          _IncreasePenalty(node.children[1], CONNECTED)
         else:
           _SetStronglyConnected(node.children[1], node.children[2])
 
@@ -330,6 +333,16 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           # connected region.  It's sometimes necessary, though undesirable, to
           # split the two.
           _SetStronglyConnected(trailer.children[-1])
+
+  def Visit_subscriptlist(self, node):  # pylint: disable=invalid-name
+    # subscriptlist ::= subscript (',' subscript)* [',']
+    self.DefaultNodeVisit(node)
+    _SetSplitPenalty(pytree_utils.FirstLeafNode(node), 0)
+    prev_child = None
+    for child in node.children:
+      if prev_child and pytree_utils.NodeName(prev_child) == 'COMMA':
+        _SetSplitPenalty(pytree_utils.FirstLeafNode(child), 0)
+      prev_child = child
 
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]

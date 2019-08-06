@@ -97,10 +97,10 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
         if config.has_section('yapf'):
           return config_file
 
-    dirname = os.path.dirname(dirname)
     if (not dirname or not os.path.basename(dirname) or
         dirname == os.path.abspath(os.path.sep)):
       break
+    dirname = os.path.dirname(dirname)
 
   global_file = os.path.expanduser(style.GLOBAL_STYLE)
   if os.path.exists(global_file):

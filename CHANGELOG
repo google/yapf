@@ -2,7 +2,20 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.28.0] UNRELEASED
+## [0.28.1] UNRELEASED
+### Changed
+- Collect a parameter list into a single object. This allows us to track how a
+  parameter list is formatted, keeping state along the way. This helps when
+  supporting Python 3 type annotations.
+### Fixed
+- Format subscript lists so that splits are essentially free after a comma.
+- Don't add a space between a string and its subscript.
+- Extend discovery of '.style.yapf' & 'setup.cfg' files to search the root
+  directory as well.
+- Make sure we have parameters before we start calculating penalties for
+  splitting them.
+
+## [0.28.0] 2019-07-11
 ### Added
 - New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
   `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with a comma
@@ -10,6 +23,7 @@
   unnecessary splits).
 ### Changed
 - Set `INDENT_DICTIONARY_VALUE` for Google style.
+- Set `JOIN_MULTIPLE_LINES = False` for Google style.
 - Catch and report `UnicodeDecodeError` exceptions.
 ### Fixed
 - `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False` wasn't honored because the
