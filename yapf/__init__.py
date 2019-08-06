@@ -64,17 +64,22 @@ def main(argv):
       action='store_true',
       help='show version number and exit')
 
-  diff_inplace_group = parser.add_mutually_exclusive_group()
-  diff_inplace_group.add_argument(
+  diff_inplace_quiet_group = parser.add_mutually_exclusive_group()
+  diff_inplace_quiet_group.add_argument(
       '-d',
       '--diff',
       action='store_true',
       help='print the diff for the fixed source')
-  diff_inplace_group.add_argument(
+  diff_inplace_quiet_group.add_argument(
       '-i',
       '--in-place',
       action='store_true',
       help='make changes to files in place')
+  diff_inplace_quiet_group.add_argument(
+      '-q',
+      '--quiet',
+      action='store_true',
+      help='output nothing and set return value')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
   lines_recursive_group.add_argument(
@@ -217,8 +222,9 @@ def main(argv):
       print_diff=args.diff,
       verify=args.verify,
       parallel=args.parallel,
+      quiet=args.quiet,
       verbose=args.verbose)
-  return 1 if changed and args.diff else 0
+  return 1 if changed and (args.diff or args.quiet) else 0
 
 
 def FormatFiles(filenames,
@@ -229,6 +235,7 @@ def FormatFiles(filenames,
                 print_diff=False,
                 verify=False,
                 parallel=False,
+                quiet=False,
                 verbose=False):
   """Format a list of files.
 
@@ -246,6 +253,7 @@ def FormatFiles(filenames,
       diff that turns the formatted source into reformatter source.
     verify: (bool) True if reformatted code should be verified for syntax.
     parallel: (bool) True if should format multiple files in parallel.
+    quiet: (bool) True if should output nothing.
     verbose: (bool) True if should print out filenames while processing.
 
   Returns:
@@ -259,15 +267,15 @@ def FormatFiles(filenames,
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
           executor.submit(_FormatFile, filename, lines, style_config,
-                          no_local_style, in_place, print_diff, verify, verbose)
-          for filename in filenames
+                          no_local_style, in_place, print_diff, verify, quiet,
+                          verbose) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
   else:
     for filename in filenames:
       changed |= _FormatFile(filename, lines, style_config, no_local_style,
-                             in_place, print_diff, verify, verbose)
+                             in_place, print_diff, verify, quiet, verbose)
   return changed
 
 
@@ -278,9 +286,10 @@ def _FormatFile(filename,
                 in_place=False,
                 print_diff=False,
                 verify=False,
+                quiet=False,
                 verbose=False):
   """Format an individual file."""
-  if verbose:
+  if verbose and not quiet:
     print('Reformatting %s' % filename)
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
@@ -294,7 +303,7 @@ def _FormatFile(filename,
         print_diff=print_diff,
         verify=verify,
         logger=logging.warning)
-    if not in_place and reformatted_code:
+    if not in_place and not quiet and reformatted_code:
       file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
                                           in_place)
     return has_change
