@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 
 CONTINUATION = token.N_TOKENS
-token.N_TOKENS += 1
 
 
 class Subtype(object):
@@ -37,22 +36,52 @@ class Subtype(object):
   NONE = 0
   UNARY_OPERATOR = 1
   BINARY_OPERATOR = 2
-  SUBSCRIPT_COLON = 3
-  SUBSCRIPT_BRACKET = 4
-  DEFAULT_OR_NAMED_ASSIGN = 5
-  DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 6
-  VARARGS_LIST = 7
-  VARARGS_STAR = 8
-  KWARGS_STAR_STAR = 9
-  ASSIGN_OPERATOR = 10
-  DICTIONARY_KEY = 11
-  DICTIONARY_KEY_PART = 12
-  DICTIONARY_VALUE = 13
-  DICT_SET_GENERATOR = 14
-  COMP_FOR = 15
-  COMP_IF = 16
-  FUNC_DEF = 17
-  DECORATOR = 18
+  A_EXPR_OPERATOR = 3
+  M_EXPR_OPERATOR = 4
+  SUBSCRIPT_COLON = 5
+  SUBSCRIPT_BRACKET = 6
+  DEFAULT_OR_NAMED_ASSIGN = 7
+  DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 8
+  VARARGS_LIST = 9
+  VARARGS_STAR = 10
+  KWARGS_STAR_STAR = 11
+  ASSIGN_OPERATOR = 12
+  DICTIONARY_KEY = 13
+  DICTIONARY_KEY_PART = 14
+  DICTIONARY_VALUE = 15
+  DICT_SET_GENERATOR = 16
+  COMP_EXPR = 17
+  COMP_FOR = 18
+  COMP_IF = 19
+  FUNC_DEF = 20
+  DECORATOR = 21
+  TYPED_NAME = 22
+  TYPED_NAME_ARG_LIST = 23
+  SIMPLE_EXPRESSION = 24
+  PARAMETER_START = 25
+  PARAMETER_STOP = 26
+
+
+def _TabbedContinuationAlignPadding(spaces, align_style, tab_width,
+                                    continuation_indent_width):
+  """Build padding string for continuation alignment in tabbed indentation.
+
+  Arguments:
+    spaces: (int) The number of spaces to place before the token for alignment.
+    align_style: (str) The alignment style for continuation lines.
+    tab_width: (int) Number of columns of each tab character.
+    continuation_indent_width: (int) Indent columns for line continuations.
+
+  Returns:
+    A padding string for alignment with style specified by align_style option.
+  """
+  if align_style == 'FIXED':
+    if spaces > 0:
+      return '\t' * int(continuation_indent_width / tab_width)
+    return ''
+  elif align_style == 'VALIGN-RIGHT':
+    return '\t' * int((spaces + tab_width - 1) / tab_width)
+  return ' ' * spaces
 
 
 class FormatToken(object):
@@ -62,12 +91,19 @@ class FormatToken(object):
   the code.
 
   Attributes:
+    node: The PyTree node this token represents.
     next_token: The token in the unwrapped line after this token or None if this
       is the last token in the unwrapped line.
     previous_token: The token in the unwrapped line before this token or None if
       this is the first token in the unwrapped line.
     matching_bracket: If a bracket token ('[', '{', or '(') the matching
       bracket.
+    parameters: If this and its following tokens make up a parameter list, then
+      this is a list of those parameters.
+    container_opening: If the object is in a container, this points to its
+      opening bracket.
+    container_elements: If this is the start of a container, a list of the
+      elements in the container.
     whitespace_prefix: The prefix for the whitespace.
     spaces_required_before: The number of spaces required before a token. This
       is a lower-bound for the formatter and not a hard requirement. For
@@ -93,6 +129,9 @@ class FormatToken(object):
     self.next_token = None
     self.previous_token = None
     self.matching_bracket = None
+    self.parameters = []
+    self.container_opening = None
+    self.container_elements = []
     self.whitespace_prefix = ''
     self.can_break_before = False
     self.must_break_before = False
@@ -109,6 +148,15 @@ class FormatToken(object):
     else:
       self.value = self.node.value
 
+  @property
+  def formatted_whitespace_prefix(self):
+    if style.Get('INDENT_BLANK_LINES'):
+      without_newlines = self.whitespace_prefix.lstrip('\n')
+      height = len(self.whitespace_prefix) - len(without_newlines)
+      if height:
+        return ('\n' + without_newlines) * height
+    return self.whitespace_prefix
+
   def AddWhitespacePrefix(self, newlines_before, spaces=0, indent_level=0):
     """Register a token's whitespace prefix.
 
@@ -119,10 +167,16 @@ class FormatToken(object):
       spaces: (int) The number of spaces to place before the token.
       indent_level: (int) The indentation level.
     """
-    indent_char = '\t' if style.Get('USE_TABS') else ' '
-    token_indent_char = indent_char if newlines_before > 0 else ' '
-    indent_before = (indent_char * indent_level * style.Get('INDENT_WIDTH') +
-                     token_indent_char * spaces)
+    if style.Get('USE_TABS'):
+      if newlines_before > 0:
+        indent_before = '\t' * indent_level + _TabbedContinuationAlignPadding(
+            spaces, style.Get('CONTINUATION_ALIGN_STYLE'),
+            style.Get('INDENT_WIDTH'), style.Get('CONTINUATION_INDENT_WIDTH'))
+      else:
+        indent_before = '\t' * indent_level + ' ' * spaces
+    else:
+      indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
+                       ' ' * spaces)
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
@@ -132,21 +186,26 @@ class FormatToken(object):
       self.value = self.node.value
 
     if not self.whitespace_prefix:
-      self.whitespace_prefix = (
-          '\n' * (self.newlines or newlines_before) + indent_before)
+      self.whitespace_prefix = ('\n' * (self.newlines or newlines_before) +
+                                indent_before)
     else:
       self.whitespace_prefix += indent_before
 
   def AdjustNewlinesBefore(self, newlines_before):
     """Change the number of newlines before this token."""
-    self.whitespace_prefix = (
-        '\n' * newlines_before + self.whitespace_prefix.lstrip('\n'))
+    self.whitespace_prefix = ('\n' * newlines_before +
+                              self.whitespace_prefix.lstrip('\n'))
 
   def RetainHorizontalSpacing(self, first_column, depth):
     """Retains a token's horizontal spacing."""
     previous = self.previous_token
-    if previous is None:
+    if not previous:
       return
+
+    if previous.is_pseudo_paren:
+      previous = previous.previous_token
+      if not previous:
+        return
 
     cur_lineno = self.lineno
     prev_lineno = previous.lineno
@@ -172,6 +231,7 @@ class FormatToken(object):
       prev_len = len(previous.value.split('\n')[-1])
       if '\n' in previous.value:
         prev_column = 0  # Last line starts in column 0.
+
     self.spaces_required_before = cur_column - (prev_column + prev_len)
 
   def OpensScope(self):
@@ -181,7 +241,8 @@ class FormatToken(object):
     return self.value in pytree_utils.CLOSING_BRACKETS
 
   def __repr__(self):
-    msg = 'FormatToken(name={0}, value={1}'.format(self.name, self.value)
+    msg = 'FormatToken(name={0}, value={1}, lineno={2}'.format(
+        self.name, self.value, self.lineno)
     msg += ', pseudo)' if self.is_pseudo_paren else ')'
     return msg
 
@@ -230,6 +291,30 @@ class FormatToken(object):
 
   @property
   @py3compat.lru_cache()
+  def is_a_expr_op(self):
+    """Token is an a_expr operator."""
+    return Subtype.A_EXPR_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_m_expr_op(self):
+    """Token is an m_expr operator."""
+    return Subtype.M_EXPR_OPERATOR in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
+  def is_arithmetic_op(self):
+    """Token is an arithmetic operator."""
+    return self.is_a_expr_op or self.is_m_expr_op
+
+  @property
+  @py3compat.lru_cache()
+  def is_simple_expr(self):
+    """Token is an operator in a simple expression."""
+    return Subtype.SIMPLE_EXPRESSION in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
   def name(self):
     """A string representation of the node's name."""
     return pytree_utils.NodeName(self.node)
@@ -263,9 +348,14 @@ class FormatToken(object):
   @property
   @py3compat.lru_cache()
   def is_multiline_string(self):
-    return (self.is_string and
-            re.match(r'^[uUbB]?[rR]?(?P<delim>"""|\'\'\').*(?P=delim)$',
-                     self.value, re.DOTALL) is not None)
+    """Test if this string is a multiline string.
+
+    Returns:
+      A multiline string always ends with triple quotes, so if it is a string
+      token, inspect the last 3 characters and return True if it is a triple
+      double or triple single quote mark.
+    """
+    return self.is_string and self.value.endswith(('"""', "'''"))
 
   @property
   @py3compat.lru_cache()
@@ -280,4 +370,9 @@ class FormatToken(object):
   @property
   def is_pylint_comment(self):
     return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=',
+                                        self.value)
+
+  @property
+  def is_pytype_comment(self):
+    return self.is_comment and re.match(r'#.*\bpytype:\s*(disable|enable)=',
                                         self.value)

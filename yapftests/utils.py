@@ -34,13 +34,13 @@ def stdout_redirector(stream):  # pylint: disable=invalid-name
 # NamedTemporaryFile is useless because on Windows the temporary file would be
 # created with O_TEMPORARY, which would not allow the file to be opened a
 # second time, even by the same process, unless the same flag is used.
-# Thus we provide a simplifed version ourselfs.
+# Thus we provide a simplified version ourselves.
 #
 # Note: returns a tuple of (io.file_obj, file_path), instead of a file_obj with
 # a .name attribute
 #
 # Note: `buffering` is set to -1 despite documentation of NamedTemporaryFile
-# says None. This is probably a problem with the python documenation.
+# says None. This is probably a problem with the python documentation.
 @contextlib.contextmanager
 def NamedTempFile(mode='w+b',
                   buffering=-1,

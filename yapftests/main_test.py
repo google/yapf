@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ class MainTest(unittest.TestCase):
   def testEchoBadInput(self):
     bad_syntax = '  a = 1\n'
     with patched_input(bad_syntax):
-      with captured_output() as (out, _):
+      with captured_output() as (_, _):
         with self.assertRaisesRegexp(SyntaxError, 'unexpected indent'):
           yapf.main([])
 

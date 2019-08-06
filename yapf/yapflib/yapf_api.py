@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ import re
 import sys
 
 from lib2to3.pgen2 import parse
-from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
 from yapf.yapflib import file_resources
+from yapf.yapflib import identify_container
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
@@ -69,7 +69,7 @@ def FormatFile(filename,
 
   Returns:
     Tuple of (reformatted_code, encoding, changed). reformatted_code is None if
-    the file is sucessfully written to (having used in_place). reformatted_code
+    the file is successfully written to (having used in_place). reformatted_code
     is a diff if print_diff is True.
 
   Raises:
@@ -95,7 +95,7 @@ def FormatFile(filename,
   if in_place:
     if original_source and original_source != reformatted_source:
       file_resources.WriteReformattedCode(filename, reformatted_source,
-                                          in_place, encoding)
+                                          encoding, in_place)
     return None, encoding, changed
 
   return reformatted_source, encoding, changed
@@ -128,12 +128,14 @@ def FormatCode(unformatted_source,
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)
   except parse.ParseError as e:
-    raise parse.ParseError(filename + ': ' + e.message)
+    e.msg = filename + ': ' + e.msg
+    raise
 
   # Run passes on the tree, modifying it in place.
   comment_splicer.SpliceComments(tree)
   continuation_splicer.SpliceContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
+  identify_container.IdentifyContainers(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)
 
@@ -143,7 +145,8 @@ def FormatCode(unformatted_source,
 
   lines = _LineRangesToSet(lines)
   _MarkLinesToFormat(uwlines, lines)
-  reformatted_source = reformatter.Reformat(uwlines, verify, lines)
+  reformatted_source = reformatter.Reformat(
+      _SplitSemicolons(uwlines), verify, lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
@@ -152,7 +155,7 @@ def FormatCode(unformatted_source,
       unformatted_source, reformatted_source, filename=filename)
 
   if print_diff:
-    return code_diff, code_diff != ''
+    return code_diff, code_diff.strip() != ''  # pylint: disable=g-explicit-bool-comparison
 
   return reformatted_source, True
 
@@ -185,14 +188,8 @@ def ReadFile(filename, logger=None):
     IOError: raised if there was an error reading the file.
   """
   try:
-    with open(filename, 'rb') as fd:
-      encoding = tokenize.detect_encoding(fd.readline)[0]
-  except IOError as err:
-    if logger:
-      logger(err)
-    raise
+    encoding = file_resources.FileEncoding(filename)
 
-  try:
     # Preserves line endings.
     with py3compat.open_with_encoding(
         filename, mode='r', encoding=encoding, newline='') as fd:
@@ -205,6 +202,19 @@ def ReadFile(filename, logger=None):
     if logger:
       logger(err)
     raise
+  except UnicodeDecodeError as err:  # pragma: no cover
+    if logger:
+      logger('Could not parse %s! Consider excluding this file with --exclude.',
+             filename)
+      logger(err)
+    raise
+
+
+def _SplitSemicolons(uwlines):
+  res = []
+  for uwline in uwlines:
+    res.extend(uwline.Split())
+  return res
 
 
 DISABLE_PATTERN = r'^#.*\byapf:\s*disable\b'
@@ -228,8 +238,8 @@ def _MarkLinesToFormat(uwlines, lines):
   """Skip sections of code that we shouldn't reformat."""
   if lines:
     for uwline in uwlines:
-      uwline.disable = not (
-          lines.intersection(range(uwline.lineno, uwline.last.lineno + 1)))
+      uwline.disable = not lines.intersection(
+          range(uwline.lineno, uwline.last.lineno + 1))
 
   # Now go through the lines and disable any lines explicitly marked as
   # disabled.
@@ -251,15 +261,17 @@ def _MarkLinesToFormat(uwlines, lines):
 
 
 def _DisableYAPF(line):
-  return (
-      re.search(DISABLE_PATTERN, line.split('\n')[0].strip(), re.IGNORECASE) or
-      re.search(DISABLE_PATTERN, line.split('\n')[-1].strip(), re.IGNORECASE))
+  return (re.search(DISABLE_PATTERN,
+                    line.split('\n')[0].strip(), re.IGNORECASE) or
+          re.search(DISABLE_PATTERN,
+                    line.split('\n')[-1].strip(), re.IGNORECASE))
 
 
 def _EnableYAPF(line):
-  return (
-      re.search(ENABLE_PATTERN, line.split('\n')[0].strip(), re.IGNORECASE) or
-      re.search(ENABLE_PATTERN, line.split('\n')[-1].strip(), re.IGNORECASE))
+  return (re.search(ENABLE_PATTERN,
+                    line.split('\n')[0].strip(), re.IGNORECASE) or
+          re.search(ENABLE_PATTERN,
+                    line.split('\n')[-1].strip(), re.IGNORECASE))
 
 
 def _GetUnifiedDiff(before, after, filename='code'):

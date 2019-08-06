@@ -2,13 +2,283 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.16.4] Unreleased
+## [0.28.1] UNRELEASED
+### Changed
+- Collect a parameter list into a single object. This allows us to track how a
+  parameter list is formatted, keeping state along the way. This helps when
+  supporting Python 3 type annotations.
+### Fixed
+- Format subscript lists so that splits are essentially free after a comma.
+- Don't add a space between a string and its subscript.
+- Extend discovery of '.style.yapf' & 'setup.cfg' files to search the root
+  directory as well.
+- Make sure we have parameters before we start calculating penalties for
+  splitting them.
+
+## [0.28.0] 2019-07-11
+### Added
+- New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
+  `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with a comma
+  fits in its starting line, then the subexpression is not split (thus avoiding
+  unnecessary splits).
+### Changed
+- Set `INDENT_DICTIONARY_VALUE` for Google style.
+- Set `JOIN_MULTIPLE_LINES = False` for Google style.
+- Catch and report `UnicodeDecodeError` exceptions.
+### Fixed
+- `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False` wasn't honored because the
+  number of newlines was erroneously calculated beforehand.
+- Lambda expressions shouldn't have an increased split penalty applied to the
+  'lambda' keyword. This prevents them from being properly formatted when they're
+  arguments to functions.
+- A comment with continuation markers (??) shouldn't mess with the lineno count.
+- Only emit unformatted if the "disable long line" is at the end of the line.
+  Otherwise we could mess up formatting for containers which have them
+  interspersed with code.
+- Fix a potential race condition by using the correct style for opening a file
+  which may not exist.
+
+## [0.27.0] 2019-04-07
+### Added
+- `SPLIT_BEFORE_ARITHMETIC_OPERATOR` splits before an arithmetic operator when
+  set. `SPLIT_PENALTY_ARITHMETIC_OPERATOR` allows you to set the split penalty
+  around arithmetic operators.
+### Changed
+- Catch lib2to3's "TokenError" exception and output a nicer message.
+### Fixed
+- Parse integer lists correctly, removing quotes if the list is within a
+  string.
+- Adjust the penalties of bitwise operands for '&' and '^', similar to '|'.
+- Avoid splitting after opening parens if SPLIT_BEFORE_FIRST_ARGUMENT is set
+  to False.
+- Adjust default SPLIT_PENALTY_AFTER_OPENING_BRACKET.
+- Re-enable removal of extra lines on the boundaries of formatted regions.
+- Adjust list splitting to avoid splitting before a dictionary element, because
+  those are likely to be split anyway. If we do split, it leads to horrible
+  looking code.
+- Dictionary arguments were broken in a recent version. It resulted in
+  unreadable formatting, where the remaining arguments were indented far more
+  than the dictionary. Fixed so that if the dictionary is the first argument in
+  a function call and doesn't fit on a single line, then it forces a split.
+- Improve the connectiveness between items in a list. This prevents random
+  splitting when it's not 100% necessary.
+- Don't remove a comment attached to a previous object just because it's part
+  of the "prefix" of a function/class node.
+
+## [0.26.0] 2019-02-08
+### Added
+- `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS` allows us to split before
+  default / named assignments.
+- `ARITHMETIC_PRECEDENCE_INDICATION` removes spacing around binary operators
+  if they have higher precedence than other operators in the same expression.
+### Changed
+- `SPACES_BEFORE_COMMENT` can now be assigned to a specific value (standard
+  behavior) or a list of column values. When assigned to a list, trailing
+  comments will be horizontally aligned to the first column value within
+  the list that is greater than the maximum line length in the block.
+- Don't modify the vertical spacing of a line that has a comment "pylint:
+  disable=line-too-long". The line is expected to be too long.
+- improved `CONTINUATION_ALIGN_STYLE` to accept quoted or underline-separated
+  option value for passing option with command line arguments.
+### Fixed
+- When retrieving the opening bracket make sure that it's actually an opening
+  bracket.
+- Don't completely deny a lambda formatting if it goes over the column limit.
+  Split only if absolutely necessary.
+- Bump up penalty for splitting before a dot ('.').
+- Ignore pseudo tokens when calculating split penalties.
+- Increase the penalty for splitting before the first bit of a subscript.
+- Improve splitting before dictionary values. Look more closely to see if the
+  dictionary entry is a container. If so, then it's probably split over
+  multiple lines with the opening bracket on the same line as the key.
+  Therefore, we shouldn't enforce a split because of that.
+- Increase split penalty around exponent operator.
+- Correct spacing when using binary operators on strings with the
+  `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` option enabled.
+
+## [0.25.0] 2018-11-25
+### Added
+- Added `INDENT_BLANK_LINES` knob to select whether the blank lines are empty
+  or indented consistently with the current block.
+- Support additional file exclude patterns in .yapfignore file.
+### Fixed
+- Correctly determine if a scope is the last in line. It avoids a wrong
+  computation of the line end when determining if it must split after the
+  opening bracket with `DEDENT_CLOSING_BRACKETS` enabled.
+
+## [0.24.0] 2018-09-07
+### Added
+- Added 'SPLIT_BEFORE_DOT' knob to support "builder style" calls. The "builder
+  style" option didn't work as advertised. Lines would split after the dots,
+  not before them regardless of the penalties.
+### Changed
+- Support Python 3.7 in the tests. The old "comp_for" and "comp_if" nodes are
+  now "old_comp_for" and "old_comp_if" in lib2to3.
+### Fixed
+- Don't count inner function calls when marking arguments as named assignments.
+- Make sure that tuples and the like are formatted nicely if they all can't fit
+  on a single line. This is similar to how we format function calls within an
+  argument list.
+- Allow splitting in a subscript if it goes over the line limit.
+- Increase the split penalty for an if-expression.
+- Increase penalty for splitting in a subscript so that it's more likely to
+  split in a function call or other data literal.
+- Cloning a pytree node doesn't transfer its a annotations. Make sure we do
+  that so that we don't lose information.
+- Revert change that broke the "no_spaces_around_binary_operators" option.
+- The "--style-help" option would output string lists and sets in Python types.
+  If the output was used as a style, then it wouldn't parse those values
+  correctly.
+
+## [0.23.0] 2018-08-27
+### Added
+- `DISABLE_ENDING_COMMA_HEURISTIC` is a new knob to disable the heuristic which
+  splits a list onto separate lines if the list is comma-terminated.
+### Fixed
+- There's no need to increase N_TOKENS. In fact, it causes other things which
+  use lib2to3 to fail if called from YAPF.
+- Change the exception message instead of creating a new one that's just a
+  clone.
+- Make sure not to reformat when a line is disabled even if the --lines option
+  is specified.
+- The "no spaces around operators" flag wasn't correctly converting strings to
+  sets. Changed the regexp to handle it better.
+
+## [0.22.0] 2018-05-15
+### Added
+- The `BLANK_LINE_BEFORE_MODULE_DOCSTRING` knob adds a blank line before a
+  module's docstring.
+- The `SPLIT_ALL_COMMA_SEPARATED_VALUES` knob causes all lists, tuples, dicts
+  function defs, etc... to split on all values, instead of maximizing the
+  number of elements on each line, when not able to fit on a single line.
+### Changed
+- Improve the heuristic we use to determine when to split at the start of a
+  function call. First check whether or not all elements can fit in the space
+  without wrapping. If not, then we split.
+- Check all of the elements of a tuple. Similarly to how arguments are
+  analyzed. This allows tuples to be split more rationally.
+- Adjust splitting penalties around arithmetic operators so that the code can
+  flow more freely. The code must flow!
+- Try to meld an argument list's closing parenthesis to the last argument.
+### Fixed
+- Attempt to determine if long lambdas are allowed. This can be done on a
+  case-by-case basis with a "pylint" disable comment.
+- A comment before a decorator isn't part of the decorator's line.
+- Only force a new wrapped line after a comment in a decorator when it's the
+  first token in the decorator.
+
+## [0.21.0] 2018-03-18
+### Added
+- Introduce a new option of formatting multiline literals. Add
+  `SPLIT_BEFORE_CLOSING_BRACKET` knob to control whether closing bracket should
+  get their own line.
+- Added `CONTINUATION_ALIGN_STYLE` knob to choose continuation alignment style
+  when `USE_TABS` is enabled.
+- Add 'BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION' knob to control the number
+  of blank lines between top-level function and class definitions.
+### Fixed
+- Don't split ellipses.
+
+## [0.20.2] 2018-02-12
+### Changed
+- Improve the speed at which files are excluded by ignoring them earlier.
+- Allow dictionaries to stay on a single line if they only have one entry
+### Fixed
+- Use tabs when constructing a continuation line when `USE_TABS` is enabled.
+- A dictionary entry may not end in a colon, but may be an "unpacking"
+  operation: `**foo`. Take that into accound and don't split after the
+  unpacking operator.
+
+## [0.20.1] 2018-01-13
+### Fixed
+- Don't treat 'None' as a keyword if calling a function on it, like '__ne__()'.
+- use_tabs=True always uses a single tab per indentation level; spaces are
+  used for aligning vertically after that.
+- Relax the split of a paren at the end of an if statement. With
+  `dedent_closing_brackets` option requires that it be able to split there.
+
+## [0.20.0] 2017-11-14
+### Added
+- Improve splitting of comprehensions and generators. Add
+  `SPLIT_PENALTY_COMPREHENSION` knob to control preference for keeping
+  comprehensions on a single line and `SPLIT_COMPLEX_COMPREHENSION` to enable
+  splitting each clause of complex comprehensions onto its own line.
+### Changed
+- Take into account a named function argument when determining if we should
+  split before the first argument in a function call.
+- Split before the first argument in a function call if the arguments contain a
+  dictionary that doesn't fit on a single line.
+- Improve splitting of elements in a tuple. We want to split if there's a
+  function call in the tuple that doesn't fit on the line.
+### Fixed
+- Enforce spaces between ellipses and keywords.
+- When calculating the split penalty for a "trailer", process the child nodes
+  afterwards because their penalties may change. For example if a list
+  comprehension is an argument.
+- Don't enforce a split before a comment after the opening of a container if it
+  doesn't it on the current line. We try hard not to move such comments around.
+- Use a TextIOWrapper when reading from stdin in Python3. This is necessary for
+  some encodings, like cp936, used on Windows.
+- Remove the penalty for a split before the first argument in a function call
+  where the only argument is a generator expression.
+
+## [0.19.0] 2017-10-14
+### Added
+- Added `SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN` that enforces a split
+  after the opening paren of an expression that's surrounded by parens.
+### Changed
+- Split before the ending bracket of a comma-terminated tuple / argument list
+  if it's not a single element tuple / arg list.
+### Fixed
+- Prefer to split after a comma in an argument list rather than in the middle
+  of an argument.
+- A non-multiline string may have newlines if it contains continuation markers
+  itself. Don't add a newline after the string when retaining the vertical
+  space.
+- Take into account the "async" keyword when determining if we must split
+  before the first argument.
+- Increase affinity for "atom" arguments in function calls. This helps prevent
+  lists from being separated when they don't need to be.
+- Don't place a dictionary argument on its own line if it's the last argument
+  in the function call where that function is part of a builder-style call.
+- Append the "var arg" type to a star in a star_expr.
+
+## [0.18.0] 2017-09-18
+### Added
+- Option `ALLOW_SPLIT_BEFORE_DICT_VALUE` allows a split before a value. If
+  False, then it won't be split even if it goes over the column limit.
+### Changed
+- Use spaces around the '=' in a typed name argument to align with 3.6 syntax.
+### Fixed
+- Allow semicolons if the line is disabled.
+- Fix issue where subsequent comments at decreasing levels of indentation
+  were improperly aligned and/or caused output with invalid syntax.
+- Fix issue where specifying a line range removed a needed line before a
+  comment.
+- Fix spacing between unary operators if one is 'not'.
+- Indent the dictionary value correctly if there's a multi-line key.
+- Don't remove needed spacing before a comment in a dict when in "chromium"
+  style.
+- Increase indent for continuation line with same indent as next logical line
+  with 'async with' statement.
+
+## [0.17.0] 2017-08-20
+### Added
+- Option `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` prevents adding spaces
+  around selected binary operators, in accordance with the current style guide.
 ### Changed
 - Adjust blank lines on formatting boundaries when using the `--lines` option.
+- Return 1 if a diff changed the code. This is in line with how GNU diff acts.
+- Add `-vv` flag to print out file names as they are processed
+### Fixed
+- Corrected how `DEDENT_CLOSING_BRACKETS` and `COALESCE_BRACKETS` interacted.
+- Fix return value to return a boolean.
+- Correct vim plugin not to clobber edited code if yapf returns an error.
+- Ensured comma-terminated tuples with multiple elements are split onto separate lines.
 
 ## [0.16.3] 2017-07-13
 ### Changed
-- Add filename information to a ParseError excetion.
+- Add filename information to a ParseError exception.
 ### Fixed
 - A token that ends in a continuation marker may have more than one newline in
   it, thus changing its "lineno" value. This can happen if multiple
@@ -93,7 +363,7 @@
 ## [0.15.0] 2017-01-12
 ### Added
 - Keep type annotations intact as much as possible. Don't try to split the over
-  mutliple lines.
+  multiple lines.
 ### Fixed
 - When determining if each element in a dictionary can fit on a single line, we
   are skipping dictionary entries. However, we need to ignore comments in our

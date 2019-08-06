@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """Utilities for Python2 / Python3 compatibility."""
 
+import codecs
 import io
 import os
 import sys
@@ -34,7 +35,10 @@ if PY3:
 
   range = range
   ifilter = filter
-  raw_input = input
+
+  def raw_input():
+    wrapper = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+    return wrapper.buffer.raw.readall().decode('utf-8')
 
   import configparser
 
@@ -95,8 +99,10 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
 
 
 if PY3:
+  basestring = str
   unicode = str  # pylint: disable=redefined-builtin,invalid-name
 else:
+  basestring = basestring
 
   def unicode(s):  # pylint: disable=invalid-name
     """Force conversion of s to unicode."""
@@ -111,3 +117,13 @@ class ConfigParser(configparser.ConfigParser):
 
     def read_file(self, fp, source=None):
       self.readfp(fp, filename=source)
+
+
+def removeBOM(source):
+  """Remove any Byte-order-Mark bytes from the beginning of a file."""
+  bom = codecs.BOM_UTF8
+  if PY3:
+    bom = bom.decode('utf-8')
+  if source.startswith(bom):
+    return source[len(bom):]
+  return source

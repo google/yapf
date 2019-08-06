@@ -17,15 +17,8 @@
 " Place this script in your ~/.vim/autoload directory. You can add accessors to
 " ~/.vimrc, e.g.:
 "
-"    map <C-P> :call yapf#YAPF()<cr>
-"    imap <C-P> <c-o>:call yapf#YAPF()<cr>
-"
-" Alternatively, you can call the command YAPF. If you omit the range,
-" it will reformat the whole buffer.
-"
-" example:
-"   :YAPF       " formats whole buffer
-"   :'<,'>YAPF  " formats lines selected in visual mode
+"    map <C-Y> :call yapf#YAPF()<cr>
+"    imap <C-Y> <c-o>:call yapf#YAPF()<cr>
 "
 function! yapf#YAPF() range
   " Determine range to format.
@@ -33,14 +26,24 @@ function! yapf#YAPF() range
   let l:cmd = 'yapf --lines=' . l:line_ranges
 
   " Call YAPF with the current buffer
-  let l:formatted_text = system(l:cmd, join(getline(1, '$'), "\n") . "\n")
+  if exists('*systemlist')
+    let l:formatted_text = systemlist(l:cmd, join(getline(1, '$'), "\n") . "\n")
+  else
+    let l:formatted_text =
+        \ split(system(l:cmd, join(getline(1, '$'), "\n") . "\n"), "\n")
+  endif
+
+  if v:shell_error
+    echohl ErrorMsg
+    echomsg printf('"%s" returned error: %s', l:cmd, l:formatted_text[-1])
+    echohl None
+    return
+  endif
 
   " Update the buffer.
   execute '1,' . string(line('$')) . 'delete'
-  call setline(1, split(l:formatted_text, "\n"))
+  call setline(1, l:formatted_text)
 
   " Reset cursor to first line of the formatted range.
   call cursor(a:firstline, 1)
 endfunction
-
-command! -range=% YAPF <line1>,<line2>call yapf#YAPF()

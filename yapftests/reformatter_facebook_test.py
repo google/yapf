@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ v, w, x, y, z
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testDedentTestListGexp(self):
-    code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
         try:
             pass
         except (
@@ -122,8 +122,27 @@ v, w, x, y, z
         ) as exception:
             pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    expected_formatted_code = textwrap.dedent("""\
+        try:
+            pass
+        except (
+            IOError, OSError, LookupError, RuntimeError, OverflowError
+        ) as exception:
+            pass
+
+        try:
+            pass
+        except (
+            IOError,
+            OSError,
+            LookupError,
+            RuntimeError,
+            OverflowError,
+        ) as exception:
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testBrokenIdempotency(self):
     # TODO(ambv): The following behaviour should be fixed.
@@ -390,6 +409,21 @@ v, w, x, y, z
 
         print(foo())
         """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testIfStmtClosingBracket(self):
+    unformatted_code = """\
+if (isinstance(value  , (StopIteration  , StopAsyncIteration  )) and exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs):
+    return False
+"""
+    expected_formatted_code = """\
+if (
+    isinstance(value, (StopIteration, StopAsyncIteration)) and
+    exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs
+):
+    return False
+"""
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 

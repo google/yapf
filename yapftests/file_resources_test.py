@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 # limitations under the License.
 """Tests for yapf.file_resources."""
 
+import contextlib
 import os
 import shutil
 import tempfile
@@ -26,18 +27,67 @@ from yapf.yapflib import py3compat
 from yapftests import utils
 
 
-class GetDefaultStyleForDirTest(unittest.TestCase):
+@contextlib.contextmanager
+def _restore_working_dir():
+  curdir = os.getcwd()
+  try:
+    yield
+  finally:
+    os.chdir(curdir)
 
-  def setUp(self):
+
+@contextlib.contextmanager
+def _exists_mocked_in_module(module, mock_implementation):
+  unmocked_exists = getattr(module, 'exists')
+  setattr(module, 'exists', mock_implementation)
+  try:
+    yield
+  finally:
+    setattr(module, 'exists', unmocked_exists)
+
+
+class GetExcludePatternsForDir(unittest.TestCase):
+
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
+    shutil.rmtree(self.test_tmpdir)
+
+  def _make_test_dir(self, name):
+    fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
+    os.makedirs(fullpath)
+    return fullpath
+
+  def test_get_exclude_file_patterns(self):
+    local_ignore_file = os.path.join(self.test_tmpdir, '.yapfignore')
+    ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
+    with open(local_ignore_file, 'w') as f:
+      f.writelines('\n'.join(ignore_patterns))
+
+    self.assertEqual(
+        sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
+        sorted(ignore_patterns))
+
+
+class GetDefaultStyleForDirTest(unittest.TestCase):
+
+  def setUp(self):  # pylint: disable=g-missing-super-call
+    self.test_tmpdir = tempfile.mkdtemp()
+
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
   def test_no_local_style(self):
     test_file = os.path.join(self.test_tmpdir, 'file.py')
     style_name = file_resources.GetDefaultStyleForDir(test_file)
     self.assertEqual(style_name, 'pep8')
+
+  def test_no_local_style_custom_default(self):
+    test_file = os.path.join(self.test_tmpdir, 'file.py')
+    style_name = file_resources.GetDefaultStyleForDir(
+        test_file, default_style='custom-default')
+    self.assertEqual(style_name, 'custom-default')
 
   def test_with_local_style(self):
     # Create an empty .style.yapf file in test_tmpdir
@@ -52,6 +102,43 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
     self.assertEqual(style_file,
                      file_resources.GetDefaultStyleForDir(test_filename))
 
+  def test_setup_config(self):
+    # An empty setup.cfg file should not be used
+    setup_config = os.path.join(self.test_tmpdir, 'setup.cfg')
+    open(setup_config, 'w').close()
+
+    test_dir = os.path.join(self.test_tmpdir, 'dir1')
+    style_name = file_resources.GetDefaultStyleForDir(test_dir)
+    self.assertEqual(style_name, 'pep8')
+
+    # One with a '[yapf]' section should be used
+    with open(setup_config, 'w') as f:
+      f.write('[yapf]\n')
+    self.assertEqual(setup_config,
+                     file_resources.GetDefaultStyleForDir(test_dir))
+
+  def test_local_style_at_root(self):
+    # Test behavior of files located on the root, and under root.
+    rootdir = os.path.abspath(os.path.sep)
+    test_dir_at_root = os.path.join(rootdir, 'dir1')
+    test_dir_under_root = os.path.join(rootdir, 'dir1', 'dir2')
+
+    # Fake placing only a style file at the root by mocking `os.path.exists`.
+    style_file = os.path.join(rootdir, '.style.yapf')
+
+    def mock_exists_implementation(path):
+      return path == style_file
+
+    with _exists_mocked_in_module(file_resources.os.path,
+                                  mock_exists_implementation):
+      # Both files should find the style file at the root.
+      default_style_at_root = file_resources.GetDefaultStyleForDir(
+          test_dir_at_root)
+      self.assertEqual(style_file, default_style_at_root)
+      default_style_under_root = file_resources.GetDefaultStyleForDir(
+          test_dir_under_root)
+      self.assertEqual(style_file, default_style_under_root)
+
 
 def _touch_files(filenames):
   for name in filenames:
@@ -60,11 +147,13 @@ def _touch_files(filenames):
 
 class GetCommandLineFilesTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
+    self.old_dir = os.getcwd()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
+    os.chdir(self.old_dir)
 
   def _make_test_dir(self, name):
     fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
@@ -79,11 +168,13 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files([file1, file2])
 
     self.assertEqual(
-        file_resources.GetCommandLineFiles(
-            [file1, file2], recursive=False, exclude=None), [file1, file2])
+        file_resources.GetCommandLineFiles([file1, file2],
+                                           recursive=False,
+                                           exclude=None), [file1, file2])
     self.assertEqual(
-        file_resources.GetCommandLineFiles(
-            [file1, file2], recursive=True, exclude=None), [file1, file2])
+        file_resources.GetCommandLineFiles([file1, file2],
+                                           recursive=True,
+                                           exclude=None), [file1, file2])
 
   def test_nonrecursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
@@ -112,9 +203,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
     self.assertEqual(
         sorted(
-            file_resources.GetCommandLineFiles(
-                [self.test_tmpdir], recursive=True, exclude=None)),
-        sorted(files))
+            file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                               recursive=True,
+                                               exclude=None)), sorted(files))
 
   def test_recursive_find_in_dir_with_exclude(self):
     tdir1 = self._make_test_dir('test1')
@@ -129,20 +220,122 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
     self.assertEqual(
         sorted(
-            file_resources.GetCommandLineFiles(
-                [self.test_tmpdir], recursive=True, exclude=['*test*3.py'])),
+            file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                               recursive=True,
+                                               exclude=['*test*3.py'])),
         sorted([
             os.path.join(tdir1, 'testfile1.py'),
             os.path.join(tdir2, 'testfile2.py'),
         ]))
 
+  def test_find_with_excluded_hidden_dirs(self):
+    tdir1 = self._make_test_dir('.test1')
+    tdir2 = self._make_test_dir('test_2')
+    tdir3 = self._make_test_dir('test.3')
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'),
+        os.path.join(tdir3, 'testfile3.py'),
+    ]
+    _touch_files(files)
+
+    actual = file_resources.GetCommandLineFiles([self.test_tmpdir],
+                                                recursive=True,
+                                                exclude=['*.test1*'])
+
+    self.assertEqual(
+        sorted(actual),
+        sorted([
+            os.path.join(tdir2, 'testfile2.py'),
+            os.path.join(tdir3, 'testfile3.py'),
+        ]))
+
+  def test_find_with_excluded_hidden_dirs_relative(self):
+    """Test find with excluded hidden dirs.
+
+    A regression test against a specific case where a hidden directory (one
+    beginning with a period) is being excluded, but it is also an immediate
+    child of the current directory which has been specified in a relative
+    manner.
+
+    At its core, the bug has to do with overzelous stripping of "./foo" so that
+    it removes too much from "./.foo" .
+    """
+    tdir1 = self._make_test_dir('.test1')
+    tdir2 = self._make_test_dir('test_2')
+    tdir3 = self._make_test_dir('test.3')
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'),
+        os.path.join(tdir3, 'testfile3.py'),
+    ]
+    _touch_files(files)
+
+    # We must temporarily change the current directory, so that we test against
+    # patterns like ./.test1/file instead of /tmp/foo/.test1/file
+    with _restore_working_dir():
+
+      os.chdir(self.test_tmpdir)
+      actual = file_resources.GetCommandLineFiles(
+          [os.path.relpath(self.test_tmpdir)],
+          recursive=True,
+          exclude=['*.test1*'])
+
+      self.assertEqual(
+          sorted(actual),
+          sorted([
+              os.path.join(
+                  os.path.relpath(self.test_tmpdir), os.path.basename(tdir2),
+                  'testfile2.py'),
+              os.path.join(
+                  os.path.relpath(self.test_tmpdir), os.path.basename(tdir3),
+                  'testfile3.py'),
+          ]))
+
+  def test_find_with_excluded_dirs(self):
+    tdir1 = self._make_test_dir('test1')
+    tdir2 = self._make_test_dir('test2/testinner/')
+    tdir3 = self._make_test_dir('test3/foo/bar/bas/xxx')
+    files = [
+        os.path.join(tdir1, 'testfile1.py'),
+        os.path.join(tdir2, 'testfile2.py'),
+        os.path.join(tdir3, 'testfile3.py'),
+    ]
+    _touch_files(files)
+
+    os.chdir(self.test_tmpdir)
+
+    found = sorted(
+        file_resources.GetCommandLineFiles(['test1', 'test2', 'test3'],
+                                           recursive=True,
+                                           exclude=[
+                                               'test1',
+                                               'test2/testinner/',
+                                           ]))
+
+    self.assertEqual(found, ['test3/foo/bar/bas/xxx/testfile3.py'])
+
+    found = sorted(
+        file_resources.GetCommandLineFiles(['.'],
+                                           recursive=True,
+                                           exclude=[
+                                               'test1',
+                                               'test3',
+                                           ]))
+
+    self.assertEqual(found, ['./test2/testinner/testfile2.py'])
+
+  def test_find_with_excluded_current_dir(self):
+    with self.assertRaises(errors.YapfError):
+      file_resources.GetCommandLineFiles([], False, exclude=['./z'])
+
 
 class IsPythonFileTest(unittest.TestCase):
 
-  def setUp(self):
+  def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
 
-  def tearDown(self):
+  def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
   def test_with_py_extension(self):
@@ -180,6 +373,22 @@ class IsPythonFileTest(unittest.TestCase):
     self.assertFalse(file_resources.IsPythonFile(file1))
 
 
+class IsIgnoredTest(unittest.TestCase):
+
+  def test_root_path(self):
+    self.assertTrue(file_resources.IsIgnored('media', ['media']))
+    self.assertFalse(file_resources.IsIgnored('media', ['media/*']))
+
+  def test_sub_path(self):
+    self.assertTrue(file_resources.IsIgnored('media/a', ['*/a']))
+    self.assertTrue(file_resources.IsIgnored('media/b', ['media/*']))
+    self.assertTrue(file_resources.IsIgnored('media/b/c', ['*/*/c']))
+
+  def test_trailing_slash(self):
+    self.assertTrue(file_resources.IsIgnored('z', ['z']))
+    self.assertTrue(file_resources.IsIgnored('z', ['z/']))
+
+
 class BufferedByteStream(object):
 
   def __init__(self):
@@ -196,11 +405,11 @@ class BufferedByteStream(object):
 class WriteReformattedCodeTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     cls.test_tmpdir = tempfile.mkdtemp()
 
   @classmethod
-  def tearDownClass(cls):
+  def tearDownClass(cls):  # pylint: disable=g-missing-super-call
     shutil.rmtree(cls.test_tmpdir)
 
   def test_write_to_file(self):

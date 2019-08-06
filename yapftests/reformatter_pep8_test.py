@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,24 +76,6 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testSplittingSemicolonStatements(self):
-    unformatted_code = textwrap.dedent("""\
-        def f():
-          x = y + 42 ; z = n * 42
-          if True: a += 1 ; b += 1; c += 1
-        """)
-    expected_formatted_code = textwrap.dedent("""\
-        def f():
-            x = y + 42
-            z = n * 42
-            if True:
-                a += 1
-                b += 1
-                c += 1
-        """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
-
   def testSpaceBetweenEndingCommandAndClosingBracket(self):
     unformatted_code = textwrap.dedent("""\
         a = (
@@ -106,7 +88,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testContinuedNonOudentedLine(self):
+  def testContinuedNonOutdentedLine(self):
     code = textwrap.dedent("""\
         class eld(d):
             if str(geom.geom_type).upper(
@@ -183,8 +165,8 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
-            runtime_mins = (
-                program_end_time - program_start_time).total_seconds() / 60.0
+            runtime_mins = (program_end_time -
+                            program_start_time).total_seconds() / 60.0
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
@@ -208,8 +190,10 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx
                 or yyyyyyyyyyyyyyyyy):
             pass
-        elif (xxxxxxxxxxxxxxx(
-                aaaaaaaaaaa, bbbbbbbbbbbbbb, cccccccccccc, dddddddddd=None)):
+        elif (xxxxxxxxxxxxxxx(aaaaaaaaaaa,
+                              bbbbbbbbbbbbbb,
+                              cccccccccccc,
+                              dddddddddd=None)):
             pass
 
 
@@ -344,6 +328,209 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testUnaryOperator(self):
+    unformatted_code = textwrap.dedent("""\
+        if not -3 < x < 3:
+          pass
+        if -3 < x < 3:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        if not -3 < x < 3:
+            pass
+        if -3 < x < 3:
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testNoSplitBeforeDictValue(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: pep8, '
+                                      'allow_split_before_dict_value: false, '
+                                      'coalesce_brackets: true, '
+                                      'dedent_closing_brackets: true, '
+                                      'each_dict_entry_on_separate_line: true, '
+                                      'split_before_logical_operator: true}'))
+
+      unformatted_code = textwrap.dedent("""\
+          some_dict = {
+              'title': _("I am example data"),
+              'description': _("Lorem ipsum dolor met sit amet elit, si vis pacem para bellum "
+                               "elites nihi very long string."),
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          some_dict = {
+              'title': _("I am example data"),
+              'description': _(
+                  "Lorem ipsum dolor met sit amet elit, si vis pacem para bellum "
+                  "elites nihi very long string."
+              ),
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+
+      unformatted_code = textwrap.dedent("""\
+          X = {'a': 1, 'b': 2, 'key': this_is_a_function_call_that_goes_over_the_column_limit_im_pretty_sure()}
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          X = {
+              'a': 1,
+              'b': 2,
+              'key': this_is_a_function_call_that_goes_over_the_column_limit_im_pretty_sure()
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+
+      unformatted_code = textwrap.dedent("""\
+          attrs = {
+              'category': category,
+              'role': forms.ModelChoiceField(label=_("Role"), required=False, queryset=category_roles, initial=selected_role, empty_label=_("No access"),),
+          }
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          attrs = {
+              'category': category,
+              'role': forms.ModelChoiceField(
+                  label=_("Role"),
+                  required=False,
+                  queryset=category_roles,
+                  initial=selected_role,
+                  empty_label=_("No access"),
+              ),
+          }
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+
+      unformatted_code = textwrap.dedent("""\
+          css_class = forms.CharField(
+              label=_("CSS class"),
+              required=False,
+              help_text=_("Optional CSS class used to customize this category appearance from templates."),
+          )
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          css_class = forms.CharField(
+              label=_("CSS class"),
+              required=False,
+              help_text=_(
+                  "Optional CSS class used to customize this category appearance from templates."
+              ),
+          )
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testBitwiseOperandSplitting(self):
+    unformatted_code = """\
+def _():
+    include_values = np.where(
+                (cdffile['Quality_Flag'][:] >= 5) & (
+                cdffile['Day_Night_Flag'][:] == 1) & (
+                cdffile['Longitude'][:] >= select_lon - radius) & (
+                cdffile['Longitude'][:] <= select_lon + radius) & (
+                cdffile['Latitude'][:] >= select_lat - radius) & (
+                cdffile['Latitude'][:] <= select_lat + radius))
+"""
+    expected_code = """\
+def _():
+    include_values = np.where(
+        (cdffile['Quality_Flag'][:] >= 5) & (cdffile['Day_Night_Flag'][:] == 1)
+        & (cdffile['Longitude'][:] >= select_lon - radius)
+        & (cdffile['Longitude'][:] <= select_lon + radius)
+        & (cdffile['Latitude'][:] >= select_lat - radius)
+        & (cdffile['Latitude'][:] <= select_lat + radius))
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
+  def testSplitBeforeArithmeticOperators(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, split_before_arithmetic_operator: true}'))
+
+      unformatted_code = """\
+def _():
+    raise ValueError('This is a long message that ends with an argument: ' + str(42))
+"""
+      expected_formatted_code = """\
+def _():
+    raise ValueError('This is a long message that ends with an argument: '
+                     + str(42))
+"""
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testListSplitting(self):
+    unformatted_code = """\
+foo([(1,1), (1,1), (1,1), (1,1), (1,1), (1,1), (1,1),
+     (1,1), (1,1), (1,1), (1,1), (1,1), (1,1), (1,1),
+     (1,10), (1,11), (1, 10), (1,11), (10,11)])
+"""
+    expected_code = """\
+foo([(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+     (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 10), (1, 11), (1, 10),
+     (1, 11), (10, 11)])
+"""
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
+
+  def testNoBlankLineBeforeNestedFuncOrClass(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, '
+              'blank_line_before_nested_class_or_def: false}'))
+
+      unformatted_code = '''\
+def normal_function():
+    """Return the nested function."""
+
+    def nested_function():
+        """Do nothing just nest within."""
+
+        @nested(klass)
+        class nested_class():
+            pass
+
+        pass
+
+    return nested_function
+'''
+      expected_formatted_code = '''\
+def normal_function():
+    """Return the nested function."""
+    def nested_function():
+        """Do nothing just nest within."""
+        @nested(klass)
+        class nested_class():
+            pass
+
+        pass
+
+    return nested_function
+'''
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
 
 
 if __name__ == '__main__':

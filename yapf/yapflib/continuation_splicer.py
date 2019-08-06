@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 The "backslash-newline" continuation marker is shoved into the node's prefix.
 Pull them out and make it into nodes of their own.
 
-  SpliceContinuations(): the main funciton exported by this module.
+  SpliceContinuations(): the main function exported by this module.
 """
 
 from lib2to3 import pytree

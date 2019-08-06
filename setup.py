@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
-          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
           'Topic :: Software Development :: Libraries :: Python Modules',
           'Topic :: Software Development :: Quality Assurance',
       ],
@@ -70,4 +69,5 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       },
       cmdclass={
           'test': RunTests,
-      },)
+      },
+  )

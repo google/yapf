@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -349,6 +349,73 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     code, changed = yapf_api.FormatCode(unformatted_code, lines=[(6, 7)])
     self.assertCodeEqual(expected_formatted_code, code)
     self.assertFalse(changed)
+
+  def testLinesRangeRemove(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+        def B():  # 6
+          pass  # 7
+
+
+
+
+        def C():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+        def B():  # 6
+          pass  # 7
+
+
+        def C():
+          pass
+        """)
+    code, changed = yapf_api.FormatCode(unformatted_code, lines=[(5, 9)])
+    self.assertCodeEqual(expected_formatted_code, code)
+    self.assertTrue(changed)
+
+  def testLinesRangeRemoveSome(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+
+        def B():  # 7
+          pass  # 8
+
+
+
+
+        def C():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+        def B():  # 7
+          pass  # 8
+
+
+
+        def C():
+          pass
+        """)
+    code, changed = yapf_api.FormatCode(unformatted_code, lines=[(6, 9)])
+    self.assertCodeEqual(expected_formatted_code, code)
+    self.assertTrue(changed)
 
 
 if __name__ == '__main__':

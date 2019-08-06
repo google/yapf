@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,11 +22,10 @@ Annotations:
   newlines: The number of newlines required before the node.
 """
 
-from lib2to3 import pytree
-
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
+from yapf.yapflib import style
 
 _NO_BLANK_LINES = 1
 _ONE_BLANK_LINE = 2
@@ -115,7 +114,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     """
     if self.last_was_class_or_function:
       if pytree_utils.NodeName(node) in _PYTHON_STATEMENTS:
-        leaf = _GetFirstChildLeaf(node)
+        leaf = pytree_utils.FirstLeafNode(node)
         self._SetNumNewlines(leaf, self._GetNumNewlines(leaf))
     self.last_was_class_or_function = False
     super(_BlankLineCalculator, self).DefaultNodeVisit(node)
@@ -155,7 +154,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     if self.last_was_decorator:
       return _NO_BLANK_LINES
     elif self._IsTopLevel(node):
-      return _TWO_BLANK_LINES
+      return 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION')
     return _ONE_BLANK_LINE
 
   def _SetNumNewlines(self, node, num_newlines):
@@ -168,16 +167,10 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
 
 def _StartsInZerothColumn(node):
-  return (_GetFirstChildLeaf(node).column == 0 or
+  return (pytree_utils.FirstLeafNode(node).column == 0 or
           (_AsyncFunction(node) and node.prev_sibling.column == 0))
 
 
 def _AsyncFunction(node):
   return (py3compat.PY3 and node.prev_sibling and
           pytree_utils.NodeName(node.prev_sibling) == 'ASYNC')
-
-
-def _GetFirstChildLeaf(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetFirstChildLeaf(node.children[0])

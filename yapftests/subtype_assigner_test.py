@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     """
     actual = []
     for uwl in uwlines:
-      filtered_values = [(ft.value, ft.subtypes) for ft in uwl.tokens
+      filtered_values = [(ft.value, ft.subtypes)
+                         for ft in uwl.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
@@ -42,41 +43,66 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     self.assertEqual(list_of_expected, actual)
 
   def testFuncDefDefaultAssign(self):
+    self.maxDiff = None  # pylint: disable=invalid-name
     code = textwrap.dedent(r"""
         def foo(a=37, *b, **c):
           return -x[:42]
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
-        [('def', [format_token.Subtype.NONE]),
-         ('foo', {format_token.Subtype.FUNC_DEF}),
-         ('(', [format_token.Subtype.NONE]),
-         ('a', {format_token.Subtype.NONE,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         ('=', {format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         ('37', {format_token.Subtype.NONE,
-                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         (',', {format_token.Subtype.NONE}),
-         ('*', {format_token.Subtype.VARARGS_STAR,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         ('b', {format_token.Subtype.NONE,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         (',', {format_token.Subtype.NONE}),
-         ('**', {format_token.Subtype.KWARGS_STAR_STAR,
-                 format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         ('c', {format_token.Subtype.NONE,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         (')', [format_token.Subtype.NONE]),
-         (':', [format_token.Subtype.NONE])],
-        [('return', [format_token.Subtype.NONE]),
-         ('-', {format_token.Subtype.UNARY_OPERATOR}),
-         ('x', [format_token.Subtype.NONE]),
-         ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
-         (':', {format_token.Subtype.SUBSCRIPT_COLON}),
-         ('42', [format_token.Subtype.NONE]),
-         (']', {format_token.Subtype.SUBSCRIPT_BRACKET})],
-    ])  # yapf: disable
+        [
+            ('def', [format_token.Subtype.NONE]),
+            ('foo', {format_token.Subtype.FUNC_DEF}),
+            ('(', {format_token.Subtype.NONE}),
+            ('a', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+                format_token.Subtype.PARAMETER_START,
+            }),
+            ('=', {
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            ('37', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.PARAMETER_STOP,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            (',', {format_token.Subtype.NONE}),
+            ('*', {
+                format_token.Subtype.PARAMETER_START,
+                format_token.Subtype.VARARGS_STAR,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            ('b', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.PARAMETER_STOP,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            (',', {format_token.Subtype.NONE}),
+            ('**', {
+                format_token.Subtype.PARAMETER_START,
+                format_token.Subtype.KWARGS_STAR_STAR,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            ('c', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.PARAMETER_STOP,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            (')', {format_token.Subtype.NONE}),
+            (':', [format_token.Subtype.NONE]),
+        ],
+        [
+            ('return', [format_token.Subtype.NONE]),
+            ('-', {format_token.Subtype.UNARY_OPERATOR}),
+            ('x', [format_token.Subtype.NONE]),
+            ('[', {format_token.Subtype.SUBSCRIPT_BRACKET}),
+            (':', {format_token.Subtype.SUBSCRIPT_COLON}),
+            ('42', [format_token.Subtype.NONE]),
+            (']', {format_token.Subtype.SUBSCRIPT_BRACKET}),
+        ],
+    ])
 
   def testFuncCallWithDefaultAssign(self):
     code = textwrap.dedent(r"""
@@ -84,17 +110,23 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
-        [('foo', [format_token.Subtype.NONE]),
-         ('(', [format_token.Subtype.NONE]),
-         ('x', {format_token.Subtype.NONE,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         (',', {format_token.Subtype.NONE}),
-         ('a', {format_token.Subtype.NONE,
-                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
-         ('=', {format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN}),
-         ("'hello world'", {format_token.Subtype.NONE}),
-         (')', [format_token.Subtype.NONE])],
-    ])  # yapf: disable
+        [
+            ('foo', [format_token.Subtype.NONE]),
+            ('(', [format_token.Subtype.NONE]),
+            ('x', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            (',', {format_token.Subtype.NONE}),
+            ('a', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            ('=', {format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN}),
+            ("'hello world'", {format_token.Subtype.NONE}),
+            (')', [format_token.Subtype.NONE]),
+        ],
+    ])
 
   def testSetComprehension(self):
     code = textwrap.dedent("""\
@@ -103,36 +135,45 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
-        [('def', [format_token.Subtype.NONE]),
-         ('foo', {format_token.Subtype.FUNC_DEF}),
-         ('(', [format_token.Subtype.NONE]),
-         ('strs', [format_token.Subtype.NONE]),
-         (')', [format_token.Subtype.NONE]),
-         (':', [format_token.Subtype.NONE])],
-        [('return', [format_token.Subtype.NONE]),
-         ('{', [format_token.Subtype.NONE]),
-         ('s', [format_token.Subtype.NONE]),
-         ('.', [format_token.Subtype.NONE]),
-         ('lower', [format_token.Subtype.NONE]),
-         ('(', [format_token.Subtype.NONE]),
-         (')', [format_token.Subtype.NONE]),
-         ('for', {format_token.Subtype.DICT_SET_GENERATOR,
-                  format_token.Subtype.COMP_FOR}),
-         ('s', {format_token.Subtype.COMP_FOR}),
-         ('in', {format_token.Subtype.COMP_FOR}),
-         ('strs', {format_token.Subtype.COMP_FOR}),
-         ('}', [format_token.Subtype.NONE])]
-    ])  # yapf: disable
+        [
+            ('def', [format_token.Subtype.NONE]),
+            ('foo', {format_token.Subtype.FUNC_DEF}),
+            ('(', {format_token.Subtype.NONE}),
+            ('strs', {
+                format_token.Subtype.NONE,
+                format_token.Subtype.PARAMETER_START,
+                format_token.Subtype.PARAMETER_STOP,
+            }),
+            (')', {format_token.Subtype.NONE}),
+            (':', [format_token.Subtype.NONE]),
+        ],
+        [
+            ('return', [format_token.Subtype.NONE]),
+            ('{', [format_token.Subtype.NONE]),
+            ('s', {format_token.Subtype.COMP_EXPR}),
+            ('.', {format_token.Subtype.COMP_EXPR}),
+            ('lower', {format_token.Subtype.COMP_EXPR}),
+            ('(', {format_token.Subtype.COMP_EXPR}),
+            (')', {format_token.Subtype.COMP_EXPR}),
+            ('for', {
+                format_token.Subtype.DICT_SET_GENERATOR,
+                format_token.Subtype.COMP_FOR,
+            }),
+            ('s', {format_token.Subtype.COMP_FOR}),
+            ('in', {format_token.Subtype.COMP_FOR}),
+            ('strs', {format_token.Subtype.COMP_FOR}),
+            ('}', [format_token.Subtype.NONE]),
+        ],
+    ])
 
   def testUnaryNotOperator(self):
     code = textwrap.dedent("""\
         not a
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckFormatTokenSubtypes(uwlines, [
-        [('not', {format_token.Subtype.UNARY_OPERATOR}),
-         ('a', [format_token.Subtype.NONE])]
-    ])  # yapf: disable
+    self._CheckFormatTokenSubtypes(
+        uwlines, [[('not', {format_token.Subtype.UNARY_OPERATOR}),
+                   ('a', [format_token.Subtype.NONE])]])
 
   def testBitwiseOperators(self):
     code = textwrap.dedent("""\
@@ -140,26 +181,86 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
-        [('x', [format_token.Subtype.NONE]),
-         ('=', {format_token.Subtype.ASSIGN_OPERATOR}),
-         ('(', [format_token.Subtype.NONE]),
-         ('(', [format_token.Subtype.NONE]),
-         ('a', [format_token.Subtype.NONE]),
-         ('|', {format_token.Subtype.BINARY_OPERATOR}),
-         ('(', [format_token.Subtype.NONE]),
-         ('b', [format_token.Subtype.NONE]),
-         ('^', {format_token.Subtype.BINARY_OPERATOR}),
-         ('3', [format_token.Subtype.NONE]),
-         (')', [format_token.Subtype.NONE]),
-         ('&', {format_token.Subtype.BINARY_OPERATOR}),
-         ('c', [format_token.Subtype.NONE]),
-         (')', [format_token.Subtype.NONE]),
-         ('<<', {format_token.Subtype.BINARY_OPERATOR}),
-         ('3', [format_token.Subtype.NONE]),
-         (')', [format_token.Subtype.NONE]),
-         ('>>', {format_token.Subtype.BINARY_OPERATOR}),
-         ('1', [format_token.Subtype.NONE]),],
-    ])  # yapf: disable
+        [
+            ('x', [format_token.Subtype.NONE]),
+            ('=', {format_token.Subtype.ASSIGN_OPERATOR}),
+            ('(', [format_token.Subtype.NONE]),
+            ('(', [format_token.Subtype.NONE]),
+            ('a', [format_token.Subtype.NONE]),
+            ('|', {format_token.Subtype.BINARY_OPERATOR}),
+            ('(', [format_token.Subtype.NONE]),
+            ('b', [format_token.Subtype.NONE]),
+            ('^', {format_token.Subtype.BINARY_OPERATOR}),
+            ('3', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('&', {format_token.Subtype.BINARY_OPERATOR}),
+            ('c', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('<<', {format_token.Subtype.BINARY_OPERATOR}),
+            ('3', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('>>', {format_token.Subtype.BINARY_OPERATOR}),
+            ('1', [format_token.Subtype.NONE]),
+        ],
+    ])
+
+  def testArithmeticOperators(self):
+    code = textwrap.dedent("""\
+        x = ((a + (b - 3) * (1 % c) @ d) / 3) // 1
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(uwlines, [
+        [
+            ('x', [format_token.Subtype.NONE]),
+            ('=', {format_token.Subtype.ASSIGN_OPERATOR}),
+            ('(', [format_token.Subtype.NONE]),
+            ('(', [format_token.Subtype.NONE]),
+            ('a', [format_token.Subtype.NONE]),
+            ('+', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.A_EXPR_OPERATOR,
+            }),
+            ('(', [format_token.Subtype.NONE]),
+            ('b', [format_token.Subtype.NONE]),
+            ('-', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.A_EXPR_OPERATOR,
+                format_token.Subtype.SIMPLE_EXPRESSION,
+            }),
+            ('3', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('*', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR,
+            }),
+            ('(', [format_token.Subtype.NONE]),
+            ('1', [format_token.Subtype.NONE]),
+            ('%', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR,
+                format_token.Subtype.SIMPLE_EXPRESSION,
+            }),
+            ('c', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('@', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR,
+            }),
+            ('d', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('/', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR,
+            }),
+            ('3', [format_token.Subtype.NONE]),
+            (')', [format_token.Subtype.NONE]),
+            ('//', {
+                format_token.Subtype.BINARY_OPERATOR,
+                format_token.Subtype.M_EXPR_OPERATOR,
+            }),
+            ('1', [format_token.Subtype.NONE]),
+        ],
+    ])
 
   def testSubscriptColon(self):
     code = textwrap.dedent("""\
@@ -185,13 +286,18 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(uwlines, [
-        [('[', [format_token.Subtype.NONE]),
-         ('a', [format_token.Subtype.NONE]),
-         (',', [format_token.Subtype.NONE]),
-         ('*', {format_token.Subtype.UNARY_OPERATOR}),
-         ('b', [format_token.Subtype.NONE]),
-         (']', [format_token.Subtype.NONE]),],
-    ])  # yapf: disable
+        [
+            ('[', [format_token.Subtype.NONE]),
+            ('a', [format_token.Subtype.NONE]),
+            (',', [format_token.Subtype.NONE]),
+            ('*', {
+                format_token.Subtype.UNARY_OPERATOR,
+                format_token.Subtype.VARARGS_STAR,
+            }),
+            ('b', [format_token.Subtype.NONE]),
+            (']', [format_token.Subtype.NONE]),
+        ],
+    ])
 
 
 if __name__ == '__main__':

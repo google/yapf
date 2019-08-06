@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -205,6 +205,33 @@ class CommentSplicerTest(unittest.TestCase):
     # right before the DEDENT
     self._AssertNodeIsComment(if_suite.children[-2])
     self._AssertNodeType('DEDENT', if_suite.children[-1])
+
+  def testCommentBeforeDedentThreeLevel(self):
+    code = textwrap.dedent(r'''
+      if foo:
+        if bar:
+          z = 1
+          # comment 2
+        # comment 1
+      # comment 0
+      j = 2
+      ''')
+    tree = pytree_utils.ParseCodeToTree(code)
+    comment_splicer.SpliceComments(tree)
+
+    # comment 0 should go under the tree root
+    self._AssertNodeIsComment(tree.children[1], '# comment 0')
+
+    # comment 1 is in the first if_suite, right before the DEDENT
+    if_suite_1 = self._FindNthChildNamed(tree, 'suite', n=1)
+    self._AssertNodeIsComment(if_suite_1.children[-2], '# comment 1')
+    self._AssertNodeType('DEDENT', if_suite_1.children[-1])
+
+    # comment 2 is in if_suite nested under the first if suite,
+    # right before the DEDENT
+    if_suite_2 = self._FindNthChildNamed(tree, 'suite', n=2)
+    self._AssertNodeIsComment(if_suite_2.children[-2], '# comment 2')
+    self._AssertNodeType('DEDENT', if_suite_2.children[-1])
 
   def testCommentsInClass(self):
     code = textwrap.dedent(r'''

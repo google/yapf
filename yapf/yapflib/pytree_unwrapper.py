@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,9 +31,12 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 
+from yapf.yapflib import format_token
+from yapf.yapflib import object_state
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
 
@@ -107,6 +110,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     if self._cur_unwrapped_line.tokens:
       self._unwrapped_lines.append(self._cur_unwrapped_line)
       _MatchBrackets(self._cur_unwrapped_line)
+      _IdentifyParameterLists(self._cur_unwrapped_line)
       _AdjustSplitPenalty(self._cur_unwrapped_line)
     self._cur_unwrapped_line = unwrapped_line.UnwrappedLine(self._cur_depth)
 
@@ -133,8 +137,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     # standalone comment and in the case of it coming directly after the
     # funcdef, it is a "top" comment for the whole function.
     # TODO(eliben): add more relevant compound statements here.
-    single_stmt_suite = (node.parent and
-                         pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
+    single_stmt_suite = (
+        node.parent and pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
     is_comment_stmt = pytree_utils.IsCommentStatement(node)
     if single_stmt_suite and not is_comment_stmt:
       self._cur_depth += 1
@@ -222,6 +226,13 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children[index].children:
       self.Visit(child)
 
+  def Visit_decorator(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
+      if (pytree_utils.NodeName(child) == 'COMMENT' and
+          child == node.children[0]):
+        self._StartNewLine()
+
   def Visit_decorators(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self._StartNewLine()
@@ -258,8 +269,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
 
   def Visit_testlist_gexp(self, node):  # pylint: disable=invalid-name
-    if _ContainsComments(node):
-      _DetermineMustSplitAnnotation(node)
+    _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
@@ -281,12 +291,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     if leaf.type in _WHITESPACE_TOKENS:
       self._StartNewLine()
     elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
-      if leaf.value == ';':
-        # Split up multiple statements on one line.
-        self._StartNewLine()
-      else:
-        # Add non-whitespace tokens and comments that aren't empty.
-        self._cur_unwrapped_line.AppendNode(leaf)
+      # Add non-whitespace tokens and comments that aren't empty.
+      self._cur_unwrapped_line.AppendNode(leaf)
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}
@@ -310,6 +316,44 @@ def _MatchBrackets(uwline):
       bracket_stack[-1].matching_bracket = token
       token.matching_bracket = bracket_stack[-1]
       bracket_stack.pop()
+
+    for bracket in bracket_stack:
+      if id(pytree_utils.GetOpeningBracket(token.node)) == id(bracket.node):
+        bracket.container_elements.append(token)
+        token.container_opening = bracket
+
+
+def _IdentifyParameterLists(uwline):
+  """Visit the node to create a state for parameter lists.
+
+  For instance, a parameter is considered an "object" with its first and last
+  token uniquely identifying the object.
+
+  Arguments:
+    uwline: (UnwrappedLine) An unwrapped line.
+  """
+  func_stack = []
+  param_stack = []
+  for tok in uwline.tokens:
+    # Identify parameter list objects.
+    if format_token.Subtype.FUNC_DEF in tok.subtypes:
+      assert tok.next_token.value == '('
+      func_stack.append(tok.next_token)
+      continue
+
+    if func_stack and tok.value == ')':
+      if tok == func_stack[-1].matching_bracket:
+        func_stack.pop()
+      continue
+
+    # Identify parameter objects.
+    if format_token.Subtype.PARAMETER_START in tok.subtypes:
+      param_stack.append(tok)
+
+    # Not "elif", a parameter could be a single token.
+    if param_stack and format_token.Subtype.PARAMETER_STOP in tok.subtypes:
+      start = param_stack.pop()
+      func_stack[-1].parameters.append(object_state.Parameter(start, tok))
 
 
 def _AdjustSplitPenalty(uwline):
@@ -335,7 +379,14 @@ def _AdjustSplitPenalty(uwline):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
+  if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
+    return
   if not _ContainsComments(node):
+    token = next(node.parent.leaves())
+    if token.value == '(':
+      if sum(1 for ch in node.children
+             if pytree_utils.NodeName(ch) == 'COMMA') < 2:
+        return
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
       return
@@ -366,11 +417,6 @@ def _ContainsComments(node):
 
 def _SetMustSplitOnFirstLeaf(node):
   """Set the "must split" annotation on the first leaf node."""
-
-  def FindFirstLeaf(node):
-    if isinstance(node, pytree.Leaf):
-      return node
-    return FindFirstLeaf(node.children[0])
-
   pytree_utils.SetNodeAnnotation(
-      FindFirstLeaf(node), pytree_utils.Annotation.MUST_SPLIT, True)
+      pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.MUST_SPLIT,
+      True)

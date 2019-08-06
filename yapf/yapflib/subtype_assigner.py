@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ def AssignSubtypes(tree):
 # Map tokens in argument lists to their respective subtype.
 _ARGLIST_TOKEN_TO_SUBTYPE = {
     '=': format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
-    ':': format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+    ':': format_token.Subtype.TYPED_NAME,
     '*': format_token.Subtype.VARARGS_STAR,
     '**': format_token.Subtype.KWARGS_STAR_STAR,
 }
@@ -80,28 +80,31 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
     if not comp_for and dict_maker:
       last_was_colon = False
+      unpacking = False
       for child in node.children:
-        if dict_maker:
-          if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+        if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+          _AppendFirstLeafTokenSubtype(child,
+                                       format_token.Subtype.KWARGS_STAR_STAR)
+        if last_was_colon:
+          if style.Get('INDENT_DICTIONARY_VALUE'):
+            _InsertPseudoParentheses(child)
+          else:
             _AppendFirstLeafTokenSubtype(child,
-                                         format_token.Subtype.KWARGS_STAR_STAR)
-          if last_was_colon:
-            if style.Get('INDENT_DICTIONARY_VALUE'):
-              _InsertPseudoParentheses(child)
-            else:
-              _AppendFirstLeafTokenSubtype(
-                  child, format_token.Subtype.DICTIONARY_VALUE)
-          elif (
-              child is not None and
-              (isinstance(child, pytree.Node) or
-               (not child.value.startswith('#') and child.value not in '{:,'))):
-            # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
-            # normally want to split before them if the dictionary cannot exist
-            # on a single line.
+                                         format_token.Subtype.DICTIONARY_VALUE)
+        elif (isinstance(child, pytree.Node) or
+              (not child.value.startswith('#') and child.value not in '{:,')):
+          # Mark the first leaf of a key entry as a DICTIONARY_KEY. We
+          # normally want to split before them if the dictionary cannot exist
+          # on a single line.
+          if not unpacking or pytree_utils.FirstLeafNode(child).value == '**':
             _AppendFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
-            _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
+          _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
         last_was_colon = pytree_utils.NodeName(child) == 'COLON'
+        if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+          unpacking = True
+        elif last_was_colon:
+          unpacking = False
 
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name
     # expr_stmt ::= testlist_star_expr (augassign (yield_expr|testlist)
@@ -150,6 +153,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '*':
         _AppendTokenSubtype(child, format_token.Subtype.UNARY_OPERATOR)
+        _AppendTokenSubtype(child, format_token.Subtype.VARARGS_STAR)
 
   def Visit_expr(self, node):  # pylint: disable=invalid-name
     # expr ::= xor_expr ('|' xor_expr)*
@@ -183,16 +187,27 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # arith_expr ::= term (('+'|'-') term)*
     for child in node.children:
       self.Visit(child)
-      if isinstance(child, pytree.Leaf) and child.value in '+-':
+      if _IsAExprOperator(child):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        _AppendTokenSubtype(child, format_token.Subtype.A_EXPR_OPERATOR)
+
+    if _IsSimpleExpression(node):
+      for child in node.children:
+        if _IsAExprOperator(child):
+          _AppendTokenSubtype(child, format_token.Subtype.SIMPLE_EXPRESSION)
 
   def Visit_term(self, node):  # pylint: disable=invalid-name
-    # term ::= factor (('*'|'/'|'%'|'//') factor)*
+    # term ::= factor (('*'|'/'|'%'|'//'|'@') factor)*
     for child in node.children:
       self.Visit(child)
-      if (isinstance(child, pytree.Leaf) and
-          child.value in {'*', '/', '%', '//'}):
+      if _IsMExprOperator(child):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
+        _AppendTokenSubtype(child, format_token.Subtype.M_EXPR_OPERATOR)
+
+    if _IsSimpleExpression(node):
+      for child in node.children:
+        if _IsMExprOperator(child):
+          _AppendTokenSubtype(child, format_token.Subtype.SIMPLE_EXPRESSION)
 
   def Visit_factor(self, node):  # pylint: disable=invalid-name
     # factor ::= ('+'|'-'|'~') factor | power
@@ -239,11 +254,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #                     | '*' test (',' argument)* [',' '**' test]
     #                     | '**' test)
     self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_tname(self, node):  # pylint: disable=invalid-name
     self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
     # decorator ::=
@@ -263,6 +280,15 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
 
+  def Visit_parameters(self, node):  # pylint: disable=invalid-name
+    # parameters ::= '(' [typedargslist] ')'
+    self._ProcessArgLists(node)
+    if len(node.children) > 2:
+      _AppendFirstLeafTokenSubtype(node.children[1],
+                                   format_token.Subtype.PARAMETER_START)
+      _AppendLastLeafTokenSubtype(node.children[-2],
+                                  format_token.Subtype.PARAMETER_STOP)
+
   def Visit_typedargslist(self, node):  # pylint: disable=invalid-name
     # typedargslist ::=
     #     ((tfpdef ['=' test] ',')*
@@ -270,7 +296,40 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' tname)
     #     | tfpdef ['=' test] (',' tfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
-    _SetDefaultOrNamedAssignArgListSubtype(node)
+    _SetArgListSubtype(node, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN,
+                       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    tname = False
+    if not node.children:
+      return
+
+    _AppendFirstLeafTokenSubtype(node.children[0],
+                                 format_token.Subtype.PARAMETER_START)
+    _AppendLastLeafTokenSubtype(node.children[-1],
+                                format_token.Subtype.PARAMETER_STOP)
+
+    i = 1
+    tname = pytree_utils.NodeName(node.children[0]) == 'tname'
+    while i < len(node.children):
+      prev_child = node.children[i - 1]
+      child = node.children[i]
+      i += 1
+
+      if pytree_utils.NodeName(prev_child) == 'COMMA':
+        _AppendFirstLeafTokenSubtype(child,
+                                     format_token.Subtype.PARAMETER_START)
+      elif pytree_utils.NodeName(child) == 'COMMA':
+        _AppendLastLeafTokenSubtype(prev_child,
+                                    format_token.Subtype.PARAMETER_STOP)
+
+      if pytree_utils.NodeName(child) == 'tname':
+        tname = True
+        _SetArgListSubtype(child, format_token.Subtype.TYPED_NAME,
+                           format_token.Subtype.TYPED_NAME_ARG_LIST)
+      elif pytree_utils.NodeName(child) == 'COMMA':
+        tname = False
+      elif pytree_utils.NodeName(child) == 'EQUAL' and tname:
+        _AppendTokenSubtype(child, subtype=format_token.Subtype.TYPED_NAME)
+        tname = False
 
   def Visit_varargslist(self, node):  # pylint: disable=invalid-name
     # varargslist ::=
@@ -287,12 +346,26 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
     _AppendSubtypeRec(node, format_token.Subtype.COMP_FOR)
+    # Mark the previous node as COMP_EXPR unless this is a nested comprehension
+    # as these will have the outer comprehension as their previous node.
+    attr = pytree_utils.GetNodeAnnotation(node.parent,
+                                          pytree_utils.Annotation.SUBTYPE)
+    if not attr or format_token.Subtype.COMP_FOR not in attr:
+      _AppendSubtypeRec(node.parent.children[0], format_token.Subtype.COMP_EXPR)
     self.DefaultNodeVisit(node)
+
+  def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_for(node)
 
   def Visit_comp_if(self, node):  # pylint: disable=invalid-name
     # comp_if ::= 'if' old_test [comp_iter]
     _AppendSubtypeRec(node, format_token.Subtype.COMP_IF)
     self.DefaultNodeVisit(node)
+
+  def Visit_old_comp_if(self, node):  # pylint: disable=invalid-name
+    # Python 3.7
+    self.Visit_comp_if(node)
 
   def _ProcessArgLists(self, node):
     """Common method for processing argument lists."""
@@ -305,28 +378,30 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
                                                   format_token.Subtype.NONE))
 
 
-def _SetDefaultOrNamedAssignArgListSubtype(node):
+def _SetArgListSubtype(node, node_subtype, list_subtype):
   """Set named assign subtype on elements in a arg list."""
 
-  def HasDefaultOrNamedAssignSubtype(node):
+  def HasSubtype(node):
     """Return True if the arg list has a named assign subtype."""
     if isinstance(node, pytree.Leaf):
-      if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in
-          pytree_utils.GetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
-                                         set())):
-        return True
-      return False
-    has_subtype = False
-    for child in node.children:
-      if pytree_utils.NodeName(child) != 'arglist':
-        has_subtype |= HasDefaultOrNamedAssignSubtype(child)
-    return has_subtype
+      return node_subtype in pytree_utils.GetNodeAnnotation(
+          node, pytree_utils.Annotation.SUBTYPE, set())
 
-  if HasDefaultOrNamedAssignSubtype(node):
     for child in node.children:
-      if pytree_utils.NodeName(child) != 'COMMA':
-        _AppendFirstLeafTokenSubtype(
-            child, format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+      node_name = pytree_utils.NodeName(child)
+      if node_name not in {'atom', 'arglist', 'power'}:
+        if HasSubtype(child):
+          return True
+
+    return False
+
+  if not HasSubtype(node):
+    return
+
+  for child in node.children:
+    node_name = pytree_utils.NodeName(child)
+    if node_name not in {'atom', 'COMMA'}:
+      _AppendFirstLeafTokenSubtype(child, list_subtype)
 
 
 def _AppendTokenSubtype(node, subtype):
@@ -341,6 +416,14 @@ def _AppendFirstLeafTokenSubtype(node, subtype):
     _AppendTokenSubtype(node, subtype)
     return
   _AppendFirstLeafTokenSubtype(node.children[0], subtype)
+
+
+def _AppendLastLeafTokenSubtype(node, subtype):
+  """Append the last leaf token's subtypes."""
+  if isinstance(node, pytree.Leaf):
+    _AppendTokenSubtype(node, subtype)
+    return
+  _AppendLastLeafTokenSubtype(node.children[-1], subtype)
 
 
 def _AppendSubtypeRec(node, subtype, force=True):
@@ -360,20 +443,26 @@ def _InsertPseudoParentheses(node):
       comment_node = node.children[-1].clone()
       node.children[-1].remove()
 
-  first = _GetFirstLeafNode(node)
-  last = _GetLastLeafNode(node)
+  first = pytree_utils.FirstLeafNode(node)
+  last = pytree_utils.LastLeafNode(node)
 
   if first == last and first.type == token.COMMENT:
     # A comment was inserted before the value, which is a pytree.Leaf.
     # Encompass the dictionary's value into an ATOM node.
     last = first.next_sibling
-    new_node = pytree.Node(syms.atom, [first.clone(), last.clone()])
+    last_clone = last.clone()
+    new_node = pytree.Node(syms.atom, [first.clone(), last_clone])
+    for orig_leaf, clone_leaf in zip(last.leaves(), last_clone.leaves()):
+      pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
+      if hasattr(orig_leaf, 'is_pseudo'):
+        clone_leaf.is_pseudo = orig_leaf.is_pseudo
+
     node.replace(new_node)
     node = new_node
     last.remove()
 
-    first = _GetFirstLeafNode(node)
-    last = _GetLastLeafNode(node)
+    first = pytree_utils.FirstLeafNode(node)
+    last = pytree_utils.LastLeafNode(node)
 
   lparen = pytree.Leaf(
       token.LPAR, u'(', context=('', (first.get_lineno(), first.column - 1)))
@@ -399,18 +488,22 @@ def _InsertPseudoParentheses(node):
     _AppendFirstLeafTokenSubtype(node, format_token.Subtype.DICTIONARY_VALUE)
   else:
     clone = node.clone()
+    for orig_leaf, clone_leaf in zip(node.leaves(), clone.leaves()):
+      pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
     new_node = pytree.Node(syms.atom, [lparen, clone, rparen])
     node.replace(new_node)
     _AppendFirstLeafTokenSubtype(clone, format_token.Subtype.DICTIONARY_VALUE)
 
 
-def _GetFirstLeafNode(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetFirstLeafNode(node.children[0])
+def _IsAExprOperator(node):
+  return isinstance(node, pytree.Leaf) and node.value in {'+', '-'}
 
 
-def _GetLastLeafNode(node):
-  if isinstance(node, pytree.Leaf):
-    return node
-  return _GetLastLeafNode(node.children[-1])
+def _IsMExprOperator(node):
+  return isinstance(node,
+                    pytree.Leaf) and node.value in {'*', '/', '%', '//', '@'}
+
+
+def _IsSimpleExpression(node):
+  """A node with only leafs as children."""
+  return all(isinstance(child, pytree.Leaf) for child in node.children)
