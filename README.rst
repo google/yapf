@@ -168,7 +168,11 @@ with a ``[yapf]`` heading. For example:
     split_before_logical_operator = true
 
 The ``based_on_style`` setting determines which of the predefined styles this
-custom style is based on (think of it like subclassing).
+custom style is based on (think of it like subclassing). Four
+styles are predefined: ``pep8`` (default), ``chromium``, ``google`` and 
+``facebook`` (see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
+
+.. _style.py: https://github.com/google/yapf/blob/master/yapf/yapflib/style.py#L445
 
 It's also possible to do the same on the command line with a dictionary. For
 example:
