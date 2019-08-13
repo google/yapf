@@ -18,6 +18,7 @@
   directory as well.
 - Make sure we have parameters before we start calculating penalties for
   splitting them.
+- Indicate if a class/function is nested to ensure blank lines when needed.
 
 ## [0.28.0] 2019-07-11
 ### Added

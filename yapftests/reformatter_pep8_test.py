@@ -64,6 +64,30 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testNoBlankBetweenDefsInClass(self):
+    unformatted_code = textwrap.dedent('''\
+        class TestClass:
+            def __init__(self):
+                self.running = False
+            def run(self):
+                """Override in subclass"""
+            def is_running(self):
+                return self.running
+        ''')
+    expected_formatted_code = textwrap.dedent('''\
+        class TestClass:
+            def __init__(self):
+                self.running = False
+
+            def run(self):
+                """Override in subclass"""
+
+            def is_running(self):
+                return self.running
+        ''')
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testSingleWhiteBeforeTrailingComment(self):
     unformatted_code = textwrap.dedent("""\
         if a+b: # comment
