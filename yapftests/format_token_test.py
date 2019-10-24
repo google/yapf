@@ -63,6 +63,33 @@ class TabbedContinuationAlignPaddingTest(unittest.TestCase):
     self.assertEqual(pad, '\t' * 2)
 
 
+class SpacedContinuationAlignPaddingTest(unittest.TestCase):
+
+  def testSpace(self):
+    align_style = 'SPACE'
+
+    pad = format_token._SpacedContinuationAlignPadding(0, align_style, 4)
+    self.assertEqual(pad, '')
+
+    pad = format_token._SpacedContinuationAlignPadding(2, align_style, 4)
+    self.assertEqual(pad, ' ' * 2)
+
+    pad = format_token._SpacedContinuationAlignPadding(5, align_style, 4)
+    self.assertEqual(pad, ' ' * 5)
+
+  def testFixed(self):
+    align_style = 'FIXED'
+
+    pad = format_token._SpacedContinuationAlignPadding(0, align_style, 8)
+    self.assertEqual(pad, '')
+
+    pad = format_token._SpacedContinuationAlignPadding(2, align_style, 8)
+    self.assertEqual(pad, ' ' * 8)
+
+    pad = format_token._SpacedContinuationAlignPadding(5, align_style, 8)
+    self.assertEqual(pad, ' ' * 8)
+
+
 class FormatTokenTest(unittest.TestCase):
 
   def testSimple(self):

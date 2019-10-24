@@ -11,6 +11,7 @@
   parameter list is formatted, keeping state along the way. This helps when
   supporting Python 3 type annotations.
 - Catch and report `UnicodeDecodeError` exceptions.
+- `CONTINUATION_ALIGN_STYLE = FIXED` now work with space indentation.
 ### Fixed
 - Format subscript lists so that splits are essentially free after a comma.
 - Don't add a space between a string and its subscript.

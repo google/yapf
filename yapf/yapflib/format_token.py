@@ -84,6 +84,25 @@ def _TabbedContinuationAlignPadding(spaces, align_style, tab_width,
   return ' ' * spaces
 
 
+def _SpacedContinuationAlignPadding(spaces, align_style,
+                                    continuation_indent_width):
+  """Build padding string for continuation alignment in space indentation.
+
+  Arguments:
+    spaces: (int) The number of spaces to place before the token for alignment.
+    align_style: (str) The alignment style for continuation lines.
+    continuation_indent_width: (int) Indent columns for line continuations.
+
+  Returns:
+    A padding string for alignment with style specified by align_style option.
+  """
+  if align_style == 'FIXED':
+    if spaces > 0:
+      return ' ' * continuation_indent_width
+    return ''
+  return ' ' * spaces
+
+
 class FormatToken(object):
   """A wrapper around pytree Leaf nodes.
 
@@ -175,8 +194,14 @@ class FormatToken(object):
       else:
         indent_before = '\t' * indent_level + ' ' * spaces
     else:
-      indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
-                       ' ' * spaces)
+      if newlines_before > 0:
+        indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
+                         _SpacedContinuationAlignPadding(
+                             spaces, style.Get('CONTINUATION_ALIGN_STYLE'),
+                             style.Get('CONTINUATION_INDENT_WIDTH')))
+      else:
+        indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
+                         ' ' * spaces)
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
