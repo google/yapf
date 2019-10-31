@@ -81,13 +81,7 @@ def LastLeafNode(node):
   return LastLeafNode(node.children[-1])
 
 
-# lib2to3 thoughtfully provides pygram.python_grammar_no_print_statement for
-# parsing Python 3 code that wouldn't parse otherwise (when 'print' is used in a
-# context where a keyword is disallowed).
-# It forgets to do the same for 'exec' though. Luckily, Python is amenable to
-# monkey-patching.
-_GRAMMAR_FOR_PY3 = pygram.python_grammar_no_print_statement.copy()
-del _GRAMMAR_FOR_PY3.keywords['exec']
+_GRAMMAR_FOR_PY3 = pygram.python_grammar_no_print_and_exec_statement.copy()
 
 _GRAMMAR_FOR_PY2 = pygram.python_grammar.copy()
 del _GRAMMAR_FOR_PY2.keywords['nonlocal']
