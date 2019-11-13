@@ -224,6 +224,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       if pytree_utils.NodeName(child) == 'ASYNC':
         break
     for child in node.children[index].children:
+      if (child.type == grammar_token.NAME and child.value == 'else'):
+        self._StartNewLine()
       self.Visit(child)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name

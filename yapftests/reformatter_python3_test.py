@@ -398,6 +398,35 @@ def rrrrrrrrrrrrrrrrrrrrrr(
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testAsyncForElseNotIndentedInsideBody(self):
+    if sys.version_info[1] < 5:
+      return
+    code = textwrap.dedent("""\
+    async def fn():
+        async for message in websocket:
+            for i in range(10):
+                pass
+            else:
+                pass
+        else:
+            pass
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testForElseInAsyncNotMixedWithAsyncFor(self):
+    if sys.version_info[1] < 5:
+      return
+    code = textwrap.dedent("""\
+    async def fn():
+        for i in range(10):
+            pass
+        else:
+            pass
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
