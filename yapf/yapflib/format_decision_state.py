@@ -652,8 +652,10 @@ class FormatDecisionState(object):
     if (previous.OpensScope() or
         (previous.is_comment and previous.previous_token is not None and
          previous.previous_token.OpensScope())):
-      dedent = (style.Get('CONTINUATION_INDENT_WIDTH'), 0)[style.Get('INDENT_CLOSING_BRACKETS')]
-      self.stack[-1].closing_scope_indent = max(0, self.stack[-1].indent - dedent)
+      dedent = (style.Get('CONTINUATION_INDENT_WIDTH'),
+                0)[style.Get('INDENT_CLOSING_BRACKETS')]
+      self.stack[-1].closing_scope_indent = max(0,
+                                                self.stack[-1].indent - dedent)
       self.stack[-1].split_before_closing_bracket = True
 
     # Calculate the split penalty.
@@ -944,7 +946,8 @@ class FormatDecisionState(object):
           return top_of_stack.indent
 
     if (_IsCompoundStatement(self.line.first) and
-        (not (style.Get('DEDENT_CLOSING_BRACKETS') or style.Get('INDENT_CLOSING_BRACKETS')) or
+        (not (style.Get('DEDENT_CLOSING_BRACKETS') or
+              style.Get('INDENT_CLOSING_BRACKETS')) or
          style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
       token_indent = (
           len(self.line.first.whitespace_prefix.split('\n')[-1]) +
