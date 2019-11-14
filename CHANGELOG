@@ -6,6 +6,9 @@
 ### Added
 - Add the `--quiet` flag to suppress output. The return code is 1 if there are
   changes, similarly to the `--diff` flag.
+- Add the `indent_closing_brackets` option. This is the same as the
+  `dedent_closing_brackets` option except the brackets are indented the same
+  as the previous line.
 ### Changed
 - Collect a parameter list into a single object. This allows us to track how a
   parameter list is formatted, keeping state along the way. This helps when
