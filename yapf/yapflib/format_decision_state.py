@@ -195,7 +195,8 @@ class FormatDecisionState(object):
       return not self._ContainerFitsOnStartLine(opening)
 
     if (self.stack[-1].split_before_closing_bracket and
-        current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET')):
+        (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
+         current.value in '}])' and style.Get('INDENT_CLOSING_BRACKETS'))):
       # Split before the closing bracket if we can.
       if format_token.Subtype.SUBSCRIPT_BRACKET not in current.subtypes:
         return current.node_split_penalty != split_penalty.UNBREAKABLE
@@ -214,6 +215,7 @@ class FormatDecisionState(object):
     ###########################################################################
     # List Splitting
     if (style.Get('DEDENT_CLOSING_BRACKETS') or
+        style.Get('INDENT_CLOSING_BRACKETS') or
         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')):
       bracket = current if current.ClosesScope() else previous
       if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
@@ -235,7 +237,8 @@ class FormatDecisionState(object):
             self.stack[-1].split_before_closing_bracket = True
             return True
 
-        elif style.Get('DEDENT_CLOSING_BRACKETS') and current.ClosesScope():
+        elif (style.Get('DEDENT_CLOSING_BRACKETS') or
+              style.Get('INDENT_CLOSING_BRACKETS')) and current.ClosesScope():
           # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
@@ -649,9 +652,8 @@ class FormatDecisionState(object):
     if (previous.OpensScope() or
         (previous.is_comment and previous.previous_token is not None and
          previous.previous_token.OpensScope())):
-      self.stack[-1].closing_scope_indent = max(
-          0, self.stack[-1].indent - style.Get('CONTINUATION_INDENT_WIDTH'))
-
+      dedent = (style.Get('CONTINUATION_INDENT_WIDTH'), 0)[style.Get('INDENT_CLOSING_BRACKETS')]
+      self.stack[-1].closing_scope_indent = max(0, self.stack[-1].indent - dedent)
       self.stack[-1].split_before_closing_bracket = True
 
     # Calculate the split penalty.
@@ -942,7 +944,7 @@ class FormatDecisionState(object):
           return top_of_stack.indent
 
     if (_IsCompoundStatement(self.line.first) and
-        (not style.Get('DEDENT_CLOSING_BRACKETS') or
+        (not (style.Get('DEDENT_CLOSING_BRACKETS') or style.Get('INDENT_CLOSING_BRACKETS')) or
          style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
       token_indent = (
           len(self.line.first.whitespace_prefix.split('\n')[-1]) +
