@@ -394,7 +394,8 @@ Knobs
 
 ``COALESCE_BRACKETS``
     Do not split consecutive brackets. Only relevant when
-    ``DEDENT_CLOSING_BRACKETS`` is set. For example:
+    ``DEDENT_CLOSING_BRACKETS`` or ``INDENT_CLOSING_BRACKETS``
+    is set. For example:
 
     .. code-block:: python
 
@@ -491,6 +492,26 @@ Knobs
 
 ``INDENT_BLANK_LINES``
     Set to ``True`` to prefer indented blank lines rather than empty
+
+``INDENT_CLOSING_BRACKETS``
+    Put closing brackets on a separate line, indented, if the bracketed
+    expression can't fit in a single line. Applies to all kinds of brackets,
+    including function definitions and calls. For example:
+
+    .. code-block:: python
+
+        config = {
+            'key1': 'value1',
+            'key2': 'value2',
+            }  # <--- this bracket is indented and on a separate line
+
+        time_series = self.remote_client.query_entity_counters(
+            entity='dev3246.region1',
+            key='dns.query_latency_tcp',
+            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+            start_ts=now()-timedelta(days=3),
+            end_ts=now(),
+            )  # <--- this bracket is indented and on a separate line
 
 ``JOIN_MULTIPLE_LINES``
     Join short lines into one line. E.g., single line ``if`` statements.

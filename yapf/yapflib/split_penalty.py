@@ -139,7 +139,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
     # Can't break before the opening paren of a parameter list.
     _SetUnbreakable(node.children[0])
-    if not style.Get('DEDENT_CLOSING_BRACKETS'):
+    if not (style.Get('INDENT_CLOSING_BRACKETS') or
+            style.Get('DEDENT_CLOSING_BRACKETS')):
       _SetStronglyConnected(node.children[-1])
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
@@ -321,7 +322,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           last_child_node = pytree_utils.LastLeafNode(trailer)
           if last_child_node.value.strip().startswith('#'):
             last_child_node = last_child_node.prev_sibling
-          if not style.Get('DEDENT_CLOSING_BRACKETS'):
+          if not (style.Get('INDENT_CLOSING_BRACKETS') or
+                  style.Get('DEDENT_CLOSING_BRACKETS')):
             last = pytree_utils.LastLeafNode(last_child_node.prev_sibling)
             if last.value != ',':
               if last_child_node.value == ']':

@@ -2710,6 +2710,175 @@ x = [1, 2, 3, 4, 5, 6, 7,]
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
+  def testIndentClosingBracketsWithTypeAnnotationExceedingLineLength(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' indent_closing_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+                def function(first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
+                  pass
+
+
+                def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
+                  pass
+                """)
+      expected_formatted_code = textwrap.dedent("""\
+                def function(
+                    first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None
+                    ) -> None:
+                  pass
+
+
+                def function(
+                    first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None
+                    ) -> None:
+                  pass
+                """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testIndentClosingBracketsInFunctionCall(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' indent_closing_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+                def function(first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None, third_and_final_argument=True):
+                  pass
+
+
+                def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_and_last_argument=None):
+                  pass
+                """)
+      expected_formatted_code = textwrap.dedent("""\
+                def function(
+                    first_argument_xxxxxxxxxxxxxxxx=(0,),
+                    second_argument=None,
+                    third_and_final_argument=True
+                    ):
+                  pass
+
+
+                def function(
+                    first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_and_last_argument=None
+                    ):
+                  pass
+                """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testIndentClosingBracketsInTuple(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' indent_closing_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+                def function():
+                  some_var = ('a long element', 'another long element', 'short element', 'really really long element')
+                  return True
+
+                def function():
+                  some_var = ('a couple', 'small', 'elemens')
+                  return False
+                """)
+      expected_formatted_code = textwrap.dedent("""\
+                def function():
+                  some_var = (
+                      'a long element', 'another long element', 'short element',
+                      'really really long element'
+                      )
+                  return True
+
+
+                def function():
+                  some_var = ('a couple', 'small', 'elemens')
+                  return False
+                """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testIndentClosingBracketsInList(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' indent_closing_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+                def function():
+                  some_var = ['a long element', 'another long element', 'short element', 'really really long element']
+                  return True
+
+                def function():
+                  some_var = ['a couple', 'small', 'elemens']
+                  return False
+                """)
+      expected_formatted_code = textwrap.dedent("""\
+                def function():
+                  some_var = [
+                      'a long element', 'another long element', 'short element',
+                      'really really long element'
+                      ]
+                  return True
+
+
+                def function():
+                  some_var = ['a couple', 'small', 'elemens']
+                  return False
+                """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testIndentClosingBracketsInDict(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: chromium,'
+                                      ' indent_closing_brackets: True}'))
+      unformatted_code = textwrap.dedent("""\
+                def function():
+                  some_var = {1: ('a long element', 'and another really really long element that is really really amazingly long'), 2: 'another long element', 3: 'short element', 4: 'really really long element'}
+                  return True
+
+                def function():
+                  some_var = {1: 'a couple', 2: 'small', 3: 'elemens'}
+                  return False
+                """)
+      expected_formatted_code = textwrap.dedent("""\
+                def function():
+                  some_var = {
+                      1:
+                          (
+                              'a long element',
+                              'and another really really long element that is really really amazingly long'
+                              ),
+                      2: 'another long element',
+                      3: 'short element',
+                      4: 'really really long element'
+                      }
+                  return True
+
+
+                def function():
+                  some_var = {1: 'a couple', 2: 'small', 3: 'elemens'}
+                  return False
+                """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
   def testMultipleDictionariesInList(self):
     unformatted_code = """\
 class A:

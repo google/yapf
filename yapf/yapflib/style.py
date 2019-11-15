@@ -150,6 +150,23 @@ _STYLE_HELP = dict(
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
         )        # <--- this bracket is dedented and on a separate line"""),
+    INDENT_CLOSING_BRACKETS=textwrap.dedent("""\
+      Put closing brackets on a separate line, indented, if the bracketed
+      expression can't fit in a single line. Applies to all kinds of brackets,
+      including function definitions and calls. For example:
+
+        config = {
+            'key1': 'value1',
+            'key2': 'value2',
+            }        # <--- this bracket is indented and on a separate line
+
+        time_series = self.remote_client.query_entity_counters(
+            entity='dev3246.region1',
+            key='dns.query_latency_tcp',
+            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+            start_ts=now()-timedelta(days=3),
+            end_ts=now(),
+            )        # <--- this bracket is indented and on a separate line"""),
     DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
       if the list is comma-terminated."""),
@@ -355,6 +372,7 @@ def CreatePEP8Style():
       CONTINUATION_ALIGN_STYLE='SPACE',
       CONTINUATION_INDENT_WIDTH=4,
       DEDENT_CLOSING_BRACKETS=False,
+      INDENT_CLOSING_BRACKETS=False,
       DISABLE_ENDING_COMMA_HEURISTIC=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
       I18N_COMMENT='',
@@ -431,6 +449,7 @@ def CreateFacebookStyle():
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['COLUMN_LIMIT'] = 80
   style['DEDENT_CLOSING_BRACKETS'] = True
+  style['INDENT_CLOSING_BRACKETS'] = False
   style['INDENT_DICTIONARY_VALUE'] = True
   style['JOIN_MULTIPLE_LINES'] = False
   style['SPACES_BEFORE_COMMENT'] = 2
@@ -532,6 +551,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     CONTINUATION_ALIGN_STYLE=_ContinuationAlignStyleStringConverter,
     CONTINUATION_INDENT_WIDTH=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
+    INDENT_CLOSING_BRACKETS=_BoolConverter,
     DISABLE_ENDING_COMMA_HEURISTIC=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
     I18N_COMMENT=str,
