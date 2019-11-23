@@ -23,6 +23,8 @@
   splitting them.
 - Indicate if a class/function is nested to ensure blank lines when needed.
 - Fix extra indentation in async-for else statement.
+- A parameter list with no elements shouldn't count as exceeding the column
+  limit.
 
 ## [0.28.0] 2019-07-11
 ### Added

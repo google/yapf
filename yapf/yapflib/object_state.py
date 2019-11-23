@@ -125,6 +125,8 @@ class ParameterListState(object):
     """Return true if the last parameter fits on a single line."""
     if not self.has_typed_return:
       return False
+    if not self.parameters:
+      return True
     last_param = self.parameters[-1].first_token
     last_token = self.opening_bracket.matching_bracket
     while not last_token.is_comment and last_token.next_token:

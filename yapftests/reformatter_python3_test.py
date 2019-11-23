@@ -47,6 +47,19 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testTypedNameWithLongNamedArg(self):
+    unformatted_code = textwrap.dedent("""\
+        def func(arg=long_function_call_that_pushes_the_line_over_eighty_characters()) -> ReturnType:
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def func(arg=long_function_call_that_pushes_the_line_over_eighty_characters()
+                 ) -> ReturnType:
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testKeywordOnlyArgSpecifier(self):
     unformatted_code = textwrap.dedent("""\
         def foo(a, *, kw):
