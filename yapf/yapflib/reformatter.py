@@ -559,8 +559,8 @@ def _ReconstructPath(initial_state, current):
     initial_state.AddTokenToState(newline=node.newline, dry_run=False)
 
 
-_ClassDepth = []
-_FuncDepth = []
+_CLASS_DEPTH = []
+_FUNC_DEPTH = []
 
 
 def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
@@ -578,19 +578,19 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
     final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
       that have already been processed.
   """
-  if _FuncDepth and _FuncDepth[-1] == indent_depth:
-    _FuncDepth.pop()
-  if _ClassDepth and _ClassDepth[-1] == indent_depth:
-    _ClassDepth.pop()
+  if _FUNC_DEPTH and _FUNC_DEPTH[-1] == indent_depth:
+    _FUNC_DEPTH.pop()
+  if _CLASS_DEPTH and _CLASS_DEPTH[-1] == indent_depth:
+    _CLASS_DEPTH.pop()
 
   nested = False
   if _IsClassOrDef(first_token):
     if first_token.value == 'class':
-      nested = len(_ClassDepth) > 1 or len(_FuncDepth) > 1
-      _ClassDepth.append(indent_depth)
+      nested = len(_CLASS_DEPTH) > 1 or len(_FUNC_DEPTH) > 1
+      _CLASS_DEPTH.append(indent_depth)
     else:
-      nested = len(_FuncDepth) > 1
-      _FuncDepth.append(indent_depth)
+      nested = len(_FUNC_DEPTH) > 1
+      _FUNC_DEPTH.append(indent_depth)
 
   first_token.AddWhitespacePrefix(
       _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
