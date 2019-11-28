@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.29.0] UNRELEASED
+## [0.29.0] 2019-11-28
 ### Added
 - Add the `--quiet` flag to suppress output. The return code is 1 if there are
   changes, similarly to the `--diff` flag.
