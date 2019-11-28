@@ -693,7 +693,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
                                            None)
           return NO_BLANK_LINES
     elif _IsClassOrDef(prev_uwline.first):
-      if first_nested and not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
+      if first_nested and not style.Get(
+          'BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)
         return NO_BLANK_LINES
