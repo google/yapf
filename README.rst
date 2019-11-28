@@ -145,6 +145,15 @@ In addition to exclude patterns provided on commandline, YAPF looks for addition
 patterns specified in a file named ``.yapfignore`` located in the working directory from
 which YAPF is invoked.
 
+``.yapfignore``'s syntax is similar to UNIX's filename pattern matching::
+
+    *       matches everything
+    ?       matches any single character
+    [seq]   matches any character in seq
+    [!seq]  matches any character not in seq
+
+Note that no entry should begin with `./`.
+
 
 Formatting style
 ================
