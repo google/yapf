@@ -25,6 +25,8 @@
 - Fix extra indentation in async-for else statement.
 - A parameter list with no elements shouldn't count as exceeding the column
   limit.
+- When splitting all comma separated values, don't treat the ending bracket as
+  special.
 
 ## [0.28.0] 2019-07-11
 ### Added

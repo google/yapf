@@ -45,6 +45,18 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
           """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+          yes = { 'yes': 'no', 'no': 'yes', }
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          yes = {
+              'yes': 'no',
+              'no': 'yes',
+          }
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
     unformatted_code = textwrap.dedent("""\
           def foo(long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args):
                 pass

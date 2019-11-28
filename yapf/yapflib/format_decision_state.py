@@ -191,8 +191,10 @@ class FormatDecisionState(object):
       if not opening:
         return True
 
-      # If the container doesn't fit in the current line, must split
-      return not self._ContainerFitsOnStartLine(opening)
+      # Allow the fallthrough code to handle the closing bracket.
+      if current != opening.matching_bracket:
+        # If the container doesn't fit in the current line, must split
+        return not self._ContainerFitsOnStartLine(opening)
 
     if (self.stack[-1].split_before_closing_bracket and
         (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
