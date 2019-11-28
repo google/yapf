@@ -559,8 +559,7 @@ def _ReconstructPath(initial_state, current):
     initial_state.AddTokenToState(newline=node.newline, dry_run=False)
 
 
-_CLASS_DEPTH = []
-_FUNC_DEPTH = []
+NESTED_DEPTH = []
 
 
 def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
@@ -578,23 +577,21 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
     final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
       that have already been processed.
   """
-  if _FUNC_DEPTH and _FUNC_DEPTH[-1] == indent_depth:
-    _FUNC_DEPTH.pop()
-  if _CLASS_DEPTH and _CLASS_DEPTH[-1] == indent_depth:
-    _CLASS_DEPTH.pop()
+  global NESTED_DEPTH
+  while NESTED_DEPTH and NESTED_DEPTH[-1] > indent_depth:
+    NESTED_DEPTH.pop()
 
-  nested = False
+  first_nested = False
   if _IsClassOrDef(first_token):
-    if first_token.value == 'class':
-      nested = len(_CLASS_DEPTH) > 1 or len(_FUNC_DEPTH) > 1
-      _CLASS_DEPTH.append(indent_depth)
-    else:
-      nested = len(_FUNC_DEPTH) > 1
-      _FUNC_DEPTH.append(indent_depth)
+    if not NESTED_DEPTH:
+      NESTED_DEPTH = [indent_depth]
+    elif NESTED_DEPTH[-1] < indent_depth:
+      first_nested = True
+      NESTED_DEPTH.append(indent_depth)
 
   first_token.AddWhitespacePrefix(
       _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
-                                 final_lines, nested),
+                                 final_lines, first_nested),
       indent_level=indent_depth)
 
 
@@ -611,7 +608,7 @@ def _IsClassOrDef(tok):
 
 
 def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
-                               final_lines, nested):
+                               final_lines, first_nested):
   """Calculate the number of newlines we need to add.
 
   Arguments:
@@ -622,7 +619,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
       previous to this line.
     final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
       that have already been processed.
-    nested: (boolean) Whether this is a nested class or function.
+    first_nested: (boolean) Whether this is the first nested class or function.
 
   Returns:
     The number of newlines needed before the first token.
@@ -655,7 +652,8 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
       # Separate a class or function from the module-level docstring with
       # appropriate number of blank lines.
       return 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION')
-    if (nested and not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF') and
+    if (first_nested and
+        not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF') and
         _IsClassOrDef(first_token)):
       pytree_utils.SetNodeAnnotation(first_token.node,
                                      pytree_utils.Annotation.NEWLINES, None)
@@ -695,7 +693,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
                                            None)
           return NO_BLANK_LINES
     elif _IsClassOrDef(prev_uwline.first):
-      if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
+      if first_nested and not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)
         return NO_BLANK_LINES

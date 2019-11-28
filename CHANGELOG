@@ -27,6 +27,8 @@
   limit.
 - When splitting all comma separated values, don't treat the ending bracket as
   special.
+- The "no blank lines between nested classes or functions" knob should only
+  apply to the first nested class or function, not all of them.
 
 ## [0.28.0] 2019-07-11
 ### Added

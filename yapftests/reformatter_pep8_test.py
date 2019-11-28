@@ -480,6 +480,39 @@ def _():
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(uwlines))
 
+  def testNoBlankLinesOnlyForFirstNestedObject(self):
+    unformatted_code = '''\
+class Demo:
+    """
+    Demo docs
+    """
+    def foo(self):
+        """
+        foo docs
+        """
+    def bar(self):
+        """
+        bar docs
+        """
+'''
+    expected_code = '''\
+class Demo:
+    """
+    Demo docs
+    """
+    def foo(self):
+        """
+        foo docs
+        """
+
+    def bar(self):
+        """
+        bar docs
+        """
+'''
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertEqual(expected_code, reformatter.Reformat(uwlines))
+
   def testSplitBeforeArithmeticOperators(self):
     try:
       style.SetGlobalStyle(
