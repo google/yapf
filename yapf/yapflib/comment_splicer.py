@@ -260,7 +260,7 @@ def _CreateCommentsFromPrefix(comment_prefix,
 # When splicing a standalone comment (i.e. a comment that appears on its own
 # line, not on the same line with other code), it's important to insert it into
 # an appropriate parent of the node it's attached to. An appropriate parent
-# is the first "standaline line node" in the parent chain of a node.
+# is the first "standalone line node" in the parent chain of a node.
 _STANDALONE_LINE_NODES = frozenset([
     'suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
     'funcdef', 'classdef', 'decorated', 'file_input'
