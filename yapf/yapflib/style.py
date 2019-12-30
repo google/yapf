@@ -432,11 +432,10 @@ def CreateGoogleStyle():
   return style
 
 
-def CreateChromiumStyle():
+def CreateYapfStyle():
   style = CreateGoogleStyle()
   style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
   style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
-  style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 2
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
@@ -463,16 +462,16 @@ def CreateFacebookStyle():
 
 _STYLE_NAME_TO_FACTORY = dict(
     pep8=CreatePEP8Style,
-    chromium=CreateChromiumStyle,
     google=CreateGoogleStyle,
     facebook=CreateFacebookStyle,
+    yapf=CreateYapfStyle,
 )
 
 _DEFAULT_STYLE_TO_FACTORY = [
-    (CreateChromiumStyle(), CreateChromiumStyle),
     (CreateFacebookStyle(), CreateFacebookStyle),
     (CreateGoogleStyle(), CreateGoogleStyle),
     (CreatePEP8Style(), CreatePEP8Style),
+    (CreateYapfStyle(), CreateYapfStyle),
 ]
 
 
