@@ -123,14 +123,11 @@ _STYLE_HELP = dict(
 
       - SPACE: Use spaces for continuation alignment. This is default behavior.
       - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
-        (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
-        alignment.
-      - VALIGN-RIGHT: Vertically align continuation lines with indent
-        characters. Slightly right (one more indent character) if cannot
-        vertically align continuation lines with indent characters.
-
-      Options FIXED and VALIGN-RIGHT are only available when USE_TABS is
-      enabled."""),
+        (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs or
+        CONTINUATION_INDENT_WIDTH spaces) for continuation alignment.
+      - VALIGN-RIGHT: Vertically align continuation lines to multiple of
+        INDENT_WIDTH columns. Slightly right (one tab or a few spaces) if
+        cannot vertically align continuation lines with indent characters."""),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
       Indent width used for line continuations."""),
     DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
