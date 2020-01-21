@@ -2,9 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [vNext]-
+## [0.29.1] UNRELEASED
 ### Changed
 - Renamed "chromium" style to "yapf". Chromium will now use PEP-8 directly.
+### Fixed
+- Honor a disable directive at the end of a multiline comment.
 
 ## [0.29.0] 2019-11-28
 ### Added

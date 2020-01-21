@@ -194,6 +194,19 @@ class FormatFileTest(unittest.TestCase):
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
 
+  def testEnabledDisabledSameComment(self):
+    code = textwrap.dedent(u"""\
+        # yapf: disable
+        a(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddd, eeeeeeeeeeeeeeeeeeeeeeeeeee)
+        # yapf: enable
+        # yapf: disable
+        a(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddd, eeeeeeeeeeeeeeeeeeeeeeeeeee)
+        # yapf: enable
+        """)
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
+      self.assertCodeEqual(code, formatted_code)
+
   def testFormatFileLinesSelection(self):
     unformatted_code = textwrap.dedent(u"""\
         if a:    b

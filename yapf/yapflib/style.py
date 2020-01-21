@@ -129,7 +129,7 @@ _STYLE_HELP = dict(
         characters. Slightly right (one more indent character) if cannot
         vertically align continuation lines with indent characters.
 
-      For options FIXED, and VALIGN-RIGHT are only available when USE_TABS is
+      Options FIXED and VALIGN-RIGHT are only available when USE_TABS is
       enabled."""),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
       Indent width used for line continuations."""),
