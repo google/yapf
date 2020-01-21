@@ -5,6 +5,9 @@
 ## [0.29.1] UNRELEASED
 ### Fixed
 - Honor a disable directive at the end of a multiline comment.
+- Don't require splitting before comments in a list when
+  `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is set. The knob is meant for
+  values, not comments, which may be associated with the current line.
 
 ## [0.29.0] 2019-11-28
 ### Added

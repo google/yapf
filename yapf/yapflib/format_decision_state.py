@@ -187,9 +187,14 @@ class FormatDecisionState(object):
       opening = _GetOpeningBracket(current)
 
       # Can't find opening bracket, behave the same way as
-      # SPLIT_ALL_COMMA_SEPARATED_VALUES
+      # SPLIT_ALL_COMMA_SEPARATED_VALUES.
       if not opening:
         return True
+
+      if current.is_comment:
+        # Don't require splitting before a comment, since it may be related to
+        # the current line.
+        return False
 
       # Allow the fallthrough code to handle the closing bracket.
       if current != opening.matching_bracket:

@@ -202,6 +202,28 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+    # Don't require splitting before comments.
+    unformatted_code = textwrap.dedent("""\
+          KO = {
+              'ABC': Abc, # abc
+              'DEF': Def, # def
+              'LOL': Lol, # wtf
+              'GHI': Ghi,
+              'JKL': Jkl,
+          }
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          KO = {
+              'ABC': Abc,  # abc
+              'DEF': Def,  # def
+              'LOL': Lol,  # wtf
+              'GHI': Ghi,
+              'JKL': Jkl,
+          }
+          """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testSimpleFunctionsWithTrailingComments(self):
     unformatted_code = textwrap.dedent("""\
         def g():  # Trailing comment
