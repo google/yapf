@@ -8,6 +8,8 @@
 - Don't require splitting before comments in a list when
   `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is set. The knob is meant for
   values, not comments, which may be associated with the current line.
+- Don't over-indent a parameter list when not needed. But make sure it is
+  properly indented so that it doesn't collide with the lines afterwards.
 
 ## [0.29.0] 2019-11-28
 ### Added

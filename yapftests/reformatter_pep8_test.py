@@ -589,6 +589,60 @@ def normal_function():
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+  def testParamListIndentationCollision1(self):
+    unformatted_code = textwrap.dedent("""\
+class _():
+
+    def __init__(self, title: Optional[str], diffs: Collection[BinaryDiff] = (), charset: Union[Type[AsciiCharset], Type[LineCharset]] = AsciiCharset, preprocess: Callable[[str], str] = identity,
+            # TODO(somebody): Make this a Literal type.
+            justify: str = 'rjust'):
+        self._cs = charset
+        self._preprocess = preprocess
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+class _():
+    def __init__(
+            self,
+            title: Optional[str],
+            diffs: Collection[BinaryDiff] = (),
+            charset: Union[Type[AsciiCharset],
+                           Type[LineCharset]] = AsciiCharset,
+            preprocess: Callable[[str], str] = identity,
+            # TODO(somebody): Make this a Literal type.
+            justify: str = 'rjust'):
+        self._cs = charset
+        self._preprocess = preprocess
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testParamListIndentationCollision2(self):
+    code = textwrap.dedent("""\
+        def simple_pass_function_with_an_extremely_long_name_and_some_arguments(
+                argument0, argument1):
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testParamListIndentationCollision3(self):
+    code = textwrap.dedent("""\
+        def func1(
+            arg1,
+            arg2,
+        ) -> None:
+            pass
+
+
+        def func2(
+            arg1,
+            arg2,
+        ):
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -440,6 +440,25 @@ def rrrrrrrrrrrrrrrrrrrrrr(
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
+  def testParameterListIndentationConflicts(self):
+    unformatted_code = textwrap.dedent("""\
+        def raw_message(  # pylint: disable=too-many-arguments
+                    self, text, user_id=1000, chat_type='private', forward_date=None, forward_from=None):
+                pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def raw_message(  # pylint: disable=too-many-arguments
+                self,
+                text,
+                user_id=1000,
+                chat_type='private',
+                forward_date=None,
+                forward_from=None):
+            pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()

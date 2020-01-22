@@ -661,8 +661,8 @@ class FormatDecisionState(object):
          previous.previous_token.OpensScope())):
       dedent = (style.Get('CONTINUATION_INDENT_WIDTH'),
                 0)[style.Get('INDENT_CLOSING_BRACKETS')]
-      self.stack[-1].closing_scope_indent = max(0,
-                                                self.stack[-1].indent - dedent)
+      self.stack[-1].closing_scope_indent = (
+          max(0, self.stack[-1].indent - dedent))
       self.stack[-1].split_before_closing_bracket = True
 
     # Calculate the split penalty.
@@ -952,7 +952,7 @@ class FormatDecisionState(object):
         if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
           return top_of_stack.indent
 
-    if (_IsCompoundStatement(self.line.first) and
+    if (not self.param_list_stack and _IsCompoundStatement(self.line.first) and
         (not (style.Get('DEDENT_CLOSING_BRACKETS') or
               style.Get('INDENT_CLOSING_BRACKETS')) or
          style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
@@ -960,18 +960,16 @@ class FormatDecisionState(object):
           len(self.line.first.whitespace_prefix.split('\n')[-1]) +
           style.Get('INDENT_WIDTH'))
       if token_indent == top_of_stack.indent:
-        if self.param_list_stack and _IsFunctionDef(self.line.first):
-          last_param = self.param_list_stack[-1]
-          if (last_param.LastParamFitsOnLine(token_indent) and
-              not last_param.LastParamFitsOnLine(
-                  token_indent + style.Get('CONTINUATION_INDENT_WIDTH'))):
-            self.param_list_stack[-1].split_before_closing_bracket = True
-            return token_indent
-
-          if not last_param.LastParamFitsOnLine(token_indent):
-            self.param_list_stack[-1].split_before_closing_bracket = True
-            return token_indent
         return token_indent + style.Get('CONTINUATION_INDENT_WIDTH')
+
+    if (self.param_list_stack and
+        not self.param_list_stack[-1].SplitBeforeClosingBracket(
+            top_of_stack.indent) and top_of_stack.indent == (
+                (self.line.depth + 1) * style.Get('INDENT_WIDTH'))):
+      if (format_token.Subtype.PARAMETER_START in current.subtypes or
+          (previous.is_comment and
+           format_token.Subtype.PARAMETER_START in previous.subtypes)):
+        return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     return top_of_stack.indent
 
