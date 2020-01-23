@@ -26,7 +26,7 @@ from yapftests import yapf_test_helper
 class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreateChromiumStyle())
 
   def testSplittingAllArgs(self):

@@ -41,6 +41,7 @@ class FormatDecisionState(object):
   Attributes:
     first_indent: The indent of the first token.
     column: The number of used columns in the current line.
+    line: The unwrapped line we're currently processing.
     next_token: The next token to be formatted.
     paren_level: The level of nesting inside (), [], and {}.
     lowest_level_on_line: The lowest paren_level on the current line.
@@ -52,6 +53,7 @@ class FormatDecisionState(object):
       properties applying to function parameter lists.
     ignore_stack_for_comparison: Ignore the stack of _ParenState for state
       comparison.
+    column_limit: The column limit specified by the style.
   """
 
   def __init__(self, line, first_indent):
@@ -999,6 +1001,7 @@ class FormatDecisionState(object):
       return num_strings > 1
 
     def DictValueIsContainer(opening, closing):
+      """Return true if the dictionary value is a container."""
       if not opening or not closing:
         return False
       colon = opening.previous_token
@@ -1205,6 +1208,7 @@ class _ParenState(object):
     indent: The column position to which a specified parenthesis level needs to
       be indented.
     last_space: The column position of the last space on each level.
+    closing_scope_indent: The column position of the closing indentation.
     split_before_closing_bracket: Whether a newline needs to be inserted before
       the closing bracket. We only want to insert a newline before the closing
       bracket if there also was a newline after the beginning left bracket.

@@ -334,7 +334,7 @@ def _GetLines(line_strings):
     if line[0] < 1:
       raise errors.YapfError('invalid start of line range: %r' % line)
     if line[0] > line[1]:
-      raise errors.YapfError('end comes before start in line range: %r', line)
+      raise errors.YapfError('end comes before start in line range: %r' % line)
     lines.append(tuple(line))
   return lines
 
