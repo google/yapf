@@ -91,6 +91,8 @@ class ParameterListState(object):
     opening_bracket: The opening bracket of the parameter list.
     closing_bracket: The closing bracket of the parameter list.
     has_typed_return: True if the function definition has a typed return.
+    ends_in_comma: True if the parameter list ends in a comma.
+    last_token: Returns the last token of the function declaration.
     has_default_values: True if the parameters have default values.
     has_split_before_first_param: Whether there is a newline before the first
       parameter.
@@ -149,6 +151,7 @@ class ParameterListState(object):
 
   @py3compat.lru_cache()
   def SplitBeforeClosingBracket(self, indent):
+    """Return true if there's a split before the closing bracket."""
     if style.Get('DEDENT_CLOSING_BRACKETS'):
       return True
     if self.ends_in_comma:
