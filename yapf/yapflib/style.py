@@ -356,6 +356,7 @@ _STYLE_HELP = dict(
 
 
 def CreatePEP8Style():
+  """Create the PEP8 formatting style."""
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALLOW_MULTILINE_LAMBDAS=False,
@@ -414,6 +415,7 @@ def CreatePEP8Style():
 
 
 def CreateGoogleStyle():
+  """Create the Google formatting style."""
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
@@ -433,6 +435,7 @@ def CreateGoogleStyle():
 
 
 def CreateChromiumStyle():
+  """Create the Chromium formatting style."""
   style = CreateGoogleStyle()
   style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
   style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
@@ -445,6 +448,7 @@ def CreateChromiumStyle():
 
 
 def CreateFacebookStyle():
+  """Create the Facebook formatting style."""
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['COLUMN_LIMIT'] = 80

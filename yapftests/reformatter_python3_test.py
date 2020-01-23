@@ -29,7 +29,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
   """Test a few constructs that are new Python 3 syntax."""
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testTypedNames(self):

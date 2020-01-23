@@ -44,6 +44,7 @@ def SpliceComments(tree):
   _AnnotateIndents(tree)
 
   def _VisitNodeRec(node):
+    """Recursively visit each node to splice comments into the AST."""
     # This loop may insert into node.children, so we'll iterate over a copy.
     for child in node.children[:]:
       if isinstance(child, pytree.Node):

@@ -579,7 +579,8 @@ class CommandLineTest(unittest.TestCase):
         try:
           subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
         except subprocess.CalledProcessError as e:
-          self.assertEqual(e.returncode, 1)  # Indicates the text changed.
+          # Indicates the text changed.
+          self.assertEqual(e.returncode, 1)  # pylint: disable=g-assert-in-except
 
   def testReformattingSpecificLines(self):
     unformatted_code = textwrap.dedent("""\

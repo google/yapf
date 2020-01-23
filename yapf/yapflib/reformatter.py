@@ -270,6 +270,7 @@ def _CanPlaceOnSingleLine(uwline):
 
 
 def _AlignTrailingComments(final_lines):
+  """Align trailing comments to the same column."""
   final_lines_index = 0
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]

@@ -25,7 +25,7 @@ from yapftests import yapf_test_helper
 class TestsForPEP8Style(yapf_test_helper.YAPFTest):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testIndent4(self):

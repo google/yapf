@@ -36,6 +36,8 @@ class ComprehensionState(object):
   Attributes:
     expr_token: The first token in the comprehension.
     for_token: The first 'for' token of the comprehension.
+    opening_bracket: The opening bracket of the list comprehension.
+    closing_bracket: The closing bracket of the list comprehension.
     has_split_at_for: Whether there is a newline immediately before the
       for_token.
     has_interior_split: Whether there is a newline within the comprehension.
