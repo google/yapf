@@ -10,6 +10,8 @@
   values, not comments, which may be associated with the current line.
 - Don't over-indent a parameter list when not needed. But make sure it is
   properly indented so that it doesn't collide with the lines afterwards.
+- Adds `FORCE_MULTILINE_DICT` knob to ensure dictionaries always split,
+  even when shorter than the max line length.
 
 ## [0.29.0] 2019-11-28
 ### Added
