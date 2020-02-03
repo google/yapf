@@ -1124,14 +1124,6 @@ def _IsArgumentToFunction(token):
   return previous and previous.is_name
 
 
-def _GetLengthOfSubtype(token, subtype, exclude=None):
-  current = token
-  while (current.next_token and subtype in current.subtypes and
-         (exclude is None or exclude not in current.subtypes)):
-    current = current.next_token
-  return current.total_length - token.total_length + 1
-
-
 def _GetOpeningBracket(current):
   """Get the opening bracket containing the current token."""
   if current.matching_bracket and not current.is_pseudo_paren:
