@@ -291,9 +291,11 @@ def _FormatFile(filename,
   """Format an individual file."""
   if verbose and not quiet:
     print('Reformatting %s' % filename)
+
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
         os.path.dirname(filename))
+
   try:
     reformatted_code, encoding, has_change = yapf_api.FormatFile(
         filename,
@@ -303,15 +305,16 @@ def _FormatFile(filename,
         print_diff=print_diff,
         verify=verify,
         logger=logging.warning)
-    if not in_place and not quiet and reformatted_code:
-      file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
-                                          in_place)
-    return has_change
   except tokenize.TokenError as e:
     raise errors.YapfError('%s:%s:%s' % (filename, e.args[1][0], e.args[0]))
   except SyntaxError as e:
     e.filename = filename
     raise
+
+  if not in_place and not quiet and reformatted_code:
+    file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
+                                        in_place)
+  return has_change
 
 
 def _GetLines(line_strings):
