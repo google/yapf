@@ -290,19 +290,19 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       while prev_trailer_idx < len(node.children) - 1:
         cur_trailer_idx = prev_trailer_idx + 1
         cur_trailer = node.children[cur_trailer_idx]
-        if pytree_utils.NodeName(cur_trailer) == 'trailer':
-          # Now we know we have two trailers one after the other
-          prev_trailer = node.children[prev_trailer_idx]
-          if prev_trailer.children[-1].value != ')':
-            # Set the previous node unbreakable if it's not a function call:
-            #   atom tr1() tr2
-            # It may be necessary (though undesirable) to split up a previous
-            # function call's parentheses to the next line.
-            _SetStronglyConnected(prev_trailer.children[-1])
-          _SetStronglyConnected(cur_trailer.children[0])
-          prev_trailer_idx = cur_trailer_idx
-        else:
+        if pytree_utils.NodeName(cur_trailer) != 'trailer':
           break
+
+        # Now we know we have two trailers one after the other
+        prev_trailer = node.children[prev_trailer_idx]
+        if prev_trailer.children[-1].value != ')':
+          # Set the previous node unbreakable if it's not a function call:
+          #   atom tr1() tr2
+          # It may be necessary (though undesirable) to split up a previous
+          # function call's parentheses to the next line.
+          _SetStronglyConnected(prev_trailer.children[-1])
+        _SetStronglyConnected(cur_trailer.children[0])
+        prev_trailer_idx = cur_trailer_idx
 
     # We don't want to split before the last ')' of a function call. This also
     # takes care of the special case of:
