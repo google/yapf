@@ -160,24 +160,24 @@ def _FindPythonFiles(filenames, recursive, exclude):
     if filename != '.' and exclude and IsIgnored(filename, exclude):
       continue
     if os.path.isdir(filename):
-      if recursive:
-        # TODO(morbo): Look into a version of os.walk that can handle recursion.
-        excluded_dirs = []
-        for dirpath, _, filelist in os.walk(filename):
-          if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
-            excluded_dirs.append(dirpath)
-            continue
-          elif any(dirpath.startswith(e) for e in excluded_dirs):
-            continue
-          for f in filelist:
-            filepath = os.path.join(dirpath, f)
-            if exclude and IsIgnored(filepath, exclude):
-              continue
-            if IsPythonFile(filepath):
-              python_files.append(filepath)
-      else:
+      if not recursive:
         raise errors.YapfError(
             "directory specified without '--recursive' flag: %s" % filename)
+
+      # TODO(morbo): Look into a version of os.walk that can handle recursion.
+      excluded_dirs = []
+      for dirpath, _, filelist in os.walk(filename):
+        if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
+          excluded_dirs.append(dirpath)
+          continue
+        elif any(dirpath.startswith(e) for e in excluded_dirs):
+          continue
+        for f in filelist:
+          filepath = os.path.join(dirpath, f)
+          if exclude and IsIgnored(filepath, exclude):
+            continue
+          if IsPythonFile(filepath):
+            python_files.append(filepath)
     elif os.path.isfile(filename):
       python_files.append(filename)
 
