@@ -215,6 +215,7 @@ def main(argv):
       verbose=args.verbose)
   return 1 if changed and (args.diff or args.quiet) else 0
 
+
 def print_help(args):
   """Prints the help menu."""
 
