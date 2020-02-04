@@ -145,18 +145,7 @@ def main(argv):
   style_config = args.style
 
   if args.style_help:
-    if style_config is None and not args.no_local_style:
-      style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
-    style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
-    print('[style]')
-    for option, docstring in sorted(style.Help().items()):
-      for line in docstring.splitlines():
-        print('#', line and ' ' or '', line, sep='')
-      option_value = style.Get(option)
-      if isinstance(option_value, set) or isinstance(option_value, list):
-        option_value = ', '.join(map(str, option_value))
-      print(option.lower(), '=', option_value, sep='')
-      print()
+    print_help(args)
     return 0
 
   if args.lines and len(args.files) > 1:
@@ -225,6 +214,23 @@ def main(argv):
       quiet=args.quiet,
       verbose=args.verbose)
   return 1 if changed and (args.diff or args.quiet) else 0
+
+
+def print_help(args):
+  """Prints the help menu."""
+
+  if args.style is None and not args.no_local_style:
+    args.style = file_resources.GetDefaultStyleForDir(os.getcwd())
+  style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
+  print('[style]')
+  for option, docstring in sorted(style.Help().items()):
+    for line in docstring.splitlines():
+      print('#', line and ' ' or '', line, sep='')
+    option_value = style.Get(option)
+    if isinstance(option_value, set) or isinstance(option_value, list):
+      option_value = ', '.join(map(str, option_value))
+    print(option.lower(), '=', option_value, sep='')
+    print()
 
 
 def FormatFiles(filenames,
