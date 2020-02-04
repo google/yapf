@@ -216,18 +216,20 @@ def main(argv):
   return 1 if changed and (args.diff or args.quiet) else 0
 
 def print_help(args):
-    if args.style is None and not args.no_local_style:
-      args.style = file_resources.GetDefaultStyleForDir(os.getcwd())
-    style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
-    print('[style]')
-    for option, docstring in sorted(style.Help().items()):
-      for line in docstring.splitlines():
-        print('#', line and ' ' or '', line, sep='')
-      option_value = style.Get(option)
-      if isinstance(option_value, set) or isinstance(option_value, list):
-        option_value = ', '.join(map(str, option_value))
-      print(option.lower(), '=', option_value, sep='')
-      print()
+  """Prints the help menu."""
+
+  if args.style is None and not args.no_local_style:
+    args.style = file_resources.GetDefaultStyleForDir(os.getcwd())
+  style.SetGlobalStyle(style.CreateStyleFromConfig(args.style))
+  print('[style]')
+  for option, docstring in sorted(style.Help().items()):
+    for line in docstring.splitlines():
+      print('#', line and ' ' or '', line, sep='')
+    option_value = style.Get(option)
+    if isinstance(option_value, set) or isinstance(option_value, list):
+      option_value = ', '.join(map(str, option_value))
+    print(option.lower(), '=', option_value, sep='')
+    print()
 
 
 def FormatFiles(filenames,
