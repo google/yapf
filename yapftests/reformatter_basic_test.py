@@ -2966,6 +2966,25 @@ class A:
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testTwoWordComparisonOperators(self):
+    unformatted_code = textwrap.dedent("""\
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl is not ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj)
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl not in {ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj})
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl
+             is not ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj)
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl
+             not in {ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj})
+        """)
+
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
 
 if __name__ == '__main__':
   unittest.main()
