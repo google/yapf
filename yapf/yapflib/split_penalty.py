@@ -414,8 +414,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # comparison ::= expr (comp_op expr)*
     self.DefaultNodeVisit(node)
     if len(node.children) == 3 and _StronglyConnectedCompOp(node):
-      _SetSplitPenalty(
-          pytree_utils.FirstLeafNode(node.children[1]), STRONGLY_CONNECTED)
+      _IncreasePenalty(node.children[1], VERY_STRONGLY_CONNECTED)
       _SetSplitPenalty(
           pytree_utils.FirstLeafNode(node.children[2]), STRONGLY_CONNECTED)
     else:
@@ -618,10 +617,13 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
 
 def _StronglyConnectedCompOp(op):
   if (len(op.children[1].children) == 2 and
-      pytree_utils.NodeName(op.children[1]) == 'comp_op' and
-      pytree_utils.FirstLeafNode(op.children[1]).value == 'not' and
-      pytree_utils.LastLeafNode(op.children[1]).value == 'in'):
-    return True
+      pytree_utils.NodeName(op.children[1]) == 'comp_op'):
+    if (pytree_utils.FirstLeafNode(op.children[1]).value == 'not' and
+        pytree_utils.LastLeafNode(op.children[1]).value == 'in'):
+      return True
+    if (pytree_utils.FirstLeafNode(op.children[1]).value == 'is' and
+        pytree_utils.LastLeafNode(op.children[1]).value == 'not'):
+      return True
   if (isinstance(op.children[1], pytree.Leaf) and
       op.children[1].value in {'==', 'in'}):
     return True
