@@ -130,16 +130,18 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
   def testNoSpacesAroundPowerOperator(self):
+    unformatted_code = textwrap.dedent("""\
+        a**b
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a ** b
+        """)
+
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
               '{based_on_style: pep8, SPACES_AROUND_POWER_OPERATOR: True}'))
-      unformatted_code = textwrap.dedent("""\
-          a**b
-          """)
-      expected_formatted_code = textwrap.dedent("""\
-          a ** b
-          """)
+
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -147,17 +149,19 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
       style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testSpacesAroundDefaultOrNamedAssign(self):
+    unformatted_code = textwrap.dedent("""\
+        f(a=5)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        f(a = 5)
+        """)
+
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
               '{based_on_style: pep8, '
               'SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN: True}'))
-      unformatted_code = textwrap.dedent("""\
-          f(a=5)
-          """)
-      expected_formatted_code = textwrap.dedent("""\
-          f(a = 5)
-          """)
+
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -279,16 +283,8 @@ None.__ne__()
   def testSplittingArguments(self):
     if sys.version_info[1] < 5:
       return
-    try:
-      style.SetGlobalStyle(
-          style.CreateStyleFromConfig(
-              '{based_on_style: pep8, '
-              'dedent_closing_brackets: true, '
-              'coalesce_brackets: false, '
-              'space_between_ending_comma_and_closing_bracket: false, '
-              'split_arguments_when_comma_terminated: true, '
-              'split_before_first_argument: true}'))
-      unformatted_code = """\
+
+    unformatted_code = """\
 async def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
     pass
 
@@ -301,7 +297,7 @@ def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=
 def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
     pass
 """
-      expected_formatted_code = """\
+    expected_formatted_code = """\
 async def open_file(
     file,
     mode='r',
@@ -337,6 +333,17 @@ def open_file(
 def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
     pass
 """
+
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, '
+              'dedent_closing_brackets: true, '
+              'coalesce_brackets: false, '
+              'space_between_ending_comma_and_closing_bracket: false, '
+              'split_arguments_when_comma_terminated: true, '
+              'split_before_first_argument: true}'))
+
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
