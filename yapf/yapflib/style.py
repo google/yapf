@@ -256,7 +256,7 @@ _STYLE_HELP = dict(
       Use spaces around the subscript / slice operator.  For example:
 
         my_list[1 : 10 : 2]
-      """)
+      """),
     SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '(' and before the ending ')' tuple delimiters.
 

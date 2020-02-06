@@ -188,7 +188,11 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name
     # dotted_name ::= NAME ('.' NAME)*
-    self._SetUnbreakableOnChildren(node)
+    for child in node.children:
+      self.Visit(child)
+    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
+    for i in py3compat.range(start, len(node.children)):
+      _SetUnbreakable(node.children[i])
 
   def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
     # dictsetmaker ::= ( (test ':' test
@@ -244,7 +248,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
               pytree_utils.FirstLeafNode(node.children[1].children[2]), 0)
 
         # Don't split the ending bracket of a subscript list.
-        _SetVeryStronglyConnected(node.children[-1])
+        _RecAnnotate(node.children[-1], pytree_utils.Annotation.SPLIT_PENALTY,
+                     VERY_STRONGLY_CONNECTED)
       elif name not in {
           'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison',
           'atom', 'power'
@@ -499,17 +504,6 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           _SetSplitPenalty(pytree_utils.FirstLeafNode(child), TOGETHER)
         prev_was_comma = False
 
-  ############################################################################
-  # Helper methods that set the annotations.
-
-  def _SetUnbreakableOnChildren(self, node):
-    """Set an UNBREAKABLE penalty annotation on children of node."""
-    for child in node.children:
-      self.Visit(child)
-    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
-    for i in py3compat.range(start, len(node.children)):
-      _SetUnbreakable(node.children[i])
-
 
 def _SetUnbreakable(node):
   """Set an UNBREAKABLE penalty annotation for the given node."""
@@ -521,13 +515,6 @@ def _SetStronglyConnected(*nodes):
   for node in nodes:
     _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
                  STRONGLY_CONNECTED)
-
-
-def _SetVeryStronglyConnected(*nodes):
-  """Set a VERY_STRONGLY_CONNECTED penalty annotation for the given nodes."""
-  for node in nodes:
-    _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
-                 VERY_STRONGLY_CONNECTED)
 
 
 def _SetExpressionPenalty(node, penalty):
