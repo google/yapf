@@ -57,87 +57,7 @@ def main(argv):
   Raises:
     YapfError: if none of the supplied files were Python files.
   """
-  parser = argparse.ArgumentParser(description='Formatter for Python code.')
-  parser.add_argument(
-      '-v',
-      '--version',
-      action='store_true',
-      help='show version number and exit')
-
-  diff_inplace_quiet_group = parser.add_mutually_exclusive_group()
-  diff_inplace_quiet_group.add_argument(
-      '-d',
-      '--diff',
-      action='store_true',
-      help='print the diff for the fixed source')
-  diff_inplace_quiet_group.add_argument(
-      '-i',
-      '--in-place',
-      action='store_true',
-      help='make changes to files in place')
-  diff_inplace_quiet_group.add_argument(
-      '-q',
-      '--quiet',
-      action='store_true',
-      help='output nothing and set return value')
-
-  lines_recursive_group = parser.add_mutually_exclusive_group()
-  lines_recursive_group.add_argument(
-      '-r',
-      '--recursive',
-      action='store_true',
-      help='run recursively over directories')
-  lines_recursive_group.add_argument(
-      '-l',
-      '--lines',
-      metavar='START-END',
-      action='append',
-      default=None,
-      help='range of lines to reformat, one-based')
-
-  parser.add_argument(
-      '-e',
-      '--exclude',
-      metavar='PATTERN',
-      action='append',
-      default=None,
-      help='patterns for files to exclude from formatting')
-  parser.add_argument(
-      '--style',
-      action='store',
-      help=('specify formatting style: either a style name (for example "pep8" '
-            'or "google"), or the name of a file with style settings. The '
-            'default is pep8 unless a %s or %s file located in the same '
-            'directory as the source or one of its parent directories '
-            '(for stdin, the current directory is used).' %
-            (style.LOCAL_STYLE, style.SETUP_CONFIG)))
-  parser.add_argument(
-      '--style-help',
-      action='store_true',
-      help=('show style settings and exit; this output can be '
-            'saved to .style.yapf to make your settings '
-            'permanent'))
-  parser.add_argument(
-      '--no-local-style',
-      action='store_true',
-      help="don't search for local style definition")
-  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
-  parser.add_argument(
-      '-p',
-      '--parallel',
-      action='store_true',
-      help=('run yapf in parallel when formatting multiple files. Requires '
-            'concurrent.futures in Python 2.X'))
-  parser.add_argument(
-      '-vv',
-      '--verbose',
-      action='store_true',
-      help='print out file names while processing')
-
-  parser.add_argument(
-      'files', nargs='*', help='reads from stdin when no files are specified.')
-  args = parser.parse_args(argv[1:])
-
+  args = _ParseArguments(argv)
   if args.version:
     print('yapf {}'.format(__version__))
     return 0
@@ -346,6 +266,98 @@ def _GetLines(line_strings):
       raise errors.YapfError('end comes before start in line range: %r' % line)
     lines.append(tuple(line))
   return lines
+
+
+def _ParseArguments(argv):
+  """Parse the command line arguments.
+
+  Arguments:
+    argv: command-line arguments, such as sys.argv (including the program name
+      in argv[0]).
+
+  Returns:
+    An object containing the arguments used to invoke the program.
+  """
+  parser = argparse.ArgumentParser(description='Formatter for Python code.')
+  parser.add_argument(
+      '-v',
+      '--version',
+      action='store_true',
+      help='show version number and exit')
+
+  diff_inplace_quiet_group = parser.add_mutually_exclusive_group()
+  diff_inplace_quiet_group.add_argument(
+      '-d',
+      '--diff',
+      action='store_true',
+      help='print the diff for the fixed source')
+  diff_inplace_quiet_group.add_argument(
+      '-i',
+      '--in-place',
+      action='store_true',
+      help='make changes to files in place')
+  diff_inplace_quiet_group.add_argument(
+      '-q',
+      '--quiet',
+      action='store_true',
+      help='output nothing and set return value')
+
+  lines_recursive_group = parser.add_mutually_exclusive_group()
+  lines_recursive_group.add_argument(
+      '-r',
+      '--recursive',
+      action='store_true',
+      help='run recursively over directories')
+  lines_recursive_group.add_argument(
+      '-l',
+      '--lines',
+      metavar='START-END',
+      action='append',
+      default=None,
+      help='range of lines to reformat, one-based')
+
+  parser.add_argument(
+      '-e',
+      '--exclude',
+      metavar='PATTERN',
+      action='append',
+      default=None,
+      help='patterns for files to exclude from formatting')
+  parser.add_argument(
+      '--style',
+      action='store',
+      help=('specify formatting style: either a style name (for example "pep8" '
+            'or "google"), or the name of a file with style settings. The '
+            'default is pep8 unless a %s or %s file located in the same '
+            'directory as the source or one of its parent directories '
+            '(for stdin, the current directory is used).' %
+            (style.LOCAL_STYLE, style.SETUP_CONFIG)))
+  parser.add_argument(
+      '--style-help',
+      action='store_true',
+      help=('show style settings and exit; this output can be '
+            'saved to .style.yapf to make your settings '
+            'permanent'))
+  parser.add_argument(
+      '--no-local-style',
+      action='store_true',
+      help="don't search for local style definition")
+  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
+  parser.add_argument(
+      '-p',
+      '--parallel',
+      action='store_true',
+      help=('run yapf in parallel when formatting multiple files. Requires '
+            'concurrent.futures in Python 2.X'))
+  parser.add_argument(
+      '-vv',
+      '--verbose',
+      action='store_true',
+      help='print out file names while processing')
+
+  parser.add_argument(
+      'files', nargs='*', help='reads from stdin when no files are specified.')
+  return parser.parse_args(argv[1:])
 
 
 def run_main():  # pylint: disable=invalid-name
