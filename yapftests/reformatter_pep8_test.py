@@ -16,6 +16,7 @@
 import textwrap
 import unittest
 
+from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
@@ -642,6 +643,60 @@ class _():
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+
+  def testTwoWordComparisonOperators(self):
+    unformatted_code = textwrap.dedent("""\
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl is not ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj)
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl not in {ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj})
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl
+             is not ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj)
+        _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl
+             not in {ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj})
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  @unittest.skipUnless(not py3compat.PY3, 'Requires Python 2.7')
+  def testAsyncAsNonKeyword(self):
+    # In Python 2, async may be used as a non-keyword identifier.
+    code = textwrap.dedent("""\
+        from util import async
+
+
+        class A(object):
+            def foo(self):
+                async.run()
+
+            def bar(self):
+                pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
+
+  def testStableInlinedDictionaryFormatting(self):
+    unformatted_code = textwrap.dedent("""\
+        def _():
+            url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
+                value, urllib.urlencode({'action': 'update', 'parameter': value}))
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def _():
+            url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
+                value, urllib.urlencode({
+                    'action': 'update',
+                    'parameter': value
+                }))
+        """)
+
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+    uwlines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+    reformatted_code = reformatter.Reformat(uwlines)
+    self.assertCodeEqual(expected_formatted_code, reformatted_code)
 
 
 if __name__ == '__main__':
