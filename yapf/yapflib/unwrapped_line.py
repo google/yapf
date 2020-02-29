@@ -287,6 +287,8 @@ def _SpaceRequiredBetween(left, right):
   if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
     return True
+  if lval in pytree_utils.OPENING_BRACKETS and rval == ':':
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if rval in ':,':
     # Otherwise, we never want a space before a colon or comma.
     return False
@@ -394,43 +396,43 @@ def _SpaceRequiredBetween(left, right):
   if (lval in pytree_utils.OPENING_BRACKETS and
       rval in pytree_utils.OPENING_BRACKETS):
     # Nested objects' opening brackets shouldn't be separated.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.CLOSING_BRACKETS and
       rval in pytree_utils.CLOSING_BRACKETS):
     # Nested objects' closing brackets shouldn't be separated.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if lval in pytree_utils.CLOSING_BRACKETS and rval in '([':
     # A call, set, dictionary, or subscript that has a call or subscript after
     # it shouldn't have a space between them.
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsIdNumberStringToken(right):
     # Don't separate the opening bracket from the first item.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if left.is_name and rval in '([':
     # Don't separate a call or array access from the name.
     return False
   if rval in pytree_utils.CLOSING_BRACKETS:
     # Don't separate the closing bracket from the last item.
     # FIXME(morbo): This might be too permissive.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if lval == 'print' and rval == '(':
     # Special support for the 'print' function.
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsUnaryOperator(right):
     # Don't separate a unary operator from the opening bracket.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.OPENING_BRACKETS and
       (format_token.Subtype.VARARGS_STAR in right.subtypes or
        format_token.Subtype.KWARGS_STAR_STAR in right.subtypes)):
     # Don't separate a '*' or '**' from the opening bracket.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if rval == ';':
     # Avoid spaces before a semicolon. (Why is there a semicolon?!)
     return False
   if lval == '(' and rval == 'await':
     # Special support for the 'await' keyword. Don't separate the 'await'
     # keyword from an opening paren.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   return True
 
 

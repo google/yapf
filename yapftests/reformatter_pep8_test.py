@@ -699,5 +699,111 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatted_code)
 
 
+class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
+  """Test the SPACE_INSIDE_BRACKETS style option."""
+  unformatted_code = textwrap.dedent("""\
+    foo( )
+    foo((1,))
+    foo((1, 2, 3))
+    foo((1,
+              2,
+                    3,))
+    my_dict[3][1][get_index(*args,**kwargs)]
+    my_dict[3][1][get_index(**kwargs)]
+    my_set={1,2,3}
+    copy_dict = my_dict[:]
+    print (my_set)
+    x = my_dict[4] (foo(*args))
+    xyz = ((10+ 3)/(5- 2**(6+x)))
+    val = "mystring"[3]
+    """)
+
+  def testEnabled(self):
+    style.SetGlobalStyle(
+        style.CreateStyleFromConfig('{space_inside_brackets: True}'))
+
+    expected_formatted_code = textwrap.dedent("""\
+      foo()
+      foo( ( 1, ) )
+      foo( ( 1, 2, 3 ) )
+      foo( (
+          1,
+          2,
+          3,
+      ) )
+      my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
+      my_dict[ 3 ][ 1 ][ get_index( **kwargs ) ]
+      my_set = { 1, 2, 3 }
+      copy_dict = my_dict[ : ]
+      print( my_set )
+      x = my_dict[ 4 ]( foo( *args ) )
+      xyz = ( ( 10 + 3 ) / ( 5 - 2**( 6 + x ) ) )
+      val = "mystring"[ 3 ]
+      """)
+
+    uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDefault(self):
+    style.SetGlobalStyle(style.CreatePEP8Style())
+
+    expected_formatted_code = textwrap.dedent("""\
+      foo()
+      foo((1, ))
+      foo((1, 2, 3))
+      foo((
+          1,
+          2,
+          3,
+      ))
+      my_dict[3][1][get_index(*args, **kwargs)]
+      my_dict[3][1][get_index(**kwargs)]
+      my_set = {1, 2, 3}
+      copy_dict = my_dict[:]
+      print(my_set)
+      x = my_dict[4](foo(*args))
+      xyz = ((10 + 3) / (5 - 2**(6 + x)))
+      val = "mystring"[3]
+      """)
+
+    uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
+  def testAwait(self):
+    style.SetGlobalStyle(
+        style.CreateStyleFromConfig('{space_inside_brackets: True}'))
+    unformatted_code = textwrap.dedent("""\
+      import asyncio
+      import time
+
+      @print_args
+      async def slow_operation():
+        await asyncio.sleep(1)
+        # print("Slow operation {} complete".format(n))
+        async def main():
+          start = time.time()
+          if (await get_html()):
+            pass
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      import asyncio
+      import time
+
+
+      @print_args
+      async def slow_operation():
+          await asyncio.sleep( 1 )
+
+          # print("Slow operation {} complete".format(n))
+          async def main():
+              start = time.time()
+              if ( await get_html() ):
+                  pass
+      """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
 if __name__ == '__main__':
   unittest.main()
