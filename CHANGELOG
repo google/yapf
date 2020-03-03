@@ -11,6 +11,8 @@
 - Don't over-indent a parameter list when not needed. But make sure it is
   properly indented so that it doesn't collide with the lines afterwards.
 - Don't split between two-word comparison operators: "is not", "not in", etc.
+- New knob `SPACE_INSIDE_BRACKETS` to add spaces inside brackets, braces, and
+  parentheses.
 
 ## [0.29.0] 2019-11-28
 ### Added

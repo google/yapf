@@ -208,6 +208,13 @@ _STYLE_HELP = dict(
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
+    SPACE_INSIDE_BRACKETS=textwrap.dedent("""\
+      Use spaces inside brackets, braces, and parentheses.  For example:
+
+        method_call( 1 )
+        my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
+        my_set = { 1, 2, 3 }
+      """),
     SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
       Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
@@ -384,6 +391,7 @@ def CreatePEP8Style():
       JOIN_MULTIPLE_LINES=True,
       NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
+      SPACE_INSIDE_BRACKETS=False,
       SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
       SPACES_BEFORE_COMMENT=2,
@@ -566,6 +574,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     JOIN_MULTIPLE_LINES=_BoolConverter,
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
+    SPACE_INSIDE_BRACKETS=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,

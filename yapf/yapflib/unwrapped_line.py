@@ -287,6 +287,12 @@ def _SpaceRequiredBetween(left, right):
   if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
     return True
+  if style.Get('SPACE_INSIDE_BRACKETS'):
+    # Supersede the "no space before a colon or comma" check.
+    if lval in pytree_utils.OPENING_BRACKETS and rval == ':':
+      return True
+    if rval in pytree_utils.CLOSING_BRACKETS and lval == ':':
+      return True
   if rval in ':,':
     # Otherwise, we never want a space before a colon or comma.
     return False
@@ -328,6 +334,11 @@ def _SpaceRequiredBetween(left, right):
       # A string followed by something other than a subscript, closing bracket,
       # dot, or a binary op should have a space after it.
       return True
+    if rval in pytree_utils.CLOSING_BRACKETS:
+      # A string followed by closing brackets should have a space after it
+      # depending on SPACE_INSIDE_BRACKETS.  A string followed by opening
+      # brackets, however, should not.
+      return style.Get('SPACE_INSIDE_BRACKETS')
     if format_token.Subtype.SUBSCRIPT_BRACKET in right.subtypes:
       # It's legal to do this in Python: 'hello'[a]
       return False
@@ -393,44 +404,50 @@ def _SpaceRequiredBetween(left, right):
     return False
   if (lval in pytree_utils.OPENING_BRACKETS and
       rval in pytree_utils.OPENING_BRACKETS):
-    # Nested objects' opening brackets shouldn't be separated.
-    return False
+    # Nested objects' opening brackets shouldn't be separated, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.CLOSING_BRACKETS and
       rval in pytree_utils.CLOSING_BRACKETS):
-    # Nested objects' closing brackets shouldn't be separated.
-    return False
+    # Nested objects' closing brackets shouldn't be separated, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if lval in pytree_utils.CLOSING_BRACKETS and rval in '([':
     # A call, set, dictionary, or subscript that has a call or subscript after
     # it shouldn't have a space between them.
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsIdNumberStringToken(right):
-    # Don't separate the opening bracket from the first item.
-    return False
+    # Don't separate the opening bracket from the first item, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if left.is_name and rval in '([':
     # Don't separate a call or array access from the name.
     return False
   if rval in pytree_utils.CLOSING_BRACKETS:
-    # Don't separate the closing bracket from the last item.
+    # Don't separate the closing bracket from the last item, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
     # FIXME(morbo): This might be too permissive.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if lval == 'print' and rval == '(':
     # Special support for the 'print' function.
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsUnaryOperator(right):
-    # Don't separate a unary operator from the opening bracket.
-    return False
+    # Don't separate a unary operator from the opening bracket, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.OPENING_BRACKETS and
       (format_token.Subtype.VARARGS_STAR in right.subtypes or
        format_token.Subtype.KWARGS_STAR_STAR in right.subtypes)):
-    # Don't separate a '*' or '**' from the opening bracket.
-    return False
+    # Don't separate a '*' or '**' from the opening bracket, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if rval == ';':
     # Avoid spaces before a semicolon. (Why is there a semicolon?!)
     return False
   if lval == '(' and rval == 'await':
     # Special support for the 'await' keyword. Don't separate the 'await'
-    # keyword from an opening paren.
-    return False
+    # keyword from an opening paren, unless enabled by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   return True
 
 
