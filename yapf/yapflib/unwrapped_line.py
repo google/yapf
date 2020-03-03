@@ -261,6 +261,10 @@ def _PriorityIndicatingNoSpace(tok):
   return _HasPrecedence(tok)
 
 
+def _IsSubscriptColonAndValuePair(token1, token2):
+  return (token1.is_number or token1.is_name) and token2.is_subscript_colon
+
+
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
   lval = left.value
@@ -293,6 +297,11 @@ def _SpaceRequiredBetween(left, right):
       return True
     if rval in pytree_utils.CLOSING_BRACKETS and lval == ':':
       return True
+  if (style.Get('SPACES_AROUND_SUBSCRIPT_COLON') and
+      (_IsSubscriptColonAndValuePair(left, right) or
+       _IsSubscriptColonAndValuePair(right, left))):
+    # Supersede the "never want a space before a colon or comma" check.
+    return True
   if rval in ':,':
     # Otherwise, we never want a space before a colon or comma.
     return False
