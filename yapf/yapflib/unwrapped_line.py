@@ -19,11 +19,15 @@ single line if there were no line length restrictions. It's then used by the
 parser to perform the wrapping required to comply with the style guide.
 """
 
+import logging
+
 from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
+
+LOGGER = logging.getLogger(__name__)
 
 
 class UnwrappedLine(object):
@@ -265,198 +269,263 @@ def _IsSubscriptColonAndValuePair(token1, token2):
   return (token1.is_number or token1.is_name) and token2.is_subscript_colon
 
 
+def _SubtypeString(subtypes):
+  types = {val: desc for desc, val in format_token.Subtype.__dict__.items()}
+  return '{' + ", ".join(
+      types.get(val, '(err=%d)' % val) for val in subtypes) + '}'
+
+
 def _SpaceRequiredBetween(left, right):
   """Return True if a space is required between the left and right token."""
   lval = left.value
   rval = right.value
+  if LOGGER.isEnabledFor(logging.DEBUG):
+    LOGGER.debug('%r, %r left:[%r, %r], right:[%r, %r]', lval, rval, left,
+                 _SubtypeString(left.subtypes), right,
+                 _SubtypeString(right.subtypes))
   if (left.is_pseudo_paren and _IsIdNumberStringToken(right) and
       left.previous_token and _IsIdNumberStringToken(left.previous_token)):
     # Space between keyword... tokens and pseudo parens.
+    LOGGER.debug('space required')
     return True
   if left.is_pseudo_paren or right.is_pseudo_paren:
     # There should be a space after the ':' in a dictionary.
     if left.OpensScope():
+      LOGGER.debug('space required')
       return True
     # The closing pseudo-paren shouldn't affect spacing.
+    LOGGER.debug('space not required')
     return False
   if left.is_continuation or right.is_continuation:
     # The continuation node's value has all of the spaces it needs.
+    LOGGER.debug('space not required')
     return False
   if right.name in pytree_utils.NONSEMANTIC_TOKENS:
     # No space before a non-semantic token.
+    LOGGER.debug('space not required')
     return False
   if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
     # Spaces between keyword, string, number, and identifier tokens.
+    LOGGER.debug('space required')
     return True
   if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
+    LOGGER.debug('space required')
     return True
   if style.Get('SPACE_INSIDE_BRACKETS'):
     # Supersede the "no space before a colon or comma" check.
     if lval in pytree_utils.OPENING_BRACKETS and rval == ':':
+      LOGGER.debug('space required')
       return True
     if rval in pytree_utils.CLOSING_BRACKETS and lval == ':':
+      LOGGER.debug('space required')
       return True
   if (style.Get('SPACES_AROUND_SUBSCRIPT_COLON') and
       (_IsSubscriptColonAndValuePair(left, right) or
        _IsSubscriptColonAndValuePair(right, left))):
     # Supersede the "never want a space before a colon or comma" check.
+    LOGGER.debug('space required')
     return True
   if rval in ':,':
     # Otherwise, we never want a space before a colon or comma.
+    LOGGER.debug('space not required')
     return False
   if lval == ',' and rval in ']})':
     # Add a space between ending ',' and closing bracket if requested.
+    LOGGER.debug('SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET')
     return style.Get('SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET')
   if lval == ',':
     # We want a space after a comma.
+    LOGGER.debug('space required')
     return True
   if lval == 'from' and rval == '.':
     # Space before the '.' in an import statement.
+    LOGGER.debug('space required')
     return True
   if lval == '.' and rval == 'import':
     # Space after the '.' in an import statement.
+    LOGGER.debug('space required')
     return True
   if (lval == '=' and rval == '.' and
       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN not in left.subtypes):
     # Space between equal and '.' as in "X = ...".
+    LOGGER.debug('space required')
     return True
   if ((right.is_keyword or right.is_name) and
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
+    LOGGER.debug('space required')
     return True
   if (format_token.Subtype.SUBSCRIPT_COLON in left.subtypes or
       format_token.Subtype.SUBSCRIPT_COLON in right.subtypes):
     # A subscript shouldn't have spaces separating its colons.
+    LOGGER.debug("space not required")
     return False
   if (format_token.Subtype.TYPED_NAME in left.subtypes or
       format_token.Subtype.TYPED_NAME in right.subtypes):
     # A typed argument should have a space after the colon.
+    LOGGER.debug('space required')
     return True
   if left.is_string:
     if (rval == '=' and format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
         in right.subtypes):
       # If there is a type hint, then we don't want to add a space between the
       # equal sign and the hint.
+      LOGGER.debug('space not required')
       return False
     if rval not in '[)]}.' and not right.is_binary_op:
       # A string followed by something other than a subscript, closing bracket,
       # dot, or a binary op should have a space after it.
+      LOGGER.debug('space required')
       return True
     if rval in pytree_utils.CLOSING_BRACKETS:
+      LOGGER.debug('SPACE_INSIDE_BRACKETS')
       # A string followed by closing brackets should have a space after it
       # depending on SPACE_INSIDE_BRACKETS.  A string followed by opening
       # brackets, however, should not.
       return style.Get('SPACE_INSIDE_BRACKETS')
     if format_token.Subtype.SUBSCRIPT_BRACKET in right.subtypes:
       # It's legal to do this in Python: 'hello'[a]
+      LOGGER.debug("space not required")
       return False
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
     # Space between the binary operator and the unary operator.
+    LOGGER.debug('space required')
     return True
   if left.is_keyword and _IsUnaryOperator(right):
     # Handle things like "not -3 < x".
+    LOGGER.debug('space required')
     return True
   if _IsUnaryOperator(left) and _IsUnaryOperator(right):
     # No space between two unary operators.
+    LOGGER.debug('space not required')
     return False
   if left.is_binary_op or right.is_binary_op:
     if lval == '**' or rval == '**':
       # Space around the "power" operator.
+      LOGGER.debug('SPACES_AROUND_POWER_OPERATOR')
       return style.Get('SPACES_AROUND_POWER_OPERATOR')
     # Enforce spaces around binary operators except the blacklisted ones.
     blacklist = style.Get('NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS')
     if lval in blacklist or rval in blacklist:
+      LOGGER.debug('space not required')
       return False
     if style.Get('ARITHMETIC_PRECEDENCE_INDICATION'):
       if _PriorityIndicatingNoSpace(left) or _PriorityIndicatingNoSpace(right):
+        LOGGER.debug('space not required')
         return False
       else:
+        LOGGER.debug('space required')
         return True
     else:
+      LOGGER.debug('space required')
       return True
   if (_IsUnaryOperator(left) and lval != 'not' and
       (right.is_name or right.is_number or rval == '(')):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
+    LOGGER.debug('space not required')
     return False
   if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes and
       format_token.Subtype.TYPED_NAME not in right.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
+    LOGGER.debug('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
     return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
   if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes and
       format_token.Subtype.TYPED_NAME not in left.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
+    LOGGER.debug('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
     return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
   if (format_token.Subtype.VARARGS_LIST in left.subtypes or
       format_token.Subtype.VARARGS_LIST in right.subtypes):
+    LOGGER.debug('space not required')
     return False
   if (format_token.Subtype.VARARGS_STAR in left.subtypes or
       format_token.Subtype.KWARGS_STAR_STAR in left.subtypes):
     # Don't add a space after a vararg's star or a keyword's star-star.
+    LOGGER.debug('space not required')
     return False
   if lval == '@' and format_token.Subtype.DECORATOR in left.subtypes:
     # Decorators shouldn't be separated from the 'at' sign.
+    LOGGER.debug('space not required')
     return False
   if left.is_keyword and rval == '.':
     # Add space between keywords and dots.
-    return lval != 'None' and lval != 'print'
+    space_required = lval != 'None' and lval != 'print'
+    LOGGER.debug('space required: %s', space_required)
+    return space_required
   if lval == '.' and right.is_keyword:
     # Add space between keywords and dots.
-    return rval != 'None' and rval != 'print'
+    space_required = rval != 'None' and rval != 'print'
+    LOGGER.debug('space required: %s', space_required)
+    return space_required
   if lval == '.' or rval == '.':
     # Don't place spaces between dots.
+    LOGGER.debug('space not required')
     return False
   if ((lval == '(' and rval == ')') or (lval == '[' and rval == ']') or
       (lval == '{' and rval == '}')):
     # Empty objects shouldn't be separated by spaces.
+    LOGGER.debug('space not required')
     return False
   if (lval in pytree_utils.OPENING_BRACKETS and
       rval in pytree_utils.OPENING_BRACKETS):
     # Nested objects' opening brackets shouldn't be separated, unless enabled
     # by SPACE_INSIDE_BRACKETS.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.CLOSING_BRACKETS and
       rval in pytree_utils.CLOSING_BRACKETS):
     # Nested objects' closing brackets shouldn't be separated, unless enabled
     # by SPACE_INSIDE_BRACKETS.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
   if lval in pytree_utils.CLOSING_BRACKETS and rval in '([':
     # A call, set, dictionary, or subscript that has a call or subscript after
     # it shouldn't have a space between them.
+    LOGGER.debug('space not required')
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsIdNumberStringToken(right):
     # Don't separate the opening bracket from the first item, unless enabled
     # by SPACE_INSIDE_BRACKETS.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
   if left.is_name and rval in '([':
     # Don't separate a call or array access from the name.
+    LOGGER.debug('space not required')
     return False
   if rval in pytree_utils.CLOSING_BRACKETS:
     # Don't separate the closing bracket from the last item, unless enabled
     # by SPACE_INSIDE_BRACKETS.
     # FIXME(morbo): This might be too permissive.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
   if lval == 'print' and rval == '(':
     # Special support for the 'print' function.
+    LOGGER.debug('space not required')
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsUnaryOperator(right):
     # Don't separate a unary operator from the opening bracket, unless enabled
     # by SPACE_INSIDE_BRACKETS.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.OPENING_BRACKETS and
       (format_token.Subtype.VARARGS_STAR in right.subtypes or
        format_token.Subtype.KWARGS_STAR_STAR in right.subtypes)):
     # Don't separate a '*' or '**' from the opening bracket, unless enabled
     # by SPACE_INSIDE_BRACKETS.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
   if rval == ';':
     # Avoid spaces before a semicolon. (Why is there a semicolon?!)
+    LOGGER.debug('space not required')
     return False
   if lval == '(' and rval == 'await':
     # Special support for the 'await' keyword. Don't separate the 'await'
     # keyword from an opening paren, unless enabled by SPACE_INSIDE_BRACKETS.
+    LOGGER.debug('SPACE_INSIDE_BRACKETS')
     return style.Get('SPACE_INSIDE_BRACKETS')
+  LOGGER.debug('space required')
   return True
 
 
