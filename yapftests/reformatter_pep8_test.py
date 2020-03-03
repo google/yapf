@@ -702,20 +702,32 @@ class _():
 class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
   """Test the SPACE_INSIDE_BRACKETS style option."""
   unformatted_code = textwrap.dedent("""\
-    foo( )
+    foo()
+    foo(1)
+    foo(1,2)
     foo((1,))
-    foo((1, 2, 3))
-    foo((1,
-              2,
-                    3,))
-    my_dict[3][1][get_index(*args,**kwargs)]
-    my_dict[3][1][get_index(**kwargs)]
-    my_set={1,2,3}
-    copy_dict = my_dict[:]
-    print (my_set)
-    x = my_dict[4] (foo(*args))
-    xyz = ((10+ 3)/(5- 2**(6+x)))
-    val = "mystring"[3]
+    foo((1, 2))
+    foo((1, 2,))
+    foo(bar['baz'][0])
+    set1 = {1, 2, 3}
+    dict1 = {1: 1, foo: 2, 3: bar}
+    dict2 = {
+        1: 1,
+        foo: 2,
+        3: bar,
+    }
+    dict3[3][1][get_index(*args,**kwargs)]
+    dict4[3][1][get_index(**kwargs)]
+    x = dict5[4](foo(*args))
+    a = list1[:]
+    b = list2[slice_start:]
+    c = list3[slice_start:slice_end]
+    d = list4[slice_start:slice_end:]
+    e = list5[slice_start:slice_end:slice_step]
+    # Print gets special handling
+    print(set2)
+    compound = ((10+3)/(5-2**(6+x)))
+    string_idx = "mystring"[3]
     """)
 
   def testEnabled(self):
@@ -724,21 +736,34 @@ class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
 
     expected_formatted_code = textwrap.dedent("""\
       foo()
+      foo( 1 )
+      foo( 1, 2 )
       foo( ( 1, ) )
-      foo( ( 1, 2, 3 ) )
+      foo( ( 1, 2 ) )
       foo( (
           1,
           2,
-          3,
       ) )
-      my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
-      my_dict[ 3 ][ 1 ][ get_index( **kwargs ) ]
-      my_set = { 1, 2, 3 }
-      copy_dict = my_dict[ : ]
-      print( my_set )
-      x = my_dict[ 4 ]( foo( *args ) )
-      xyz = ( ( 10 + 3 ) / ( 5 - 2**( 6 + x ) ) )
-      val = "mystring"[ 3 ]
+      foo( bar[ 'baz' ][ 0 ] )
+      set1 = { 1, 2, 3 }
+      dict1 = { 1: 1, foo: 2, 3: bar }
+      dict2 = {
+          1: 1,
+          foo: 2,
+          3: bar,
+      }
+      dict3[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
+      dict4[ 3 ][ 1 ][ get_index( **kwargs ) ]
+      x = dict5[ 4 ]( foo( *args ) )
+      a = list1[ : ]
+      b = list2[ slice_start: ]
+      c = list3[ slice_start:slice_end ]
+      d = list4[ slice_start:slice_end: ]
+      e = list5[ slice_start:slice_end:slice_step ]
+      # Print gets special handling
+      print( set2 )
+      compound = ( ( 10 + 3 ) / ( 5 - 2**( 6 + x ) ) )
+      string_idx = "mystring"[ 3 ]
       """)
 
     uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
@@ -749,21 +774,34 @@ class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
 
     expected_formatted_code = textwrap.dedent("""\
       foo()
+      foo(1)
+      foo(1, 2)
       foo((1, ))
-      foo((1, 2, 3))
+      foo((1, 2))
       foo((
           1,
           2,
-          3,
       ))
-      my_dict[3][1][get_index(*args, **kwargs)]
-      my_dict[3][1][get_index(**kwargs)]
-      my_set = {1, 2, 3}
-      copy_dict = my_dict[:]
-      print(my_set)
-      x = my_dict[4](foo(*args))
-      xyz = ((10 + 3) / (5 - 2**(6 + x)))
-      val = "mystring"[3]
+      foo(bar['baz'][0])
+      set1 = {1, 2, 3}
+      dict1 = {1: 1, foo: 2, 3: bar}
+      dict2 = {
+          1: 1,
+          foo: 2,
+          3: bar,
+      }
+      dict3[3][1][get_index(*args, **kwargs)]
+      dict4[3][1][get_index(**kwargs)]
+      x = dict5[4](foo(*args))
+      a = list1[:]
+      b = list2[slice_start:]
+      c = list3[slice_start:slice_end]
+      d = list4[slice_start:slice_end:]
+      e = list5[slice_start:slice_end:slice_step]
+      # Print gets special handling
+      print(set2)
+      compound = ((10 + 3) / (5 - 2**(6 + x)))
+      string_idx = "mystring"[3]
       """)
 
     uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
