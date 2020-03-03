@@ -13,6 +13,8 @@
 - Don't split between two-word comparison operators: "is not", "not in", etc.
 - New knob `SPACE_INSIDE_BRACKETS` to add spaces inside brackets, braces, and
   parentheses.
+- New knob `SPACES_AROUND_SUBSCRIPT_COLON` to add spaces around the subscript /
+  slice operator.
 
 ## [0.29.0] 2019-11-28
 ### Added
