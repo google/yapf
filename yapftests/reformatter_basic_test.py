@@ -2982,7 +2982,8 @@ my_dict = {
       """)
       expected_formatted_code = unformatted_code
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreateChromiumStyle())
 
