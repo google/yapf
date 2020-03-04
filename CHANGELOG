@@ -13,6 +13,8 @@
 - Don't split between two-word comparison operators: "is not", "not in", etc.
 - Adds `FORCE_MULTILINE_DICT` knob to ensure dictionaries always split,
   even when shorter than the max line length.
+- New knob `SPACE_INSIDE_BRACKETS` to add spaces inside brackets, braces, and
+  parentheses.
 
 ## [0.29.0] 2019-11-28
 ### Added
