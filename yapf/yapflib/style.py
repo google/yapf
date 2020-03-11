@@ -219,6 +219,11 @@ _STYLE_HELP = dict(
       Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
+    SPACES_AROUND_SUBSCRIPT_COLON=textwrap.dedent("""\
+      Use spaces around the subscript / slice operator.  For example:
+
+        my_list[1 : 10 : 2]
+      """),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
       This can be a single value (representing the number of spaces
@@ -394,6 +399,7 @@ def CreatePEP8Style():
       SPACE_INSIDE_BRACKETS=False,
       SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
+      SPACES_AROUND_SUBSCRIPT_COLON=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
@@ -577,6 +583,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACE_INSIDE_BRACKETS=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
+    SPACES_AROUND_SUBSCRIPT_COLON=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,

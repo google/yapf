@@ -843,5 +843,77 @@ class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
 
+class TestsForSpacesAroundSubscriptColon(yapf_test_helper.YAPFTest):
+  """Test the SPACES_AROUND_SUBSCRIPT_COLON style option."""
+  unformatted_code = textwrap.dedent("""\
+    a = list1[ : ]
+    b = list2[ slice_start: ]
+    c = list3[ slice_start:slice_end ]
+    d = list4[ slice_start:slice_end: ]
+    e = list5[ slice_start:slice_end:slice_step ]
+    a1 = list1[ : ]
+    b1 = list2[ 1: ]
+    c1 = list3[ 1:20 ]
+    d1 = list4[ 1:20: ]
+    e1 = list5[ 1:20:3 ]
+  """)
+
+  def testEnabled(self):
+    style.SetGlobalStyle(
+        style.CreateStyleFromConfig('{spaces_around_subscript_colon: True}'))
+    expected_formatted_code = textwrap.dedent("""\
+      a = list1[:]
+      b = list2[slice_start :]
+      c = list3[slice_start : slice_end]
+      d = list4[slice_start : slice_end :]
+      e = list5[slice_start : slice_end : slice_step]
+      a1 = list1[:]
+      b1 = list2[1 :]
+      c1 = list3[1 : 20]
+      d1 = list4[1 : 20 :]
+      e1 = list5[1 : 20 : 3]
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testWithSpaceInsideBrackets(self):
+    style.SetGlobalStyle(
+        style.CreateStyleFromConfig('{'
+                                    'spaces_around_subscript_colon: true, '
+                                    'space_inside_brackets: true,'
+                                    '}'))
+    expected_formatted_code = textwrap.dedent("""\
+      a = list1[ : ]
+      b = list2[ slice_start : ]
+      c = list3[ slice_start : slice_end ]
+      d = list4[ slice_start : slice_end : ]
+      e = list5[ slice_start : slice_end : slice_step ]
+      a1 = list1[ : ]
+      b1 = list2[ 1 : ]
+      c1 = list3[ 1 : 20 ]
+      d1 = list4[ 1 : 20 : ]
+      e1 = list5[ 1 : 20 : 3 ]
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testDefault(self):
+    style.SetGlobalStyle(style.CreatePEP8Style())
+    expected_formatted_code = textwrap.dedent("""\
+      a = list1[:]
+      b = list2[slice_start:]
+      c = list3[slice_start:slice_end]
+      d = list4[slice_start:slice_end:]
+      e = list5[slice_start:slice_end:slice_step]
+      a1 = list1[:]
+      b1 = list2[1:]
+      c1 = list3[1:20]
+      d1 = list4[1:20:]
+      e1 = list5[1:20:3]
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+
 if __name__ == '__main__':
   unittest.main()
