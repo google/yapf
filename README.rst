@@ -545,6 +545,13 @@ Knobs
     Set to ``True`` to prefer spaces around the assignment operator for default
     or keyword arguments.
 
+``SPACES_AROUND_SUBSCRIPT_COLON``
+    Use spaces around the subscript / slice operator.  For example:
+
+    .. code-block:: python
+
+        my_list[1 : 10 : 2]
+
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
     This can be a single value (representing the number of spaces
