@@ -172,6 +172,13 @@ _STYLE_HELP = dict(
       if the list is comma-terminated."""),
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
       Place each dictionary entry onto its own line."""),
+    FORCE_MULTILINE_DICT=textwrap.dedent("""\
+      Require multiline dictionary even if it would normally fit on one line.
+      For example:
+
+        config = {
+            'key1': 'value1'
+        }"""),
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
@@ -388,6 +395,7 @@ def CreatePEP8Style():
       INDENT_CLOSING_BRACKETS=False,
       DISABLE_ENDING_COMMA_HEURISTIC=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
+      FORCE_MULTILINE_DICT=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
@@ -572,6 +580,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     INDENT_CLOSING_BRACKETS=_BoolConverter,
     DISABLE_ENDING_COMMA_HEURISTIC=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
+    FORCE_MULTILINE_DICT=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,

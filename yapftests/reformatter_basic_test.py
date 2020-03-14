@@ -1937,8 +1937,8 @@ class A(object):
 
   def testDontAddBlankLineAfterMultilineString(self):
     code = textwrap.dedent("""\
-      query = '''SELECT id 
-      FROM table 
+      query = '''SELECT id
+      FROM table
       WHERE day in {}'''
       days = ",".join(days)
       """)
@@ -2953,6 +2953,39 @@ my_dict = {
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+  def testForceMultilineDict_True(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{force_multiline_dict: true}'))
+      unformatted_code = textwrap.dedent(
+          "responseDict = {'childDict': {'spam': 'eggs'}}\n")
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      actual = reformatter.Reformat(uwlines)
+      expected = textwrap.dedent("""\
+        responseDict = {
+            'childDict': {
+                'spam': 'eggs'
+            }
+        }
+      """)
+      self.assertCodeEqual(expected, actual)
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
+
+  def testForceMultilineDict_False(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{force_multiline_dict: false}'))
+      unformatted_code = textwrap.dedent("""\
+        responseDict = {'childDict': {'spam': 'eggs'}}
+      """)
+      expected_formatted_code = unformatted_code
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateChromiumStyle())
 
 
 if __name__ == '__main__':

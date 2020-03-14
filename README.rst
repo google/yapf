@@ -473,6 +473,10 @@ Knobs
 ``EACH_DICT_ENTRY_ON_SEPARATE_LINE``
     Place each dictionary entry onto its own line.
 
+``FORCE_MULTILINE_DICT``
+    Respect EACH_DICT_ENTRY_ON_SEPARATE_LINE even if the line is shorter than
+    COLUMN_LIMIT.
+
 ``I18N_COMMENT``
     The regex for an internationalization comment. The presence of this comment
     stops reformatting of that line, because the comments are required to be

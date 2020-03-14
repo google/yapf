@@ -439,5 +439,33 @@ class WriteReformattedCodeTest(unittest.TestCase):
     self.assertEqual(stream.getvalue(), s)
 
 
+class LineEndingTest(unittest.TestCase):
+
+  def test_line_ending_linefeed(self):
+    lines = ['spam\n', 'spam\n']
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_carriage_return(self):
+    lines = ['spam\r', 'spam\r']
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\r')
+
+  def test_line_ending_combo(self):
+    lines = ['spam\r\n', 'spam\r\n']
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\r\n')
+
+  def test_line_ending_weighted(self):
+    lines = [
+        'spam\n',
+        'spam\n',
+        'spam\r',
+        'spam\r\n',
+    ]
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+
 if __name__ == '__main__':
   unittest.main()

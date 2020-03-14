@@ -257,6 +257,9 @@ def _CanPlaceOnSingleLine(uwline):
   Returns:
     True if the line can or should be added to a single line. False otherwise.
   """
+  token_names = [x.name for x in uwline.tokens]
+  if (style.Get('FORCE_MULTILINE_DICT') and 'LBRACE' in token_names):
+    return False
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
   last = uwline.last
   last_index = -1
