@@ -29,7 +29,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
 
   def testSetGlobalStyle(self):
     try:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
       unformatted_code = textwrap.dedent(u"""\
           for i in range(5):
            print('bar')

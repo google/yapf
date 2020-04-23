@@ -113,12 +113,12 @@ class MainTest(unittest.TestCase):
 
   def testEchoInputWithStyle(self):
     code = 'def f(a = 1):\n    return 2*a\n'
-    chromium_code = 'def f(a=1):\n  return 2 * a\n'
+    yapf_code = 'def f(a=1):\n  return 2 * a\n'
     with patched_input(code):
       with captured_output() as (out, _):
-        ret = yapf.main(['-', '--style=chromium'])
+        ret = yapf.main(['-', '--style=yapf'])
         self.assertEqual(ret, 0)
-        self.assertEqual(out.getvalue(), chromium_code)
+        self.assertEqual(out.getvalue(), yapf_code)
 
   def testEchoBadInput(self):
     bad_syntax = '  a = 1\n'

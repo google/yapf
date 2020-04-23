@@ -28,7 +28,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSimpleFunctionDefWithNoSplitting(self):
     code = textwrap.dedent(r"""

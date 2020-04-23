@@ -27,7 +27,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testDecorators(self):
     unformatted_code = textwrap.dedent("""\

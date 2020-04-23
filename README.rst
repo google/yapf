@@ -178,8 +178,8 @@ with a ``[yapf]`` heading. For example:
 
 The ``based_on_style`` setting determines which of the predefined styles this
 custom style is based on (think of it like subclassing). Four
-styles are predefined: ``pep8`` (default), ``chromium``, ``google`` and 
-``facebook`` (see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
+styles are predefined: ``pep8`` (default), ``google``, ``yapf``, and ``facebook``
+(see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
 
 .. _style.py: https://github.com/google/yapf/blob/master/yapf/yapflib/style.py#L445
 
@@ -188,9 +188,9 @@ example:
 
 .. code-block:: shell
 
-    --style='{based_on_style: chromium, indent_width: 4}'
+    --style='{based_on_style: pep8, indent_width: 2}'
 
-This will take the ``chromium`` base style and modify it to have four space
+This will take the ``pep8`` base style and modify it to have two space
 indentations.
 
 YAPF will search for the formatting style in the following manner:
