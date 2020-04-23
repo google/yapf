@@ -136,7 +136,8 @@ _STYLE_HELP = dict(
             transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
-        )        # <--- this bracket is dedented and on a separate line"""),
+        )        # <--- this bracket is dedented and on a separate line
+      """),
     DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
       if the list is comma-terminated."""),
@@ -159,7 +160,8 @@ _STYLE_HELP = dict(
                 'value1',
             'key2': value1 +
                     value2,
-        }"""),
+        }
+      """),
     INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
     INDENT_BLANK_LINES=textwrap.dedent("""\
@@ -174,7 +176,6 @@ _STYLE_HELP = dict(
       will be formatted as follows when configured with "*,/":
 
         1 + 2*3 - 4/5
-
       """),
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
@@ -191,7 +192,6 @@ _STYLE_HELP = dict(
       will be formatted as:
 
         { 1: 2 }
-
       """),
     SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '[' and before the ending ']' list delimiters.
@@ -201,7 +201,6 @@ _STYLE_HELP = dict(
       will be formatted as:
       
         [ 1, 2 ]
-        
       """),
     SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '(' and before the ending ')' tuple delimiters.
@@ -211,7 +210,6 @@ _STYLE_HELP = dict(
       will be formatted as:
       
         ( 1, 2, 3 )
-        
       """),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
