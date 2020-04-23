@@ -1778,5 +1778,188 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
     self._Check(unformatted_code, expected_formatted_code)
 
 
+class _SpacesAroundDictListTupleTestImpl(unittest.TestCase):
+
+  @staticmethod
+  def _OwnStyle():
+    my_style = style.CreatePEP8Style()
+    my_style['DISABLE_ENDING_COMMA_HEURISTIC'] = True
+    my_style['SPLIT_ALL_COMMA_SEPARATED_VALUES'] = False
+    my_style['SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'] = False
+    return my_style
+
+  def _Check(self, unformatted_code, expected_formatted_code):
+    formatted_code, _ = yapf_api.FormatCode(
+        unformatted_code, style_config=style.SetGlobalStyle(self._OwnStyle()))
+    self.assertEqual(expected_formatted_code, formatted_code)
+
+  def setUp(self):
+    self.maxDiff = None
+
+
+class SpacesAroundDictTest(_SpacesAroundDictListTupleTestImpl):
+
+  @classmethod
+  def _OwnStyle(cls):
+    style = super(SpacesAroundDictTest, cls)._OwnStyle()
+    style['SPACES_AROUND_DICT_DELIMITERS'] = True
+
+    return style
+
+  def testStandard(self):
+    unformatted_code = textwrap.dedent("""\
+      {1 : 2}
+      {k:v for k, v in other.items()}
+      {k for k in [1, 2, 3]}
+
+      # The following statements should not change
+      {}
+      {1 : 2} # yapf: disable
+
+      # yapf: disable
+      {1 : 2}
+      # yapf: enable
+
+      # Dict settings should not impact lists or tuples
+      [1, 2]
+      (3, 4)
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      { 1: 2 }
+      { k: v for k, v in other.items() }
+      { k for k in [1, 2, 3] }
+      
+      # The following statements should not change
+      {}
+      {1 : 2} # yapf: disable
+
+      # yapf: disable
+      {1 : 2}
+      # yapf: enable
+      
+      # Dict settings should not impact lists or tuples
+      [1, 2]
+      (3, 4)
+      """)
+
+    self._Check(unformatted_code, expected_formatted_code)
+
+
+class SpacesAroundListTest(_SpacesAroundDictListTupleTestImpl):
+
+  @classmethod
+  def _OwnStyle(cls):
+    style = super(SpacesAroundListTest, cls)._OwnStyle()
+    style['SPACES_AROUND_LIST_DELIMITERS'] = True
+
+    return style
+
+  def testStandard(self):
+    unformatted_code = textwrap.dedent("""\
+      [a,b,c]
+      [4,5,]
+      [6, [7, 8], 9]
+      [v for v in [1,2,3] if v & 1]
+
+      # The following statements should not change
+      index[0]
+      index[a, b]
+      []
+      [v for v in [1,2,3] if v & 1] # yapf: disable
+
+      # yapf: disable
+      [a,b,c]
+      [4,5,]
+      # yapf: enable
+
+      # List settings should not impact dicts or tuples
+      {a: b}
+      (1, 2)
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      [ a, b, c ]
+      [ 4, 5, ]
+      [ 6, [ 7, 8 ], 9 ]
+      [ v for v in [ 1, 2, 3 ] if v & 1 ]
+
+      # The following statements should not change
+      index[0]
+      index[a, b]
+      []
+      [v for v in [1,2,3] if v & 1] # yapf: disable
+      
+      # yapf: disable
+      [a,b,c]
+      [4,5,]
+      # yapf: enable
+      
+      # List settings should not impact dicts or tuples
+      {a: b}
+      (1, 2)
+      """)
+
+    self._Check(unformatted_code, expected_formatted_code)
+
+
+class SpacesAroundTupleTest(_SpacesAroundDictListTupleTestImpl):
+
+  @classmethod
+  def _OwnStyle(cls):
+    style = super(SpacesAroundTupleTest, cls)._OwnStyle()
+    style['SPACES_AROUND_TUPLE_DELIMITERS'] = True
+
+    return style
+
+  def testStandard(self):
+    unformatted_code = textwrap.dedent("""\
+      (0, 1)
+      (2, 3)
+      (4, 5, 6,)
+      func((7, 8), 9)
+
+      # The following statements should not change
+      func(1, 2)
+      (this_func or that_func)(3, 4)
+      if (True and False): pass
+      ()
+
+      (0, 1) # yapf: disable
+
+      # yapf: disable
+      (0, 1)
+      (2, 3)
+      # yapf: enable
+
+      # Tuple settings should not impact dicts or lists
+      {a: b}
+      [3, 4]
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      ( 0, 1 )
+      ( 2, 3 )
+      ( 4, 5, 6, )
+      func(( 7, 8 ), 9)
+
+      # The following statements should not change
+      func(1, 2)
+      (this_func or that_func)(3, 4)
+      if (True and False): pass
+      ()
+      
+      (0, 1) # yapf: disable
+
+      # yapf: disable
+      (0, 1)
+      (2, 3)
+      # yapf: enable
+      
+      # Tuple settings should not impact dicts or lists
+      {a: b}
+      [3, 4]
+      """)
+
+    self._Check(unformatted_code, expected_formatted_code)
+
+
 if __name__ == '__main__':
   unittest.main()
