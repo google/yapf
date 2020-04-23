@@ -43,7 +43,7 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
 
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
-        unformatted_code, style_config='chromium')
+        unformatted_code, style_config='yapf')
     self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -95,7 +95,7 @@ class FormatFileTest(unittest.TestCase):
         if True:
             pass
         """)
-    expected_formatted_code_chromium = textwrap.dedent(u"""\
+    expected_formatted_code_yapf = textwrap.dedent(u"""\
         if True:
           pass
         """)
@@ -103,9 +103,8 @@ class FormatFileTest(unittest.TestCase):
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code_pep8, formatted_code)
 
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
-      self.assertCodeEqual(expected_formatted_code_chromium, formatted_code)
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
+      self.assertCodeEqual(expected_formatted_code_yapf, formatted_code)
 
   def testDisableLinesPattern(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -361,8 +360,7 @@ class FormatFileTest(unittest.TestCase):
         ]
         """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
 
   def testDisabledWithPrecedingText(self):
@@ -381,15 +379,13 @@ class FormatFileTest(unittest.TestCase):
         ]
         """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
 
   def testCRLFLineEnding(self):
     code = u'class _():\r\n  pass\r\n'
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
 
 
@@ -502,7 +498,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
-  def testSetChromiumStyle(self):
+  def testSetYapfStyle(self):
     unformatted_code = textwrap.dedent("""\
         def foo(): # trail
             x = 37
@@ -514,9 +510,9 @@ class CommandLineTest(unittest.TestCase):
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--style=chromium'])
+        extra_options=['--style=yapf'])
 
-  def testSetCustomStyleBasedOnChromium(self):
+  def testSetCustomStyleBasedOnYapf(self):
     unformatted_code = textwrap.dedent("""\
         def foo(): # trail
             x = 37
@@ -527,7 +523,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     style_file = textwrap.dedent(u'''\
         [style]
-        based_on_style = chromium
+        based_on_style = yapf
         spaces_before_comment = 4
         ''')
     with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
@@ -1164,7 +1160,7 @@ x = {
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--lines', '1-1', '--style', 'chromium'])
+        extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testMultilineCommentFormattingDisabled(self):
     unformatted_code = textwrap.dedent("""\
@@ -1198,7 +1194,7 @@ x = {
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--lines', '1-1', '--style', 'chromium'])
+        extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testTrailingCommentsWithDisabledFormatting(self):
     unformatted_code = textwrap.dedent("""\
@@ -1218,7 +1214,7 @@ x = {
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--lines', '1-1', '--style', 'chromium'])
+        extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testUseTabs(self):
     unformatted_code = """\
@@ -1233,7 +1229,7 @@ def foo_function():
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 INDENT_WIDTH=1
 """
@@ -1257,7 +1253,7 @@ def f():
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 INDENT_WIDTH=1
 """
@@ -1282,7 +1278,7 @@ def foo_function(
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 COLUMN_LIMIT=32
 INDENT_WIDTH=4
@@ -1310,7 +1306,7 @@ def foo_function(arg1, arg2,
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 COLUMN_LIMIT=32
 INDENT_WIDTH=4
@@ -1461,7 +1457,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--style', 'chromium', '--lines', '1-1'])
+        extra_options=['--style', 'yapf', '--lines', '1-1'])
 
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testNoSpacesAroundBinaryOperators(self):
@@ -1511,7 +1507,7 @@ a = [
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--style', 'chromium', '--lines', '1-100'])
+        extra_options=['--style', 'yapf', '--lines', '1-100'])
 
 
 class BadInputTest(unittest.TestCase):
@@ -1829,6 +1825,189 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         do_not_touch2   # yapf: disable
         a_longer_statement      # comment 2
         """)
+    self._Check(unformatted_code, expected_formatted_code)
+
+
+class _SpacesAroundDictListTupleTestImpl(unittest.TestCase):
+
+  @staticmethod
+  def _OwnStyle():
+    my_style = style.CreatePEP8Style()
+    my_style['DISABLE_ENDING_COMMA_HEURISTIC'] = True
+    my_style['SPLIT_ALL_COMMA_SEPARATED_VALUES'] = False
+    my_style['SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'] = False
+    return my_style
+
+  def _Check(self, unformatted_code, expected_formatted_code):
+    formatted_code, _ = yapf_api.FormatCode(
+        unformatted_code, style_config=style.SetGlobalStyle(self._OwnStyle()))
+    self.assertEqual(expected_formatted_code, formatted_code)
+
+  def setUp(self):
+    self.maxDiff = None
+
+
+class SpacesAroundDictTest(_SpacesAroundDictListTupleTestImpl):
+
+  @classmethod
+  def _OwnStyle(cls):
+    style = super(SpacesAroundDictTest, cls)._OwnStyle()
+    style['SPACES_AROUND_DICT_DELIMITERS'] = True
+
+    return style
+
+  def testStandard(self):
+    unformatted_code = textwrap.dedent("""\
+      {1 : 2}
+      {k:v for k, v in other.items()}
+      {k for k in [1, 2, 3]}
+
+      # The following statements should not change
+      {}
+      {1 : 2} # yapf: disable
+
+      # yapf: disable
+      {1 : 2}
+      # yapf: enable
+
+      # Dict settings should not impact lists or tuples
+      [1, 2]
+      (3, 4)
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      { 1: 2 }
+      { k: v for k, v in other.items() }
+      { k for k in [1, 2, 3] }
+      
+      # The following statements should not change
+      {}
+      {1 : 2} # yapf: disable
+
+      # yapf: disable
+      {1 : 2}
+      # yapf: enable
+      
+      # Dict settings should not impact lists or tuples
+      [1, 2]
+      (3, 4)
+      """)
+
+    self._Check(unformatted_code, expected_formatted_code)
+
+
+class SpacesAroundListTest(_SpacesAroundDictListTupleTestImpl):
+
+  @classmethod
+  def _OwnStyle(cls):
+    style = super(SpacesAroundListTest, cls)._OwnStyle()
+    style['SPACES_AROUND_LIST_DELIMITERS'] = True
+
+    return style
+
+  def testStandard(self):
+    unformatted_code = textwrap.dedent("""\
+      [a,b,c]
+      [4,5,]
+      [6, [7, 8], 9]
+      [v for v in [1,2,3] if v & 1]
+
+      # The following statements should not change
+      index[0]
+      index[a, b]
+      []
+      [v for v in [1,2,3] if v & 1] # yapf: disable
+
+      # yapf: disable
+      [a,b,c]
+      [4,5,]
+      # yapf: enable
+
+      # List settings should not impact dicts or tuples
+      {a: b}
+      (1, 2)
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      [ a, b, c ]
+      [ 4, 5, ]
+      [ 6, [ 7, 8 ], 9 ]
+      [ v for v in [ 1, 2, 3 ] if v & 1 ]
+
+      # The following statements should not change
+      index[0]
+      index[a, b]
+      []
+      [v for v in [1,2,3] if v & 1] # yapf: disable
+      
+      # yapf: disable
+      [a,b,c]
+      [4,5,]
+      # yapf: enable
+      
+      # List settings should not impact dicts or tuples
+      {a: b}
+      (1, 2)
+      """)
+
+    self._Check(unformatted_code, expected_formatted_code)
+
+
+class SpacesAroundTupleTest(_SpacesAroundDictListTupleTestImpl):
+
+  @classmethod
+  def _OwnStyle(cls):
+    style = super(SpacesAroundTupleTest, cls)._OwnStyle()
+    style['SPACES_AROUND_TUPLE_DELIMITERS'] = True
+
+    return style
+
+  def testStandard(self):
+    unformatted_code = textwrap.dedent("""\
+      (0, 1)
+      (2, 3)
+      (4, 5, 6,)
+      func((7, 8), 9)
+
+      # The following statements should not change
+      func(1, 2)
+      (this_func or that_func)(3, 4)
+      if (True and False): pass
+      ()
+
+      (0, 1) # yapf: disable
+
+      # yapf: disable
+      (0, 1)
+      (2, 3)
+      # yapf: enable
+
+      # Tuple settings should not impact dicts or lists
+      {a: b}
+      [3, 4]
+      """)
+    expected_formatted_code = textwrap.dedent("""\
+      ( 0, 1 )
+      ( 2, 3 )
+      ( 4, 5, 6, )
+      func(( 7, 8 ), 9)
+
+      # The following statements should not change
+      func(1, 2)
+      (this_func or that_func)(3, 4)
+      if (True and False): pass
+      ()
+      
+      (0, 1) # yapf: disable
+
+      # yapf: disable
+      (0, 1)
+      (2, 3)
+      # yapf: enable
+      
+      # Tuple settings should not impact dicts or lists
+      {a: b}
+      [3, 4]
+      """)
+
     self._Check(unformatted_code, expected_formatted_code)
 
 

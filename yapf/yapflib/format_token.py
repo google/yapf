@@ -311,6 +311,12 @@ class FormatToken(object):
 
   @property
   @py3compat.lru_cache()
+  def is_subscript_colon(self):
+    """Token is a subscript colon."""
+    return Subtype.SUBSCRIPT_COLON in self.subtypes
+
+  @property
+  @py3compat.lru_cache()
   def name(self):
     """A string representation of the node's name."""
     return pytree_utils.NodeName(self.node)

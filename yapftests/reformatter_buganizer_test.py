@@ -26,7 +26,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB137580392(self):
     code = """\
@@ -1680,49 +1680,53 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testB20016122(self):
+    unformatted_code = textwrap.dedent("""\
+        from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
+                                                                   long_argument_2)
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        from a_very_long_or_indented_module_name_yada_yada import (
+            long_argument_1, long_argument_2)
+        """)
+
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
               '{based_on_style: pep8, split_penalty_import_names: 350}'))
-      unformatted_code = textwrap.dedent("""\
-          from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
-                                                                     long_argument_2)
-          """)
-      expected_formatted_code = textwrap.dedent("""\
-          from a_very_long_or_indented_module_name_yada_yada import (
-              long_argument_1, long_argument_2)
-          """)
+
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
+    code = textwrap.dedent("""\
+        class foo():
+
+          def __eq__(self, other):
+            return (isinstance(other, type(self))
+                    and self.xxxxxxxxxxx == other.xxxxxxxxxxx
+                    and self.xxxxxxxx == other.xxxxxxxx
+                    and self.aaaaaaaaaaaa == other.aaaaaaaaaaaa
+                    and self.bbbbbbbbbbb == other.bbbbbbbbbbb
+                    and self.ccccccccccccccccc == other.ccccccccccccccccc
+                    and self.ddddddddddddddddddddddd == other.ddddddddddddddddddddddd
+                    and self.eeeeeeeeeeee == other.eeeeeeeeeeee
+                    and self.ffffffffffffff == other.time_completed
+                    and self.gggggg == other.gggggg and self.hhh == other.hhh
+                    and len(self.iiiiiiii) == len(other.iiiiiiii)
+                    and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
+        """)
+
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium, '
+          style.CreateStyleFromConfig('{based_on_style: yapf, '
                                       'split_before_logical_operator: True}'))
-      code = textwrap.dedent("""\
-          class foo():
 
-            def __eq__(self, other):
-              return (isinstance(other, type(self))
-                      and self.xxxxxxxxxxx == other.xxxxxxxxxxx
-                      and self.xxxxxxxx == other.xxxxxxxx
-                      and self.aaaaaaaaaaaa == other.aaaaaaaaaaaa
-                      and self.bbbbbbbbbbb == other.bbbbbbbbbbb
-                      and self.ccccccccccccccccc == other.ccccccccccccccccc
-                      and self.ddddddddddddddddddddddd == other.ddddddddddddddddddddddd
-                      and self.eeeeeeeeeeee == other.eeeeeeeeeeee
-                      and self.ffffffffffffff == other.time_completed
-                      and self.gggggg == other.gggggg and self.hhh == other.hhh
-                      and len(self.iiiiiiii) == len(other.iiiiiiii)
-                      and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
-          """)
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB22527411(self):
     unformatted_code = textwrap.dedent("""\
@@ -1873,12 +1877,14 @@ class _():
                 if c: break
             return 0
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+
     try:
       style.SetGlobalStyle(style.CreatePEP8Style())
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB19353268(self):
     code = textwrap.dedent("""\

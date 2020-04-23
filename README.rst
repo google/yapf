@@ -178,8 +178,8 @@ with a ``[yapf]`` heading. For example:
 
 The ``based_on_style`` setting determines which of the predefined styles this
 custom style is based on (think of it like subclassing). Four
-styles are predefined: ``pep8`` (default), ``chromium``, ``google`` and 
-``facebook`` (see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
+styles are predefined: ``pep8`` (default), ``google``, ``yapf``, and ``facebook``
+(see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
 
 .. _style.py: https://github.com/google/yapf/blob/master/yapf/yapflib/style.py#L445
 
@@ -188,9 +188,9 @@ example:
 
 .. code-block:: shell
 
-    --style='{based_on_style: chromium, indent_width: 4}'
+    --style='{based_on_style: pep8, indent_width: 2}'
 
-This will take the ``chromium`` base style and modify it to have four space
+This will take the ``pep8`` base style and modify it to have two space
 indentations.
 
 YAPF will search for the formatting style in the following manner:
@@ -470,6 +470,10 @@ Knobs
 ``EACH_DICT_ENTRY_ON_SEPARATE_LINE``
     Place each dictionary entry onto its own line.
 
+``FORCE_MULTILINE_DICT``
+    Respect EACH_DICT_ENTRY_ON_SEPARATE_LINE even if the line is shorter than
+    COLUMN_LIMIT.
+
 ``I18N_COMMENT``
     The regex for an internationalization comment. The presence of this comment
     stops reformatting of that line, because the comments are required to be
@@ -542,6 +546,52 @@ Knobs
     Set to ``True`` to prefer spaces around the assignment operator for default
     or keyword arguments.
 
+``SPACES_AROUND_DICT_DELIMITERS``
+    Adds a space after the opening '{' and before the ending '}' dict delimiters.
+
+    .. code-block:: python
+
+        {1: 2}
+
+    will be formatted as:
+
+    .. code-block:: python
+
+        { 1: 2 }
+
+``SPACES_AROUND_LIST_DELIMITERS``
+    Adds a space after the opening '[' and before the ending ']' list delimiters.
+
+    .. code-block:: python
+
+        [1, 2]
+
+    will be formatted as:
+    
+    .. code-block:: python
+
+        [ 1, 2 ]
+
+``SPACES_AROUND_SUBSCRIPT_COLON``
+    Use spaces around the subscript / slice operator.  For example:
+
+    .. code-block:: python
+
+        my_list[1 : 10 : 2]
+
+``SPACES_AROUND_TUPLE_DELIMITERS``
+    Adds a space after the opening '(' and before the ending ')' tuple delimiters.
+
+    .. code-block:: python
+
+        (1, 2, 3)
+
+    will be formatted as:
+
+    .. code-block:: python
+
+        ( 1, 2, 3 )
+
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
     This can be a single value (representing the number of spaces
@@ -590,6 +640,15 @@ Knobs
 
 ``SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET``
     Insert a space between the ending comma and closing bracket of a list, etc.
+
+``SPACE_INSIDE_BRACKETS``
+    Use spaces inside brackets, braces, and parentheses.  For example:
+
+    .. code-block:: python
+
+        method_call( 1 )
+        my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
+        my_set = { 1, 2, 3 }
 
 ``SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED``
     Split before arguments if the argument list is terminated by a comma.
@@ -810,7 +869,7 @@ I still get non Pep8 compliant code! Why?
 YAPF tries very hard to be fully PEP 8 compliant. However, it is paramount
 to not risk altering the semantics of your code. Thus, YAPF tries to be as
 safe as possible and does not change the token stream
-(e.g., by adding parenthesis).
+(e.g., by adding parentheses).
 All these cases however, can be easily fixed manually. For instance,
 
 .. code-block:: python
@@ -819,7 +878,7 @@ All these cases however, can be easily fixed manually. For instance,
 
     FOO = my_variable_1 + my_variable_2 + my_variable_3 + my_variable_4 + my_variable_5 + my_variable_6 + my_variable_7 + my_variable_8
 
-won't be split, but you can easily get it right by just adding parenthesis:
+won't be split, but you can easily get it right by just adding parentheses:
 
 .. code-block:: python
 
