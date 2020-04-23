@@ -86,17 +86,21 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
 
     # See if we have a setup.cfg file with a '[yapf]' section.
     config_file = os.path.join(dirname, style.SETUP_CONFIG)
-    if os.path.exists(config_file):
-      with open(config_file) as fd:
+    try:
+      fd = open(config_file)
+    except IOError:
+      pass  # It's okay if it's not there.
+    else:
+      with fd:
         config = py3compat.ConfigParser()
         config.read_file(fd)
         if config.has_section('yapf'):
           return config_file
 
-    dirname = os.path.dirname(dirname)
     if (not dirname or not os.path.basename(dirname) or
         dirname == os.path.abspath(os.path.sep)):
       break
+    dirname = os.path.dirname(dirname)
 
   global_file = os.path.expanduser(style.GLOBAL_STYLE)
   if os.path.exists(global_file):
@@ -156,24 +160,24 @@ def _FindPythonFiles(filenames, recursive, exclude):
     if filename != '.' and exclude and IsIgnored(filename, exclude):
       continue
     if os.path.isdir(filename):
-      if recursive:
-        # TODO(morbo): Look into a version of os.walk that can handle recursion.
-        excluded_dirs = []
-        for dirpath, _, filelist in os.walk(filename):
-          if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
-            excluded_dirs.append(dirpath)
-            continue
-          elif any(dirpath.startswith(e) for e in excluded_dirs):
-            continue
-          for f in filelist:
-            filepath = os.path.join(dirpath, f)
-            if exclude and IsIgnored(filepath, exclude):
-              continue
-            if IsPythonFile(filepath):
-              python_files.append(filepath)
-      else:
+      if not recursive:
         raise errors.YapfError(
             "directory specified without '--recursive' flag: %s" % filename)
+
+      # TODO(morbo): Look into a version of os.walk that can handle recursion.
+      excluded_dirs = []
+      for dirpath, _, filelist in os.walk(filename):
+        if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
+          excluded_dirs.append(dirpath)
+          continue
+        elif any(dirpath.startswith(e) for e in excluded_dirs):
+          continue
+        for f in filelist:
+          filepath = os.path.join(dirpath, f)
+          if exclude and IsIgnored(filepath, exclude):
+            continue
+          if IsPythonFile(filepath):
+            python_files.append(filepath)
     elif os.path.isfile(filename):
       python_files.append(filename)
 

@@ -350,6 +350,73 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, code)
     self.assertFalse(changed)
 
+  def testLinesRangeRemove(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+        def B():  # 6
+          pass  # 7
+
+
+
+
+        def C():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+        def B():  # 6
+          pass  # 7
+
+
+        def C():
+          pass
+        """)
+    code, changed = yapf_api.FormatCode(unformatted_code, lines=[(5, 9)])
+    self.assertCodeEqual(expected_formatted_code, code)
+    self.assertTrue(changed)
+
+  def testLinesRangeRemoveSome(self):
+    unformatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+
+        def B():  # 7
+          pass  # 8
+
+
+
+
+        def C():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        def A():
+          pass
+
+
+
+        def B():  # 7
+          pass  # 8
+
+
+
+        def C():
+          pass
+        """)
+    code, changed = yapf_api.FormatCode(unformatted_code, lines=[(6, 9)])
+    self.assertCodeEqual(expected_formatted_code, code)
+    self.assertTrue(changed)
+
 
 if __name__ == '__main__':
   unittest.main()

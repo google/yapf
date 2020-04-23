@@ -24,11 +24,14 @@ import tempfile
 import textwrap
 import unittest
 
+from lib2to3.pgen2 import tokenize
+
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
 from yapftests import utils
+from yapftests import yapf_test_helper
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 
@@ -36,12 +39,12 @@ ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
 
 
-class FormatCodeTest(unittest.TestCase):
+class FormatCodeTest(yapf_test_helper.YAPFTest):
 
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
         unformatted_code, style_config='chromium')
-    self.assertEqual(expected_formatted_code, formatted_code)
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
@@ -188,6 +191,19 @@ class FormatFileTest(unittest.TestCase):
 
           # yapf: enable
       """)
+    with utils.TempFileContents(self.test_tmpdir, code) as filepath:
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
+      self.assertCodeEqual(code, formatted_code)
+
+  def testEnabledDisabledSameComment(self):
+    code = textwrap.dedent(u"""\
+        # yapf: disable
+        a(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddd, eeeeeeeeeeeeeeeeeeeeeeeeeee)
+        # yapf: enable
+        # yapf: disable
+        a(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddd, eeeeeeeeeeeeeeeeeeeeeeeeeee)
+        # yapf: enable
+        """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
@@ -512,7 +528,26 @@ class CommandLineTest(unittest.TestCase):
     style_file = textwrap.dedent(u'''\
         [style]
         based_on_style = chromium
-        SPACES_BEFORE_COMMENT = 4
+        spaces_before_comment = 4
+        ''')
+    with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
+      self.assertYapfReformats(
+          unformatted_code,
+          expected_formatted_code,
+          extra_options=['--style={0}'.format(stylepath)])
+
+  def testSetCustomStyleSpacesBeforeComment(self):
+    unformatted_code = textwrap.dedent("""\
+        a_very_long_statement_that_extends_way_beyond # Comment
+        short # This is a shorter statement
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        a_very_long_statement_that_extends_way_beyond # Comment
+        short                                         # This is a shorter statement
+        """)
+    style_file = textwrap.dedent(u'''\
+        [style]
+        spaces_before_comment = 15, 20
         ''')
     with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
       self.assertYapfReformats(
@@ -544,7 +579,8 @@ class CommandLineTest(unittest.TestCase):
         try:
           subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
         except subprocess.CalledProcessError as e:
-          self.assertEqual(e.returncode, 1)  # Indicates the text changed.
+          # Indicates the text changed.
+          self.assertEqual(e.returncode, 1)  # pylint: disable=g-assert-in-except
 
   def testReformattingSpecificLines(self):
     unformatted_code = textwrap.dedent("""\
@@ -817,6 +853,28 @@ class CommandLineTest(unittest.TestCase):
 
     self.assertYapfReformats(
         unformatted_code, unformatted_code, extra_options=['--lines', '2-2'])
+
+  def testVerticalSpacingWithCommentWithContinuationMarkers(self):
+    unformatted_code = """\
+# \\
+# \\
+# \\
+
+x = {
+}
+"""
+    expected_formatted_code = """\
+# \\
+# \\
+# \\
+
+x = {
+}
+"""
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-1'])
 
   def testRetainingSemicolonsWhenSpecifyingLines(self):
     unformatted_code = textwrap.dedent("""\
@@ -1409,6 +1467,10 @@ class BadInputTest(unittest.TestCase):
     code = '  a = 1\n'
     self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
 
+  def testBadCode(self):
+    code = 'x = """hello\n'
+    self.assertRaises(tokenize.TokenError, yapf_api.FormatCode, code)
+
 
 class DiffIndentTest(unittest.TestCase):
 
@@ -1436,12 +1498,12 @@ class DiffIndentTest(unittest.TestCase):
     self._Check(unformatted_code, expected_formatted_code)
 
 
-class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
+class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
   @staticmethod
   def _OwnStyle():
     my_style = style.CreatePEP8Style()
-    my_style["SPACES_BEFORE_COMMENT"] = [
+    my_style['SPACES_BEFORE_COMMENT'] = [
         15,
         25,
         35,
@@ -1451,7 +1513,7 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
         unformatted_code, style_config=style.SetGlobalStyle(self._OwnStyle()))
-    self.assertEqual(expected_formatted_code, formatted_code)
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
@@ -1518,7 +1580,7 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
         func(2) # Line 2
         # Line 3
         func(3)                             # Line 4
-                                        # Line 5 - SpliceComments makes this a new block
+                                        # Line 5
                                     # Line 6
 
         def Func():
@@ -1529,9 +1591,8 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
         func(2)       # Line 2
                       # Line 3
         func(3)       # Line 4
-
-        # Line 5 - SpliceComments makes this a new block
-        # Line 6
+                      # Line 5
+                      # Line 6
 
 
         def Func():
@@ -1663,12 +1724,12 @@ class HorizontallyAlignedTrailingCommentsTest(unittest.TestCase):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def MyFunc(
-                arg1,                     # Desc 1
-                arg2,                     # Desc 2
-                a_longer_var_name,        # Desc 3
-                arg4,
-                arg5,                     # Desc 5
-                arg6,
+            arg1,               # Desc 1
+            arg2,               # Desc 2
+            a_longer_var_name,  # Desc 3
+            arg4,
+            arg5,               # Desc 5
+            arg6,
         ):
             pass
         """)

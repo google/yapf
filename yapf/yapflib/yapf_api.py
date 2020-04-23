@@ -63,9 +63,18 @@ def FormatFile(filename,
 
   Arguments:
     filename: (unicode) The file to reformat.
+    style_config: (string) Either a style name or a path to a file that contains
+      formatting style settings. If None is specified, use the default style
+      as set in style.DEFAULT_STYLE_FACTORY
+    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
+      that we want to format. The lines are 1-based indexed. It can be used by
+      third-party code (e.g., IDEs) when reformatting a snippet of code rather
+      than a whole file.
+    print_diff: (bool) Instead of returning the reformatted source, return a
+      diff that turns the formatted source into reformatter source.
+    verify: (bool) True if reformatted code should be verified for syntax.
     in_place: (bool) If True, write the reformatted code back to the file.
     logger: (io streamer) A stream to output logging.
-    remaining arguments: see comment at the top of this module.
 
   Returns:
     Tuple of (reformatted_code, encoding, changed). reformatted_code is None if
@@ -114,7 +123,16 @@ def FormatCode(unformatted_source,
   Arguments:
     unformatted_source: (unicode) The code to format.
     filename: (unicode) The name of the file being reformatted.
-    remaining arguments: see comment at the top of this module.
+    style_config: (string) Either a style name or a path to a file that contains
+      formatting style settings. If None is specified, use the default style
+      as set in style.DEFAULT_STYLE_FACTORY
+    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
+      that we want to format. The lines are 1-based indexed. It can be used by
+      third-party code (e.g., IDEs) when reformatting a snippet of code rather
+      than a whole file.
+    print_diff: (bool) Instead of returning the reformatted source, return a
+      diff that turns the formatted source into reformatter source.
+    verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
     Tuple of (reformatted_source, changed). reformatted_source conforms to the
@@ -202,6 +220,12 @@ def ReadFile(filename, logger=None):
     if logger:
       logger(err)
     raise
+  except UnicodeDecodeError as err:  # pragma: no cover
+    if logger:
+      logger('Could not parse %s! Consider excluding this file with --exclude.',
+             filename)
+      logger(err)
+    raise
 
 
 def _SplitSemicolons(uwlines):
@@ -246,7 +270,10 @@ def _MarkLinesToFormat(uwlines, lines):
         while index < len(uwlines):
           uwline = uwlines[index]
           if uwline.is_comment and _EnableYAPF(uwline.first.value.strip()):
-            break
+            if not re.search(DISABLE_PATTERN,
+                             uwline.first.value.strip().split('\n')[-1].strip(),
+                             re.IGNORECASE):
+              break
           uwline.disable = True
           index += 1
     elif re.search(DISABLE_PATTERN, uwline.last.value.strip(), re.IGNORECASE):

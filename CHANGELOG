@@ -2,20 +2,119 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.26.0] UNRELEASED
+## [0.30.0] UNRELEASED
 ### Added
-- `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS` allows us to split before
-  default / named assignments.
 - Added `SPACES_AROUND_LIST_DELIMITERS`, `SPACES_AROUND_DICT_DELIMITERS`,
   and `SPACES_AROUND_TUPLE_DELIMITERS` to add spaces after the opening-
   and before the closing-delimiters for lists, dicts, and tuples.
+- Adds `FORCE_MULTILINE_DICT` knob to ensure dictionaries always split,
+  even when shorter than the max line length.
+- New knob `SPACE_INSIDE_BRACKETS` to add spaces inside brackets, braces, and
+  parentheses.
+- New knob `SPACES_AROUND_SUBSCRIPT_COLON` to add spaces around the subscript /
+  slice operator.
+### Fixed
+- Honor a disable directive at the end of a multiline comment.
+- Don't require splitting before comments in a list when
+  `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is set. The knob is meant for
+  values, not comments, which may be associated with the current line.
+- Don't over-indent a parameter list when not needed. But make sure it is
+  properly indented so that it doesn't collide with the lines afterwards.
+- Don't split between two-word comparison operators: "is not", "not in", etc.
+
+## [0.29.0] 2019-11-28
+### Added
+- Add the `--quiet` flag to suppress output. The return code is 1 if there are
+  changes, similarly to the `--diff` flag.
+- Add the `indent_closing_brackets` option. This is the same as the
+  `dedent_closing_brackets` option except the brackets are indented the same
+  as the previous line.
+### Changed
+- Collect a parameter list into a single object. This allows us to track how a
+  parameter list is formatted, keeping state along the way. This helps when
+  supporting Python 3 type annotations.
+- Catch and report `UnicodeDecodeError` exceptions.
+- Improved description of .yapfignore syntax.
+### Fixed
+- Format subscript lists so that splits are essentially free after a comma.
+- Don't add a space between a string and its subscript.
+- Extend discovery of '.style.yapf' & 'setup.cfg' files to search the root
+  directory as well.
+- Make sure we have parameters before we start calculating penalties for
+  splitting them.
+- Indicate if a class/function is nested to ensure blank lines when needed.
+- Fix extra indentation in async-for else statement.
+- A parameter list with no elements shouldn't count as exceeding the column
+  limit.
+- When splitting all comma separated values, don't treat the ending bracket as
+  special.
+- The "no blank lines between nested classes or functions" knob should only
+  apply to the first nested class or function, not all of them.
+
+## [0.28.0] 2019-07-11
+### Added
+- New knob `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is a variation on
+  `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a subexpression with a comma
+  fits in its starting line, then the subexpression is not split (thus avoiding
+  unnecessary splits).
+### Changed
+- Set `INDENT_DICTIONARY_VALUE` for Google style.
+- Set `JOIN_MULTIPLE_LINES = False` for Google style.
+### Fixed
+- `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False` wasn't honored because the
+  number of newlines was erroneously calculated beforehand.
+- Lambda expressions shouldn't have an increased split penalty applied to the
+  'lambda' keyword. This prevents them from being properly formatted when they're
+  arguments to functions.
+- A comment with continuation markers (??) shouldn't mess with the lineno count.
+- Only emit unformatted if the "disable long line" is at the end of the line.
+  Otherwise we could mess up formatting for containers which have them
+  interspersed with code.
+- Fix a potential race condition by using the correct style for opening a file
+  which may not exist.
+
+## [0.27.0] 2019-04-07
+### Added
+- `SPLIT_BEFORE_ARITHMETIC_OPERATOR` splits before an arithmetic operator when
+  set. `SPLIT_PENALTY_ARITHMETIC_OPERATOR` allows you to set the split penalty
+  around arithmetic operators.
+### Changed
+- Catch lib2to3's "TokenError" exception and output a nicer message.
+### Fixed
+- Parse integer lists correctly, removing quotes if the list is within a
+  string.
+- Adjust the penalties of bitwise operands for '&' and '^', similar to '|'.
+- Avoid splitting after opening parens if SPLIT_BEFORE_FIRST_ARGUMENT is set
+  to False.
+- Adjust default SPLIT_PENALTY_AFTER_OPENING_BRACKET.
+- Re-enable removal of extra lines on the boundaries of formatted regions.
+- Adjust list splitting to avoid splitting before a dictionary element, because
+  those are likely to be split anyway. If we do split, it leads to horrible
+  looking code.
+- Dictionary arguments were broken in a recent version. It resulted in
+  unreadable formatting, where the remaining arguments were indented far more
+  than the dictionary. Fixed so that if the dictionary is the first argument in
+  a function call and doesn't fit on a single line, then it forces a split.
+- Improve the connectiveness between items in a list. This prevents random
+  splitting when it's not 100% necessary.
+- Don't remove a comment attached to a previous object just because it's part
+  of the "prefix" of a function/class node.
+
+## [0.26.0] 2019-02-08
+### Added
+- `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS` allows us to split before
+  default / named assignments.
+- `ARITHMETIC_PRECEDENCE_INDICATION` removes spacing around binary operators
+  if they have higher precedence than other operators in the same expression.
 ### Changed
 - `SPACES_BEFORE_COMMENT` can now be assigned to a specific value (standard
-  behavior) or a list of column values. When assigned to a list, trailing 
+  behavior) or a list of column values. When assigned to a list, trailing
   comments will be horizontally aligned to the first column value within
   the list that is greater than the maximum line length in the block.
 - Don't modify the vertical spacing of a line that has a comment "pylint:
   disable=line-too-long". The line is expected to be too long.
+- improved `CONTINUATION_ALIGN_STYLE` to accept quoted or underline-separated
+  option value for passing option with command line arguments.
 ### Fixed
 - When retrieving the opening bracket make sure that it's actually an opening
   bracket.
@@ -29,6 +128,8 @@
   multiple lines with the opening bracket on the same line as the key.
   Therefore, we shouldn't enforce a split because of that.
 - Increase split penalty around exponent operator.
+- Correct spacing when using binary operators on strings with the
+  `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS` option enabled.
 
 ## [0.25.0] 2018-11-25
 ### Added

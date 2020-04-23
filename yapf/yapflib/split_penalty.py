@@ -31,6 +31,7 @@ DOTTED_NAME = 4000
 VERY_STRONGLY_CONNECTED = 3500
 STRONGLY_CONNECTED = 3000
 CONNECTED = 500
+TOGETHER = 100
 
 OR_TEST = 1000
 AND_TEST = 1100
@@ -128,9 +129,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
             break
 
     if allow_multiline_lambdas:
-      _SetStronglyConnected(node)
+      _SetExpressionPenalty(node, STRONGLY_CONNECTED)
     else:
-      _SetVeryStronglyConnected(node)
+      _SetExpressionPenalty(node, VERY_STRONGLY_CONNECTED)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'
@@ -138,11 +139,18 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
     # Can't break before the opening paren of a parameter list.
     _SetUnbreakable(node.children[0])
-    if not style.Get('DEDENT_CLOSING_BRACKETS'):
+    if not (style.Get('INDENT_CLOSING_BRACKETS') or
+            style.Get('DEDENT_CLOSING_BRACKETS')):
       _SetStronglyConnected(node.children[-1])
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
     # arglist ::= argument (',' argument)* [',']
+    if pytree_utils.NodeName(node.children[0]) == 'STAR':
+      # Python 3 treats a star expression as a specific expression type.
+      # Process it in that method.
+      self.Visit_star_expr(node)
+      return
+
     self.DefaultNodeVisit(node)
 
     for index in py3compat.range(1, len(node.children)):
@@ -249,10 +257,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
           # Bump up the split penalty for the first part of a subscript. We
           # would rather not split there.
-          first_leaf = pytree_utils.FirstLeafNode(node.children[1])
-          penalty = pytree_utils.GetNodeAnnotation(
-              first_leaf, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
-          _SetSplitPenalty(first_leaf, penalty + CONNECTED)
+          _IncreasePenalty(node.children[1], CONNECTED)
         else:
           _SetStronglyConnected(node.children[1], node.children[2])
 
@@ -285,19 +290,19 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       while prev_trailer_idx < len(node.children) - 1:
         cur_trailer_idx = prev_trailer_idx + 1
         cur_trailer = node.children[cur_trailer_idx]
-        if pytree_utils.NodeName(cur_trailer) == 'trailer':
-          # Now we know we have two trailers one after the other
-          prev_trailer = node.children[prev_trailer_idx]
-          if prev_trailer.children[-1].value != ')':
-            # Set the previous node unbreakable if it's not a function call:
-            #   atom tr1() tr2
-            # It may be necessary (though undesirable) to split up a previous
-            # function call's parentheses to the next line.
-            _SetStronglyConnected(prev_trailer.children[-1])
-          _SetStronglyConnected(cur_trailer.children[0])
-          prev_trailer_idx = cur_trailer_idx
-        else:
+        if pytree_utils.NodeName(cur_trailer) != 'trailer':
           break
+
+        # Now we know we have two trailers one after the other
+        prev_trailer = node.children[prev_trailer_idx]
+        if prev_trailer.children[-1].value != ')':
+          # Set the previous node unbreakable if it's not a function call:
+          #   atom tr1() tr2
+          # It may be necessary (though undesirable) to split up a previous
+          # function call's parentheses to the next line.
+          _SetStronglyConnected(prev_trailer.children[-1])
+        _SetStronglyConnected(cur_trailer.children[0])
+        prev_trailer_idx = cur_trailer_idx
 
     # We don't want to split before the last ')' of a function call. This also
     # takes care of the special case of:
@@ -317,7 +322,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           last_child_node = pytree_utils.LastLeafNode(trailer)
           if last_child_node.value.strip().startswith('#'):
             last_child_node = last_child_node.prev_sibling
-          if not style.Get('DEDENT_CLOSING_BRACKETS'):
+          if not (style.Get('INDENT_CLOSING_BRACKETS') or
+                  style.Get('DEDENT_CLOSING_BRACKETS')):
             last = pytree_utils.LastLeafNode(last_child_node.prev_sibling)
             if last.value != ',':
               if last_child_node.value == ']':
@@ -329,6 +335,16 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           # connected region.  It's sometimes necessary, though undesirable, to
           # split the two.
           _SetStronglyConnected(trailer.children[-1])
+
+  def Visit_subscriptlist(self, node):  # pylint: disable=invalid-name
+    # subscriptlist ::= subscript (',' subscript)* [',']
+    self.DefaultNodeVisit(node)
+    _SetSplitPenalty(pytree_utils.FirstLeafNode(node), 0)
+    prev_child = None
+    for child in node.children:
+      if prev_child and pytree_utils.NodeName(prev_child) == 'COMMA':
+        _SetSplitPenalty(pytree_utils.FirstLeafNode(child), 0)
+      prev_child = child
 
   def Visit_subscript(self, node):  # pylint: disable=invalid-name
     # subscript ::= test | [test] ':' [test] [sliceop]
@@ -398,8 +414,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # comparison ::= expr (comp_op expr)*
     self.DefaultNodeVisit(node)
     if len(node.children) == 3 and _StronglyConnectedCompOp(node):
-      _SetSplitPenalty(
-          pytree_utils.FirstLeafNode(node.children[1]), STRONGLY_CONNECTED)
+      _IncreasePenalty(node.children[1], VERY_STRONGLY_CONNECTED)
       _SetSplitPenalty(
           pytree_utils.FirstLeafNode(node.children[2]), STRONGLY_CONNECTED)
     else:
@@ -414,27 +429,19 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # expr ::= xor_expr ('|' xor_expr)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, EXPR)
-    index = 1
-    while index < len(node.children) - 1:
-      child = node.children[index]
-      if isinstance(child, pytree.Leaf) and child.value == '|':
-        if style.Get('SPLIT_BEFORE_BITWISE_OPERATOR'):
-          _SetSplitPenalty(child, style.Get('SPLIT_PENALTY_BITWISE_OPERATOR'))
-        else:
-          _SetSplitPenalty(
-              pytree_utils.FirstLeafNode(node.children[index + 1]),
-              style.Get('SPLIT_PENALTY_BITWISE_OPERATOR'))
-      index += 1
+    _SetBitwiseOperandPenalty(node, '|')
 
   def Visit_xor_expr(self, node):  # pylint: disable=invalid-name
     # xor_expr ::= and_expr ('^' and_expr)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, XOR_EXPR)
+    _SetBitwiseOperandPenalty(node, '^')
 
   def Visit_and_expr(self, node):  # pylint: disable=invalid-name
     # and_expr ::= shift_expr ('&' shift_expr)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, AND_EXPR)
+    _SetBitwiseOperandPenalty(node, '&')
 
   def Visit_shift_expr(self, node):  # pylint: disable=invalid-name
     # shift_expr ::= arith_expr (('<<'|'>>') arith_expr)*
@@ -447,14 +454,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # arith_expr ::= term (('+'|'-') term)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, ARITH_EXPR)
-
-    index = 1
-    while index < len(node.children) - 1:
-      child = node.children[index]
-      if pytree_utils.NodeName(child) in self._ARITH_OPS:
-        next_node = pytree_utils.FirstLeafNode(node.children[index + 1])
-        _SetSplitPenalty(next_node, ARITH_EXPR)
-      index += 1
+    _SetExpressionOperandPenalty(node, self._ARITH_OPS)
 
   _TERM_OPS = frozenset({'STAR', 'AT', 'SLASH', 'PERCENT', 'DOUBLESLASH'})
 
@@ -462,14 +462,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # term ::= factor (('*'|'@'|'/'|'%'|'//') factor)*
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, TERM)
-
-    index = 1
-    while index < len(node.children) - 1:
-      child = node.children[index]
-      if pytree_utils.NodeName(child) in self._TERM_OPS:
-        next_node = pytree_utils.FirstLeafNode(node.children[index + 1])
-        _SetSplitPenalty(next_node, TERM)
-      index += 1
+    _SetExpressionOperandPenalty(node, self._TERM_OPS)
 
   def Visit_factor(self, node):  # pyline: disable=invalid-name
     # factor ::= ('+'|'-'|'~') factor | power
@@ -503,7 +496,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         prev_was_comma = True
       else:
         if prev_was_comma:
-          _SetSplitPenalty(pytree_utils.FirstLeafNode(child), 0)
+          _SetSplitPenalty(pytree_utils.FirstLeafNode(child), TOGETHER)
         prev_was_comma = False
 
   ############################################################################
@@ -558,6 +551,30 @@ def _SetExpressionPenalty(node, penalty):
   RecExpression(node, pytree_utils.FirstLeafNode(node))
 
 
+def _SetBitwiseOperandPenalty(node, op):
+  for index in py3compat.range(1, len(node.children) - 1):
+    child = node.children[index]
+    if isinstance(child, pytree.Leaf) and child.value == op:
+      if style.Get('SPLIT_BEFORE_BITWISE_OPERATOR'):
+        _SetSplitPenalty(child, style.Get('SPLIT_PENALTY_BITWISE_OPERATOR'))
+      else:
+        _SetSplitPenalty(
+            pytree_utils.FirstLeafNode(node.children[index + 1]),
+            style.Get('SPLIT_PENALTY_BITWISE_OPERATOR'))
+
+
+def _SetExpressionOperandPenalty(node, ops):
+  for index in py3compat.range(1, len(node.children) - 1):
+    child = node.children[index]
+    if pytree_utils.NodeName(child) in ops:
+      if style.Get('SPLIT_BEFORE_ARITHMETIC_OPERATOR'):
+        _SetSplitPenalty(child, style.Get('SPLIT_PENALTY_ARITHMETIC_OPERATOR'))
+      else:
+        _SetSplitPenalty(
+            pytree_utils.FirstLeafNode(node.children[index + 1]),
+            style.Get('SPLIT_PENALTY_ARITHMETIC_OPERATOR'))
+
+
 def _IncreasePenalty(node, amt):
   """Increase a penalty annotation on children nodes."""
 
@@ -600,10 +617,13 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
 
 def _StronglyConnectedCompOp(op):
   if (len(op.children[1].children) == 2 and
-      pytree_utils.NodeName(op.children[1]) == 'comp_op' and
-      pytree_utils.FirstLeafNode(op.children[1]).value == 'not' and
-      pytree_utils.LastLeafNode(op.children[1]).value == 'in'):
-    return True
+      pytree_utils.NodeName(op.children[1]) == 'comp_op'):
+    if (pytree_utils.FirstLeafNode(op.children[1]).value == 'not' and
+        pytree_utils.LastLeafNode(op.children[1]).value == 'in'):
+      return True
+    if (pytree_utils.FirstLeafNode(op.children[1]).value == 'is' and
+        pytree_utils.LastLeafNode(op.children[1]).value == 'not'):
+      return True
   if (isinstance(op.children[1], pytree.Leaf) and
       op.children[1].value in {'==', 'in'}):
     return True

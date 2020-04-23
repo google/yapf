@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Git pre-commit hook to check staged Python files for formatting issues with
 # yapf.
@@ -21,15 +21,16 @@
 # is used.
 
 # Find all staged Python files, and exit early if there aren't any.
-PYTHON_FILES=(`git diff --name-only --cached --diff-filter=AM | \
-  grep --color=never '.py$'`)
-if [ ! "$PYTHON_FILES" ]; then
+PYTHON_FILES=()
+while IFS=$'\n' read -r line; do PYTHON_FILES+=("$line"); done \
+  < <(git diff --name-only --cached --diff-filter=AM | grep --color=never '.py$')
+if [ ${#PYTHON_FILES[@]} -eq 0 ]; then
   exit 0
 fi
 
 ########## PIP VERSION #############
 # Verify that yapf is installed; if not, warn and exit.
-if [ -z $(which yapf) ]; then
+if ! command -v yapf >/dev/null; then
   echo 'yapf not on path; can not format. Please install yapf:'
   echo '    pip install yapf'
   exit 2
@@ -37,7 +38,7 @@ fi
 ######### END PIP VERSION ##########
 
 ########## PIPENV VERSION ##########
-# if [ -z $(pipenv run which yapf) ]; then
+# if ! pipenv run yapf --version 2>/dev/null 2>&1; then
 #   echo 'yapf not on path; can not format. Please install yapf:'
 #   echo '    pipenv install yapf'
 #   exit 2
@@ -46,16 +47,14 @@ fi
 
 
 # Check for unstaged changes to files in the index.
-CHANGED_FILES=(`git diff --name-only ${PYTHON_FILES[@]}`)
-if [ "$CHANGED_FILES" ]; then
+CHANGED_FILES=()
+while IFS=$'\n' read -r line; do CHANGED_FILES+=("$line"); done \
+  < <(git diff --name-only "${PYTHON_FILES[@]}")
+if [ ${#CHANGED_FILES[@]} -gt 0 ]; then
   echo 'You have unstaged changes to some files in your commit; skipping '
   echo 'auto-format. Please stage, stash, or revert these changes. You may '
   echo 'find `git stash -k` helpful here.'
-  echo
-  echo 'Files with unstaged changes:'
-  for file in ${CHANGED_FILES[@]}; do
-    echo "  $file"
-  done
+  echo 'Files with unstaged changes:' "${CHANGED_FILES[@]}"
   exit 1
 fi
 
@@ -64,22 +63,20 @@ fi
 echo 'Formatting staged Python files . . .'
 
 ########## PIP VERSION #############
-yapf -i -r ${PYTHON_FILES[@]}
+yapf -i -r "${PYTHON_FILES[@]}"
 ######### END PIP VERSION ##########
 
 ########## PIPENV VERSION ##########
-# pipenv run yapf -i -r ${PYTHON_FILES[@]}
+# pipenv run yapf -i -r "${PYTHON_FILES[@]}"
 ###### END PIPENV VERSION ##########
 
 
-CHANGED_FILES=(`git diff --name-only ${PYTHON_FILES[@]}`)
-if [ "$CHANGED_FILES" ]; then
+CHANGED_FILES=()
+while IFS=$'\n' read -r line; do CHANGED_FILES+=("$line"); done \
+  < <(git diff --name-only "${PYTHON_FILES[@]}")
+if [ ${#CHANGED_FILES[@]} -gt 0 ]; then
   echo 'Reformatted staged files. Please review and stage the changes.'
-  echo
-  echo 'Files updated:'
-  for file in ${CHANGED_FILES[@]}; do
-    echo "  $file"
-  done
+  echo 'Files updated: ' "${CHANGED_FILES[@]}"
   exit 1
 else
   exit 0
