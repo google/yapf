@@ -549,12 +549,51 @@ Knobs
     Set to ``True`` to prefer spaces around the assignment operator for default
     or keyword arguments.
 
+``SPACES_AROUND_DICT_DELIMITERS``
+    Adds a space after the opening '{' and before the ending '}' dict delimiters.
+
+    .. code-block:: python
+
+        {1: 2}
+
+    will be formatted as:
+
+    .. code-block:: python
+
+        { 1: 2 }
+
+``SPACES_AROUND_LIST_DELIMITERS``
+    Adds a space after the opening '[' and before the ending ']' list delimiters.
+
+    .. code-block:: python
+
+        [1, 2]
+
+    will be formatted as:
+    
+    .. code-block:: python
+
+        [ 1, 2 ]
+
 ``SPACES_AROUND_SUBSCRIPT_COLON``
     Use spaces around the subscript / slice operator.  For example:
 
     .. code-block:: python
 
         my_list[1 : 10 : 2]
+
+``SPACES_AROUND_TUPLE_DELIMITERS``
+    Adds a space after the opening '(' and before the ending ')' tuple delimiters.
+
+    .. code-block:: python
+
+        (1, 2, 3)
+
+    will be formatted as:
+
+    .. code-block:: python
+
+        ( 1, 2, 3 )
 
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.

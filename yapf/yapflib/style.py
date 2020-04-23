@@ -31,6 +31,11 @@ def Get(setting_name):
   return _style[setting_name]
 
 
+def GetOrDefault(setting_name, default_value):
+  """Get a style setting or default value if the setting does not exist."""
+  return _style.get(setting_name, default_value)
+
+
 def Help():
   """Return dict mapping style names to help strings."""
   return _STYLE_HELP
@@ -149,24 +154,8 @@ _STYLE_HELP = dict(
             transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
-        )        # <--- this bracket is dedented and on a separate line"""),
-    INDENT_CLOSING_BRACKETS=textwrap.dedent("""\
-      Put closing brackets on a separate line, indented, if the bracketed
-      expression can't fit in a single line. Applies to all kinds of brackets,
-      including function definitions and calls. For example:
-
-        config = {
-            'key1': 'value1',
-            'key2': 'value2',
-            }        # <--- this bracket is indented and on a separate line
-
-        time_series = self.remote_client.query_entity_counters(
-            entity='dev3246.region1',
-            key='dns.query_latency_tcp',
-            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
-            start_ts=now()-timedelta(days=3),
-            end_ts=now(),
-            )        # <--- this bracket is indented and on a separate line"""),
+        )        # <--- this bracket is dedented and on a separate line
+      """),
     DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
       if the list is comma-terminated."""),
@@ -187,6 +176,24 @@ _STYLE_HELP = dict(
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
       away from the i18n comment."""),
+    INDENT_CLOSING_BRACKETS=textwrap.dedent("""\
+      Put closing brackets on a separate line, indented, if the bracketed
+      expression can't fit in a single line. Applies to all kinds of brackets,
+      including function definitions and calls. For example:
+
+        config = {
+            'key1': 'value1',
+            'key2': 'value2',
+            }        # <--- this bracket is indented and on a separate line
+
+        time_series = self.remote_client.query_entity_counters(
+            entity='dev3246.region1',
+            key='dns.query_latency_tcp',
+            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+            start_ts=now()-timedelta(days=3),
+            end_ts=now(),
+            )        # <--- this bracket is indented and on a separate line
+        """),
     INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
       Indent the dictionary value if it cannot fit on the same line as the
       dictionary key. For example:
@@ -196,7 +203,8 @@ _STYLE_HELP = dict(
                 'value1',
             'key2': value1 +
                     value2,
-        }"""),
+        }
+      """),
     INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
     INDENT_BLANK_LINES=textwrap.dedent("""\
@@ -226,10 +234,37 @@ _STYLE_HELP = dict(
       Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
+    SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '{' and before the ending '}' dict delimiters.
+
+        {1: 2}
+
+      will be formatted as:
+
+        { 1: 2 }
+      """),
+    SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '[' and before the ending ']' list delimiters.
+
+        [1, 2]
+
+      will be formatted as:
+
+        [ 1, 2 ]
+      """),
     SPACES_AROUND_SUBSCRIPT_COLON=textwrap.dedent("""\
       Use spaces around the subscript / slice operator.  For example:
 
         my_list[1 : 10 : 2]
+      """)
+    SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '(' and before the ending ')' tuple delimiters.
+
+        (1, 2, 3)
+
+      will be formatted as:
+
+        ( 1, 2, 3 )
       """),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
@@ -407,7 +442,10 @@ def CreatePEP8Style():
       SPACE_INSIDE_BRACKETS=False,
       SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
+      SPACES_AROUND_DICT_DELIMITERS=False,
+      SPACES_AROUND_LIST_DELIMITERS=False,
       SPACES_AROUND_SUBSCRIPT_COLON=False,
+      SPACES_AROUND_TUPLE_DELIMITERS=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
@@ -592,7 +630,10 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACE_INSIDE_BRACKETS=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
+    SPACES_AROUND_DICT_DELIMITERS=_BoolConverter,
+    SPACES_AROUND_LIST_DELIMITERS=_BoolConverter,
     SPACES_AROUND_SUBSCRIPT_COLON=_BoolConverter,
+    SPACES_AROUND_TUPLE_DELIMITERS=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,
