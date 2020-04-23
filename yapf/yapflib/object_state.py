@@ -36,6 +36,8 @@ class ComprehensionState(object):
   Attributes:
     expr_token: The first token in the comprehension.
     for_token: The first 'for' token of the comprehension.
+    opening_bracket: The opening bracket of the list comprehension.
+    closing_bracket: The closing bracket of the list comprehension.
     has_split_at_for: Whether there is a newline immediately before the
       for_token.
     has_interior_split: Whether there is a newline within the comprehension.
@@ -91,6 +93,8 @@ class ParameterListState(object):
     opening_bracket: The opening bracket of the parameter list.
     closing_bracket: The closing bracket of the parameter list.
     has_typed_return: True if the function definition has a typed return.
+    ends_in_comma: True if the parameter list ends in a comma.
+    last_token: Returns the last token of the function declaration.
     has_default_values: True if the parameters have default values.
     has_split_before_first_param: Whether there is a newline before the first
       parameter.
@@ -120,6 +124,21 @@ class ParameterListState(object):
   def has_default_values(self):
     return any(param.has_default_value for param in self.parameters)
 
+  @property
+  @py3compat.lru_cache()
+  def ends_in_comma(self):
+    if not self.parameters:
+      return False
+    return self.parameters[-1].last_token.next_token.value == ','
+
+  @property
+  @py3compat.lru_cache()
+  def last_token(self):
+    token = self.opening_bracket.matching_bracket
+    while not token.is_comment and token.next_token:
+      token = token.next_token
+    return token
+
   @py3compat.lru_cache()
   def LastParamFitsOnLine(self, indent):
     """Return true if the last parameter fits on a single line."""
@@ -127,13 +146,24 @@ class ParameterListState(object):
       return False
     if not self.parameters:
       return True
+    total_length = self.last_token.total_length
     last_param = self.parameters[-1].first_token
-    last_token = self.opening_bracket.matching_bracket
-    while not last_token.is_comment and last_token.next_token:
-      last_token = last_token.next_token
-    total_length = last_token.total_length
     total_length -= last_param.total_length - len(last_param.value)
     return total_length + indent <= style.Get('COLUMN_LIMIT')
+
+  @py3compat.lru_cache()
+  def SplitBeforeClosingBracket(self, indent):
+    """Return true if there's a split before the closing bracket."""
+    if style.Get('DEDENT_CLOSING_BRACKETS'):
+      return True
+    if self.ends_in_comma:
+      return True
+    if not self.parameters:
+      return False
+    total_length = self.last_token.total_length
+    last_param = self.parameters[-1].first_token
+    total_length -= last_param.total_length - len(last_param.value)
+    return total_length + indent > style.Get('COLUMN_LIMIT')
 
   def Clone(self):
     clone = ParameterListState(self.opening_bracket,

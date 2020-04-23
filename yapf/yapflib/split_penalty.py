@@ -188,7 +188,11 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
   def Visit_dotted_name(self, node):  # pylint: disable=invalid-name
     # dotted_name ::= NAME ('.' NAME)*
-    self._SetUnbreakableOnChildren(node)
+    for child in node.children:
+      self.Visit(child)
+    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
+    for i in py3compat.range(start, len(node.children)):
+      _SetUnbreakable(node.children[i])
 
   def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
     # dictsetmaker ::= ( (test ':' test
@@ -244,7 +248,8 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
               pytree_utils.FirstLeafNode(node.children[1].children[2]), 0)
 
         # Don't split the ending bracket of a subscript list.
-        _SetVeryStronglyConnected(node.children[-1])
+        _RecAnnotate(node.children[-1], pytree_utils.Annotation.SPLIT_PENALTY,
+                     VERY_STRONGLY_CONNECTED)
       elif name not in {
           'arglist', 'argument', 'term', 'or_test', 'and_test', 'comparison',
           'atom', 'power'
@@ -290,19 +295,19 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       while prev_trailer_idx < len(node.children) - 1:
         cur_trailer_idx = prev_trailer_idx + 1
         cur_trailer = node.children[cur_trailer_idx]
-        if pytree_utils.NodeName(cur_trailer) == 'trailer':
-          # Now we know we have two trailers one after the other
-          prev_trailer = node.children[prev_trailer_idx]
-          if prev_trailer.children[-1].value != ')':
-            # Set the previous node unbreakable if it's not a function call:
-            #   atom tr1() tr2
-            # It may be necessary (though undesirable) to split up a previous
-            # function call's parentheses to the next line.
-            _SetStronglyConnected(prev_trailer.children[-1])
-          _SetStronglyConnected(cur_trailer.children[0])
-          prev_trailer_idx = cur_trailer_idx
-        else:
+        if pytree_utils.NodeName(cur_trailer) != 'trailer':
           break
+
+        # Now we know we have two trailers one after the other
+        prev_trailer = node.children[prev_trailer_idx]
+        if prev_trailer.children[-1].value != ')':
+          # Set the previous node unbreakable if it's not a function call:
+          #   atom tr1() tr2
+          # It may be necessary (though undesirable) to split up a previous
+          # function call's parentheses to the next line.
+          _SetStronglyConnected(prev_trailer.children[-1])
+        _SetStronglyConnected(cur_trailer.children[0])
+        prev_trailer_idx = cur_trailer_idx
 
     # We don't want to split before the last ')' of a function call. This also
     # takes care of the special case of:
@@ -414,8 +419,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # comparison ::= expr (comp_op expr)*
     self.DefaultNodeVisit(node)
     if len(node.children) == 3 and _StronglyConnectedCompOp(node):
-      _SetSplitPenalty(
-          pytree_utils.FirstLeafNode(node.children[1]), STRONGLY_CONNECTED)
+      _IncreasePenalty(node.children[1], VERY_STRONGLY_CONNECTED)
       _SetSplitPenalty(
           pytree_utils.FirstLeafNode(node.children[2]), STRONGLY_CONNECTED)
     else:
@@ -500,17 +504,6 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           _SetSplitPenalty(pytree_utils.FirstLeafNode(child), TOGETHER)
         prev_was_comma = False
 
-  ############################################################################
-  # Helper methods that set the annotations.
-
-  def _SetUnbreakableOnChildren(self, node):
-    """Set an UNBREAKABLE penalty annotation on children of node."""
-    for child in node.children:
-      self.Visit(child)
-    start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
-    for i in py3compat.range(start, len(node.children)):
-      _SetUnbreakable(node.children[i])
-
 
 def _SetUnbreakable(node):
   """Set an UNBREAKABLE penalty annotation for the given node."""
@@ -522,13 +515,6 @@ def _SetStronglyConnected(*nodes):
   for node in nodes:
     _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
                  STRONGLY_CONNECTED)
-
-
-def _SetVeryStronglyConnected(*nodes):
-  """Set a VERY_STRONGLY_CONNECTED penalty annotation for the given nodes."""
-  for node in nodes:
-    _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY,
-                 VERY_STRONGLY_CONNECTED)
 
 
 def _SetExpressionPenalty(node, penalty):
@@ -618,10 +604,13 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
 
 def _StronglyConnectedCompOp(op):
   if (len(op.children[1].children) == 2 and
-      pytree_utils.NodeName(op.children[1]) == 'comp_op' and
-      pytree_utils.FirstLeafNode(op.children[1]).value == 'not' and
-      pytree_utils.LastLeafNode(op.children[1]).value == 'in'):
-    return True
+      pytree_utils.NodeName(op.children[1]) == 'comp_op'):
+    if (pytree_utils.FirstLeafNode(op.children[1]).value == 'not' and
+        pytree_utils.LastLeafNode(op.children[1]).value == 'in'):
+      return True
+    if (pytree_utils.FirstLeafNode(op.children[1]).value == 'is' and
+        pytree_utils.LastLeafNode(op.children[1]).value == 'not'):
+      return True
   if (isinstance(op.children[1], pytree.Leaf) and
       op.children[1].value in {'==', 'in'}):
     return True

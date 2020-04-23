@@ -31,6 +31,11 @@ def Get(setting_name):
   return _style[setting_name]
 
 
+def GetOrDefault(setting_name, default_value):
+  """Get a style setting or default value if the setting does not exist."""
+  return _style.get(setting_name, default_value)
+
+
 def Help():
   """Return dict mapping style names to help strings."""
   return _STYLE_HELP
@@ -149,7 +154,28 @@ _STYLE_HELP = dict(
             transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
-        )        # <--- this bracket is dedented and on a separate line"""),
+        )        # <--- this bracket is dedented and on a separate line
+      """),
+    DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
+      Disable the heuristic which places each list element on a separate line
+      if the list is comma-terminated."""),
+    EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
+      Place each dictionary entry onto its own line."""),
+    FORCE_MULTILINE_DICT=textwrap.dedent("""\
+      Require multiline dictionary even if it would normally fit on one line.
+      For example:
+
+        config = {
+            'key1': 'value1'
+        }"""),
+    I18N_COMMENT=textwrap.dedent("""\
+      The regex for an i18n comment. The presence of this comment stops
+      reformatting of that line, because the comments are required to be
+      next to the string they translate."""),
+    I18N_FUNCTION_CALL=textwrap.dedent("""\
+      The i18n function call names. The presence of this function stops
+      reformattting on that line, because the string it has cannot be moved
+      away from the i18n comment."""),
     INDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, indented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
@@ -166,20 +192,8 @@ _STYLE_HELP = dict(
             transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
-            )        # <--- this bracket is indented and on a separate line"""),
-    DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
-      Disable the heuristic which places each list element on a separate line
-      if the list is comma-terminated."""),
-    EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
-      Place each dictionary entry onto its own line."""),
-    I18N_COMMENT=textwrap.dedent("""\
-      The regex for an i18n comment. The presence of this comment stops
-      reformatting of that line, because the comments are required to be
-      next to the string they translate."""),
-    I18N_FUNCTION_CALL=textwrap.dedent("""\
-      The i18n function call names. The presence of this function stops
-      reformattting on that line, because the string it has cannot be moved
-      away from the i18n comment."""),
+            )        # <--- this bracket is indented and on a separate line
+        """),
     INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
       Indent the dictionary value if it cannot fit on the same line as the
       dictionary key. For example:
@@ -189,7 +203,8 @@ _STYLE_HELP = dict(
                 'value1',
             'key2': value1 +
                     value2,
-        }"""),
+        }
+      """),
     INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
     INDENT_BLANK_LINES=textwrap.dedent("""\
@@ -208,10 +223,49 @@ _STYLE_HELP = dict(
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
+    SPACE_INSIDE_BRACKETS=textwrap.dedent("""\
+      Use spaces inside brackets, braces, and parentheses.  For example:
+
+        method_call( 1 )
+        my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
+        my_set = { 1, 2, 3 }
+      """),
     SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
       Use spaces around the power operator."""),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
+    SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '{' and before the ending '}' dict delimiters.
+
+        {1: 2}
+
+      will be formatted as:
+
+        { 1: 2 }
+      """),
+    SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '[' and before the ending ']' list delimiters.
+
+        [1, 2]
+
+      will be formatted as:
+
+        [ 1, 2 ]
+      """),
+    SPACES_AROUND_SUBSCRIPT_COLON=textwrap.dedent("""\
+      Use spaces around the subscript / slice operator.  For example:
+
+        my_list[1 : 10 : 2]
+      """),
+    SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
+      Adds a space after the opening '(' and before the ending ')' tuple delimiters.
+
+        (1, 2, 3)
+
+      will be formatted as:
+
+        ( 1, 2, 3 )
+      """),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
       This can be a single value (representing the number of spaces
@@ -356,6 +410,7 @@ _STYLE_HELP = dict(
 
 
 def CreatePEP8Style():
+  """Create the PEP8 formatting style."""
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALLOW_MULTILINE_LAMBDAS=False,
@@ -375,6 +430,7 @@ def CreatePEP8Style():
       INDENT_CLOSING_BRACKETS=False,
       DISABLE_ENDING_COMMA_HEURISTIC=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
+      FORCE_MULTILINE_DICT=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
@@ -383,8 +439,13 @@ def CreatePEP8Style():
       JOIN_MULTIPLE_LINES=True,
       NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
+      SPACE_INSIDE_BRACKETS=False,
       SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
+      SPACES_AROUND_DICT_DELIMITERS=False,
+      SPACES_AROUND_LIST_DELIMITERS=False,
+      SPACES_AROUND_SUBSCRIPT_COLON=False,
+      SPACES_AROUND_TUPLE_DELIMITERS=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
@@ -414,6 +475,7 @@ def CreatePEP8Style():
 
 
 def CreateGoogleStyle():
+  """Create the Google formatting style."""
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
@@ -433,6 +495,7 @@ def CreateGoogleStyle():
 
 
 def CreateYapfStyle():
+  """Create the YAPF formatting style."""
   style = CreateGoogleStyle()
   style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
   style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
@@ -444,6 +507,7 @@ def CreateYapfStyle():
 
 
 def CreateFacebookStyle():
+  """Create the Facebook formatting style."""
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
   style['COLUMN_LIMIT'] = 80
@@ -553,6 +617,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     INDENT_CLOSING_BRACKETS=_BoolConverter,
     DISABLE_ENDING_COMMA_HEURISTIC=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
+    FORCE_MULTILINE_DICT=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
@@ -561,8 +626,13 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     JOIN_MULTIPLE_LINES=_BoolConverter,
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
+    SPACE_INSIDE_BRACKETS=_BoolConverter,
     SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
+    SPACES_AROUND_DICT_DELIMITERS=_BoolConverter,
+    SPACES_AROUND_LIST_DELIMITERS=_BoolConverter,
+    SPACES_AROUND_SUBSCRIPT_COLON=_BoolConverter,
+    SPACES_AROUND_TUPLE_DELIMITERS=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,

@@ -25,6 +25,8 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 
+from lib2to3.fixer_util import syms as python_symbols
+
 
 class UnwrappedLine(object):
   """Represents a single unwrapped line in the output.
@@ -69,7 +71,7 @@ class UnwrappedLine(object):
     prev_length = self.first.total_length
     for token in self._tokens[1:]:
       if (token.spaces_required_before == 0 and
-          _SpaceRequiredBetween(prev_token, token)):
+          _SpaceRequiredBetween(prev_token, token, self.disable)):
         token.spaces_required_before = 1
 
       tok_len = len(token.value) if not token.is_pseudo_paren else 0
@@ -261,7 +263,11 @@ def _PriorityIndicatingNoSpace(tok):
   return _HasPrecedence(tok)
 
 
-def _SpaceRequiredBetween(left, right):
+def _IsSubscriptColonAndValuePair(token1, token2):
+  return (token1.is_number or token1.is_name) and token2.is_subscript_colon
+
+
+def _SpaceRequiredBetween(left, right, is_line_disabled):
   """Return True if a space is required between the left and right token."""
   lval = left.value
   rval = right.value
@@ -286,6 +292,17 @@ def _SpaceRequiredBetween(left, right):
     return True
   if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
+    return True
+  if style.Get('SPACE_INSIDE_BRACKETS'):
+    # Supersede the "no space before a colon or comma" check.
+    if lval in pytree_utils.OPENING_BRACKETS and rval == ':':
+      return True
+    if rval in pytree_utils.CLOSING_BRACKETS and lval == ':':
+      return True
+  if (style.Get('SPACES_AROUND_SUBSCRIPT_COLON') and
+      (_IsSubscriptColonAndValuePair(left, right) or
+       _IsSubscriptColonAndValuePair(right, left))):
+    # Supersede the "never want a space before a colon or comma" check.
     return True
   if rval in ':,':
     # Otherwise, we never want a space before a colon or comma.
@@ -319,9 +336,8 @@ def _SpaceRequiredBetween(left, right):
     # A typed argument should have a space after the colon.
     return True
   if left.is_string:
-    if (rval == '=' and
-        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in right.subtypes
-       ):
+    if (rval == '=' and format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+        in right.subtypes):
       # If there is a type hint, then we don't want to add a space between the
       # equal sign and the hint.
       return False
@@ -329,6 +345,11 @@ def _SpaceRequiredBetween(left, right):
       # A string followed by something other than a subscript, closing bracket,
       # dot, or a binary op should have a space after it.
       return True
+    if rval in pytree_utils.CLOSING_BRACKETS:
+      # A string followed by closing brackets should have a space after it
+      # depending on SPACE_INSIDE_BRACKETS.  A string followed by opening
+      # brackets, however, should not.
+      return style.Get('SPACE_INSIDE_BRACKETS')
     if format_token.Subtype.SUBSCRIPT_BRACKET in right.subtypes:
       # It's legal to do this in Python: 'hello'[a]
       return False
@@ -392,46 +413,68 @@ def _SpaceRequiredBetween(left, right):
       (lval == '{' and rval == '}')):
     # Empty objects shouldn't be separated by spaces.
     return False
+  if not is_line_disabled and (left.OpensScope() or right.ClosesScope()):
+    if (style.GetOrDefault('SPACES_AROUND_DICT_DELIMITERS', False) and (
+        (lval == '{' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
+        (rval == '}' and
+         _IsDictListTupleDelimiterTok(right, is_opening=False)))):
+      return True
+    if (style.GetOrDefault('SPACES_AROUND_LIST_DELIMITERS', False) and (
+        (lval == '[' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
+        (rval == ']' and
+         _IsDictListTupleDelimiterTok(right, is_opening=False)))):
+      return True
+    if (style.GetOrDefault('SPACES_AROUND_TUPLE_DELIMITERS', False) and (
+        (lval == '(' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
+        (rval == ')' and
+         _IsDictListTupleDelimiterTok(right, is_opening=False)))):
+      return True
   if (lval in pytree_utils.OPENING_BRACKETS and
       rval in pytree_utils.OPENING_BRACKETS):
-    # Nested objects' opening brackets shouldn't be separated.
-    return False
+    # Nested objects' opening brackets shouldn't be separated, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.CLOSING_BRACKETS and
       rval in pytree_utils.CLOSING_BRACKETS):
-    # Nested objects' closing brackets shouldn't be separated.
-    return False
+    # Nested objects' closing brackets shouldn't be separated, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if lval in pytree_utils.CLOSING_BRACKETS and rval in '([':
     # A call, set, dictionary, or subscript that has a call or subscript after
     # it shouldn't have a space between them.
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsIdNumberStringToken(right):
-    # Don't separate the opening bracket from the first item.
-    return False
+    # Don't separate the opening bracket from the first item, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if left.is_name and rval in '([':
     # Don't separate a call or array access from the name.
     return False
   if rval in pytree_utils.CLOSING_BRACKETS:
-    # Don't separate the closing bracket from the last item.
+    # Don't separate the closing bracket from the last item, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
     # FIXME(morbo): This might be too permissive.
-    return False
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if lval == 'print' and rval == '(':
     # Special support for the 'print' function.
     return False
   if lval in pytree_utils.OPENING_BRACKETS and _IsUnaryOperator(right):
-    # Don't separate a unary operator from the opening bracket.
-    return False
+    # Don't separate a unary operator from the opening bracket, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.OPENING_BRACKETS and
       (format_token.Subtype.VARARGS_STAR in right.subtypes or
        format_token.Subtype.KWARGS_STAR_STAR in right.subtypes)):
-    # Don't separate a '*' or '**' from the opening bracket.
-    return False
+    # Don't separate a '*' or '**' from the opening bracket, unless enabled
+    # by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   if rval == ';':
     # Avoid spaces before a semicolon. (Why is there a semicolon?!)
     return False
   if lval == '(' and rval == 'await':
     # Special support for the 'await' keyword. Don't separate the 'await'
-    # keyword from an opening paren.
-    return False
+    # keyword from an opening paren, unless enabled by SPACE_INSIDE_BRACKETS.
+    return style.Get('SPACE_INSIDE_BRACKETS')
   return True
 
 
@@ -522,6 +565,33 @@ def IsSurroundedByBrackets(tok):
 
     previous_token = previous_token.previous_token
   return None
+
+
+def _IsDictListTupleDelimiterTok(tok, is_opening):
+  assert tok
+
+  if tok.matching_bracket is None:
+    return False
+
+  if is_opening:
+    open_tok = tok
+    close_tok = tok.matching_bracket
+  else:
+    open_tok = tok.matching_bracket
+    close_tok = tok
+
+  # There must be something in between the tokens
+  if open_tok.next_token == close_tok:
+    return False
+
+  assert open_tok.next_token.node
+  assert open_tok.next_token.node.parent
+
+  return open_tok.next_token.node.parent.type in [
+      python_symbols.dictsetmaker,
+      python_symbols.listmaker,
+      python_symbols.testlist_gexp,
+  ]
 
 
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})

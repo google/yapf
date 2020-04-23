@@ -2,11 +2,27 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.29.1] UNRELEASED
+## [0.30.0] UNRELEASED
+### Added
+- Added `SPACES_AROUND_LIST_DELIMITERS`, `SPACES_AROUND_DICT_DELIMITERS`,
+  and `SPACES_AROUND_TUPLE_DELIMITERS` to add spaces after the opening-
+  and before the closing-delimiters for lists, dicts, and tuples.
+- Adds `FORCE_MULTILINE_DICT` knob to ensure dictionaries always split,
+  even when shorter than the max line length.
+- New knob `SPACE_INSIDE_BRACKETS` to add spaces inside brackets, braces, and
+  parentheses.
+- New knob `SPACES_AROUND_SUBSCRIPT_COLON` to add spaces around the subscript /
+  slice operator.
 ### Changed
 - Renamed "chromium" style to "yapf". Chromium will now use PEP-8 directly.
 ### Fixed
 - Honor a disable directive at the end of a multiline comment.
+- Don't require splitting before comments in a list when
+  `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES` is set. The knob is meant for
+  values, not comments, which may be associated with the current line.
+- Don't over-indent a parameter list when not needed. But make sure it is
+  properly indented so that it doesn't collide with the lines afterwards.
+- Don't split between two-word comparison operators: "is not", "not in", etc.
 
 ## [0.29.0] 2019-11-28
 ### Added
