@@ -1334,7 +1334,7 @@ def foo_function(
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 COLUMN_LIMIT=32
 INDENT_WIDTH=4
 CONTINUATION_INDENT_WIDTH=8
@@ -1361,7 +1361,7 @@ def foo_function(arg1, arg2,
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 COLUMN_LIMIT=32
 INDENT_WIDTH=4
 CONTINUATION_INDENT_WIDTH=8

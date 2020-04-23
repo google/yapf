@@ -3017,7 +3017,7 @@ my_dict = {
       """)
       self.assertCodeEqual(expected, actual)
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testForceMultilineDict_False(self):
     try:
@@ -3031,7 +3031,7 @@ my_dict = {
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
 
 if __name__ == '__main__':
