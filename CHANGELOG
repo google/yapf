@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.30.0] UNRELEASED
+## [0.30.0] 2020-04-23
 ### Added
 - Added `SPACES_AROUND_LIST_DELIMITERS`, `SPACES_AROUND_DICT_DELIMITERS`,
   and `SPACES_AROUND_TUPLE_DELIMITERS` to add spaces after the opening-
