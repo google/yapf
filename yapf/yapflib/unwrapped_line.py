@@ -345,8 +345,7 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
       (lval == '{' and rval == '}')):
     # Empty objects shouldn't be separated by spaces.
     return False
-  if ((lval in pytree_utils.OPENING_BRACKETS or
-       rval in pytree_utils.CLOSING_BRACKETS) and not is_line_disabled):
+  if not is_line_disabled and (left.OpensScope() or right.ClosesScope()):
     if (style.GetOrDefault('SPACES_AROUND_DICT_DELIMITERS', False) and (
         (lval == '{' and _IsDictListTupleDelimiterTok(left, is_opening=True)) or
         (rval == '}' and
