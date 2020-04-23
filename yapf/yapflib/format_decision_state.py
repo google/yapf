@@ -921,6 +921,18 @@ class FormatDecisionState(object):
 
     return penalty
 
+  def _IndentWithContinuationAlignStyle(self, column):
+    if column == 0:
+      return column
+    align_style = style.Get('CONTINUATION_ALIGN_STYLE')
+    if align_style == 'FIXED':
+      return ((self.line.depth * style.Get('INDENT_WIDTH')) +
+              style.Get('CONTINUATION_INDENT_WIDTH'))
+    if align_style == 'VALIGN-RIGHT':
+      indent_width = style.Get('INDENT_WIDTH')
+      return indent_width * int((column + indent_width - 1) / indent_width)
+    return column
+
   def _GetNewlineColumn(self):
     """Return the new column on the newline."""
     current = self.next_token
@@ -934,8 +946,11 @@ class FormatDecisionState(object):
     elif current.spaces_required_before > 2 or self.line.disable:
       return current.spaces_required_before
 
+    cont_aligned_indent = self._IndentWithContinuationAlignStyle(
+        top_of_stack.indent)
+
     if current.OpensScope():
-      return top_of_stack.indent if self.paren_level else self.first_indent
+      return cont_aligned_indent if self.paren_level else self.first_indent
 
     if current.ClosesScope():
       if (previous.OpensScope() or
@@ -973,7 +988,7 @@ class FormatDecisionState(object):
            format_token.Subtype.PARAMETER_START in previous.subtypes)):
         return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
-    return top_of_stack.indent
+    return cont_aligned_indent
 
   def _FitsOnLine(self, start, end):
     """Determines if line between start and end can fit on the current line."""

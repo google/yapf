@@ -434,14 +434,11 @@ Knobs
     - ``SPACE``: Use spaces for continuation alignment. This is default
       behavior.
     - ``FIXED``: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
-      (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
-      alignment.
-    - ``VALIGN-RIGHT``: Vertically align continuation lines with indent
-      characters. Slightly right (one more indent character) if cannot
+      (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs or CONTINUATION_INDENT_WIDTH
+      spaces) for continuation alignment.
+    - ``VALIGN-RIGHT``: Vertically align continuation lines to multiple of
+      INDENT_WIDTH columns. Slightly right (one tab or a few spaces) if cannot
       vertically align continuation lines with indent characters.
-
-      For options ``FIXED``, and ``VALIGN-RIGHT`` are only available when
-      ``USE_TABS`` is enabled.
 
 ``CONTINUATION_INDENT_WIDTH``
     Indent width used for line continuations.
