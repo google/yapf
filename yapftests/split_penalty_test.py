@@ -36,7 +36,7 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def _ParseAndComputePenalties(self, code, dumptree=False):
     """Parses the code and computes split penalties.

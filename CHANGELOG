@@ -13,6 +13,8 @@
   parentheses.
 - New knob `SPACES_AROUND_SUBSCRIPT_COLON` to add spaces around the subscript /
   slice operator.
+### Changed
+- Renamed "chromium" style to "yapf". Chromium will now use PEP-8 directly.
 ### Fixed
 - Honor a disable directive at the end of a multiline comment.
 - Don't require splitting before comments in a list when

@@ -26,8 +26,8 @@ from yapftests import yapf_test_helper
 class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
   @classmethod
-  def setUpClass(cls):  # pylint: disable=g-missing-super-call
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSplittingAllArgs(self):
     style.SetGlobalStyle(
@@ -306,13 +306,13 @@ class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(se
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, indent_blank_lines: true}'))
+              '{based_on_style: yapf, indent_blank_lines: true}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
     unformatted_code, expected_formatted_code = (expected_formatted_code,
                                                  unformatted_code)
@@ -1850,12 +1850,12 @@ class A(object):
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, allow_multiline_lambdas: true}'))
+              '{based_on_style: yapf, allow_multiline_lambdas: true}'))
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testMultilineDictionaryKeys(self):
     unformatted_code = textwrap.dedent("""\
@@ -1882,13 +1882,13 @@ class A(object):
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium, '
+          style.CreateStyleFromConfig('{based_on_style: yapf, '
                                       'allow_multiline_dictionary_keys: true}'))
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testStableDictionaryFormatting(self):
     code = textwrap.dedent("""\
@@ -1919,7 +1919,34 @@ class A(object):
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(code, reformatted_code)
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testStableInlinedDictionaryFormatting(self):
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      unformatted_code = textwrap.dedent("""\
+          def _():
+              url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
+                  value, urllib.urlencode({'action': 'update', 'parameter': value}))
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          def _():
+              url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
+                  value, urllib.urlencode({
+                      'action': 'update',
+                      'parameter': value
+                  }))
+          """)
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+      uwlines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(uwlines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testDontSplitKeywordValueArguments(self):
     unformatted_code = textwrap.dedent("""\
@@ -1990,7 +2017,7 @@ class A(object):
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(code, reformatted_code)
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testNotSplittingAfterSubscript(self):
     unformatted_code = textwrap.dedent("""\
@@ -2102,7 +2129,7 @@ class A(object):
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, '
+              '{based_on_style: yapf, '
               'split_arguments_when_comma_terminated: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
@@ -2113,7 +2140,7 @@ class A(object):
       reformatted_code = reformatter.Reformat(uwlines)
       self.assertCodeEqual(expected_formatted_code, reformatted_code)
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testImportAsList(self):
     code = textwrap.dedent("""\
@@ -2402,14 +2429,14 @@ class A(object):
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, '
+              '{based_on_style: yapf, '
               'blank_line_before_class_docstring: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testBlankLineBeforeModuleDocstring(self):
     unformatted_code = textwrap.dedent('''\
@@ -2464,7 +2491,7 @@ class A(object):
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testTupleCohesion(self):
     unformatted_code = textwrap.dedent("""\
@@ -2559,13 +2586,13 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, split_before_first_argument: True}'))
+              '{based_on_style: yapf, split_before_first_argument: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSplittingBeforeFirstArgumentOnFunctionDefinition(self):
     """Tests split_before_first_argument on a function definition."""
@@ -2583,13 +2610,13 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, split_before_first_argument: True}'))
+              '{based_on_style: yapf, split_before_first_argument: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSplittingBeforeFirstArgumentOnCompoundStatement(self):
     """Tests split_before_first_argument on a compound statement."""
@@ -2609,13 +2636,13 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, split_before_first_argument: True}'))
+              '{based_on_style: yapf, split_before_first_argument: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testCoalesceBracketsOnDict(self):
     """Tests coalesce_brackets on a dictionary."""
@@ -2645,13 +2672,13 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, coalesce_brackets: True}'))
+              '{based_on_style: yapf, coalesce_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSplitAfterComment(self):
     code = textwrap.dedent("""\
@@ -2666,13 +2693,32 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: chromium, coalesce_brackets: True, '
+              '{based_on_style: yapf, coalesce_brackets: True, '
               'dedent_closing_brackets: true}'))
+      uwlines = yapf_test_helper.ParseAndUnwrap(code)
+      self.assertCodeEqual(code, reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  @unittest.skipUnless(not py3compat.PY3, 'Requires Python 2.7')
+  def testAsyncAsNonKeyword(self):
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
+      # In Python 2, async may be used as a non-keyword identifier.
+      code = textwrap.dedent("""\
+          from util import async
+
+
+          class A(object):
+              def foo(self):
+                  async.run()
+          """)
 
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testDisableEndingCommaHeuristic(self):
     code = textwrap.dedent("""\
@@ -2681,13 +2727,13 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' disable_ending_comma_heuristic: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testDedentClosingBracketsWithTypeAnnotationExceedingLineLength(self):
     unformatted_code = textwrap.dedent("""\
@@ -2713,14 +2759,14 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' dedent_closing_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testIndentClosingBracketsWithTypeAnnotationExceedingLineLength(self):
     unformatted_code = textwrap.dedent("""\
@@ -2746,14 +2792,14 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' indent_closing_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testIndentClosingBracketsInFunctionCall(self):
     unformatted_code = textwrap.dedent("""\
@@ -2781,14 +2827,14 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' indent_closing_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testIndentClosingBracketsInTuple(self):
     unformatted_code = textwrap.dedent("""\
@@ -2816,14 +2862,14 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' indent_closing_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testIndentClosingBracketsInList(self):
     unformatted_code = textwrap.dedent("""\
@@ -2851,14 +2897,14 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' indent_closing_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testIndentClosingBracketsInDict(self):
     unformatted_code = textwrap.dedent("""\
@@ -2892,14 +2938,14 @@ my_dict = {
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium,'
+          style.CreateStyleFromConfig('{based_on_style: yapf,'
                                       ' indent_closing_brackets: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testMultipleDictionariesInList(self):
     unformatted_code = textwrap.dedent("""\

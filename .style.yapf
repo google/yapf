@@ -1,3 +1,2 @@
 [style]
-# YAPF uses the chromium style
-based_on_style = chromium
+based_on_style = yapf

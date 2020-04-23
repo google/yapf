@@ -43,7 +43,7 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
 
   def _Check(self, unformatted_code, expected_formatted_code):
     formatted_code, _ = yapf_api.FormatCode(
-        unformatted_code, style_config='chromium')
+        unformatted_code, style_config='yapf')
     self.assertCodeEqual(expected_formatted_code, formatted_code)
 
   def testSimple(self):
@@ -95,7 +95,7 @@ class FormatFileTest(unittest.TestCase):
         if True:
             pass
         """)
-    expected_formatted_code_chromium = textwrap.dedent(u"""\
+    expected_formatted_code_yapf = textwrap.dedent(u"""\
         if True:
           pass
         """)
@@ -103,9 +103,8 @@ class FormatFileTest(unittest.TestCase):
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code_pep8, formatted_code)
 
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
-      self.assertCodeEqual(expected_formatted_code_chromium, formatted_code)
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
+      self.assertCodeEqual(expected_formatted_code_yapf, formatted_code)
 
   def testDisableLinesPattern(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -361,8 +360,7 @@ class FormatFileTest(unittest.TestCase):
         ]
         """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
 
   def testDisabledWithPrecedingText(self):
@@ -381,15 +379,13 @@ class FormatFileTest(unittest.TestCase):
         ]
         """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
 
   def testCRLFLineEnding(self):
     code = u'class _():\r\n  pass\r\n'
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
-      formatted_code, _, _ = yapf_api.FormatFile(
-          filepath, style_config='chromium')
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
 
 
@@ -502,7 +498,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
-  def testSetChromiumStyle(self):
+  def testSetYapfStyle(self):
     unformatted_code = textwrap.dedent("""\
         def foo(): # trail
             x = 37
@@ -514,9 +510,9 @@ class CommandLineTest(unittest.TestCase):
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--style=chromium'])
+        extra_options=['--style=yapf'])
 
-  def testSetCustomStyleBasedOnChromium(self):
+  def testSetCustomStyleBasedOnYapf(self):
     unformatted_code = textwrap.dedent("""\
         def foo(): # trail
             x = 37
@@ -527,7 +523,7 @@ class CommandLineTest(unittest.TestCase):
         """)
     style_file = textwrap.dedent(u'''\
         [style]
-        based_on_style = chromium
+        based_on_style = yapf
         spaces_before_comment = 4
         ''')
     with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
@@ -1164,7 +1160,7 @@ x = {
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--lines', '1-1', '--style', 'chromium'])
+        extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testMultilineCommentFormattingDisabled(self):
     unformatted_code = textwrap.dedent("""\
@@ -1198,7 +1194,7 @@ x = {
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--lines', '1-1', '--style', 'chromium'])
+        extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testTrailingCommentsWithDisabledFormatting(self):
     unformatted_code = textwrap.dedent("""\
@@ -1218,7 +1214,7 @@ x = {
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--lines', '1-1', '--style', 'chromium'])
+        extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testUseTabs(self):
     unformatted_code = """\
@@ -1233,7 +1229,7 @@ def foo_function():
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 INDENT_WIDTH=1
 """
@@ -1257,7 +1253,7 @@ def f():
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 INDENT_WIDTH=1
 """
@@ -1282,7 +1278,7 @@ def foo_function(arg1, arg2,
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 COLUMN_LIMIT=32
 INDENT_WIDTH=4
@@ -1310,7 +1306,7 @@ def foo_function(arg1, arg2,
 """
     style_contents = u"""\
 [style]
-based_on_style = chromium
+based_on_style = yapf
 USE_TABS = true
 COLUMN_LIMIT=32
 INDENT_WIDTH=4
@@ -1407,7 +1403,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--style', 'chromium', '--lines', '1-1'])
+        extra_options=['--style', 'yapf', '--lines', '1-1'])
 
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testNoSpacesAroundBinaryOperators(self):
@@ -1457,7 +1453,7 @@ a = [
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        extra_options=['--style', 'chromium', '--lines', '1-100'])
+        extra_options=['--style', 'yapf', '--lines', '1-100'])
 
 
 class BadInputTest(unittest.TestCase):

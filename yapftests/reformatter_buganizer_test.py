@@ -26,7 +26,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB137580392(self):
     code = """\
@@ -1720,13 +1720,13 @@ class _():
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig('{based_on_style: chromium, '
+          style.CreateStyleFromConfig('{based_on_style: yapf, '
                                       'split_before_logical_operator: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB22527411(self):
     unformatted_code = textwrap.dedent("""\
@@ -1884,7 +1884,7 @@ class _():
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(uwlines))
     finally:
-      style.SetGlobalStyle(style.CreateChromiumStyle())
+      style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB19353268(self):
     code = textwrap.dedent("""\
