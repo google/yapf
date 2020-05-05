@@ -285,7 +285,7 @@ than a whole file.
     'def g():\n    a = 1\n    b = 2\n    return a==b\n'
 
 A ``print_diff`` (bool): Instead of returning the reformatted source, return a
-diff that turns the formatted source into reformatter source.
+diff that turns the formatted source into reformatted source.
 
 .. code-block:: python
 
