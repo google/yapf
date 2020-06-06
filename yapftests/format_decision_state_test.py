@@ -132,7 +132,6 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     clone = state.Clone()
     self.assertEqual(repr(state), repr(clone))
 
-
 def _FilterLine(uwline):
   """Filter out nonsemantic tokens from the UnwrappedLines."""
   return [
