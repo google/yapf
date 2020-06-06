@@ -1602,6 +1602,18 @@ class A(object):
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    
+   def testColumnLimitWhereNoKeyValuePairsGoOverLimit(self):
+    code = textwrap.dedent("""\
+      expected = {
+          'aaaaaa': 'bbbbbb',
+          'ccccccccccccc': 'ddddddddd',
+          'eeeee': 'ffffff',
+          'ggggggggg': 'hhhhhhhhhhhh',
+       }
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines)) 
 
   def testEndingComment(self):
     code = textwrap.dedent("""\
@@ -1856,7 +1868,43 @@ class A(object):
                            reformatter.Reformat(uwlines))
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
+      
+ def testFunctionCallShort(self):
+      try:
+        unformatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, g(lrotate) % 16),
+                long_function_name(16, g(rrotate) % 16))
+            """)
+        expected_formatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, g(lrotate) % 16),
+                long_function_name(16, g(rrotate) % 16))
+            """)
+        uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+        self.assertCodeEqual(expected_formatted_code,
+                             reformatter.Reformat(uwlines))
+      finally:
+        style.SetGlobalStyle(style.CreateYapfStyle())
 
+  def testFunctionCallLong(self):
+    try:
+      unformatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, func(lrotate) % 16),
+                long_function_name(16, func(rrotate) % 16))
+            """)
+      expected_formatted_code = textwrap.dedent("""\
+            f(
+                long_function_name(16, func(lrotate) % 16),
+                long_function_name(16, func(rrotate) % 16))
+            """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+      
   def testMultilineDictionaryKeys(self):
     unformatted_code = textwrap.dedent("""\
         MAP_WITH_LONG_KEYS = {
@@ -2644,7 +2692,30 @@ my_dict = {
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
-  def testCoalesceBracketsOnDict(self):
+       def testSplittingBeforeFirstBaseClassOnClassDefinition(self):
+    """Tests split_before_first_base_class on a function definition."""
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: yapf, split_before_first_base_class: True}')
+      )
+      unformatted_code = textwrap.dedent("""\
+          class _NumberOfSecondsFromElementsGetter(SomeBase, SomeOtherBase,
+                                              SomeThirdBase):
+            pass
+          """)
+      expected_formatted_code = textwrap.dedent("""\
+          class _NumberOfSecondsFromElementsGetter(
+              SomeBase, SomeOtherBase, SomeThirdBase):
+            pass
+          """)
+      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(uwlines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+   def testCoalesceBracketsOnDict(self):
     """Tests coalesce_brackets on a dictionary."""
     unformatted_code = textwrap.dedent("""\
         date_time_values = (
