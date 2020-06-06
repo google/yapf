@@ -13,6 +13,8 @@
   parentheses.
 - New knob `SPACES_AROUND_SUBSCRIPT_COLON` to add spaces around the subscript /
   slice operator.
+- `SPLIT_BEFORE_FIRST_BASE_CLASS` is analagous to SPLIT_BEFORE_FIRST_ARGUMENT
+  but for class definitions.
 ### Changed
 - Renamed "chromium" style to "yapf". Chromium will now use PEP-8 directly.
 - `CONTINUATION_ALIGN_STYLE` with `FIXED` or `VALIGN-RIGHT` now works with
