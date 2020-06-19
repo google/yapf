@@ -32,6 +32,8 @@ import logging
 import os
 import sys
 
+from contrib.fixers import fixers_api
+
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
@@ -57,7 +59,8 @@ def main(argv):
   Raises:
     YapfError: if none of the supplied files were Python files.
   """
-  parser = argparse.ArgumentParser(description='Formatter for Python code.')
+  parser = argparse.ArgumentParser(
+      prog='yapf', description='Formatter for Python code.')
   parser.add_argument(
       '-v',
       '--version',
@@ -121,18 +124,34 @@ def main(argv):
       '--no-local-style',
       action='store_true',
       help="don't search for local style definition")
-  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
   parser.add_argument(
       '-p',
       '--parallel',
       action='store_true',
       help=('run yapf in parallel when formatting multiple files. Requires '
             'concurrent.futures in Python 2.X'))
+
+  parser.add_argument(
+      '--fixers',
+      action='store',
+      default=None,
+      metavar='{' + ', '.join(fixers_api.AVAILABLE_FIXERS) + '}',
+      type=lambda x: [s.strip().lower() for s in x.split(',')],
+      help='comma-separated list of fixers to run on code')
+  parser.add_argument(
+      '--force-quote-type',
+      action='store',
+      default='none',
+      choices=['single', 'double'],
+      help='type of quotes to use - \', ", or decide heuristically')
+
   parser.add_argument(
       '-vv',
       '--verbose',
       action='store_true',
       help='print out file names while processing')
+
+  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
 
   parser.add_argument(
       'files', nargs='*', help='reads from stdin when no files are specified.')
@@ -151,7 +170,19 @@ def main(argv):
   if args.lines and len(args.files) > 1:
     parser.error('cannot use -l/--lines with more than one file')
 
+  err_msg = fixers_api.ValidateCommandLineArguments(args)
+  if err_msg:
+    parser.error(err_msg)
+    return 1
+
   lines = _GetLines(args.lines) if args.lines is not None else None
+
+  options_for_fixers = {
+      'fixers': args.fixers,
+      'force_quote_type': args.force_quote_type,
+      'lines': lines,
+  }
+
   if not args.files:
     # No arguments specified. Read code from stdin.
     if args.in_place or args.diff:
@@ -184,6 +215,7 @@ def main(argv):
           py3compat.unicode('\n'.join(source) + '\n'),
           filename='<stdin>',
           style_config=style_config,
+          options=options_for_fixers,
           lines=lines,
           verify=args.verify)
     except tokenize.TokenError as e:
@@ -211,6 +243,7 @@ def main(argv):
       print_diff=args.diff,
       verify=args.verify,
       parallel=args.parallel,
+      options=options_for_fixers,
       quiet=args.quiet,
       verbose=args.verbose)
   return 1 if changed and (args.diff or args.quiet) else 0
@@ -239,9 +272,10 @@ def FormatFiles(filenames,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 parallel=False,
+                options=None,
                 quiet=False,
+                verify=False,
                 verbose=False):
   """Format a list of files.
 
@@ -257,9 +291,10 @@ def FormatFiles(filenames,
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
     parallel: (bool) True if should format multiple files in parallel.
+    options: (dict) options for running fixers.
     quiet: (bool) True if should output nothing.
+    verify: (bool) True if reformatted code should be verified for syntax.
     verbose: (bool) True if should print out filenames while processing.
 
   Returns:
@@ -281,7 +316,8 @@ def FormatFiles(filenames,
   else:
     for filename in filenames:
       changed |= _FormatFile(filename, lines, style_config, no_local_style,
-                             in_place, print_diff, verify, quiet, verbose)
+                             in_place, print_diff, options, verify, quiet,
+                             verbose)
   return changed
 
 
@@ -291,6 +327,7 @@ def _FormatFile(filename,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
+                options=None,
                 verify=False,
                 quiet=False,
                 verbose=False):
@@ -309,6 +346,7 @@ def _FormatFile(filename,
         style_config=style_config,
         lines=lines,
         print_diff=print_diff,
+        options=options,
         verify=verify,
         logger=logging.warning)
   except tokenize.TokenError as e:

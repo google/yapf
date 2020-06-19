@@ -36,6 +36,8 @@ import difflib
 import re
 import sys
 
+from contrib.fixers import fixers_api
+
 from lib2to3.pgen2 import parse
 
 from yapf.yapflib import blank_line_calculator
@@ -56,8 +58,9 @@ def FormatFile(filename,
                style_config=None,
                lines=None,
                print_diff=False,
-               verify=False,
+               options=None,
                in_place=False,
+               verify=False,
                logger=None):
   """Format a single Python file and return the formatted code.
 
@@ -72,8 +75,9 @@ def FormatFile(filename,
       than a whole file.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
+    options: (dict) options for running fixers.
     in_place: (bool) If True, write the reformatted code back to the file.
+    verify: (bool) True if reformatted code should be verified for syntax.
     logger: (io streamer) A stream to output logging.
 
   Returns:
@@ -97,6 +101,7 @@ def FormatFile(filename,
       filename=filename,
       lines=lines,
       print_diff=print_diff,
+      options=options,
       verify=verify)
   if reformatted_source.rstrip('\n'):
     lines = reformatted_source.rstrip('\n').split('\n')
@@ -115,6 +120,7 @@ def FormatCode(unformatted_source,
                style_config=None,
                lines=None,
                print_diff=False,
+               options=None,
                verify=False):
   """Format a string of Python code.
 
@@ -132,6 +138,7 @@ def FormatCode(unformatted_source,
       than a whole file.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
+    options: (dict) options for running fixers.
     verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
@@ -142,6 +149,8 @@ def FormatCode(unformatted_source,
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
   if not unformatted_source.endswith('\n'):
     unformatted_source += '\n'
+
+  unformatted_source = fixers_api.Pre2to3FixerRun(unformatted_source, options)
 
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)

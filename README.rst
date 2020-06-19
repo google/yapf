@@ -92,21 +92,22 @@ Usage
 
 Options::
 
-    usage: yapf [-h] [-v] [-d | -i] [-r | -l START-END] [-e PATTERN]
+    usage: yapf [-h] [-v] [-d | -i | -q] [-r | -l START-END] [-e PATTERN]
                 [--style STYLE] [--style-help] [--no-local-style] [-p]
-                [-vv]
+                [--fixers {quotes}] [--force-quote-type {single,double}] [-vv]
                 [files [files ...]]
 
     Formatter for Python code.
 
     positional arguments:
-      files
+      files                 reads from stdin when no files are specified.
 
     optional arguments:
       -h, --help            show this help message and exit
       -v, --version         show version number and exit
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
+      -q, --quiet           output nothing and set return value
       -r, --recursive       run recursively over directories
       -l START-END, --lines START-END
                             range of lines to reformat, one-based
@@ -122,9 +123,12 @@ Options::
       --style-help          show style settings and exit; this output can be saved
                             to .style.yapf to make your settings permanent
       --no-local-style      don't search for local style definition
-      -p, --parallel        Run yapf in parallel when formatting multiple files.
+      -p, --parallel        run yapf in parallel when formatting multiple files.
                             Requires concurrent.futures in Python 2.X
-      -vv, --verbose        Print out file names while processing
+      --fixers {quotes}     comma-separated list of fixers to run on code
+      --force-quote-type {single,double}
+                            type of quotes to use - ', ", or decide heuristically
+      -vv, --verbose        print out file names while processing
 
 
 ------------
@@ -320,6 +324,48 @@ The ``in_place`` argument saves the reformatted code back to the file:
 
     >>> print(open("foo.py").read())  # contents of file (now fixed)
     a == b
+
+
+lib2to3 Style Fixers
+====================
+
+YAPF allows you run `lib2to3 style fixers
+<http://python3porting.com/fixers.html>` before or after reformatting. The
+fixers live in the `contrib/fixers/` directory.
+
+Fixers modify the source code and not just whitespace, which is against YAPF's
+policy of changing only whitespace. Therefore, caution needs to be taken when
+using them so that the program's semantics don't change.
+
+------
+Quotes
+------
+
+The "quotes" fixer converts the quotes used to be consistent throughout the
+file. You can have YAPF heuristically choose the quote type (similar to how
+pylint chooses) or force a specific style.
+
+Heuristically choosing quote type:t
+
+.. code-block:: python
+
+    $ python -m yapf --fixers quotes < quotes.py
+    print("These quotes are double")
+
+    print("while these quotes are single")
+
+    print("We really want them to be the same!")
+
+Forcing single quote type:
+
+.. code-block:: python
+
+    $ python -m yapf --fixers quotes --force-quote-type single < quotes.py
+    print('These quotes are now single')
+
+    print('while these quotes are single')
+
+    print(We really want them to be the same!)
 
 
 Knobs
