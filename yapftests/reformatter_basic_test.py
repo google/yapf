@@ -3033,6 +3033,19 @@ my_dict = {
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
+  @unittest.skipUnless(py3compat.PY38, 'Requires Python 3.8')
+  def testWalrus(self):
+    unformatted_code = textwrap.dedent("""\
+      if (x  :=  len([1]*1000)>100):
+        print(f'{x} is pretty big' )
+    """)
+    expected = textwrap.dedent("""\
+      if (x := len([1] * 1000) > 100):
+        print(f'{x} is pretty big')
+    """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(uwlines))
+
 
 if __name__ == '__main__':
   unittest.main()
