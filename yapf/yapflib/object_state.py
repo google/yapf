@@ -135,7 +135,8 @@ class ParameterListState(object):
   @py3compat.lru_cache()
   def last_token(self):
     token = self.opening_bracket.matching_bracket
-    while not token.is_comment and token.next_token:
+    while not token.is_comment and
+     token.next_token:
       token = token.next_token
     return token
 

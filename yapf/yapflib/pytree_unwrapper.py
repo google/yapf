@@ -224,7 +224,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       if pytree_utils.NodeName(child) == 'ASYNC':
         break
     for child in node.children[index].children:
-      if pytree_utils.NodeName(child) == 'NAME' and child.value == 'else':
+      if pytree_utils.NodeName(child) == 'NAME' and
+       child.value == 'else':
         self._StartNewLine()
       self.Visit(child)
 
@@ -292,7 +293,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     """
     if leaf.type in _WHITESPACE_TOKENS:
       self._StartNewLine()
-    elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
+    elif leaf.type != grammar_token.COMMENT or
+     leaf.value.strip():
       # Add non-whitespace tokens and comments that aren't empty.
       self._cur_unwrapped_line.AppendNode(leaf)
 

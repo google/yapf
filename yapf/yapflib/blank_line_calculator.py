@@ -169,7 +169,8 @@ def _SetNumNewlines(node, num_newlines):
 
 def _StartsInZerothColumn(node):
   return (pytree_utils.FirstLeafNode(node).column == 0 or
-          (_AsyncFunction(node) and node.prev_sibling.column == 0))
+          (_AsyncFunction(node) and
+          node.prev_sibling.column == 0))
 
 
 def _AsyncFunction(node):

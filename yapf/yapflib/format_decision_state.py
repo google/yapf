@@ -180,7 +180,8 @@ class FormatDecisionState(object):
     if not previous:
       return False
 
-    if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
+    if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and
+     previous.value == ',':
       return True
 
     if (style.Get('SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES') and
@@ -204,8 +205,10 @@ class FormatDecisionState(object):
         return not self._ContainerFitsOnStartLine(opening)
 
     if (self.stack[-1].split_before_closing_bracket and
-        (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
-         current.value in '}])' and style.Get('INDENT_CLOSING_BRACKETS'))):
+        (current.value in '}]' and
+         style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
+         current.value in '}])' and
+          style.Get('INDENT_CLOSING_BRACKETS'))):
       # Split before the closing bracket if we can.
       if format_token.Subtype.SUBSCRIPT_BRACKET not in current.subtypes:
         return current.node_split_penalty != split_penalty.UNBREAKABLE
@@ -247,7 +250,8 @@ class FormatDecisionState(object):
             return True
 
         elif (style.Get('DEDENT_CLOSING_BRACKETS') or
-              style.Get('INDENT_CLOSING_BRACKETS')) and current.ClosesScope():
+              style.Get('INDENT_CLOSING_BRACKETS')) and
+               current.ClosesScope():
           # Split before and dedent the closing bracket.
           return self.stack[-1].split_before_closing_bracket
 
@@ -293,13 +297,17 @@ class FormatDecisionState(object):
       func_call_or_string_format = False
       tok = current.next_token
       if current.is_name:
-        while tok and (tok.is_name or tok.value == '.'):
+        while tok and (tok.is_name or
+         tok.value == '.'):
           tok = tok.next_token
-        func_call_or_string_format = tok and tok.value == '('
+        func_call_or_string_format = tok and
+         tok.value == '('
       elif current.is_string:
-        while tok and tok.is_string:
+        while tok and
+         tok.is_string:
           tok = tok.next_token
-        func_call_or_string_format = tok and tok.value == '%'
+        func_call_or_string_format = tok and
+         tok.value == '%'
       if func_call_or_string_format:
         open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
         if open_bracket:
@@ -316,7 +324,8 @@ class FormatDecisionState(object):
       # If we have a list of tuples, then we can get a similar look as above. If
       # the full list cannot fit on the line, then we want a split.
       open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
-      if (open_bracket and open_bracket.value in '[{' and
+      if (open_bracket and
+       open_bracket.value in '[{' and
           format_token.Subtype.SUBSCRIPT_BRACKET not in open_bracket.subtypes):
         if not self._FitsOnLine(current, current.matching_bracket):
           return True
@@ -329,7 +338,8 @@ class FormatDecisionState(object):
       # Place each dictionary entry onto its own line.
       if previous.value == '{' and previous.previous_token:
         opening = _GetOpeningBracket(previous.previous_token)
-        if (opening and opening.value == '(' and opening.previous_token and
+        if (opening and opening.value == '(' and
+         opening.previous_token and
             opening.previous_token.is_name):
           # This is a dictionary that's an argument to a function.
           if (self._FitsOnLine(previous, previous.matching_bracket) and
@@ -454,7 +464,8 @@ class FormatDecisionState(object):
     #         KEY_2: 'value two',
     #     },
     #                   default=False)
-    if (current.value == '{' and previous.value == '(' and pprevious and
+    if (current.value == '{' and previous.value == '(' and
+     pprevious and
         pprevious.is_name):
       dict_end = current.matching_bracket
       next_token = dict_end.next_token
@@ -483,7 +494,8 @@ class FormatDecisionState(object):
           return True
 
         opening = _GetOpeningBracket(current)
-        if (opening and opening.value == '(' and opening.previous_token and
+        if (opening and opening.value == '(' and
+         opening.previous_token and
             (opening.previous_token.is_name or
              opening.previous_token.value in {'*', '**'})):
           is_func_call = False
@@ -547,7 +559,8 @@ class FormatDecisionState(object):
     # These checks rely upon the original formatting. This is in order to
     # attempt to keep hand-written code in the same condition as it was before.
     # However, this may cause the formatter to fail to be idempotent.
-    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and current.value in '&|' and
+    if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and
+     current.value in '&|' and
         previous.lineno < current.lineno):
       # Retain the split before a bitwise operator.
       return True
@@ -722,7 +735,8 @@ class FormatDecisionState(object):
 
     # If we encounter a closing bracket, we can remove a level from our
     # parenthesis stack.
-    if len(self.stack) > 1 and current.ClosesScope():
+    if len(self.stack) > 1 and
+     current.ClosesScope():
       if format_token.Subtype.DICTIONARY_KEY_PART in current.subtypes:
         self.stack[-2].last_space = self.stack[-2].indent
       else:
@@ -730,7 +744,8 @@ class FormatDecisionState(object):
       self.stack.pop()
       self.paren_level -= 1
 
-    is_multiline_string = current.is_string and '\n' in current.value
+    is_multiline_string = current.is_string and
+     '\n' in current.value
     if is_multiline_string:
       # This is a multiline string. Only look at the first line.
       self.column += len(current.value.split('\n')[0])
@@ -855,7 +870,8 @@ class FormatDecisionState(object):
       first_param_column = previous.total_length + self.stack[-2].indent
       if not newline:
         param_list = self.param_list_stack[-1]
-        if param_list.parameters and param_list.has_typed_return:
+        if param_list.parameters and
+         param_list.has_typed_return:
           last_param = param_list.parameters[-1].first_token
           last_token = _LastTokenInLine(previous.matching_bracket)
           total_length = last_token.total_length
@@ -888,13 +904,15 @@ class FormatDecisionState(object):
     param_list = self.param_list_stack[-1]
     if current == self.param_list_stack[-1].closing_bracket:
       self.param_list_stack.pop()  # We're done with this state.
-      if newline and param_list.has_typed_return:
+      if newline and
+       param_list.has_typed_return:
         if param_list.split_before_closing_bracket:
           penalty -= split_penalty.STRONGLY_CONNECTED
         elif param_list.LastParamFitsOnLine(self.column):
           penalty += split_penalty.STRONGLY_CONNECTED
 
-      if (not newline and param_list.has_typed_return and
+      if (not newline and
+       param_list.has_typed_return and
           param_list.has_split_before_first_param):
         # Prefer splitting before the closing bracket if there's a return type
         # and we've already split before the first parameter.
@@ -981,7 +999,8 @@ class FormatDecisionState(object):
 
     if (self.param_list_stack and
         not self.param_list_stack[-1].SplitBeforeClosingBracket(
-            top_of_stack.indent) and top_of_stack.indent
+            top_of_stack.indent) and
+             top_of_stack.indent
         == ((self.line.depth + 1) * style.Get('INDENT_WIDTH'))):
       if (format_token.Subtype.PARAMETER_START in current.subtypes or
           (previous.is_comment and
@@ -1024,7 +1043,8 @@ class FormatDecisionState(object):
         if not colon.is_pseudo_paren:
           break
         colon = colon.previous_token
-      if not colon or colon.value != ':':
+      if not colon or
+       colon.value != ':':
         return False
       key = colon.previous_token
       if not key:
@@ -1136,7 +1156,8 @@ def _IsArgumentToFunction(token):
   if not bracket or bracket.value != '(':
     return False
   previous = bracket.previous_token
-  return previous and previous.is_name
+  return previous and
+   previous.is_name
 
 
 def _GetOpeningBracket(current):
@@ -1156,14 +1177,16 @@ def _GetOpeningBracket(current):
 
 
 def _LastTokenInLine(current):
-  while not current.is_comment and current.next_token:
+  while not current.is_comment and
+   current.next_token:
     current = current.next_token
   return current
 
 
 def _IsFunctionDefinition(current):
   prev = current.previous_token
-  return (current.value == '(' and prev and
+  return (current.value == '(' and
+   prev and
           format_token.Subtype.FUNC_DEF in prev.subtypes)
 
 
@@ -1171,7 +1194,8 @@ def _IsLastScopeInLine(current):
   current = current.matching_bracket
   while current:
     current = current.next_token
-    if current and current.OpensScope():
+    if current and
+     current.OpensScope():
       return False
   return True
 

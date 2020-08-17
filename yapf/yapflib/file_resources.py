@@ -36,7 +36,8 @@ def _GetExcludePatternsFromFile(filename):
   """Get a list of file patterns to ignore."""
   ignore_patterns = []
   # See if we have a .yapfignore file.
-  if os.path.isfile(filename) and os.access(filename, os.R_OK):
+  if os.path.isfile(filename) and
+   os.access(filename, os.R_OK):
     with open(filename, 'r') as fd:
       for line in fd:
         if line.strip() and not line.startswith('#'):
@@ -157,7 +158,9 @@ def _FindPythonFiles(filenames, recursive, exclude):
 
   python_files = []
   for filename in filenames:
-    if filename != '.' and exclude and IsIgnored(filename, exclude):
+    if filename != '.' and
+     exclude and
+      IsIgnored(filename, exclude):
       continue
     if os.path.isdir(filename):
       if not recursive:
@@ -167,14 +170,17 @@ def _FindPythonFiles(filenames, recursive, exclude):
       # TODO(morbo): Look into a version of os.walk that can handle recursion.
       excluded_dirs = []
       for dirpath, _, filelist in os.walk(filename):
-        if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
+        if dirpath != '.' and
+         exclude and
+          IsIgnored(dirpath, exclude):
           excluded_dirs.append(dirpath)
           continue
         elif any(dirpath.startswith(e) for e in excluded_dirs):
           continue
         for f in filelist:
           filepath = os.path.join(dirpath, f)
-          if exclude and IsIgnored(filepath, exclude):
+          if exclude and
+           IsIgnored(filepath, exclude):
             continue
           if IsPythonFile(filepath):
             python_files.append(filepath)

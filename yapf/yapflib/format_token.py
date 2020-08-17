@@ -219,7 +219,8 @@ class FormatToken(object):
     prev_column = previous.node.column
     prev_len = len(previous.value)
 
-    if previous.is_pseudo_paren and previous.value == ')':
+    if previous.is_pseudo_paren and
+     previous.value == ')':
       prev_column -= 1
       prev_len = 0
 
@@ -357,7 +358,8 @@ class FormatToken(object):
       token, inspect the last 3 characters and return True if it is a triple
       double or triple single quote mark.
     """
-    return self.is_string and self.value.endswith(('"""', "'''"))
+    return self.is_string and
+     self.value.endswith(('"""', "'''"))
 
   @property
   @py3compat.lru_cache()
@@ -367,14 +369,17 @@ class FormatToken(object):
   @property
   @py3compat.lru_cache()
   def is_pseudo_paren(self):
-    return hasattr(self.node, 'is_pseudo') and self.node.is_pseudo
+    return hasattr(self.node, 'is_pseudo') and
+     self.node.is_pseudo
 
   @property
   def is_pylint_comment(self):
-    return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=',
+    return self.is_comment and
+     re.match(r'#.*\bpylint:\s*(disable|enable)=',
                                         self.value)
 
   @property
   def is_pytype_comment(self):
-    return self.is_comment and re.match(r'#.*\bpytype:\s*(disable|enable)=',
+    return self.is_comment and
+     re.match(r'#.*\bpytype:\s*(disable|enable)=',
                                         self.value)

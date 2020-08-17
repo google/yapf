@@ -110,7 +110,8 @@ def SpliceComments(tree):
                   # Skip empty lines at the top of the first comment group
                   comment_lineno += 1
                   continue
-              elif comment_column is None or col < comment_column:
+              elif comment_column is None or
+               col < comment_column:
                 comment_column = col
                 comment_indent = cmt[:comment_column]
                 comment_groups.append((comment_column, comment_indent, []))
@@ -229,7 +230,8 @@ def _CreateCommentsFromPrefix(comment_prefix,
   index = 0
   while index < len(lines):
     comment_block = []
-    while index < len(lines) and lines[index].lstrip().startswith('#'):
+    while index < len(lines) and
+     lines[index].lstrip().startswith('#'):
       comment_block.append(lines[index].strip())
       index += 1
 
@@ -358,7 +360,8 @@ def _AnnotateIndents(tree):
     if child.type == token.INDENT:
       child_indent = pytree_utils.GetNodeAnnotation(
           tree, pytree_utils.Annotation.CHILD_INDENT)
-      if child_indent is not None and child_indent != child.value:
+      if child_indent is not None and
+       child_indent != child.value:
         raise RuntimeError('inconsistent indentation for child', (tree, child))
       pytree_utils.SetNodeAnnotation(tree, pytree_utils.Annotation.CHILD_INDENT,
                                      child.value)
