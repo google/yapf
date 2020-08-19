@@ -101,6 +101,8 @@ _STYLE_HELP = dict(
       Insert a blank line before a class-level docstring."""),
     BLANK_LINE_BEFORE_MODULE_DOCSTRING=textwrap.dedent("""\
       Insert a blank line before a module docstring."""),
+    BLANK_LINES_AFTER_TOP_LEVEL_IMPORTS=textwrap.dedent("""\
+      Number of blank lines after top-level imports."""),
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=textwrap.dedent("""\
       Number of blank lines surrounding top-level function and class
       definitions."""),
@@ -418,6 +420,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       BLANK_LINE_BEFORE_MODULE_DOCSTRING=False,
+      BLANK_LINES_AFTER_TOP_LEVEL_IMPORTS=1,
       BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=2,
       COALESCE_BRACKETS=False,
       COLUMN_LIMIT=79,
@@ -605,6 +608,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     BLANK_LINE_BEFORE_MODULE_DOCSTRING=_BoolConverter,
+    BLANK_LINES_AFTER_TOP_LEVEL_IMPORTS=int,
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=int,
     COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,

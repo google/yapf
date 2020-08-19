@@ -253,6 +253,43 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
+  def testBlankLinesAfterTopLevelImport(self):
+    unformatted_code = textwrap.dedent("""\
+        import foo as bar
+        VAR = 'baz'
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        import foo as bar
+
+        VAR = 'baz'
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        import foo as bar
+        # Some comment
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        import foo as bar
+        # Some comment
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        def foobar():
+          from foo import Bar
+          Bar.baz()
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foobar():
+          from foo import Bar
+          Bar.baz()
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
   def testBlankLinesAtEndOfFile(self):
     unformatted_code = textwrap.dedent("""\
         def foobar(): # foo
@@ -421,8 +458,8 @@ class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(se
 
   def testCommentsWithTrailingSpaces(self):
     unformatted_code = textwrap.dedent("""\
-        # Thing 1    
-        # Thing 2    
+        # Thing 1
+        # Thing 2
         """)
     expected_formatted_code = textwrap.dedent("""\
         # Thing 1

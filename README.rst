@@ -388,6 +388,10 @@ Knobs
 ``BLANK_LINE_BEFORE_CLASS_DOCSTRING``
     Insert a blank line before a class-level docstring.
 
+``BLANK_LINES_AFTER_TOP_LEVEL_IMPORTS``
+    Sets the number of desired blank lines after top-level imports. Useful for
+    compatibility with tools like isort.
+
 ``BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION``
     Sets the number of desired blank lines surrounding top-level function and
     class definitions. For example:
@@ -567,7 +571,7 @@ Knobs
         [1, 2]
 
     will be formatted as:
-    
+
     .. code-block:: python
 
         [ 1, 2 ]
@@ -665,16 +669,16 @@ Knobs
     ``b`` in this code:
 
     .. code-block:: python
-      
+
       abcdef(
           aReallyLongThing: int,
           b: [Int,
               Int])
-   
+
     With the new knob this is split as:
 
     .. code-block:: python
-      
+
       abcdef(
           aReallyLongThing: int,
           b: [Int, Int])
