@@ -104,6 +104,9 @@ _STYLE_HELP = dict(
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=textwrap.dedent("""\
       Number of blank lines surrounding top-level function and class
       definitions."""),
+    BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=textwrap.dedent("""\
+      Number of blank lines between top-level imports and variable
+      definitions."""),
     COALESCE_BRACKETS=textwrap.dedent("""\
       Do not split consecutive brackets. Only relevant when
       dedent_closing_brackets is set. For example:
@@ -419,6 +422,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       BLANK_LINE_BEFORE_MODULE_DOCSTRING=False,
       BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=2,
+      BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=1,
       COALESCE_BRACKETS=False,
       COLUMN_LIMIT=79,
       CONTINUATION_ALIGN_STYLE='SPACE',
@@ -606,6 +610,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     BLANK_LINE_BEFORE_MODULE_DOCSTRING=_BoolConverter,
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=int,
+    BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=int,
     COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,
     CONTINUATION_ALIGN_STYLE=_ContinuationAlignStyleStringConverter,

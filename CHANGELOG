@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.31.0] UNRELEASED
+### Added
+- Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
+  a custom number of blank lines between top-level imports and variable
+  definitions.
+
 ## [0.30.0] 2020-04-23
 ### Added
 - Added `SPACES_AROUND_LIST_DELIMITERS`, `SPACES_AROUND_DICT_DELIMITERS`,

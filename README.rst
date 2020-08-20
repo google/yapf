@@ -401,6 +401,10 @@ Knobs
         class Bar:
             pass
 
+``BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES``
+    Sets the number of desired blank lines between top-level imports and
+    variable definitions. Useful for compatibility with tools like isort.
+
 ``COALESCE_BRACKETS``
     Do not split consecutive brackets. Only relevant when
     ``DEDENT_CLOSING_BRACKETS`` or ``INDENT_CLOSING_BRACKETS``
@@ -567,7 +571,7 @@ Knobs
         [1, 2]
 
     will be formatted as:
-    
+
     .. code-block:: python
 
         [ 1, 2 ]
@@ -665,16 +669,16 @@ Knobs
     ``b`` in this code:
 
     .. code-block:: python
-      
+
       abcdef(
           aReallyLongThing: int,
           b: [Int,
               Int])
-   
+
     With the new knob this is split as:
 
     .. code-block:: python
-      
+
       abcdef(
           aReallyLongThing: int,
           b: [Int, Int])
