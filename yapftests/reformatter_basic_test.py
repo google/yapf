@@ -510,8 +510,8 @@ class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(se
 
   def testCommentsWithTrailingSpaces(self):
     unformatted_code = textwrap.dedent("""\
-        # Thing 1
-        # Thing 2
+        # Thing 1    
+        # Thing 2    
         """)
     expected_formatted_code = textwrap.dedent("""\
         # Thing 1
