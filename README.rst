@@ -388,10 +388,6 @@ Knobs
 ``BLANK_LINE_BEFORE_CLASS_DOCSTRING``
     Insert a blank line before a class-level docstring.
 
-``BLANK_LINES_AFTER_TOP_LEVEL_IMPORTS``
-    Sets the number of desired blank lines after top-level imports. Useful for
-    compatibility with tools like isort.
-
 ``BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION``
     Sets the number of desired blank lines surrounding top-level function and
     class definitions. For example:
@@ -404,6 +400,10 @@ Knobs
                            # <------ is the default setting
         class Bar:
             pass
+
+``BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES``
+    Sets the number of desired blank lines between top-level imports and
+    variable definitions. Useful for compatibility with tools like isort.
 
 ``COALESCE_BRACKETS``
     Do not split consecutive brackets. Only relevant when

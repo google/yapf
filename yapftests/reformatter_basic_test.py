@@ -280,7 +280,8 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: yapf, blank_lines_after_top_level_imports: 2}'))
+              '{based_on_style: yapf, blank_lines_between_top_level_imports_and_variables: 2}'
+          ))
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -294,6 +295,36 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     expected_formatted_code = textwrap.dedent("""\
         import foo as bar
         # Some comment
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        import foo as bar
+        class Baz():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        import foo as bar
+
+
+        class Baz():
+          pass
+        """)
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
+    unformatted_code = textwrap.dedent("""\
+        import foo as bar
+        def foobar():
+          pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        import foo as bar
+
+
+        def foobar():
+          pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
