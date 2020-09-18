@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,9 +31,12 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 
+from yapf.yapflib import format_token
+from yapf.yapflib import object_state
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
 from yapf.yapflib import unwrapped_line
 
 
@@ -107,6 +110,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     if self._cur_unwrapped_line.tokens:
       self._unwrapped_lines.append(self._cur_unwrapped_line)
       _MatchBrackets(self._cur_unwrapped_line)
+      _IdentifyParameterLists(self._cur_unwrapped_line)
       _AdjustSplitPenalty(self._cur_unwrapped_line)
     self._cur_unwrapped_line = unwrapped_line.UnwrappedLine(self._cur_depth)
 
@@ -220,7 +224,16 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       if pytree_utils.NodeName(child) == 'ASYNC':
         break
     for child in node.children[index].children:
+      if pytree_utils.NodeName(child) == 'NAME' and child.value == 'else':
+        self._StartNewLine()
       self.Visit(child)
+
+  def Visit_decorator(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
+      if (pytree_utils.NodeName(child) == 'COMMENT' and
+          child == node.children[0]):
+        self._StartNewLine()
 
   def Visit_decorators(self, node):  # pylint: disable=invalid-name
     for child in node.children:
@@ -306,6 +319,44 @@ def _MatchBrackets(uwline):
       token.matching_bracket = bracket_stack[-1]
       bracket_stack.pop()
 
+    for bracket in bracket_stack:
+      if id(pytree_utils.GetOpeningBracket(token.node)) == id(bracket.node):
+        bracket.container_elements.append(token)
+        token.container_opening = bracket
+
+
+def _IdentifyParameterLists(uwline):
+  """Visit the node to create a state for parameter lists.
+
+  For instance, a parameter is considered an "object" with its first and last
+  token uniquely identifying the object.
+
+  Arguments:
+    uwline: (UnwrappedLine) An unwrapped line.
+  """
+  func_stack = []
+  param_stack = []
+  for tok in uwline.tokens:
+    # Identify parameter list objects.
+    if format_token.Subtype.FUNC_DEF in tok.subtypes:
+      assert tok.next_token.value == '('
+      func_stack.append(tok.next_token)
+      continue
+
+    if func_stack and tok.value == ')':
+      if tok == func_stack[-1].matching_bracket:
+        func_stack.pop()
+      continue
+
+    # Identify parameter objects.
+    if format_token.Subtype.PARAMETER_START in tok.subtypes:
+      param_stack.append(tok)
+
+    # Not "elif", a parameter could be a single token.
+    if param_stack and format_token.Subtype.PARAMETER_STOP in tok.subtypes:
+      start = param_stack.pop()
+      func_stack[-1].parameters.append(object_state.Parameter(start, tok))
+
 
 def _AdjustSplitPenalty(uwline):
   """Visit the node and adjust the split penalties if needed.
@@ -330,6 +381,8 @@ def _AdjustSplitPenalty(uwline):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
+  if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
+    return
   if not _ContainsComments(node):
     token = next(node.parent.leaves())
     if token.value == '(':
@@ -366,11 +419,6 @@ def _ContainsComments(node):
 
 def _SetMustSplitOnFirstLeaf(node):
   """Set the "must split" annotation on the first leaf node."""
-
-  def FindFirstLeaf(node):
-    if isinstance(node, pytree.Leaf):
-      return node
-    return FindFirstLeaf(node.children[0])
-
   pytree_utils.SetNodeAnnotation(
-      FindFirstLeaf(node), pytree_utils.Annotation.MUST_SPLIT, True)
+      pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.MUST_SPLIT,
+      True)

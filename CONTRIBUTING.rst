@@ -27,12 +27,11 @@ use Github pull requests for this purpose.
 YAPF coding style
 -----------------
 
-YAPF follows the `Chromium Python Style Guide
-<https://www.chromium.org/chromium-os/python-style-guidelines>`_. It's the same
-as the Google Python Style guide with two exceptions:
+YAPF follows the `Google Python Style Guide
+<https://google.github.io/styleguide/pyguide.html>`_ with two exceptions:
 
 - 2 spaces for indentation rather than 4.
-- CamelCase for function and method names rather than words_with_underscores.
+- CamelCase for function and method names rather than snake_case.
 
 The rationale for this is that YAPF was initially developed at Google where
 these two exceptions are still part of the internal Python style guide.

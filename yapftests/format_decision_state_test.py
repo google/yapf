@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):
-    style.SetGlobalStyle(style.CreateChromiumStyle())
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSimpleFunctionDefWithNoSplitting(self):
     code = textwrap.dedent(r"""

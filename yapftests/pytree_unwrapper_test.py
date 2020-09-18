@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -318,12 +318,12 @@ class MatchBracketsTest(yapf_test_helper.YAPFTest):
 
   def testFunctionDef(self):
     code = textwrap.dedent("""\
-        def foo(a, b={'hello': ['w','d']}, c=[42, 37]):
+        def foo(a, b=['w','d'], c=[42, 37]):
           pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckMatchingBrackets(uwlines, [
-        [(2, 24), (7, 15), (10, 14), (19, 23)],
+        [(2, 20), (7, 11), (15, 19)],
         [],
     ])
 

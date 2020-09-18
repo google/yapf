@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,6 +67,18 @@ def NodeName(node):
     return token.tok_name[node.type]
   else:
     return pygram.python_grammar.number2symbol[node.type]
+
+
+def FirstLeafNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return FirstLeafNode(node.children[0])
+
+
+def LastLeafNode(node):
+  if isinstance(node, pytree.Leaf):
+    return node
+  return LastLeafNode(node.children[-1])
 
 
 # lib2to3 thoughtfully provides pygram.python_grammar_no_print_statement for
@@ -207,6 +219,18 @@ def _InsertNodeAt(new_node, target, after=False):
 _NODE_ANNOTATION_PREFIX = '_yapf_annotation_'
 
 
+def CopyYapfAnnotations(src, dst):
+  """Copy all YAPF annotations from the source node to the destination node.
+
+  Arguments:
+    src: the source node.
+    dst: the destination node.
+  """
+  for annotation in dir(src):
+    if annotation.startswith(_NODE_ANNOTATION_PREFIX):
+      setattr(dst, annotation, getattr(src, annotation, None))
+
+
 def GetNodeAnnotation(node, annotation, default=None):
   """Get annotation value from a node.
 
@@ -257,6 +281,28 @@ def RemoveSubtypeAnnotation(node, value):
   if attr and value in attr:
     attr.remove(value)
     SetNodeAnnotation(node, Annotation.SUBTYPE, attr)
+
+
+def GetOpeningBracket(node):
+  """Get opening bracket value from a node.
+
+  Arguments:
+    node: the node.
+
+  Returns:
+    The opening bracket node or None if it couldn't find one.
+  """
+  return getattr(node, _NODE_ANNOTATION_PREFIX + 'container_bracket', None)
+
+
+def SetOpeningBracket(node, bracket):
+  """Set opening bracket value for a node.
+
+  Arguments:
+    node: the node.
+    bracket: opening bracket to set.
+  """
+  setattr(node, _NODE_ANNOTATION_PREFIX + 'container_bracket', bracket)
 
 
 def DumpNodeToString(node):

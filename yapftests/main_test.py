@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -113,12 +113,12 @@ class MainTest(unittest.TestCase):
 
   def testEchoInputWithStyle(self):
     code = 'def f(a = 1):\n    return 2*a\n'
-    chromium_code = 'def f(a=1):\n  return 2 * a\n'
+    yapf_code = 'def f(a=1):\n  return 2 * a\n'
     with patched_input(code):
       with captured_output() as (out, _):
-        ret = yapf.main(['-', '--style=chromium'])
+        ret = yapf.main(['-', '--style=yapf'])
         self.assertEqual(ret, 0)
-        self.assertEqual(out.getvalue(), chromium_code)
+        self.assertEqual(out.getvalue(), yapf_code)
 
   def testEchoBadInput(self):
     bad_syntax = '  a = 1\n'

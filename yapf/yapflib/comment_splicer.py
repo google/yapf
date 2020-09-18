@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ def SpliceComments(tree):
   _AnnotateIndents(tree)
 
   def _VisitNodeRec(node):
+    """Recursively visit each node to splice comments into the AST."""
     # This loop may insert into node.children, so we'll iterate over a copy.
     for child in node.children[:]:
       if isinstance(child, pytree.Node):
@@ -152,6 +153,16 @@ def SpliceComments(tree):
                 # parent to insert into. See comments above
                 # _STANDALONE_LINE_NODES for more details.
                 node_with_line_parent = _FindNodeWithStandaloneLineParent(child)
+
+                if pytree_utils.NodeName(
+                    node_with_line_parent.parent) in {'funcdef', 'classdef'}:
+                  # Keep a comment that's not attached to a function or class
+                  # next to the object it is attached to.
+                  comment_end = (
+                      comment_lineno + comment_prefix.rstrip('\n').count('\n'))
+                  if comment_end < node_with_line_parent.lineno - 1:
+                    node_with_line_parent = node_with_line_parent.parent
+
                 pytree_utils.InsertNodesBefore(
                     _CreateCommentsFromPrefix(
                         comment_prefix, comment_lineno, 0, standalone=True),
@@ -250,7 +261,7 @@ def _CreateCommentsFromPrefix(comment_prefix,
 # When splicing a standalone comment (i.e. a comment that appears on its own
 # line, not on the same line with other code), it's important to insert it into
 # an appropriate parent of the node it's attached to. An appropriate parent
-# is the first "standaline line node" in the parent chain of a node.
+# is the first "standalone line node" in the parent chain of a node.
 _STANDALONE_LINE_NODES = frozenset([
     'suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
     'funcdef', 'classdef', 'decorated', 'file_input'

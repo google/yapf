@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,6 +26,31 @@ from yapftests import utils
 
 class UtilsTest(unittest.TestCase):
 
+  def testContinuationAlignStyleStringConverter(self):
+    for cont_align_space in ('', 'space', '"space"', '\'space\''):
+      self.assertEqual(
+          style._ContinuationAlignStyleStringConverter(cont_align_space),
+          'SPACE')
+    for cont_align_fixed in ('fixed', '"fixed"', '\'fixed\''):
+      self.assertEqual(
+          style._ContinuationAlignStyleStringConverter(cont_align_fixed),
+          'FIXED')
+    for cont_align_valignright in (
+        'valign-right',
+        '"valign-right"',
+        '\'valign-right\'',
+        'valign_right',
+        '"valign_right"',
+        '\'valign_right\'',
+    ):
+      self.assertEqual(
+          style._ContinuationAlignStyleStringConverter(cont_align_valignright),
+          'VALIGN-RIGHT')
+    with self.assertRaises(ValueError) as ctx:
+      style._ContinuationAlignStyleStringConverter('blahblah')
+    self.assertIn("unknown continuation align style: 'blahblah'",
+                  str(ctx.exception))
+
   def testStringListConverter(self):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])
     self.assertEqual(style._StringListConverter('foo,bar'), ['foo', 'bar'])
@@ -39,30 +64,36 @@ class UtilsTest(unittest.TestCase):
     self.assertEqual(style._BoolConverter('false'), False)
     self.assertEqual(style._BoolConverter('0'), False)
 
+  def testIntListConverter(self):
+    self.assertEqual(style._IntListConverter('1, 2, 3'), [1, 2, 3])
+    self.assertEqual(style._IntListConverter('[ 1, 2, 3 ]'), [1, 2, 3])
+    self.assertEqual(style._IntListConverter('[ 1, 2, 3, ]'), [1, 2, 3])
 
-def _LooksLikeChromiumStyle(cfg):
-  return (cfg['INDENT_WIDTH'] == 2 and
-          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
+  def testIntOrIntListConverter(self):
+    self.assertEqual(style._IntOrIntListConverter('10'), 10)
+    self.assertEqual(style._IntOrIntListConverter('1, 2, 3'), [1, 2, 3])
 
 
 def _LooksLikeGoogleStyle(cfg):
-  return (cfg['INDENT_WIDTH'] == 4 and
-          cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
+  return cfg['COLUMN_LIMIT'] == 80 and cfg['SPLIT_COMPLEX_COMPREHENSION']
 
 
 def _LooksLikePEP8Style(cfg):
-  return (cfg['INDENT_WIDTH'] == 4 and
-          not cfg['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'])
+  return cfg['COLUMN_LIMIT'] == 79
 
 
 def _LooksLikeFacebookStyle(cfg):
-  return cfg['INDENT_WIDTH'] == 4 and cfg['DEDENT_CLOSING_BRACKETS']
+  return cfg['DEDENT_CLOSING_BRACKETS']
+
+
+def _LooksLikeYapfStyle(cfg):
+  return cfg['SPLIT_BEFORE_DOT']
 
 
 class PredefinedStylesByNameTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefault(self):
@@ -80,10 +111,10 @@ class PredefinedStylesByNameTest(unittest.TestCase):
       cfg = style.CreateStyleFromConfig(google_name)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
 
-  def testChromiumByName(self):
-    for chromium_name in ('chromium', 'Chromium', 'CHROMIUM'):
-      cfg = style.CreateStyleFromConfig(chromium_name)
-      self.assertTrue(_LooksLikeChromiumStyle(cfg))
+  def testYapfByName(self):
+    for yapf_name in ('yapf', 'YAPF'):
+      cfg = style.CreateStyleFromConfig(yapf_name)
+      self.assertTrue(_LooksLikeYapfStyle(cfg))
 
   def testFacebookByName(self):
     for fb_name in ('facebook', 'FACEBOOK', 'Facebook'):
@@ -94,12 +125,12 @@ class PredefinedStylesByNameTest(unittest.TestCase):
 class StyleFromFileTest(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     cls.test_tmpdir = tempfile.mkdtemp()
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   @classmethod
-  def tearDownClass(cls):
+  def tearDownClass(cls):  # pylint: disable=g-missing-super-call
     shutil.rmtree(cls.test_tmpdir)
 
   def testDefaultBasedOnStyle(self):
@@ -122,17 +153,6 @@ class StyleFromFileTest(unittest.TestCase):
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
-
-  def testDefaultBasedOnChromiumStyle(self):
-    cfg = textwrap.dedent(u'''\
-        [style]
-        based_on_style = chromium
-        continuation_indent_width = 30
-        ''')
-    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
-      cfg = style.CreateStyleFromConfig(filepath)
-      self.assertTrue(_LooksLikeChromiumStyle(cfg))
-      self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 30)
 
   def testDefaultBasedOnGoogleStyle(self):
     cfg = textwrap.dedent(u'''\
@@ -159,25 +179,25 @@ class StyleFromFileTest(unittest.TestCase):
   def testBoolOptionValue(self):
     cfg = textwrap.dedent(u'''\
         [style]
-        based_on_style = chromium
+        based_on_style = pep8
         SPLIT_BEFORE_NAMED_ASSIGNS=False
         split_before_logical_operator = true
         ''')
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
-      self.assertTrue(_LooksLikeChromiumStyle(cfg))
+      self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['SPLIT_BEFORE_NAMED_ASSIGNS'], False)
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
   def testStringListOptionValue(self):
     cfg = textwrap.dedent(u'''\
         [style]
-        based_on_style = chromium
+        based_on_style = pep8
         I18N_FUNCTION_CALL = N_, V_, T_
         ''')
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
-      self.assertTrue(_LooksLikeChromiumStyle(cfg))
+      self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
 
   def testErrorNoStyleFile(self):
@@ -210,7 +230,7 @@ class StyleFromFileTest(unittest.TestCase):
 class StyleFromDict(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefaultBasedOnStyle(self):
@@ -220,24 +240,22 @@ class StyleFromDict(unittest.TestCase):
         'blank_line_before_nested_class_or_def': True
     }
     cfg = style.CreateStyleFromConfig(config_dict)
-    self.assertTrue(_LooksLikeChromiumStyle(cfg))
+    self.assertTrue(_LooksLikePEP8Style(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnStyleBadDict(self):
     self.assertRaisesRegexp(style.StyleConfigError, 'Unknown style option',
-                            style.CreateStyleFromConfig, {
-                                'based_on_styl': 'pep8'
-                            })
+                            style.CreateStyleFromConfig,
+                            {'based_on_styl': 'pep8'})
     self.assertRaisesRegexp(style.StyleConfigError, 'not a valid',
-                            style.CreateStyleFromConfig, {
-                                'INDENT_WIDTH': 'FOUR'
-                            })
+                            style.CreateStyleFromConfig,
+                            {'INDENT_WIDTH': 'FOUR'})
 
 
 class StyleFromCommandLine(unittest.TestCase):
 
   @classmethod
-  def setUpClass(cls):
+  def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDefaultBasedOnStyle(self):
@@ -245,7 +263,7 @@ class StyleFromCommandLine(unittest.TestCase):
         '{based_on_style: pep8,'
         ' indent_width: 2,'
         ' blank_line_before_nested_class_or_def: True}')
-    self.assertTrue(_LooksLikeChromiumStyle(cfg))
+    self.assertTrue(_LooksLikePEP8Style(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnStyleNotStrict(self):
@@ -253,8 +271,16 @@ class StyleFromCommandLine(unittest.TestCase):
         '{based_on_style : pep8'
         ' ,indent_width=2'
         ' blank_line_before_nested_class_or_def:True}')
-    self.assertTrue(_LooksLikeChromiumStyle(cfg))
+    self.assertTrue(_LooksLikePEP8Style(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
+
+  def testDefaultBasedOnExplicitlyUnicodeTypeString(self):
+    cfg = style.CreateStyleFromConfig(u'{}')
+    self.assertIsInstance(cfg, dict)
+
+  def testDefaultBasedOnDetaultTypeString(self):
+    cfg = style.CreateStyleFromConfig('{}')
+    self.assertIsInstance(cfg, dict)
 
   def testDefaultBasedOnStyleBadString(self):
     self.assertRaisesRegexp(style.StyleConfigError, 'Unknown style option',

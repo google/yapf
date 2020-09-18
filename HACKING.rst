@@ -5,7 +5,7 @@ To run YAPF on all of YAPF::
 
  $ PYTHONPATH=$PWD/yapf python -m yapf -i -r .
 
-To run YAPF on just the files changed in the curent git branch::
+To run YAPF on just the files changed in the current git branch::
 
  $ PYTHONPATH=$PWD/yapf python -m yapf -i $(git diff --name-only @{upstream})
 
@@ -13,7 +13,7 @@ Releasing a new version
 -----------------------
 
 * Run tests: python setup.py test
-  [don't forget to run with Python 2.7 and 3.4]
+  [don't forget to run with Python 2.7 and 3.6]
 
 * Bump version in yapf/__init__.py
 

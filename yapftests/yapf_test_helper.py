@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import unittest
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
+from yapf.yapflib import identify_container
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
@@ -74,6 +75,7 @@ def ParseAndUnwrap(code, dumptree=False):
   comment_splicer.SpliceComments(tree)
   continuation_splicer.SpliceContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
+  identify_container.IdentifyContainers(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)
 

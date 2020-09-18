@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,16 +73,23 @@ def Reformat(uwlines, verify=False, lines=None):
       if any(tok.is_comment for tok in uwline.tokens):
         _RetainVerticalSpacingBeforeComments(uwline)
 
-    if (_LineContainsI18n(uwline) or uwline.disable or
-        _LineHasContinuationMarkers(uwline)):
+    if uwline.disable or _LineHasContinuationMarkers(uwline):
       _RetainHorizontalSpacing(uwline)
       _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
       _EmitLineUnformatted(state)
+
+    elif (_LineContainsPylintDisableLineTooLong(uwline) or
+          _LineContainsI18n(uwline)):
+      # Don't modify vertical spacing, but fix any horizontal spacing issues.
+      _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
+      _EmitLineUnformatted(state)
+
     elif _CanPlaceOnSingleLine(uwline) and not any(tok.must_split
                                                    for tok in uwline.tokens):
       # The unwrapped line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
+
     else:
       if not _AnalyzeSolutionSpace(state):
         # Failsafe mode. If there isn't a solution to the line, then just emit
@@ -95,6 +102,8 @@ def Reformat(uwlines, verify=False, lines=None):
 
     final_lines.append(uwline)
     prev_uwline = uwline
+
+  _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
 
 
@@ -105,12 +114,23 @@ def _RetainHorizontalSpacing(uwline):
 
 
 def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
+  """Retain all vertical spacing between lines."""
+  if cur_uwline.disable and (not prev_uwline or prev_uwline.disable):
+    # If both lines are disabled we aren't allowed to reformat anything.
+    lines = set()
+
   prev_tok = None
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
+
   for cur_tok in cur_uwline.tokens:
     _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines)
+
     prev_tok = cur_tok
+    if cur_uwline.disable:
+      # After the first token we are acting on a single line. So if it is
+      # disabled we must not reformat.
+      lines = set()
 
 
 def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
@@ -133,7 +153,7 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
   else:
     cur_lineno = cur_tok.lineno
 
-  if prev_tok.value.endswith('\\'):
+  if not prev_tok.is_comment and prev_tok.value.endswith('\\'):
     prev_lineno += prev_tok.value.count('\n')
 
   required_newlines = cur_lineno - prev_lineno
@@ -173,7 +193,6 @@ def _EmitLineUnformatted(state):
     state: (format_decision_state.FormatDecisionState) The format decision
       state.
   """
-  prev_lineno = None
   while state.next_token:
     previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
@@ -184,10 +203,8 @@ def _EmitLineUnformatted(state):
     if previous_token.is_continuation:
       newline = False
     else:
-      newline = (
-          prev_lineno is not None and state.next_token.lineno > previous_lineno)
+      newline = state.next_token.lineno > previous_lineno
 
-    prev_lineno = state.next_token.lineno
     state.AddTokenToState(newline=newline, dry_run=False)
 
 
@@ -221,6 +238,11 @@ def _LineContainsI18n(uwline):
   return False
 
 
+def _LineContainsPylintDisableLineTooLong(uwline):
+  """Return true if there is a "pylint: disable=line-too-long" comment."""
+  return re.search(r'\bpylint:\s+disable=line-too-long\b', uwline.last.value)
+
+
 def _LineHasContinuationMarkers(uwline):
   """Return true if the line has continuation markers in it."""
   return any(tok.is_continuation for tok in uwline.tokens)
@@ -235,16 +257,148 @@ def _CanPlaceOnSingleLine(uwline):
   Returns:
     True if the line can or should be added to a single line. False otherwise.
   """
+  token_names = [x.name for x in uwline.tokens]
+  if (style.Get('FORCE_MULTILINE_DICT') and 'LBRACE' in token_names):
+    return False
   indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
   last = uwline.last
   last_index = -1
-  if last.is_pylint_comment:
+  if last.is_pylint_comment or last.is_pytype_comment:
     last = last.previous_token
     last_index = -2
   if last is None:
     return True
   return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
           not any(tok.is_comment for tok in uwline.tokens[:last_index]))
+
+
+def _AlignTrailingComments(final_lines):
+  """Align trailing comments to the same column."""
+  final_lines_index = 0
+  while final_lines_index < len(final_lines):
+    line = final_lines[final_lines_index]
+    assert line.tokens
+
+    processed_content = False
+
+    for tok in line.tokens:
+      if (tok.is_comment and isinstance(tok.spaces_required_before, list) and
+          tok.value.startswith('#')):
+        # All trailing comments and comments that appear on a line by themselves
+        # in this block should be indented at the same level. The block is
+        # terminated by an empty line or EOF. Enumerate through each line in
+        # the block and calculate the max line length. Once complete, use the
+        # first col value greater than that value and create the necessary for
+        # each line accordingly.
+        all_pc_line_lengths = []  # All pre-comment line lengths
+        max_line_length = 0
+
+        while True:
+          # EOF
+          if final_lines_index + len(all_pc_line_lengths) == len(final_lines):
+            break
+
+          this_line = final_lines[final_lines_index + len(all_pc_line_lengths)]
+
+          # Blank line - note that content is preformatted so we don't need to
+          # worry about spaces/tabs; a blank line will always be '\n\n'.
+          assert this_line.tokens
+          if (all_pc_line_lengths and
+              this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
+             ):
+            break
+
+          if this_line.disable:
+            all_pc_line_lengths.append([])
+            continue
+
+          # Calculate the length of each line in this unwrapped line.
+          line_content = ''
+          pc_line_lengths = []
+
+          for line_tok in this_line.tokens:
+            whitespace_prefix = line_tok.formatted_whitespace_prefix
+
+            newline_index = whitespace_prefix.rfind('\n')
+            if newline_index != -1:
+              max_line_length = max(max_line_length, len(line_content))
+              line_content = ''
+
+              whitespace_prefix = whitespace_prefix[newline_index + 1:]
+
+            if line_tok.is_comment:
+              pc_line_lengths.append(len(line_content))
+            else:
+              line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
+
+          if pc_line_lengths:
+            max_line_length = max(max_line_length, max(pc_line_lengths))
+
+          all_pc_line_lengths.append(pc_line_lengths)
+
+        # Calculate the aligned column value
+        max_line_length += 2
+
+        aligned_col = None
+        for potential_col in tok.spaces_required_before:
+          if potential_col > max_line_length:
+            aligned_col = potential_col
+            break
+
+        if aligned_col is None:
+          aligned_col = max_line_length
+
+        # Update the comment token values based on the aligned values
+        for all_pc_line_lengths_index, pc_line_lengths in enumerate(
+            all_pc_line_lengths):
+          if not pc_line_lengths:
+            continue
+
+          this_line = final_lines[final_lines_index + all_pc_line_lengths_index]
+
+          pc_line_length_index = 0
+          for line_tok in this_line.tokens:
+            if line_tok.is_comment:
+              assert pc_line_length_index < len(pc_line_lengths)
+              assert pc_line_lengths[pc_line_length_index] < aligned_col
+
+              # Note that there may be newlines embedded in the comments, so
+              # we need to apply a whitespace prefix to each line.
+              whitespace = ' ' * (
+                  aligned_col - pc_line_lengths[pc_line_length_index] - 1)
+              pc_line_length_index += 1
+
+              line_content = []
+
+              for comment_line_index, comment_line in enumerate(
+                  line_tok.value.split('\n')):
+                line_content.append('{}{}'.format(whitespace,
+                                                  comment_line.strip()))
+
+                if comment_line_index == 0:
+                  whitespace = ' ' * (aligned_col - 1)
+
+              line_content = '\n'.join(line_content)
+
+              # Account for initial whitespace already slated for the
+              # beginning of the line.
+              existing_whitespace_prefix = \
+                line_tok.formatted_whitespace_prefix.lstrip('\n')
+
+              if line_content.startswith(existing_whitespace_prefix):
+                line_content = line_content[len(existing_whitespace_prefix):]
+
+              line_tok.value = line_content
+
+          assert pc_line_length_index == len(pc_line_lengths)
+
+        final_lines_index += len(all_pc_line_lengths)
+
+        processed_content = True
+        break
+
+    if not processed_content:
+      final_lines_index += 1
 
 
 def _FormatFinalLines(final_lines, verify):
@@ -254,7 +408,7 @@ def _FormatFinalLines(final_lines, verify):
     formatted_line = []
     for tok in line.tokens:
       if not tok.is_pseudo_paren:
-        formatted_line.append(tok.whitespace_prefix)
+        formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
       else:
         if (not tok.next_token.whitespace_prefix.startswith('\n') and
@@ -409,6 +563,9 @@ def _ReconstructPath(initial_state, current):
     initial_state.AddTokenToState(newline=node.newline, dry_run=False)
 
 
+NESTED_DEPTH = []
+
+
 def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
   """Format the first token in the unwrapped line.
 
@@ -424,9 +581,21 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
     final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
       that have already been processed.
   """
+  global NESTED_DEPTH
+  while NESTED_DEPTH and NESTED_DEPTH[-1] > indent_depth:
+    NESTED_DEPTH.pop()
+
+  first_nested = False
+  if _IsClassOrDef(first_token):
+    if not NESTED_DEPTH:
+      NESTED_DEPTH = [indent_depth]
+    elif NESTED_DEPTH[-1] < indent_depth:
+      first_nested = True
+      NESTED_DEPTH.append(indent_depth)
+
   first_token.AddWhitespacePrefix(
       _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
-                                 final_lines),
+                                 final_lines, first_nested),
       indent_level=indent_depth)
 
 
@@ -435,15 +604,15 @@ ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
-def _IsClassOrDef(uwline):
-  if uwline.first.value in {'class', 'def'}:
+def _IsClassOrDef(tok):
+  if tok.value in {'class', 'def', '@'}:
     return True
-
-  return (t.name for t in uwline.tokens[:2]) == ('async', 'def')
+  return (tok.next_token and tok.value == 'async' and
+          tok.next_token.value == 'def')
 
 
 def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
-                               final_lines):
+                               final_lines, first_nested):
   """Calculate the number of newlines we need to add.
 
   Arguments:
@@ -454,6 +623,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
       previous to this line.
     final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
       that have already been processed.
+    first_nested: (boolean) Whether this is the first nested class or function.
 
   Returns:
     The number of newlines needed before the first token.
@@ -473,22 +643,40 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
         style.Get('BLANK_LINE_BEFORE_CLASS_DOCSTRING')):
       # Enforce a blank line before a class's docstring.
       return ONE_BLANK_LINE
+    elif (prev_uwline.first.value.startswith('#') and
+          style.Get('BLANK_LINE_BEFORE_MODULE_DOCSTRING')):
+      # Enforce a blank line before a module's docstring.
+      return ONE_BLANK_LINE
     # The docstring shouldn't have a newline before it.
     return NO_BLANK_LINES
+
+  if first_token.is_name and not indent_depth:
+    if (prev_uwline.first.value == 'from' or
+        prev_uwline.first.value == 'import'):
+      # Support custom number of blank lines between top-level imports and
+      # variable definitions.
+      return 1 + style.Get(
+          'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES')
 
   prev_last_token = prev_uwline.last
   if prev_last_token.is_docstring:
     if (not indent_depth and first_token.value in {'class', 'def', 'async'}):
-      # Separate a class or function from the module-level docstring with two
-      # blank lines.
-      return TWO_BLANK_LINES
+      # Separate a class or function from the module-level docstring with
+      # appropriate number of blank lines.
+      return 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION')
+    if (first_nested and
+        not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF') and
+        _IsClassOrDef(first_token)):
+      pytree_utils.SetNodeAnnotation(first_token.node,
+                                     pytree_utils.Annotation.NEWLINES, None)
+      return NO_BLANK_LINES
     if _NoBlankLinesBeforeCurrentToken(prev_last_token.value, first_token,
                                        prev_last_token):
       return NO_BLANK_LINES
     else:
       return ONE_BLANK_LINE
 
-  if first_token.value in {'class', 'def', 'async', '@'}:
+  if _IsClassOrDef(first_token):
     # TODO(morbo): This can go once the blank line calculator is more
     # sophisticated.
     if not indent_depth:
@@ -509,13 +697,16 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
           if final_lines[index - 1].first.value == '@':
             final_lines[index].first.AdjustNewlinesBefore(NO_BLANK_LINES)
           else:
-            prev_last_token.AdjustNewlinesBefore(TWO_BLANK_LINES)
+            prev_last_token.AdjustNewlinesBefore(
+                1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION'))
           if first_token.newlines is not None:
-            pytree_utils.SetNodeAnnotation(
-                first_token.node, pytree_utils.Annotation.NEWLINES, None)
+            pytree_utils.SetNodeAnnotation(first_token.node,
+                                           pytree_utils.Annotation.NEWLINES,
+                                           None)
           return NO_BLANK_LINES
-    elif _IsClassOrDef(prev_uwline):
-      if not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
+    elif _IsClassOrDef(prev_uwline.first):
+      if first_nested and not style.Get(
+          'BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         pytree_utils.SetNodeAnnotation(first_token.node,
                                        pytree_utils.Annotation.NEWLINES, None)
         return NO_BLANK_LINES

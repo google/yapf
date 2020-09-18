@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ from lib2to3 import pytree
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
+from yapf.yapflib import style
+
+from yapftests import yapf_test_helper
 
 UNBREAKABLE = split_penalty.UNBREAKABLE
 VERY_STRONGLY_CONNECTED = split_penalty.VERY_STRONGLY_CONNECTED
@@ -29,7 +32,11 @@ DOTTED_NAME = split_penalty.DOTTED_NAME
 STRONGLY_CONNECTED = split_penalty.STRONGLY_CONNECTED
 
 
-class SplitPenaltyTest(unittest.TestCase):
+class SplitPenaltyTest(yapf_test_helper.YAPFTest):
+
+  @classmethod
+  def setUpClass(cls):
+    style.SetGlobalStyle(style.CreateYapfStyle())
 
   def _ParseAndComputePenalties(self, code, dumptree=False):
     """Parses the code and computes split penalties.
@@ -133,11 +140,11 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('lambda', None),
-        ('a', UNBREAKABLE),
-        (',', UNBREAKABLE),
-        ('b', UNBREAKABLE),
-        (':', UNBREAKABLE),
-        ('None', UNBREAKABLE),
+        ('a', VERY_STRONGLY_CONNECTED),
+        (',', VERY_STRONGLY_CONNECTED),
+        ('b', VERY_STRONGLY_CONNECTED),
+        (':', VERY_STRONGLY_CONNECTED),
+        ('None', VERY_STRONGLY_CONNECTED),
     ])
 
     # Test dotted names.
@@ -174,9 +181,9 @@ class SplitPenaltyTest(unittest.TestCase):
         ('y', None),
         ('(', UNBREAKABLE),
         ('lambda', STRONGLY_CONNECTED),
-        ('a', UNBREAKABLE),
-        (':', UNBREAKABLE),
-        ('23', UNBREAKABLE),
+        ('a', VERY_STRONGLY_CONNECTED),
+        (':', VERY_STRONGLY_CONNECTED),
+        ('23', VERY_STRONGLY_CONNECTED),
         (')', VERY_STRONGLY_CONNECTED),
         (':', STRONGLY_CONNECTED),
         ('37', None),
@@ -198,7 +205,7 @@ class SplitPenaltyTest(unittest.TestCase):
         ('foo', STRONGLY_CONNECTED),
         ('if', 0),
         ('a', STRONGLY_CONNECTED),
-        ('.', UNBREAKABLE),
+        ('.', VERY_STRONGLY_CONNECTED),
         ('x', DOTTED_NAME),
         ('==', STRONGLY_CONNECTED),
         ('37', STRONGLY_CONNECTED),
@@ -224,9 +231,9 @@ class SplitPenaltyTest(unittest.TestCase):
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('foo', None),
-        ('.', UNBREAKABLE),
+        ('.', VERY_STRONGLY_CONNECTED),
         ('bar', DOTTED_NAME),
-        ('.', STRONGLY_CONNECTED),
+        ('.', VERY_STRONGLY_CONNECTED),
         ('baz', DOTTED_NAME),
         ('(', STRONGLY_CONNECTED),
         ('1', None),
