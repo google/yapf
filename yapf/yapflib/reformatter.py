@@ -115,10 +115,6 @@ def _RetainHorizontalSpacing(uwline):
 
 def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
   """Retain all vertical spacing between lines."""
-  if cur_uwline.disable and (not prev_uwline or prev_uwline.disable):
-    # If both lines are disabled we aren't allowed to reformat anything.
-    lines = set()
-
   prev_tok = None
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
@@ -160,7 +156,7 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
   if cur_tok.is_comment and not prev_tok.is_comment:
     # Don't adjust between a comment and non-comment.
     pass
-  elif lines and (cur_lineno in lines or prev_lineno in lines):
+  elif lines and lines.intersection(range(prev_lineno, cur_lineno + 1)):
     desired_newlines = cur_tok.whitespace_prefix.count('\n')
     whitespace_lines = range(prev_lineno + 1, cur_lineno)
     deletable_lines = len(lines.intersection(whitespace_lines))
