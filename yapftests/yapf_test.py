@@ -1016,6 +1016,29 @@ x = {
         expected_formatted_code,
         extra_options=['--lines', '4-7'])
 
+  def testRetainVerticalFormattingBetweenDisabledLines(self):
+    unformatted_code = textwrap.dedent("""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                pass
+
+
+            def bbbbbbbbbbbbb(self):  # 5
+                pass
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        class A(object):
+            def aaaaaaaaaaaaa(self):
+                pass
+
+            def bbbbbbbbbbbbb(self):  # 5
+                pass
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '4-4'])
+
   def testFormatLinesSpecifiedInMiddleOfExpression(self):
     unformatted_code = textwrap.dedent("""\
         class A(object):
