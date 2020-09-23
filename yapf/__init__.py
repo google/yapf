@@ -58,7 +58,7 @@ def main(argv):
     YapfError: if none of the supplied files were Python files.
   """
   parser = _BuildParser()
-  parser.parse_args(argv[1:])
+  args = parser.parse_args(argv[1:])
   if args.version:
     print('yapf {}'.format(__version__))
     return 0
