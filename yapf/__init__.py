@@ -57,7 +57,8 @@ def main(argv):
   Raises:
     YapfError: if none of the supplied files were Python files.
   """
-  args = _ParseArguments(argv)
+  parser = _BuildParser()
+  args = parser.parse_args(argv[1:])
   if args.version:
     print('yapf {}'.format(__version__))
     return 0
@@ -65,7 +66,7 @@ def main(argv):
   style_config = args.style
 
   if args.style_help:
-    print_help(args)
+    _PrintHelp(args)
     return 0
 
   if args.lines and len(args.files) > 1:
@@ -136,7 +137,7 @@ def main(argv):
   return 1 if changed and (args.diff or args.quiet) else 0
 
 
-def print_help(args):
+def _PrintHelp(args):
   """Prints the help menu."""
 
   if args.style is None and not args.no_local_style:
@@ -268,15 +269,11 @@ def _GetLines(line_strings):
   return lines
 
 
-def _ParseArguments(argv):
-  """Parse the command line arguments.
-
-  Arguments:
-    argv: command-line arguments, such as sys.argv (including the program name
-      in argv[0]).
+def _BuildParser():
+  """Constructs the parser for the command line arguments.
 
   Returns:
-    An object containing the arguments used to invoke the program.
+    An ArgumentParser instance for the CLI.
   """
   parser = argparse.ArgumentParser(description='Formatter for Python code.')
   parser.add_argument(
@@ -357,7 +354,7 @@ def _ParseArguments(argv):
 
   parser.add_argument(
       'files', nargs='*', help='reads from stdin when no files are specified.')
-  return parser.parse_args(argv[1:])
+  return parser
 
 
 def run_main():  # pylint: disable=invalid-name
