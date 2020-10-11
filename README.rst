@@ -321,6 +321,42 @@ The ``in_place`` argument saves the reformatted code back to the file:
     >>> print(open("foo.py").read())  # contents of file (now fixed)
     a == b
 
+Formatting diffs
+================
+
+Options::
+
+    usage: yapf-diff [-h] [-i] [-p NUM] [--regex PATTERN] [--iregex PATTERN][-v]
+                     [--style STYLE] [--binary BINARY]
+
+    This script reads input from a unified diff and reformats all the changed
+    lines. This is useful to reformat all the lines touched by a specific patch.
+    Example usage for git/svn users:
+
+      git diff -U0 --no-color --relative HEAD^ | yapf-diff -i
+      svn diff --diff-cmd=diff -x-U0 | yapf-diff -p0 -i
+
+    It should be noted that the filename contained in the diff is used
+    unmodified to determine the source file to update. Users calling this script
+    directly should be careful to ensure that the path in the diff is correct
+    relative to the current working directory.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -i, --in-place        apply edits to files instead of displaying a diff
+      -p NUM, --prefix NUM  strip the smallest prefix containing P slashes
+      --regex PATTERN       custom pattern selecting file paths to reformat
+                            (case sensitive, overrides -iregex)
+      --iregex PATTERN      custom pattern selecting file paths to reformat
+                            (case insensitive, overridden by -regex)
+      -v, --verbose         be more verbose, ineffective without -i
+      --style STYLE         specify formatting style: either a style name (for
+                            example "pep8" or "google"), or the name of a file
+                            with style settings. The default is pep8 unless a
+                            .style.yapf or setup.cfg file located in one of the
+                            parent directories of the source file (or current
+                            directory for stdin)
+      --binary BINARY       location of binary to use for yapf
 
 Knobs
 =====
