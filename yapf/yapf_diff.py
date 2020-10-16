@@ -9,7 +9,6 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
 #===------------------------------------------------------------------------===#
-
 """
 This script reads input from a unified diff and reformats all the changed
 lines. This is useful to reformat all the lines touched by a specific patch.
@@ -32,36 +31,53 @@ import subprocess
 import sys
 
 if sys.version_info.major >= 3:
-    from io import StringIO
+  from io import StringIO
 else:
-    from io import BytesIO as StringIO
+  from io import BytesIO as StringIO
 
 
 def main():
-  parser = argparse.ArgumentParser(description=__doc__,
-                                   formatter_class=
-                                           argparse.RawDescriptionHelpFormatter)
-  parser.add_argument('-i', '--in-place', action='store_true', default=False,
-                      help='apply edits to files instead of displaying a diff')
-  parser.add_argument('-p', '--prefix', metavar='NUM', default=1,
-                      help='strip the smallest prefix containing P slashes')
-  parser.add_argument('--regex', metavar='PATTERN', default=None,
-                      help='custom pattern selecting file paths to reformat '
-                      '(case sensitive, overrides -iregex)')
-  parser.add_argument('--iregex', metavar='PATTERN', default=r'.*\.(py)',
-                      help='custom pattern selecting file paths to reformat '
-                      '(case insensitive, overridden by -regex)')
-  parser.add_argument('-v', '--verbose', action='store_true',
-                      help='be more verbose, ineffective without -i')
-  parser.add_argument('--style',
-                      help='specify formatting style: either a style name (for '
-                      'example "pep8" or "google"), or the name of a file with '
-                      'style settings. The default is pep8 unless a '
-                      '.style.yapf or setup.cfg file located in one of the '
-                      'parent directories of the source file (or current '
-                      'directory for stdin)')
-  parser.add_argument('--binary', default='yapf',
-                      help='location of binary to use for yapf')
+  parser = argparse.ArgumentParser(
+      description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+  parser.add_argument(
+      '-i',
+      '--in-place',
+      action='store_true',
+      default=False,
+      help='apply edits to files instead of displaying a diff')
+  parser.add_argument(
+      '-p',
+      '--prefix',
+      metavar='NUM',
+      default=1,
+      help='strip the smallest prefix containing P slashes')
+  parser.add_argument(
+      '--regex',
+      metavar='PATTERN',
+      default=None,
+      help='custom pattern selecting file paths to reformat '
+      '(case sensitive, overrides -iregex)')
+  parser.add_argument(
+      '--iregex',
+      metavar='PATTERN',
+      default=r'.*\.(py)',
+      help='custom pattern selecting file paths to reformat '
+      '(case insensitive, overridden by -regex)')
+  parser.add_argument(
+      '-v',
+      '--verbose',
+      action='store_true',
+      help='be more verbose, ineffective without -i')
+  parser.add_argument(
+      '--style',
+      help='specify formatting style: either a style name (for '
+      'example "pep8" or "google"), or the name of a file with '
+      'style settings. The default is pep8 unless a '
+      '.style.yapf or setup.cfg file located in one of the '
+      'parent directories of the source file (or current '
+      'directory for stdin)')
+  parser.add_argument(
+      '--binary', default='yapf', help='location of binary to use for yapf')
   args = parser.parse_args()
 
   # Extract changed lines for each file.
@@ -103,11 +119,12 @@ def main():
     command.extend(lines)
     if args.style:
       command.extend(['--style', args.style])
-    p = subprocess.Popen(command,
-                         stdout=subprocess.PIPE,
-                         stderr=None,
-                         stdin=subprocess.PIPE,
-                         universal_newlines=True)
+    p = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=None,
+        stdin=subprocess.PIPE,
+        universal_newlines=True)
     stdout, stderr = p.communicate()
     if p.returncode != 0:
       sys.exit(p.returncode)
@@ -116,12 +133,12 @@ def main():
       with open(filename) as f:
         code = f.readlines()
       formatted_code = StringIO(stdout).readlines()
-      diff = difflib.unified_diff(code, formatted_code,
-                                  filename, filename,
+      diff = difflib.unified_diff(code, formatted_code, filename, filename,
                                   '(before formatting)', '(after formatting)')
       diff_string = ''.join(diff)
       if len(diff_string) > 0:
         sys.stdout.write(diff_string)
+
 
 if __name__ == '__main__':
   main()
