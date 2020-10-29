@@ -67,7 +67,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       entry_points={
           'console_scripts': [
               'yapf = yapf:run_main',
-              'yapf-diff = yapf.yapf_diff:main',
+              'yapf-diff = yapf.third_party.yapf_diff.yapf_diff:main',
           ],
       },
       cmdclass={
