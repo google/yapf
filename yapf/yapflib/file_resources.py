@@ -154,6 +154,7 @@ def _FindPythonFiles(filenames, recursive, exclude):
   """Find all Python files."""
   if exclude and any(e.startswith('./') for e in exclude):
     raise errors.YapfError("path in '--exclude' should not start with ./")
+  exclude = exclude and [e.rstrip("/" + os.path.sep) for e in exclude]
 
   python_files = []
   for filename in filenames:
