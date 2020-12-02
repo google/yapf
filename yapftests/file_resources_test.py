@@ -152,8 +152,8 @@ class GetCommandLineFilesTest(unittest.TestCase):
     self.old_dir = os.getcwd()
 
   def tearDown(self):  # pylint: disable=g-missing-super-call
-    shutil.rmtree(self.test_tmpdir)
     os.chdir(self.old_dir)
+    shutil.rmtree(self.test_tmpdir)
 
   def _make_test_dir(self, name):
     fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
