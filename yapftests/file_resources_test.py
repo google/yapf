@@ -152,8 +152,8 @@ class GetCommandLineFilesTest(unittest.TestCase):
     self.old_dir = os.getcwd()
 
   def tearDown(self):  # pylint: disable=g-missing-super-call
-    shutil.rmtree(self.test_tmpdir)
     os.chdir(self.old_dir)
+    shutil.rmtree(self.test_tmpdir)
 
   def _make_test_dir(self, name):
     fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
@@ -313,7 +313,8 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                                'test2/testinner/',
                                            ]))
 
-    self.assertEqual(found, ['test3/foo/bar/bas/xxx/testfile3.py'])
+    self.assertEqual(
+        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace("/", os.path.sep)])
 
     found = sorted(
         file_resources.GetCommandLineFiles(['.'],
@@ -323,7 +324,8 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                                'test3',
                                            ]))
 
-    self.assertEqual(found, ['./test2/testinner/testfile2.py'])
+    self.assertEqual(
+        found, ['./test2/testinner/testfile2.py'.replace("/", os.path.sep)])
 
   def test_find_with_excluded_current_dir(self):
     with self.assertRaises(errors.YapfError):
@@ -386,7 +388,7 @@ class IsIgnoredTest(unittest.TestCase):
 
   def test_trailing_slash(self):
     self.assertTrue(file_resources.IsIgnored('z', ['z']))
-    self.assertTrue(file_resources.IsIgnored('z', ['z/']))
+    self.assertTrue(file_resources.IsIgnored('z', ['z' + os.path.sep]))
 
 
 class BufferedByteStream(object):
