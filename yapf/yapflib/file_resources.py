@@ -187,10 +187,10 @@ def _FindPythonFiles(filenames, recursive, exclude):
 
 def IsIgnored(path, exclude):
   """Return True if filename matches any patterns in exclude."""
-  path = path.lstrip('/')
-  while path.startswith('./'):
+  path = path.lstrip(os.path.sep)
+  while path.startswith('.' + os.path.sep):
     path = path[2:]
-  return any(fnmatch.fnmatch(path, e.rstrip('/')) for e in exclude)
+  return any(fnmatch.fnmatch(path, e.rstrip(os.path.sep)) for e in exclude)
 
 
 def IsPythonFile(filename):
