@@ -7,6 +7,8 @@
 - Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
   a custom number of blank lines between top-level imports and variable
   definitions.
+### Fixed
+- Exclude directories on Windows.
 
 ## [0.30.0] 2020-04-23
 ### Added
