@@ -166,7 +166,10 @@ class _():
   def _():
     X = (
         _ares_label_prefix +
-        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')  # pylint: disable=line-too-long
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'  # pylint: disable=line-too-long
+        'PyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyType'  # pytype: disable=attribute-error
+        'CopybaraCopybaraCopybaraCopybaraCopybaraCopybaraCopybaraCopybaraCopybara'  # copybara:strip
+    )
 """
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))

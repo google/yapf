@@ -7,6 +7,7 @@
 - Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
   a custom number of blank lines between top-level imports and variable
   definitions.
+- Ignore end of line `# copybara:` directives when checking line length.
 ### Fixed
 - Exclude directories on Windows.
 
