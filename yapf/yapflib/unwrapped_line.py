@@ -366,9 +366,9 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     if lval == '**' or rval == '**':
       # Space around the "power" operator.
       return style.Get('SPACES_AROUND_POWER_OPERATOR')
-    # Enforce spaces around binary operators except the blacklisted ones.
-    blacklist = style.Get('NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS')
-    if lval in blacklist or rval in blacklist:
+    # Enforce spaces around binary operators except the blocked ones.
+    block_list = style.Get('NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS')
+    if lval in block_list or rval in block_list:
       return False
     if style.Get('ARITHMETIC_PRECEDENCE_INDICATION'):
       if _PriorityIndicatingNoSpace(left) or _PriorityIndicatingNoSpace(right):
