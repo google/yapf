@@ -20,6 +20,8 @@ import sys
 
 PY3 = sys.version_info[0] >= 3
 PY36 = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
+PY37 = sys.version_info[0] >= 3 and sys.version_info[1] >= 7
+PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8
 
 if PY3:
   StringIO = io.StringIO
