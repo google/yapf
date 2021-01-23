@@ -6,12 +6,12 @@ YAPF
     :target: https://badge.fury.io/py/yapf
     :alt: PyPI version
 
-.. image:: https://travis-ci.org/google/yapf.svg?branch=master
+.. image:: https://travis-ci.org/google/yapf.svg?branch=main
     :target: https://travis-ci.org/google/yapf
     :alt: Build status
 
-.. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=master
-    :target: https://coveralls.io/r/google/yapf?branch=master
+.. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=main
+    :target: https://coveralls.io/r/google/yapf?branch=main
     :alt: Coverage status
 
 
@@ -179,7 +179,7 @@ custom style is based on (think of it like subclassing). Four
 styles are predefined: ``pep8`` (default), ``google``, ``yapf``, and ``facebook``
 (see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
 
-.. _style.py: https://github.com/google/yapf/blob/master/yapf/yapflib/style.py#L445
+.. _style.py: https://github.com/google/yapf/blob/main/yapf/yapflib/style.py#L445
 
 It's also possible to do the same on the command line with a dictionary. For
 example:

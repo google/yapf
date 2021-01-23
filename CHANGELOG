@@ -4,6 +4,7 @@
 
 ## [0.31.0] UNRELEASED
 ### Added
+- Renamed 'master' brannch to 'main'.
 - Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
   a custom number of blank lines between top-level imports and variable
   definitions.

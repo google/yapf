@@ -65,7 +65,7 @@ directory:
 .. code-block:: bash
 
     # From the root of your git project.
-    curl -o pre-commit.sh https://raw.githubusercontent.com/google/yapf/master/plugins/pre-commit.sh
+    curl -o pre-commit.sh https://raw.githubusercontent.com/google/yapf/main/plugins/pre-commit.sh
     chmod a+x pre-commit.sh
     mv pre-commit.sh .git/hooks/pre-commit
 
