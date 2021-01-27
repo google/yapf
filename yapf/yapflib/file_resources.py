@@ -21,6 +21,7 @@ import fnmatch
 import os
 import re
 
+import toml
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
@@ -67,7 +68,7 @@ def GetExcludePatternsForDir(dirname):
 def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
   """Return default style name for a given directory.
 
-  Looks for .style.yapf or setup.cfg in the parent directories.
+  Looks for .style.yapf or setup.cfg or pyproject.toml in the parent directories.
 
   Arguments:
     dirname: (unicode) The name of the directory.
@@ -96,6 +97,19 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
         config.read_file(fd)
         if config.has_section('yapf'):
           return config_file
+
+    # See if we have a pyproject.toml file with a '[tool.yapf]'  section.
+    config_file = os.path.join(dirname, style.PYPROJECT_TOML)
+    try:
+      fd = open(config_file)
+    except IOError:
+      pass  # It's okay if it's not there.
+    else:
+      with fd:
+        pyproject_toml = toml.load(config_file)
+        style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
+        if style_dict is not None:
+            return config_file
 
     if (not dirname or not os.path.basename(dirname) or
         dirname == os.path.abspath(os.path.sep)):

@@ -17,6 +17,8 @@ import os
 import re
 import textwrap
 
+import toml
+
 from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 
@@ -742,20 +744,30 @@ def _CreateConfigParserFromConfigFile(config_filename):
         '"{0}" is not a valid style or file path'.format(config_filename))
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
-    config.read_file(style_file)
-    if config_filename.endswith(SETUP_CONFIG):
-      if not config.has_section('yapf'):
-        raise StyleConfigError(
-            'Unable to find section [yapf] in {0}'.format(config_filename))
-    elif config_filename.endswith(LOCAL_STYLE):
-      if not config.has_section('style'):
-        raise StyleConfigError(
-            'Unable to find section [style] in {0}'.format(config_filename))
+    if config_filename.endswith(PYPROJECT_TOML):
+      pyproject_toml = toml.load(style_file)
+      style_dict = pyproject_toml.get("tool", {}).get("yapf", {})
+      config.add_section('style')
+      for k, v in style_dict.items():
+        config.set('style', k, str(v))
+      return config
     else:
-      if not config.has_section('style'):
-        raise StyleConfigError(
-            'Unable to find section [style] in {0}'.format(config_filename))
-    return config
+      config.read_file(style_file)
+      if config_filename.endswith(SETUP_CONFIG):
+        if not config.has_section('yapf'):
+          raise StyleConfigError(
+              'Unable to find section [yapf] in {0}'.format(config_filename))
+        return config
+      elif config_filename.endswith(LOCAL_STYLE):
+        if not config.has_section('style'):
+          raise StyleConfigError(
+              'Unable to find section [style] in {0}'.format(config_filename))
+        return config
+      else:
+        if not config.has_section('style'):
+          raise StyleConfigError(
+              'Unable to find section [style] in {0}'.format(config_filename))
+        return config
 
 
 def _CreateStyleFromConfigParser(config):
@@ -816,6 +828,10 @@ LOCAL_STYLE = '.style.yapf'
 # Alternative place for directory-local style definition. Style should be
 # specified in the '[yapf]' section.
 SETUP_CONFIG = 'setup.cfg'
+
+# Style definition by local pyproject.toml file. Style should be specified
+# in the '[tool.yapf]' section.
+PYPROJECT_TOML = 'pyproject.toml'
 
 # TODO(eliben): For now we're preserving the global presence of a style dict.
 # Refactor this so that the style is passed around through yapf rather than
