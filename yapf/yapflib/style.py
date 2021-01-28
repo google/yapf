@@ -751,23 +751,24 @@ def _CreateConfigParserFromConfigFile(config_filename):
       for k, v in style_dict.items():
         config.set('style', k, str(v))
       return config
-    else:
-      config.read_file(style_file)
-      if config_filename.endswith(SETUP_CONFIG):
-        if not config.has_section('yapf'):
-          raise StyleConfigError(
-              'Unable to find section [yapf] in {0}'.format(config_filename))
-        return config
-      elif config_filename.endswith(LOCAL_STYLE):
-        if not config.has_section('style'):
-          raise StyleConfigError(
-              'Unable to find section [style] in {0}'.format(config_filename))
-        return config
-      else:
-        if not config.has_section('style'):
-          raise StyleConfigError(
-              'Unable to find section [style] in {0}'.format(config_filename))
-        return config
+
+    config.read_file(style_file)
+    if config_filename.endswith(SETUP_CONFIG):
+      if not config.has_section('yapf'):
+        raise StyleConfigError(
+            'Unable to find section [yapf] in {0}'.format(config_filename))
+      return config
+
+    if config_filename.endswith(LOCAL_STYLE):
+      if not config.has_section('style'):
+        raise StyleConfigError(
+            'Unable to find section [style] in {0}'.format(config_filename))
+      return config
+
+    if not config.has_section('style'):
+      raise StyleConfigError(
+          'Unable to find section [style] in {0}'.format(config_filename))
+    return config
 
 
 def _CreateStyleFromConfigParser(config):
