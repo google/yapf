@@ -746,7 +746,10 @@ def _CreateConfigParserFromConfigFile(config_filename):
     config = py3compat.ConfigParser()
     if config_filename.endswith(PYPROJECT_TOML):
       pyproject_toml = toml.load(style_file)
-      style_dict = pyproject_toml.get("tool", {}).get("yapf", {})
+      style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
+      if style_dict is None:
+        raise StyleConfigError(
+            'Unable to find section [tool.yapf] in {0}'.format(config_filename))
       config.add_section('style')
       for k, v in style_dict.items():
         config.set('style', k, str(v))
