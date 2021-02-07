@@ -181,7 +181,7 @@ def _FindPythonFiles(filenames, recursive, exclude):
 
       # TODO(morbo): Look into a version of os.walk that can handle recursion.
       excluded_dirs = []
-      for dirpath, _, filelist in os.walk(filename):
+      for dirpath, dirnames, filelist in os.walk(filename):
         if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
           excluded_dirs.append(dirpath)
           continue
@@ -193,6 +193,19 @@ def _FindPythonFiles(filenames, recursive, exclude):
             continue
           if IsPythonFile(filepath):
             python_files.append(filepath)
+        # To prevent it from scanning the contents excluded folders, os.walk()
+        # lets you amend its list of child dirs `dirnames`. These edits must be
+        # made in-place instead of creating a modified copy of `dirnames`.
+        # list.remove() is slow and list.pop() is a headache. Instead clear
+        # `dirnames` then repopulate it.
+        dirnames_ = [dirnames.pop(0) for i in range(len(dirnames))]
+        for dirname in dirnames_:
+          dir_ = os.path.join(dirpath, dirname)
+          if IsIgnored(dir_, exclude):
+            excluded_dirs.append(dir_)
+          else:
+            dirnames.append(dirname)
+
     elif os.path.isfile(filename):
       python_files.append(filename)
 
@@ -201,6 +214,8 @@ def _FindPythonFiles(filenames, recursive, exclude):
 
 def IsIgnored(path, exclude):
   """Return True if filename matches any patterns in exclude."""
+  if exclude is None:
+    return False
   path = path.lstrip(os.path.sep)
   while path.startswith('.' + os.path.sep):
     path = path[2:]

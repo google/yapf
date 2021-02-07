@@ -11,6 +11,10 @@
 - Ignore end of line `# copybara:` directives when checking line length.
 - Look at the 'pyproject.toml' file to see if it contains style information for
   YAPF.
+### Changed
+- Do not scan exlcuded directories. Prior versions would scan an exluded
+  folder then exclude its contents on a file by file basis. Preventing the
+  folder being scanned is faster.
 ### Fixed
 - Exclude directories on Windows.
 
