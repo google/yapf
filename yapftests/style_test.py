@@ -227,14 +227,14 @@ class StyleFromFileTest(unittest.TestCase):
                                    'Unknown style option'):
         style.CreateStyleFromConfig(filepath)
 
-  def testPyprojectTomlNoStyleSection(self):
+  def testPyprojectTomlNoYapfSection(self):
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     _ = open(filepath, 'w')
     with self.assertRaisesRegexp(style.StyleConfigError,
                                  'Unable to find section'):
       style.CreateStyleFromConfig(filepath)
 
-  def testPyprojectTomlParseStyleSection(self):
+  def testPyprojectTomlParseYapfSection(self):
     cfg = textwrap.dedent(u'''\
         [tool.yapf]
         based_on_style = "pep8"

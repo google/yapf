@@ -119,17 +119,17 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
 
   def test_pyproject_toml(self):
     # An empty pyproject.toml file should not be used
-    setup_config = os.path.join(self.test_tmpdir, 'pyproject.toml')
-    open(setup_config, 'w').close()
+    pyproject_toml = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    open(pyproject_toml, 'w').close()
 
     test_dir = os.path.join(self.test_tmpdir, 'dir1')
     style_name = file_resources.GetDefaultStyleForDir(test_dir)
     self.assertEqual(style_name, 'pep8')
 
     # One with a '[tool.yapf]' section should be used
-    with open(setup_config, 'w') as f:
+    with open(pyproject_toml, 'w') as f:
       f.write('[tool.yapf]\n')
-    self.assertEqual(setup_config,
+    self.assertEqual(pyproject_toml,
                      file_resources.GetDefaultStyleForDir(test_dir))
 
   def test_local_style_at_root(self):
