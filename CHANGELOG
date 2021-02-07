@@ -9,6 +9,8 @@
   a custom number of blank lines between top-level imports and variable
   definitions.
 - Ignore end of line `# copybara:` directives when checking line length.
+- Look at the 'pyproject.toml' file to see if it contains style information for
+  YAPF.
 ### Fixed
 - Exclude directories on Windows.
 
