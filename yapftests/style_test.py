@@ -14,6 +14,7 @@
 # limitations under the License.
 """Tests for yapf.style."""
 
+import os
 import shutil
 import tempfile
 import textwrap
@@ -225,6 +226,26 @@ class StyleFromFileTest(unittest.TestCase):
       with self.assertRaisesRegexp(style.StyleConfigError,
                                    'Unknown style option'):
         style.CreateStyleFromConfig(filepath)
+
+  def testPyprojectTomlNoStyleSection(self):
+    filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    _ = open(filepath, 'w')
+    with self.assertRaisesRegexp(style.StyleConfigError,
+                                 'Unable to find section'):
+      style.CreateStyleFromConfig(filepath)
+
+  def testPyprojectTomlParseStyleSection(self):
+    cfg = textwrap.dedent(u'''\
+        [tool.yapf]
+        based_on_style = "pep8"
+        continuation_indent_width = 40
+        ''')
+    filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    with open(filepath, 'w') as f:
+        f.write(cfg)
+    cfg = style.CreateStyleFromConfig(filepath)
+    self.assertTrue(_LooksLikePEP8Style(cfg))
+    self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
 
 class StyleFromDict(unittest.TestCase):
