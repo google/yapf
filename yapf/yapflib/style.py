@@ -17,8 +17,6 @@ import os
 import re
 import textwrap
 
-import toml
-
 from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 
@@ -745,6 +743,8 @@ def _CreateConfigParserFromConfigFile(config_filename):
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     if config_filename.endswith(PYPROJECT_TOML):
+      import toml
+
       pyproject_toml = toml.load(style_file)
       style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
       if style_dict is None:

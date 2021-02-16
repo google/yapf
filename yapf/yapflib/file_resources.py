@@ -21,7 +21,6 @@ import fnmatch
 import os
 import re
 
-import toml
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
@@ -106,6 +105,8 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
       pass  # It's okay if it's not there.
     else:
       with fd:
+        import toml
+
         pyproject_toml = toml.load(config_file)
         style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
         if style_dict is not None:
