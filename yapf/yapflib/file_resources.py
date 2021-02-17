@@ -105,12 +105,17 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
       pass  # It's okay if it's not there.
     else:
       with fd:
-        import toml
+        try:
+          import toml
+        except ImportError:
+          raise errors.YapfError(
+              "toml package is needed for using pyproject.toml as a configuration file"
+          )
 
         pyproject_toml = toml.load(config_file)
         style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
         if style_dict is not None:
-            return config_file
+          return config_file
 
     if (not dirname or not os.path.basename(dirname) or
         dirname == os.path.abspath(os.path.sep)):

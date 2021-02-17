@@ -743,7 +743,12 @@ def _CreateConfigParserFromConfigFile(config_filename):
   with open(config_filename) as style_file:
     config = py3compat.ConfigParser()
     if config_filename.endswith(PYPROJECT_TOML):
-      import toml
+      try:
+        import toml
+      except ImportError:
+        raise errors.YapfError(
+            "toml package is needed for using pyproject.toml as a configuration file"
+        )
 
       pyproject_toml = toml.load(style_file)
       style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
