@@ -176,10 +176,18 @@ with a ``[yapf]`` heading. For example:
 
 The ``based_on_style`` setting determines which of the predefined styles this
 custom style is based on (think of it like subclassing). Four
-styles are predefined: ``pep8`` (default), ``google``, ``yapf``, and ``facebook``
-(see ``_STYLE_NAME_TO_FACTORY`` in style.py_).
+styles are predefined:
 
-.. _style.py: https://github.com/google/yapf/blob/main/yapf/yapflib/style.py#L445
+- ``pep8`` (default)
+- ``google`` (based off of the `Google Python Style Guide`_)
+- ``yapf`` (for use with Google open source projects)
+- ``facebook``
+
+.. _`Google Python Style Guide`: https://github.com/google/styleguide/blob/gh-pages/pyguide.md
+
+See ``_STYLE_NAME_TO_FACTORY`` in style.py_ for details.
+
+.. _style.py: https://github.com/google/yapf/blob/main/yapf/yapflib/style.py
 
 It's also possible to do the same on the command line with a dictionary. For
 example:
