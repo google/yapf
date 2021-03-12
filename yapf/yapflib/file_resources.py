@@ -67,7 +67,7 @@ def GetExcludePatternsForDir(dirname):
 def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
   """Return default style name for a given directory.
 
-  Looks for .style.yapf or setup.cfg in the parent directories.
+  Looks for .style.yapf or setup.cfg or pyproject.toml in the parent directories.
 
   Arguments:
     dirname: (unicode) The name of the directory.
@@ -95,6 +95,26 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
         config = py3compat.ConfigParser()
         config.read_file(fd)
         if config.has_section('yapf'):
+          return config_file
+
+    # See if we have a pyproject.toml file with a '[tool.yapf]'  section.
+    config_file = os.path.join(dirname, style.PYPROJECT_TOML)
+    try:
+      fd = open(config_file)
+    except IOError:
+      pass  # It's okay if it's not there.
+    else:
+      with fd:
+        try:
+          import toml
+        except ImportError:
+          raise errors.YapfError(
+              "toml package is needed for using pyproject.toml as a configuration file"
+          )
+
+        pyproject_toml = toml.load(config_file)
+        style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
+        if style_dict is not None:
           return config_file
 
     if (not dirname or not os.path.basename(dirname) or
