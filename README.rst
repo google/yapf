@@ -113,10 +113,10 @@ Options::
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
                             with style settings. The default is pep8 unless a
-                            .style.yapf or setup.cfg file located in the same
-                            directory as the source or one of its parent
-                            directories (for stdin, the current directory is
-                            used).
+                            .style.yapf or setup.cfg or pyproject.toml file
+                            located in the same directory as the source or one of
+                            its parent directories (for stdin, the current
+                            directory is used).
       --style-help          show style settings and exit; this output can be saved
                             to .style.yapf to make your settings permanent
       --no-local-style      don't search for local style definition
@@ -198,7 +198,9 @@ YAPF will search for the formatting style in the following manner:
    directory or one of its parent directories.
 3. In the ``[yapf]`` section of a ``setup.cfg`` file in either the current
    directory or one of its parent directories.
-4. In the ``[style]`` section of a ``~/.config/yapf/style`` file in your home
+4. In the ``[tool.yapf]`` section of a ``pyproject.toml`` file in either the current
+   directory or one of its parent directories.
+5. In the ``[style]`` section of a ``~/.config/yapf/style`` file in your home
    directory.
 
 If none of those files are found, the default style is used (PEP8).
@@ -351,9 +353,10 @@ Options::
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
                             with style settings. The default is pep8 unless a
-                            .style.yapf or setup.cfg file located in one of the
-                            parent directories of the source file (or current
-                            directory for stdin)
+                            .style.yapf or setup.cfg or pyproject.toml file
+                            located in the same directory as the source or one of
+                            its parent directories (for stdin, the current
+                            directory is used).
       --binary BINARY       location of binary to use for yapf
 
 Knobs
