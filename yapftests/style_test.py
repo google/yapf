@@ -242,7 +242,7 @@ class StyleFromFileTest(unittest.TestCase):
         ''')
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     with open(filepath, 'w') as f:
-        f.write(cfg)
+      f.write(cfg)
     cfg = style.CreateStyleFromConfig(filepath)
     self.assertTrue(_LooksLikePEP8Style(cfg))
     self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
