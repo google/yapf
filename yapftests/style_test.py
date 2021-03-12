@@ -228,6 +228,11 @@ class StyleFromFileTest(unittest.TestCase):
         style.CreateStyleFromConfig(filepath)
 
   def testPyprojectTomlNoYapfSection(self):
+    try:
+      import toml
+    except ImportError:
+      return
+
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     _ = open(filepath, 'w')
     with self.assertRaisesRegexp(style.StyleConfigError,
@@ -235,6 +240,11 @@ class StyleFromFileTest(unittest.TestCase):
       style.CreateStyleFromConfig(filepath)
 
   def testPyprojectTomlParseYapfSection(self):
+    try:
+      import toml
+    except ImportError:
+      return
+
     cfg = textwrap.dedent(u'''\
         [tool.yapf]
         based_on_style = "pep8"

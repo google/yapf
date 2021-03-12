@@ -119,6 +119,11 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
 
   def test_pyproject_toml(self):
     # An empty pyproject.toml file should not be used
+    try:
+      import toml
+    except ImportError:
+      return
+
     pyproject_toml = os.path.join(self.test_tmpdir, 'pyproject.toml')
     open(pyproject_toml, 'w').close()
 
