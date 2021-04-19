@@ -270,8 +270,11 @@ share several arguments which are described below:
 
     >>> from yapf.yapflib.yapf_api import FormatCode  # reformat a string of code
 
-    >>> FormatCode("f ( a = 1, b = 2 )")
+    >>> formatted_code, changed = FormatCode("f ( a = 1, b = 2 )")
+    >>> formatted_code
     'f(a=1, b=2)\n'
+    >>> changed
+    True
 
 A ``style_config`` argument: Either a style name or a path to a file that contains
 formatting style settings. If None is specified, use the default style
@@ -279,7 +282,7 @@ as set in ``style.DEFAULT_STYLE_FACTORY``.
 
 .. code-block:: python
 
-    >>> FormatCode("def g():\n  return True", style_config='pep8')
+    >>> FormatCode("def g():\n  return True", style_config='pep8')[0]
     'def g():\n    return True\n'
 
 A ``lines`` argument: A list of tuples of lines (ints), [start, end],
@@ -289,7 +292,7 @@ than a whole file.
 
 .. code-block:: python
 
-    >>> FormatCode("def g( ):\n    a=1\n    b = 2\n    return a==b", lines=[(1, 1), (2, 3)])
+    >>> FormatCode("def g( ):\n    a=1\n    b = 2\n    return a==b", lines=[(1, 1), (2, 3)])[0]
     'def g():\n    a = 1\n    b = 2\n    return a==b\n'
 
 A ``print_diff`` (bool): Instead of returning the reformatted source, return a
@@ -297,7 +300,7 @@ diff that turns the formatted source into reformatter source.
 
 .. code-block:: python
 
-    >>> print(FormatCode("a==b", filename="foo.py", print_diff=True))
+    >>> print(FormatCode("a==b", filename="foo.py", print_diff=True)[0])
     --- foo.py (original)
     +++ foo.py (reformatted)
     @@ -1 +1 @@
@@ -316,14 +319,19 @@ the diff, the default is ``<unknown>``.
     >>> print(open("foo.py").read())  # contents of file
     a==b
 
-    >>> FormatFile("foo.py")
-    ('a == b\n', 'utf-8')
+    >>> reformatted_code, encoding, changed = FormatFile("foo.py")
+    >>> formatted_code
+    'a == b\n'
+    >>> encoding
+    'utf-8'
+    >>> changed
+    True
 
 The ``in_place`` argument saves the reformatted code back to the file:
 
 .. code-block:: python
 
-    >>> FormatFile("foo.py", in_place=True)
+    >>> FormatFile("foo.py", in_place=True)[:2]
     (None, 'utf-8')
 
     >>> print(open("foo.py").read())  # contents of file (now fixed)
