@@ -491,10 +491,13 @@ def _AnalyzeSolutionSpace(initial_state):
     if count > 10000:
       node.state.ignore_stack_for_comparison = True
 
-    if node.state in seen:
-      continue
-
+    # Unconditionally add the state and check if it was present to avoid having to
+    # hash it twice in the common case (state hashing is expensive).
+    before_seen_count = len(seen)
     seen.add(node.state)
+    # If seen didn't change size, the state was already present.
+    if before_seen_count == len(seen):
+      continue
 
     # FIXME(morbo): Add a 'decision' element?
 
