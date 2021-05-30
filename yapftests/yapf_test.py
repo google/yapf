@@ -881,8 +881,6 @@ x = {
         """)
     expected_formatted_code = textwrap.dedent("""\
         a = line_to_format
-
-
         def f():
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
@@ -905,8 +903,6 @@ x = {
         ''')
     expected_formatted_code = textwrap.dedent('''\
         foo = 42
-
-
         def f():
             email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
         <b>Czar: </b>"""+despot["Nicholas"]+"""<br>
@@ -1030,6 +1026,7 @@ x = {
         class A(object):
             def aaaaaaaaaaaaa(self):
                 pass
+
 
             def bbbbbbbbbbbbb(self):  # 5
                 pass
@@ -1170,13 +1167,12 @@ x = {
 
   def testPseudoParenSpaces(self):
     unformatted_code = textwrap.dedent("""\
-        def foo():
+        def   foo():
           def bar():
             return {msg_id: author for author, msg_id in reader}
         """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
-
           def bar():
             return {msg_id: author for author, msg_id in reader}
         """)
@@ -1481,6 +1477,30 @@ CONTINUATION_ALIGN_STYLE = valign-right
         unformatted_code,
         expected_formatted_code,
         extra_options=['--style', 'yapf', '--lines', '1-1'])
+
+  def testDisableWithLinesOption(self):
+    unformatted_code = textwrap.dedent("""\
+        # yapf_lines_bug.py
+        # yapf: disable
+        def outer_func():
+            def inner_func():
+                return
+            return
+        # yapf: enable
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        # yapf_lines_bug.py
+        # yapf: disable
+        def outer_func():
+            def inner_func():
+                return
+            return
+        # yapf: enable
+        """)
+    self.assertYapfReformats(
+        unformatted_code,
+        expected_formatted_code,
+        extra_options=['--lines', '1-8'])
 
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testNoSpacesAroundBinaryOperators(self):

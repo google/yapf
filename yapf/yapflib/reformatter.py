@@ -119,14 +119,14 @@ def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
   if prev_uwline is not None:
     prev_tok = prev_uwline.last
 
+  if cur_uwline.disable:
+    # After the first token we are acting on a single line. So if it is
+    # disabled we must not reformat.
+    lines = set()
+
   for cur_tok in cur_uwline.tokens:
     _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines)
-
     prev_tok = cur_tok
-    if cur_uwline.disable:
-      # After the first token we are acting on a single line. So if it is
-      # disabled we must not reformat.
-      lines = set()
 
 
 def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):

@@ -300,15 +300,12 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def B():  # 4
           pass  # 5
 
-
         def C():
           pass
 
 
         def D():  # 9
           pass  # 10
-
-
         def E():
           pass
         """)
@@ -375,6 +372,8 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
           pass  # 7
 
 
+
+
         def C():
           pass
         """)
@@ -407,6 +406,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
 
         def B():  # 7
           pass  # 8
+
 
 
 
