@@ -323,6 +323,9 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN not in left.subtypes):
     # Space between equal and '.' as in "X = ...".
     return True
+  if lval == ':' and rval == '.':
+    # Space between : and ...
+    return True
   if ((right.is_keyword or right.is_name) and
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
