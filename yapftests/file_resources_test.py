@@ -54,17 +54,47 @@ class GetExcludePatternsForDir(unittest.TestCase):
   def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
-  def _make_test_dir(self, name):
-    fullpath = os.path.normpath(os.path.join(self.test_tmpdir, name))
-    os.makedirs(fullpath)
-    return fullpath
-
-  def test_get_exclude_file_patterns(self):
+  def test_get_exclude_file_patterns_from_yapfignore(self):
     local_ignore_file = os.path.join(self.test_tmpdir, '.yapfignore')
     ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
     with open(local_ignore_file, 'w') as f:
       f.writelines('\n'.join(ignore_patterns))
 
+    self.assertEqual(
+        sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
+        sorted(ignore_patterns))
+
+  def test_get_exclude_file_patterns_from_pyproject(self):
+    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
+    with open(local_ignore_file, 'w') as f:
+      f.write('[tool.yapfignore]\n')
+      f.write('ignore_patterns="""')
+      f.writelines('\n'.join(ignore_patterns))
+      f.write('"""')
+    self.assertEqual(
+        sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
+        sorted(ignore_patterns))
+
+  def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
+    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    ignore_patterns = []
+    open(local_ignore_file, 'w').close()
+    self.assertEqual(
+        sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
+        sorted(ignore_patterns))
+
+  def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
+    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    ignore_patterns = []
+    with open(local_ignore_file, 'w') as f:
+      f.write('[tool.yapfignore]\n')
+    self.assertEqual(
+        sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
+        sorted(ignore_patterns))
+
+  def test_get_exclude_file_patterns_with_no_config_files(self):
+    ignore_patterns = []
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
