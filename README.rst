@@ -136,12 +136,12 @@ otherwise (including program error). You can use this in a CI workflow to test t
 has been YAPF-formatted.
 
 ---------------------------------------------
-Excluding files from formatting (.yapfignore)
+Excluding files from formatting (.yapfignore or pyproject.toml)
 ---------------------------------------------
 
 In addition to exclude patterns provided on commandline, YAPF looks for additional
-patterns specified in a file named ``.yapfignore`` located in the working directory from
-which YAPF is invoked.
+patterns specified in a file named ``.yapfignore`` or ``pyproject.toml`` located in the
+working directory from which YAPF is invoked.
 
 ``.yapfignore``'s syntax is similar to UNIX's filename pattern matching::
 
@@ -152,6 +152,15 @@ which YAPF is invoked.
 
 Note that no entry should begin with `./`.
 
+If you use ``pyproject.toml``, exclude patterns are specified by ``ignore_pattens`` key
+in ``[tool.yapfignore]`` section. For example:
+
+.. code-block:: ini
+   [tool.yapfignore]
+   ignore_patterns="""
+   temp/**/*.py
+   temp2/*.py
+   """
 
 Formatting style
 ================
