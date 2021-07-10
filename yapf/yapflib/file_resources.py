@@ -69,7 +69,7 @@ def _GetExcludePatternsFromPyprojectToml(filename):
     if line.strip() and not line.startswith('#'):
       ignore_patterns.append(line.strip())
   if any(e.startswith('./') for e in ignore_patterns):
-    raise errors.YapfError('path in .yapfignore should not start with ./')
+    raise errors.YapfError('path in pyproject.toml should not start with ./')
 
   return ignore_patterns
 

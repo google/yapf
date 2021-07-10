@@ -64,7 +64,20 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
+  def test_get_exclude_file_patterns_from_yapfignore_with_wrong_syntax(self):
+    local_ignore_file = os.path.join(self.test_tmpdir, '.yapfignore')
+    ignore_patterns = ['temp/**/*.py', './wrong/syntax/*.py']
+    with open(local_ignore_file, 'w') as f:
+      f.writelines('\n'.join(ignore_patterns))
+
+    with self.assertRaises(errors.YapfError):
+      file_resources.GetExcludePatternsForDir(self.test_tmpdir)
+
   def test_get_exclude_file_patterns_from_pyproject(self):
+    try:
+      import toml
+    except ImportError:
+      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
     with open(local_ignore_file, 'w') as f:
@@ -72,29 +85,57 @@ class GetExcludePatternsForDir(unittest.TestCase):
       f.write('ignore_patterns="""')
       f.writelines('\n'.join(ignore_patterns))
       f.write('"""')
+
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
+  def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
+    try:
+      import toml
+    except ImportError:
+      return
+    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
+    ignore_patterns = ['temp/**/*.py', './wrong/syntax/*.py']
+    with open(local_ignore_file, 'w') as f:
+      f.write('[tool.yapfignore]\n')
+      f.write('ignore_patterns="""')
+      f.writelines('\n'.join(ignore_patterns))
+      f.write('"""')
+
+    with self.assertRaises(errors.YapfError):
+      file_resources.GetExcludePatternsForDir(self.test_tmpdir)
+
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
+    try:
+      import toml
+    except ImportError:
+      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     open(local_ignore_file, 'w').close()
+
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
+    try:
+      import toml
+    except ImportError:
+      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
+
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_with_no_config_files(self):
     ignore_patterns = []
+
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
