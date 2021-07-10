@@ -2,6 +2,11 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.32.0] UNRELEASED
+### Added
+- Look at the 'pyproject.toml' file to see if it contains ignore file information
+  for YAPF.
+
 ## [0.31.0] 2021-03-14
 ### Added
 - Renamed 'master' brannch to 'main'.
