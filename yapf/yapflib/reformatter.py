@@ -651,8 +651,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     return NO_BLANK_LINES
 
   if first_token.is_name and not indent_depth:
-    if (prev_uwline.first.value == 'from' or
-        prev_uwline.first.value == 'import'):
+    if prev_uwline.first.value in {'from', 'import'}:
       # Support custom number of blank lines between top-level imports and
       # variable definitions.
       return 1 + style.Get(
