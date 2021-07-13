@@ -307,13 +307,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     _AppendLastLeafTokenSubtype(node.children[-1],
                                 format_token.Subtype.PARAMETER_STOP)
 
-    i = 1
     tname = pytree_utils.NodeName(node.children[0]) == 'tname'
-    while i < len(node.children):
+    for i in range(1, len(node.children)):
       prev_child = node.children[i - 1]
       child = node.children[i]
-      i += 1
-
       if pytree_utils.NodeName(prev_child) == 'COMMA':
         _AppendFirstLeafTokenSubtype(child,
                                      format_token.Subtype.PARAMETER_START)
