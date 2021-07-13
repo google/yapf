@@ -32,10 +32,9 @@ LF = '\n'
 CRLF = '\r\n'
 
 
-def _GetExcludePatternsFromFile(filename):
-  """Get a list of file patterns to ignore."""
+def _GetExcludePatternsFromYapfIgnore(filename):
+  """Get a list of file patterns to ignore from .yapfignore."""
   ignore_patterns = []
-  # See if we have a .yapfignore file.
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
     with open(filename, 'r') as fd:
       for line in fd:
@@ -44,6 +43,33 @@ def _GetExcludePatternsFromFile(filename):
 
     if any(e.startswith('./') for e in ignore_patterns):
       raise errors.YapfError('path in .yapfignore should not start with ./')
+
+  return ignore_patterns
+
+
+def _GetExcludePatternsFromPyprojectToml(filename):
+  """Get a list of file patterns to ignore from pyproject.toml."""
+  ignore_patterns = []
+  try:
+    import toml
+  except ImportError:
+    raise errors.YapfError(
+        "toml package is needed for using pyproject.toml as a configuration file"
+    )
+
+  pyproject_toml = toml.load(filename)
+  if os.path.isfile(filename) and os.access(filename, os.R_OK):
+    excludes = pyproject_toml.get('tool',
+                                  {}).get('yapfignore',
+                                          {}).get('ignore_patterns', None)
+  if excludes is None:
+    return []
+
+  for line in excludes.split('\n'):
+    if line.strip() and not line.startswith('#'):
+      ignore_patterns.append(line.strip())
+  if any(e.startswith('./') for e in ignore_patterns):
+    raise errors.YapfError('path in pyproject.toml should not start with ./')
 
   return ignore_patterns
 
@@ -60,8 +86,16 @@ def GetExcludePatternsForDir(dirname):
     A List of file patterns to exclude if ignore file is found, otherwise empty
     List.
   """
-  ignore_file = os.path.join(dirname, '.yapfignore')
-  return _GetExcludePatternsFromFile(ignore_file)
+  ignore_patterns = []
+
+  yapfignore_file = os.path.join(dirname, '.yapfignore')
+  if os.path.exists(yapfignore_file):
+    ignore_patterns += _GetExcludePatternsFromYapfIgnore(yapfignore_file)
+
+  pyproject_toml_file = os.path.join(dirname, 'pyproject.toml')
+  if os.path.exists(pyproject_toml_file):
+    ignore_patterns += _GetExcludePatternsFromPyprojectToml(pyproject_toml_file)
+  return ignore_patterns
 
 
 def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
