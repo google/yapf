@@ -712,8 +712,8 @@ Knobs
 
 ``SPLIT_ALL_COMMA_SEPARATED_VALUES``
     If a comma separated list (``dict``, ``list``, ``tuple``, or function
-    ``def``) is on a line that is too long, split such that all elements
-    are on a single line.
+    ``def``) is on a line that is too long, split such that each element
+    is on a separate line.
 
 ``SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES``
     Variation on ``SPLIT_ALL_COMMA_SEPARATED_VALUES`` in which, if a
