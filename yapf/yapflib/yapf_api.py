@@ -100,7 +100,7 @@ def FormatFile(filename,
       verify=verify)
   if reformatted_source.rstrip('\n'):
     lines = reformatted_source.rstrip('\n').split('\n')
-    reformatted_source = newline.join(line for line in lines) + newline
+    reformatted_source = newline.join(iter(lines)) + newline
   if in_place:
     if original_source and original_source != reformatted_source:
       file_resources.WriteReformattedCode(filename, reformatted_source,

@@ -568,7 +568,7 @@ def _StringSetConverter(s):
   """Option value converter for a comma-separated set of strings."""
   if len(s) > 2 and s[0] in '"\'':
     s = s[1:-1]
-  return set(part.strip() for part in s.split(','))
+  return {part.strip() for part in s.split(',')}
 
 
 def _BoolConverter(s):
