@@ -224,13 +224,10 @@ def _LineContainsI18n(uwline):
 
   if style.Get('I18N_FUNCTION_CALL'):
     length = len(uwline.tokens)
-    index = 0
-    while index < length - 1:
+    for index in range(length - 1):
       if (uwline.tokens[index + 1].value == '(' and
           uwline.tokens[index].value in style.Get('I18N_FUNCTION_CALL')):
         return True
-      index += 1
-
   return False
 
 
