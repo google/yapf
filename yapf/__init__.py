@@ -148,7 +148,7 @@ def _PrintHelp(args):
     for line in docstring.splitlines():
       print('#', line and ' ' or '', line, sep='')
     option_value = style.Get(option)
-    if isinstance(option_value, set) or isinstance(option_value, list):
+    if isinstance(option_value, (set, list)):
       option_value = ', '.join(map(str, option_value))
     print(option.lower(), '=', option_value, sep='')
     print()
