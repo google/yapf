@@ -405,10 +405,10 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     return False
   if left.is_keyword and rval == '.':
     # Add space between keywords and dots.
-    return lval != 'None' and lval != 'print'
+    return lval not in {'None', 'print'}
   if lval == '.' and right.is_keyword:
     # Add space between keywords and dots.
-    return rval != 'None' and rval != 'print'
+    return rval not in {'None', 'print'}
   if lval == '.' or rval == '.':
     # Don't place spaces between dots.
     return False
