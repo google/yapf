@@ -95,9 +95,8 @@ def main():
     if args.regex is not None:
       if not re.match('^%s$' % args.regex, filename):
         continue
-    else:
-      if not re.match('^%s$' % args.iregex, filename, re.IGNORECASE):
-        continue
+    elif not re.match('^%s$' % args.iregex, filename, re.IGNORECASE):
+      continue
 
     match = re.search(r'^@@.*\+(\d+)(,(\d+))?', line)
     if match:

@@ -90,15 +90,14 @@ def Reformat(uwlines, verify=False, lines=None):
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
 
-    else:
-      if not _AnalyzeSolutionSpace(state):
-        # Failsafe mode. If there isn't a solution to the line, then just emit
-        # it as is.
-        state = format_decision_state.FormatDecisionState(uwline, indent_amt)
-        state.MoveStateToNextToken()
-        _RetainHorizontalSpacing(uwline)
-        _RetainRequiredVerticalSpacing(uwline, prev_uwline, None)
-        _EmitLineUnformatted(state)
+    elif not _AnalyzeSolutionSpace(state):
+      # Failsafe mode. If there isn't a solution to the line, then just emit
+      # it as is.
+      state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+      state.MoveStateToNextToken()
+      _RetainHorizontalSpacing(uwline)
+      _RetainRequiredVerticalSpacing(uwline, prev_uwline, None)
+      _EmitLineUnformatted(state)
 
     final_lines.append(uwline)
     prev_uwline = uwline
@@ -404,12 +403,11 @@ def _FormatFinalLines(final_lines, verify):
       if not tok.is_pseudo_paren:
         formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
-      else:
-        if (not tok.next_token.whitespace_prefix.startswith('\n') and
+      elif (not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
-          if (tok.previous_token.value == ':' or
-              tok.next_token.value not in ',}])'):
-            formatted_line.append(' ')
+        if (tok.previous_token.value == ':' or
+            tok.next_token.value not in ',}])'):
+          formatted_line.append(' ')
 
     formatted_code.append(''.join(formatted_line))
     if verify:
