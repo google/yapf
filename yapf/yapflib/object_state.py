@@ -212,10 +212,7 @@ class Parameter(object):
     while tok != self.last_token:
       if format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in tok.subtypes:
         return True
-      if tok.OpensScope():
-        tok = tok.matching_bracket
-      else:
-        tok = tok.next_token
+      tok = tok.matching_bracket if tok.OpensScope() else tok.next_token
     return False
 
   def Clone(self):

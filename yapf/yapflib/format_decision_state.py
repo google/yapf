@@ -1184,10 +1184,7 @@ def _IsSingleElementTuple(token):
   while token != close:
     if token.value == ',':
       num_commas += 1
-    if token.OpensScope():
-      token = token.matching_bracket
-    else:
-      token = token.next_token
+    token = token.matching_bracket if token.OpensScope() else token.next_token
   return num_commas == 1
 
 
@@ -1198,10 +1195,7 @@ def _ScopeHasNoCommas(token):
   while token != close:
     if token.value == ',':
       return False
-    if token.OpensScope():
-      token = token.matching_bracket
-    else:
-      token = token.next_token
+    token = token.matching_bracket if token.OpensScope() else token.next_token
   return True
 
 
