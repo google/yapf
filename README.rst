@@ -156,11 +156,12 @@ If you use ``pyproject.toml``, exclude patterns are specified by ``ignore_patten
 in ``[tool.yapfignore]`` section. For example:
 
 .. code-block:: ini
+
    [tool.yapfignore]
-   ignore_patterns="""
-   temp/**/*.py
-   temp2/*.py
-   """
+   ignore_patterns = [
+     "temp/**/*.py",
+     "temp2/*.py"
+   ]
 
 Formatting style
 ================

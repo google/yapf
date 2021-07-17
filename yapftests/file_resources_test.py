@@ -82,9 +82,9 @@ class GetExcludePatternsForDir(unittest.TestCase):
     ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
-      f.write('ignore_patterns="""')
-      f.writelines('\n'.join(ignore_patterns))
-      f.write('"""')
+      f.write('ignore_patterns=[')
+      f.writelines('\n,'.join([f'"{p}"' for p in ignore_patterns]))
+      f.write(']')
 
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
@@ -99,9 +99,9 @@ class GetExcludePatternsForDir(unittest.TestCase):
     ignore_patterns = ['temp/**/*.py', './wrong/syntax/*.py']
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
-      f.write('ignore_patterns="""')
-      f.writelines('\n'.join(ignore_patterns))
-      f.write('"""')
+      f.write('ignore_patterns=[')
+      f.writelines('\n,'.join([f'"{p}"' for p in ignore_patterns]))
+      f.write(']')
 
     with self.assertRaises(errors.YapfError):
       file_resources.GetExcludePatternsForDir(self.test_tmpdir)
