@@ -27,8 +27,6 @@ if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
-  import codecs
-
   def open_with_encoding(filename, mode, encoding, newline=''):  # pylint: disable=unused-argument
     return codecs.open(filename, mode=mode, encoding=encoding)
 
