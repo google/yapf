@@ -57,19 +57,13 @@ def _GetExcludePatternsFromPyprojectToml(filename):
         "toml package is needed for using pyproject.toml as a configuration file"
     )
 
-  pyproject_toml = toml.load(filename)
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
-    excludes = pyproject_toml.get('tool',
-                                  {}).get('yapfignore',
-                                          {}).get('ignore_patterns', None)
-  if excludes is None:
-    return []
-
-  for line in excludes.split('\n'):
-    if line.strip() and not line.startswith('#'):
-      ignore_patterns.append(line.strip())
-  if any(e.startswith('./') for e in ignore_patterns):
-    raise errors.YapfError('path in pyproject.toml should not start with ./')
+    pyproject_toml = toml.load(filename)
+    ignore_patterns = pyproject_toml.get('tool',
+                                         {}).get('yapfignore',
+                                                 {}).get('ignore_patterns', [])
+    if any(e.startswith('./') for e in ignore_patterns):
+      raise errors.YapfError('path in pyproject.toml should not start with ./')
 
   return ignore_patterns
 
