@@ -17,7 +17,7 @@
 - Look at the 'pyproject.toml' file to see if it contains style information for
   YAPF.
 ### Changed
-- Do not scan exlcuded directories. Prior versions would scan an exluded
+- Do not scan excluded directories. Prior versions would scan an excluded
   folder then exclude its contents on a file by file basis. Preventing the
   folder being scanned is faster.
 ### Fixed
@@ -246,7 +246,7 @@
 ### Fixed
 - Use tabs when constructing a continuation line when `USE_TABS` is enabled.
 - A dictionary entry may not end in a colon, but may be an "unpacking"
-  operation: `**foo`. Take that into accound and don't split after the
+  operation: `**foo`. Take that into account and don't split after the
   unpacking operator.
 
 ## [0.20.1] 2018-01-13
@@ -669,7 +669,7 @@
 - Retain proper vertical spacing before comments in a data literal.
 - Make sure that continuations from a compound statement are distinguished from
   the succeeding line.
-- Ignore preceding comments when calculating what is a "dictonary maker".
+- Ignore preceding comments when calculating what is a "dictionary maker".
 - Add a small penalty for splitting before a closing bracket.
 - Ensure that a space is enforced after we remove a pseudo-paren that's between
   two names, keywords, numbers, etc.
@@ -697,7 +697,7 @@
 - Improve splitting heuristic when the first argument to a function call is
   itself a function call with arguments. In cases like this, the remaining
   arguments to the function call would look badly aligned, even though they are
-  techincally correct (the best kind of correct!).
+  technically correct (the best kind of correct!).
 - Improve splitting heuristic more so that if the first argument to a function
   call is a data literal that will go over the column limit, then we want to
   split before it.
