@@ -11,14 +11,14 @@
 #
 # When running, this first checks for unstaged changes to staged files, and if
 # there are any, it will exit with an error. Files with unstaged changes will be
-# printed.
+# printed. 
 #
 # If all staged files have no unstaged changes, it will run yapf against them,
 # leaving the formatting changes unstaged. Changed files will be printed.
 #
 # BUGS: This does not leave staged changes alone when used with the -a flag to
 # git commit, due to the fact that git stages ALL unstaged files when that flag
-# is used.
+# is used. 
 
 # Find all staged Python files, and exit early if there aren't any.
 PYTHON_FILES=()
