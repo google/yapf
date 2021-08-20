@@ -418,7 +418,7 @@ def CreatePEP8Style():
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
       ALLOW_SPLIT_BEFORE_DICT_VALUE=True,
       ARITHMETIC_PRECEDENCE_INDICATION=False,
-      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=False,
+      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=True,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       BLANK_LINE_BEFORE_MODULE_DOCSTRING=False,
       BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=2,
@@ -479,7 +479,6 @@ def CreateGoogleStyle():
   """Create the Google formatting style."""
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
-  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = True
   style['COLUMN_LIMIT'] = 80
   style['INDENT_DICTIONARY_VALUE'] = True
   style['INDENT_WIDTH'] = 4
@@ -511,6 +510,7 @@ def CreateFacebookStyle():
   """Create the Facebook formatting style."""
   style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
+  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = False
   style['COLUMN_LIMIT'] = 80
   style['DEDENT_CLOSING_BRACKETS'] = True
   style['INDENT_CLOSING_BRACKETS'] = False
