@@ -238,6 +238,7 @@ None.__ne__()
       return
     code = textwrap.dedent("""\
         async def outer():
+
             async def inner():
                 pass
         """)
@@ -365,6 +366,7 @@ class Foo:
 """
     expected_formatted_code = """\
 class Foo:
+
     def foo(self):
         foofoofoofoofoofoofoofoo('foofoofoofoofoo', {
             'foo': 'foo',

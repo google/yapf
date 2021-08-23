@@ -735,12 +735,14 @@ class CommandLineTest(unittest.TestCase):
   def testDisableButAdjustIndentations(self):
     unformatted_code = textwrap.dedent("""\
         class SplitPenaltyTest(unittest.TestCase):
+
           def testUnbreakable(self):
             self._CheckPenalties(tree, [
             ])  # yapf: disable
         """)
     expected_formatted_code = textwrap.dedent("""\
         class SplitPenaltyTest(unittest.TestCase):
+
             def testUnbreakable(self):
                 self._CheckPenalties(tree, [
                 ])  # yapf: disable

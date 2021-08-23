@@ -50,22 +50,22 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
-  def testNoBlankBetweenClassAndDef(self):
+  def testBlankBetweenClassAndDef(self):
     unformatted_code = textwrap.dedent("""\
         class Foo:
-
           def joe():
             pass
         """)
     expected_formatted_code = textwrap.dedent("""\
         class Foo:
+
             def joe():
                 pass
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
-  def testNoBlankBetweenDefsInClass(self):
+  def testBlankBetweenDefsInClass(self):
     unformatted_code = textwrap.dedent('''\
         class TestClass:
             def __init__(self):
@@ -77,6 +77,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         ''')
     expected_formatted_code = textwrap.dedent('''\
         class TestClass:
+
             def __init__(self):
                 self.running = False
 
@@ -174,6 +175,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         """)
     expected_formatted_code = textwrap.dedent("""\
         def f():
+
             def g():
                 while (xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz]) == 'aaaaaaaaaaa'
                        and xxxxxxxxxxxxxxxxxxxx(
@@ -341,11 +343,13 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
   def testSplitAroundNamedAssigns(self):
     unformatted_code = textwrap.dedent("""\
         class a():
+
             def a(): return a(
              aaaaaaaaaa=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
         """)
     expected_formatted_code = textwrap.dedent("""\
         class a():
+
             def a():
                 return a(
                     aaaaaaaaaa=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -501,6 +505,7 @@ class Demo:
     """
     Demo docs
     """
+
     def foo(self):
         """
         foo docs
@@ -602,6 +607,7 @@ class _():
         """)
     expected_formatted_code = textwrap.dedent("""\
 class _():
+
     def __init__(
             self,
             title: Optional[str],

@@ -1982,6 +1982,7 @@ class A(object):
   def testStableDictionaryFormatting(self):
     code = textwrap.dedent("""\
         class A(object):
+
           def method(self):
             filters = {
                 'expressions': [{
