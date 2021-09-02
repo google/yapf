@@ -110,6 +110,45 @@ def FormatFile(filename,
   return reformatted_source, encoding, changed
 
 
+def FormatTree(tree, style_config=None, lines=None, verify=False):
+  """Format a parsed lib2to3 pytree.
+
+  This provides an alternative entry point to YAPF.
+
+  Arguments:
+    tree: (pytree.Node) The root of the pytree to format.
+    style_config: (string) Either a style name or a path to a file that contains
+      formatting style settings. If None is specified, use the default style
+      as set in style.DEFAULT_STYLE_FACTORY
+    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
+      that we want to format. The lines are 1-based indexed. It can be used by
+      third-party code (e.g., IDEs) when reformatting a snippet of code rather
+      than a whole file.
+    verify: (bool) True if reformatted code should be verified for syntax.
+
+  Returns:
+    The source formatted according to the given formatting style.
+  """
+  _CheckPythonVersion()
+  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
+
+  # Run passes on the tree, modifying it in place.
+  comment_splicer.SpliceComments(tree)
+  continuation_splicer.SpliceContinuations(tree)
+  subtype_assigner.AssignSubtypes(tree)
+  identify_container.IdentifyContainers(tree)
+  split_penalty.ComputeSplitPenalties(tree)
+  blank_line_calculator.CalculateBlankLines(tree)
+
+  uwlines = pytree_unwrapper.UnwrapPyTree(tree)
+  for uwl in uwlines:
+    uwl.CalculateFormattingInformation()
+
+  lines = _LineRangesToSet(lines)
+  _MarkLinesToFormat(uwlines, lines)
+  return reformatter.Reformat(_SplitSemicolons(uwlines), verify, lines)
+
+
 def FormatCode(unformatted_source,
                filename='<unknown>',
                style_config=None,
@@ -138,8 +177,6 @@ def FormatCode(unformatted_source,
     Tuple of (reformatted_source, changed). reformatted_source conforms to the
     desired formatting style. changed is True if the source changed.
   """
-  _CheckPythonVersion()
-  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
   if not unformatted_source.endswith('\n'):
     unformatted_source += '\n'
 
@@ -149,22 +186,11 @@ def FormatCode(unformatted_source,
     e.msg = filename + ': ' + e.msg
     raise
 
-  # Run passes on the tree, modifying it in place.
-  comment_splicer.SpliceComments(tree)
-  continuation_splicer.SpliceContinuations(tree)
-  subtype_assigner.AssignSubtypes(tree)
-  identify_container.IdentifyContainers(tree)
-  split_penalty.ComputeSplitPenalties(tree)
-  blank_line_calculator.CalculateBlankLines(tree)
-
-  uwlines = pytree_unwrapper.UnwrapPyTree(tree)
-  for uwl in uwlines:
-    uwl.CalculateFormattingInformation()
-
-  lines = _LineRangesToSet(lines)
-  _MarkLinesToFormat(uwlines, lines)
-  reformatted_source = reformatter.Reformat(
-      _SplitSemicolons(uwlines), verify, lines)
+  reformatted_source = FormatTree(
+      tree,
+      style_config=style_config,
+      lines=lines,
+      verify=verify)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
