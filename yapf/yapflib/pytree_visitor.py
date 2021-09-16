@@ -19,7 +19,7 @@ and Leaf types. This module implements a visitor pattern for such trees.
 It also exports a basic "dumping" visitor that dumps a textual representation of
 a pytree into a stream.
 
-  PyTreeVisitor: a generic visitor pattern fo pytrees.
+  PyTreeVisitor: a generic visitor pattern for pytrees.
   PyTreeDumper: a configurable "dumper" for displaying pytrees.
   DumpPyTree(): a convenience function to dump a pytree.
 """

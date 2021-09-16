@@ -2433,7 +2433,7 @@ class A(object):
         AAAAAAAAAAAAAAAAAAAAAAAA = {
             Environment.XXXXXXXXXX: 'some text more text even more tex',
             Environment.YYYYYYY: 'some text more text even more text yet ag',
-            Environment.ZZZZZZZZZZZ: 'some text more text even mor etext yet again tex',
+            Environment.ZZZZZZZZZZZ: 'some text more text even more text yet again tex',
         }
         """)
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
