@@ -25,6 +25,7 @@ the lib2to3 library.
 """
 
 import ast
+import os
 
 from lib2to3 import pygram
 from lib2to3 import pytree
@@ -108,6 +109,9 @@ def ParseCodeToTree(code):
   """
   # This function is tiny, but the incantation for invoking the parser correctly
   # is sufficiently magical to be worth abstracting away.
+  if not code.endswith(os.linesep):
+    code += os.linesep
+
   try:
     # Try to parse using a Python 3 grammar, which is more permissive (print and
     # exec are not keywords).
