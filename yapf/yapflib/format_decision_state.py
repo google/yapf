@@ -446,7 +446,7 @@ class FormatDecisionState(object):
 
     # A function call with a dictionary as its first argument may result in
     # unreadable formatting if the dictionary spans multiple lines. The
-    # dictionary itself is formatted just fine, but the remaning arguments are
+    # dictionary itself is formatted just fine, but the remaining arguments are
     # indented too far:
     #
     #     function_call({
