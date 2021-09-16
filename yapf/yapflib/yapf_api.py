@@ -177,9 +177,6 @@ def FormatCode(unformatted_source,
     Tuple of (reformatted_source, changed). reformatted_source conforms to the
     desired formatting style. changed is True if the source changed.
   """
-  if not unformatted_source.endswith('\n'):
-    unformatted_source += '\n'
-
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)
   except parse.ParseError as e:
