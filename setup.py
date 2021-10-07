@@ -73,7 +73,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       cmdclass={
           'test': RunTests,
       },
-      install_requires=[
-          'toml',
-      ],
+      extras_require={
+          'pyproject': ['toml'],
+      },
   )
