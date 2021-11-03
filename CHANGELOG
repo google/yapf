@@ -12,6 +12,7 @@
 - Enable `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF` knob for "pep8" style, so
   method definitions inside a class are surrounded by a single blank line as
   prescribed by PEP8.
+- Fixed the '...' token to be spaced after a colon.
 
 ## [0.31.0] 2021-03-14
 ### Added

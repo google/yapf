@@ -319,11 +319,11 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   if lval == '.' and rval == 'import':
     # Space after the '.' in an import statement.
     return True
-  if (lval == '=' and rval == '.' and
+  if (lval == '=' and rval in {'.', ',,,'} and
       format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN not in left.subtypes):
     # Space between equal and '.' as in "X = ...".
     return True
-  if lval == ':' and rval == '.':
+  if lval == ':' and rval in {'.', '...'}:
     # Space between : and ...
     return True
   if ((right.is_keyword or right.is_name) and

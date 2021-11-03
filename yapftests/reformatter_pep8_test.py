@@ -715,6 +715,19 @@ class _():
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
+  def testSpaceBetweenDictColonAndElipses(self):
+    style.SetGlobalStyle(style.CreatePEP8Style())
+    unformatted_code = textwrap.dedent("""\
+      {0:"...", 1:...}
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+      {0: "...", 1: ...}
+    """)
+
+    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+
 
 class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
   """Test the SPACE_INSIDE_BRACKETS style option."""
