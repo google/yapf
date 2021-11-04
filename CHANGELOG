@@ -12,6 +12,7 @@
 ### Changes
 - Change tests to support "pytest".
 - Reformat so that "flake8" is happy.
+- Use GitHub Actions instead of Travis for CI.
 ### Fixed
 - Enable `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF` knob for "pep8" style, so
   method definitions inside a class are surrounded by a single blank line as
