@@ -83,7 +83,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
       f.write('ignore_patterns=[')
-      f.writelines('\n,'.join([str(p) for p in ignore_patterns]))
+      f.writelines('\n,'.join(['"{}"'.format(p) for p in ignore_patterns]))
       f.write(']')
 
     self.assertEqual(
@@ -101,7 +101,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
       f.write('ignore_patterns=[')
-      f.writelines('\n,'.join([str(p) for p in ignore_patterns]))
+      f.writelines('\n,'.join(['"{}"'.format(p) for p in ignore_patterns]))
       f.write(']')
 
     with self.assertRaises(errors.YapfError):
