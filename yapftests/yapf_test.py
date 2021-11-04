@@ -1528,7 +1528,7 @@ a = 4-b / c@d**37
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
-        env={'PYTHONIOENCODING': 'cp936', 'PYTHONHASHSEED': 0})
+        env={'PYTHONIOENCODING': 'cp936'})
 
   def testDisableWithLineRanges(self):
     unformatted_code = """\
