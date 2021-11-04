@@ -84,7 +84,7 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
                          reformatter.Reformat(uwlines, verify=False))
 
   def testContinuationLineShouldBeDistinguished(self):
-    unformatted_code = textwrap.dedent("""\
+    code = textwrap.dedent("""\
         class Foo(object):
 
             def bar(self):
@@ -92,16 +92,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
                         self.generators + self.next_batch) == 1:
                     pass
         """)
-    expected_formatted_code = textwrap.dedent("""\
-        class Foo(object):
-            def bar(self):
-                if self.solo_generator_that_is_long is None and len(
-                        self.generators + self.next_batch) == 1:
-                    pass
-        """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(uwlines, verify=False))
+    uwlines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
 
 
 if __name__ == '__main__':
