@@ -7,7 +7,7 @@ YAPF
     :alt: PyPI version
 
 .. image:: https://github.com/google/yapf/actions/workflows/ci.yml/badge.svg
-    :target: https://github.com/google/yapf
+    :target: https://github.com/google/yapf/actions
     :alt: Build status
 
 .. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=main
