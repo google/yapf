@@ -184,10 +184,7 @@ def FormatCode(unformatted_source,
     raise
 
   reformatted_source = FormatTree(
-      tree,
-      style_config=style_config,
-      lines=lines,
-      verify=verify)
+      tree, style_config=style_config, lines=lines, verify=verify)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
