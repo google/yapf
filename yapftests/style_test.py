@@ -316,13 +316,11 @@ class StyleFromCommandLine(yapf_test_helper.YAPFTest):
 
   def testDefaultBasedOnStyleBadString(self):
     self.assertRaisesRegex(style.StyleConfigError, 'Unknown style option',
-                           style.CreateStyleFromConfig,
-                           '{based_on_styl: pep8}')
+                           style.CreateStyleFromConfig, '{based_on_styl: pep8}')
     self.assertRaisesRegex(style.StyleConfigError, 'not a valid',
                            style.CreateStyleFromConfig, '{INDENT_WIDTH: FOUR}')
     self.assertRaisesRegex(style.StyleConfigError, 'Invalid style dict',
-                           style.CreateStyleFromConfig,
-                           '{based_on_style: pep8')
+                           style.CreateStyleFromConfig, '{based_on_style: pep8')
 
 
 class StyleHelp(yapf_test_helper.YAPFTest):
