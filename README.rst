@@ -6,8 +6,8 @@ YAPF
     :target: https://badge.fury.io/py/yapf
     :alt: PyPI version
 
-.. image:: https://travis-ci.org/google/yapf.svg?branch=main
-    :target: https://travis-ci.org/google/yapf
+.. image:: https://github.com/google/yapf/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/google/yapf
     :alt: Build status
 
 .. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=main
