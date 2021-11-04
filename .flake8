@@ -13,6 +13,7 @@ ignore =
 
 exclude =
     yapf/yapflib/py3compat.py
+    yapftests/*
 
 disable-noqa 
 indent-size = 2
