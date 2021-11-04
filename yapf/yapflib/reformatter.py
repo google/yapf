@@ -298,7 +298,7 @@ def _AlignTrailingComments(final_lines):
           assert this_line.tokens
           if (all_pc_line_lengths and
               this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
-             ):
+              ):
             break
 
           if this_line.disable:
@@ -486,8 +486,8 @@ def _AnalyzeSolutionSpace(initial_state):
     if count > 10000:
       node.state.ignore_stack_for_comparison = True
 
-    # Unconditionally add the state and check if it was present to avoid having to
-    # hash it twice in the common case (state hashing is expensive).
+    # Unconditionally add the state and check if it was present to avoid having
+    # to hash it twice in the common case (state hashing is expensive).
     before_seen_count = len(seen)
     seen.add(node.state)
     # If seen didn't change size, the state was already present.
