@@ -298,7 +298,7 @@ def _AlignTrailingComments(final_lines):
           assert this_line.tokens
           if (all_pc_line_lengths and
               this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
-              ):
+             ):
             break
 
           if this_line.disable:

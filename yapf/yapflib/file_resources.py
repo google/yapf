@@ -55,8 +55,7 @@ def _GetExcludePatternsFromPyprojectToml(filename):
   except ImportError:
     raise errors.YapfError(
         "toml package is needed for using pyproject.toml as a "
-        "configuration file"
-    )
+        "configuration file")
 
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
     pyproject_toml = toml.load(filename)
@@ -140,8 +139,7 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
         except ImportError:
           raise errors.YapfError(
               "toml package is needed for using pyproject.toml as a "
-              "configuration file"
-          )
+              "configuration file")
 
         pyproject_toml = toml.load(config_file)
         style_dict = pyproject_toml.get('tool', {}).get('yapf', None)

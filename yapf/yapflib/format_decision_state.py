@@ -981,8 +981,8 @@ class FormatDecisionState(object):
 
     if (self.param_list_stack and
         not self.param_list_stack[-1].SplitBeforeClosingBracket(
-            top_of_stack.indent) and top_of_stack.indent ==
-        ((self.line.depth + 1) * style.Get('INDENT_WIDTH'))):
+            top_of_stack.indent) and top_of_stack.indent
+        == ((self.line.depth + 1) * style.Get('INDENT_WIDTH'))):
       if (format_token.Subtype.PARAMETER_START in current.subtypes or
           (previous.is_comment and
            format_token.Subtype.PARAMETER_START in previous.subtypes)):

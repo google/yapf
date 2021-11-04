@@ -1,9 +1,13 @@
 [flake8]
 ignore =
+    # closing bracket does not match visual indentation
+    E124,
     # continuation line over-indented for hanging indent
     E126,
     # visually indented line with same indent as next logical line,
     E129,
+    # line break before binary operator
+    W503,
     # line break after binary operator
     W504
 

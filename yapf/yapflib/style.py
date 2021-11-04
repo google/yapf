@@ -310,7 +310,7 @@ _STYLE_HELP = dict(
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
 
-      """), # noqa
+      """),  # noqa
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
       Split before arguments if the argument list is terminated by a
       comma."""),
@@ -345,7 +345,7 @@ _STYLE_HELP = dict(
 
         foo = ('This is a really long string: {}, {}, {}, {}'
                .format(a, b, c, d))
-      """), # noqa
+      """),  # noqa
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
       Split after the opening paren which surrounds an expression if it doesn't
       fit on a single line.
@@ -405,7 +405,7 @@ _STYLE_HELP = dict(
 
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
-      """), # noqa
+      """),  # noqa
     SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the 'and' and 'or'
       operators."""),
@@ -754,8 +754,7 @@ def _CreateConfigParserFromConfigFile(config_filename):
       except ImportError:
         raise errors.YapfError(
             "toml package is needed for using pyproject.toml as a "
-            "configuration file"
-        )
+            "configuration file")
 
       pyproject_toml = toml.load(style_file)
       style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
