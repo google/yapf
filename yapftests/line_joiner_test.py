@@ -74,7 +74,7 @@ class LineJoinerTest(yapf_test_helper.YAPFTest):
   def testOverColumnLimit(self):
     code = textwrap.dedent(u"""\
         if instance(bbbbbbbbbbbbbbbbbbbbbbbbb, int): cccccccccccccccccccccccccc = ddddddddddddddddddddd
-        """)
+        """)  # noqa
     self._CheckLineJoining(code, join_lines=False)
 
 

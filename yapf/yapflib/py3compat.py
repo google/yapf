@@ -27,9 +27,9 @@ if PY3:
   StringIO = io.StringIO
   BytesIO = io.BytesIO
 
-  import codecs
+  import codecs  # noqa: F811
 
-  def open_with_encoding(filename, mode, encoding, newline=''):  # pylint: disable=unused-argument
+  def open_with_encoding(filename, mode, encoding, newline=''):  # pylint: disable=unused-argument # noqa
     return codecs.open(filename, mode=mode, encoding=encoding)
 
   import functools
@@ -62,13 +62,13 @@ else:
 
     return fake_wrapper
 
-  range = xrange
+  range = xrange  # noqa: F821
 
   from itertools import ifilter
   raw_input = raw_input
 
   import ConfigParser as configparser
-  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access
+  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access # noqa
 
 
 def EncodeAndWriteToStdout(s, encoding='utf-8'):

@@ -170,7 +170,7 @@ class _():
         'PyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyTypePyType'  # pytype: disable=attribute-error
         'CopybaraCopybaraCopybaraCopybaraCopybaraCopybaraCopybaraCopybaraCopybara'  # copybara:strip
     )
-"""
+"""  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -203,7 +203,7 @@ X = {
 class Foo(object):
   def testNoAlertForShortPeriod(self, rutabaga):
     self.targets[:][streamz_path,self._fillInOtherFields(streamz_path, {streamz_field_of_interest:True})] = series.Counter('1s', '+ 500x10000')
-"""
+"""  # noqa
     expected_formatted_code = """\
 class Foo(object):
 
@@ -236,7 +236,7 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
   def testB111764402(self):
     unformatted_code = """\
 x = self.stubs.stub(video_classification_map,              'read_video_classifications',       (lambda external_ids, **unused_kwargs:                     {external_id: self._get_serving_classification('video') for external_id in external_ids}))
-"""
+"""  # noqa
     expected_formatted_code = """\
 x = self.stubs.stub(video_classification_map, 'read_video_classifications',
                     (lambda external_ids, **unused_kwargs: {
@@ -293,7 +293,7 @@ def potato(feeditems, browse_use_case=None):
     if kumquat:
       if not feeds_variants.variants['FEEDS_LOAD_PLAYLIST_VIDEOS_FOR_ALL_ITEMS'] and item.video:
         continue
-"""
+"""  # noqa
     expected_formatted_code = """\
 def potato(feeditems, browse_use_case=None):
   for item in turnip:
@@ -403,13 +403,13 @@ def _():
   aaaaaaaaaaa = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccc(\
 eeeeeeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffffffffffffffffffffff.\
 ggggggggggggggggggggggggggggggggg.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh())
-"""
+"""  # noqa
     expected_formatted_code = """\
 def _():
   aaaaaaaaaaa = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccc(
       eeeeeeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffffffffffffffffffffff
       .ggggggggggggggggggggggggggggggggg.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh())
-"""
+"""  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -419,7 +419,7 @@ def f():
   if (aaaaaaaaaaaaaa.bbbbbbbbbbbb.ccccc <= 0 and  # pytype: disable=attribute-error
       ddddddddddd.eeeeeeeee == constants.FFFFFFFFFFFFFF):
     raise "yo"
-"""
+"""  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -493,7 +493,7 @@ INITIAL_SYMTAB = dict([(name, 'exception#' + name) for name in INITIAL_EXCEPTION
 ] * [(name, 'type#' + name) for name in INITIAL_TYPES] + [
     (name, 'function#' + name) for name in INITIAL_FUNCTIONS
 ] + [(name, 'const#' + name) for name in INITIAL_CONSTS])
-"""
+"""  # noqa
     expected_formatted_code = """\
 INITIAL_SYMTAB = dict(
     [(name, 'exception#' + name) for name in INITIAL_EXCEPTIONS] *
@@ -523,7 +523,7 @@ _MEMCACHE = lazy.MakeLazy(
     lambda: function.call.mem.clients(FLAGS.some_flag_thingy, default_namespace=_LAZY_MEM_NAMESPACE, allow_pickle=True)
     # pylint: enable=g-long-lambda
 )
-"""
+"""  # noqa
     expected_formatted_code = """\
 _MEMCACHE = lazy.MakeLazy(
     # pylint: disable=g-long-lambda
@@ -551,7 +551,7 @@ def _():
               | m.Window(m.Delta('1h'))
               | m.Join('successes', 'total')
               | m.Point(m.VAL['successes'] / m.VAL['total']))))
-"""
+"""  # noqa
     expected_formatted_code = """\
 def _():
   success_rate_stream_table = module.Precompute(
@@ -684,7 +684,7 @@ X = {
   def testB67455376(self):
     unformatted_code = """\
 sponge_ids.extend(invocation.id() for invocation in self._client.GetInvocationsByLabels(labels))
-"""
+"""  # noqa
     expected_formatted_code = """\
 sponge_ids.extend(invocation.id()
                   for invocation in self._client.GetInvocationsByLabels(labels))
@@ -764,7 +764,7 @@ def _():
   query = (
       m.Fetch(n.Raw('monarch.BorgTask', '/proc/container/memory/usage'), { 'borg_user': borguser, 'borg_job': jobname })
       | o.Window(m.Align('5m')) | p.GroupBy(['borg_user', 'borg_job', 'borg_cell'], q.Mean()))
-"""
+"""  # noqa
     expected_formatted_code = """\
 def _():
   query = (
@@ -815,7 +815,7 @@ def _():
         region=region,
         forwardingRule=rule_name,
         body={'fingerprint': base64.urlsafe_b64encode('invalid_fingerprint')}).execute()
-"""
+"""  # noqa
     expected_formatted_code = """\
 def _():
   with self.assertRaisesRegexp(errors.HttpError, 'Invalid'):
@@ -843,7 +843,7 @@ def _():
   def testB65241516(self):
     unformatted_code = """\
 checkpoint_files = gfile.Glob(os.path.join(TrainTraceDir(unit_key, "*", "*"), embedding_model.CHECKPOINT_FILENAME + "-*"))
-"""
+"""  # noqa
     expected_formatted_code = """\
 checkpoint_files = gfile.Glob(
     os.path.join(
@@ -903,7 +903,7 @@ def _():
                     ('/some/path/to/a/file/that/is/needed/by/this/process')
               }
           }
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
           X = {
@@ -912,7 +912,7 @@ def _():
                       ('/some/path/to/a/file/that/is/needed/by/this/process')
               }
           }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -921,7 +921,7 @@ def _():
         def _():
           while ((not mpede_proc) or ((time_time() - last_modified) < FLAGS_boot_idle_timeout)):
             pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
           while ((not mpede_proc) or
@@ -942,7 +942,7 @@ def _():
                             'read': 'name/some-type-of-very-long-name-for-reading-perms',
                             'modify': 'name/some-other-type-of-very-long-name-for-modifying'
                          })
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
           labelacl = Env(
@@ -954,14 +954,14 @@ def _():
                   'read': 'name/some-type-of-very-long-name-for-reading-perms',
                   'modify': 'name/some-other-type-of-very-long-name-for-modifying'
               })
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
   def testB34682902(self):
     unformatted_code = textwrap.dedent("""\
         logging.info("Mean angular velocity norm: %.3f", np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         logging.info("Mean angular velocity norm: %.3f",
                      np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
@@ -1016,7 +1016,7 @@ def _():
                     'this is an entry',
             }
         }
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         environments = {
             'prod': {
@@ -1043,7 +1043,7 @@ def _():
                 '.....': 'this is an entry',
             }
         }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1125,7 +1125,7 @@ def _():
 
           def __init__(self, metric, fields_cb=None):
             self._fields_cb = fields_cb or (lambda *unused_args, **unused_kwargs: {})
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1154,7 +1154,7 @@ class _():
 
           def xxxxx(self, yyyyy, zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
             return 1
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class _():
 
@@ -1166,7 +1166,7 @@ class _():
               yyyyy,
               zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
             return 1
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1174,13 +1174,13 @@ class _():
     unformatted_code = textwrap.dedent("""\
         {'1234567890123456789012345678901234567890123456789012345678901234567890':
              '1234567890123456789012345678901234567890'}
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         {
             '1234567890123456789012345678901234567890123456789012345678901234567890':
                 '1234567890123456789012345678901234567890'
         }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1190,7 +1190,7 @@ class _():
 
           def Function(self):
             thing.Scrape('/aaaaaaaaa/bbbbbbbbbb/ccccc/dddd/eeeeeeeeeeeeee/ffffffffffffff').AndReturn(42)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class Thing:
 
@@ -1233,7 +1233,7 @@ class _():
         def lulz():
           return (some_long_module_name.SomeLongClassName.some_long_attribute_name
                   .some_long_method_name())
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1252,7 +1252,7 @@ class _():
                 'lllllllllllll': None,  # use the default
             }
         }
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
       def _():
         xxxxxxxxxxxxxxxxxxx = {
@@ -1280,7 +1280,7 @@ class _():
           def _():
             self.assertFalse(
                 evaluation_runner.get_larps_in_eval_set('these_arent_the_larps'))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1291,7 +1291,7 @@ class _():
           def __repr__(self):
             return '<session %s on %s>' % (
                 self._id, self._stub._stub.rpc_channel().target())  # pylint:disable=protected-access
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1325,14 +1325,14 @@ class _():
         def _():
           _xxxxxxxxxxxxxxx(aaaaaaaa, bbbbbbbbbbbbbb.cccccccccc[
               dddddddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
           _xxxxxxxxxxxxxxx(
               aaaaaaaa,
               bbbbbbbbbbbbbb.cccccccccc[dddddddddddddddddddddddddddd
                                         .eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1381,7 +1381,7 @@ class _():
                  False:
                      self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
                 })
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
           if True:
@@ -1391,7 +1391,7 @@ class _():
                 False:
                     self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
             })
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1399,7 +1399,7 @@ class _():
     unformatted_code = textwrap.dedent("""\
         def _():
           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccccccccc)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
@@ -1449,7 +1449,7 @@ class _():
     code = textwrap.dedent("""\
         def f():
           ids = {u: i for u, i in zip(self.aaaaa, xrange(42, 42 + len(self.aaaaaa)))}
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1488,7 +1488,7 @@ class _():
             'materialize': lambda x: some_type_of_function('materialize ' + x.command_def),
             '#': lambda x: x  # do nothing
         })
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         APPARENT_ACTIONS = (
             'command_type',
@@ -1498,7 +1498,7 @@ class _():
                 '#':
                     lambda x: x  # do nothing
             })
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1513,7 +1513,7 @@ class _():
                     "PPPPPPPPPPPPPPPPPPPPP":
                         FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
                 })
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def foo():
           if True:
@@ -1525,7 +1525,7 @@ class _():
                     "PPPPPPPPPPPPPPPPPPPPP":
                         FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
                 })
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1593,7 +1593,7 @@ class _():
         def foo():
           if True:
             return (struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def foo():
           if True:
@@ -1608,7 +1608,7 @@ class _():
         class A(object):
           def xxxxxxxxx(self, aaaaaaa, bbbbbbb=ccccccccccc, dddddd=300, eeeeeeeeeeeeee=None, fffffffffffffff=0):
             pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class A(object):
 
@@ -1628,7 +1628,7 @@ class _():
         class F():
           def functioni(self, aaaaaaa, bbbbbbb, cccccc, dddddddddddddd, eeeeeeeeeeeeeee):
             pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class F():
 
@@ -1660,7 +1660,7 @@ class _():
                    | m.ggggggg(bbbbbbbbbbbbbbb))
                   | m.jjjj()
                   | m.ppppp(m.vvv[0] + m.vvv[1]))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1678,7 +1678,7 @@ class _():
                      | m.ggggggg(self.gggggggg))
                     | m.jjjj()
                     | m.ppppp(m.VAL[0] / m.VAL[1]))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1686,7 +1686,7 @@ class _():
     unformatted_code = textwrap.dedent("""\
         from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
                                                                    long_argument_2)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         from a_very_long_or_indented_module_name_yada_yada import (
             long_argument_1, long_argument_2)
@@ -1719,7 +1719,7 @@ class _():
                     and self.gggggg == other.gggggg and self.hhh == other.hhh
                     and len(self.iiiiiiii) == len(other.iiiiiiii)
                     and all(jjjjjjj in other.iiiiiiii for jjjjjjj in self.iiiiiiii))
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -1736,7 +1736,7 @@ class _():
         def f():
           if True:
             aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(ffffffffffffff)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def f():
           if True:
@@ -1762,7 +1762,7 @@ class _():
                 'xxx':
                     '%s/cccccc/ddddddddddddddddddd.jar' % (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1785,7 +1785,7 @@ class _():
                                       'dddddddddddddddddddddddddddddddddddddddddd',
             }
         }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1834,7 +1834,7 @@ class _():
                           class_0_count=class_0_count,
                           class_1_name=self.class_1_name,
                           class_1_count=class_1_count))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1843,7 +1843,7 @@ class _():
         if True:
           aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb(
               'ccccccccccc', ddddddddd='eeeee').fffffffff([ggggggggggggggggggggg])
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1907,7 +1907,7 @@ class _():
                 fffffffffff=(aaaaaaa.bbbbbbbb.ccccccc.dddddddddddddddddddd
                              .Mmmmmmmmmmmmmmmmmm(-1, 'permission error'))):
               self.assertRaises(nnnnnnnnnnnnnnnn.ooooo, ppppp.qqqqqqqqqqqqqqqqq)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class Foo(object):
 
@@ -1918,7 +1918,7 @@ class _():
                     aaaaaaa.bbbbbbbb.ccccccc.dddddddddddddddddddd.Mmmmmmmmmmmmmmmmmm(
                         -1, 'permission error'))):
               self.assertRaises(nnnnnnnnnnnnnnnn.ooooo, ppppp.qqqqqqqqqqqqqqqqq)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2054,7 +2054,7 @@ instance = (
                   os.path.join(aaaaa.bbbbb.ccccccccccc, DDDDDDDDDDDDDDD,
                                "eeeeeeeee ffffffffff"), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2092,7 +2092,7 @@ instance = (
                                                       eeeeeeeee=self.fffffffffffff
                                                       )as gggg:
             pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
           with aaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccc(
@@ -2107,7 +2107,7 @@ instance = (
         def foo(self):
          def bar(my_dict_name):
           self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with('foo_bar_baz_boo')
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def foo(self):
 
@@ -2115,7 +2115,7 @@ instance = (
             self.my_dict_name[
                 'foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with(
                     'foo_bar_baz_boo')
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2125,7 +2125,7 @@ instance = (
           if 1:
             for row in AAAA:
               self.create(aaaaaaaa="/aaa/bbbb/cccc/dddddd/eeeeeeeeeeeeeeeeeeeeeeeeee/%s" % row [0].replace(".foo", ".bar"), aaaaa=bbb[1], ccccc=bbb[2], dddd=bbb[3], eeeeeeeeeee=[s.strip() for s in bbb[4].split(",")], ffffffff=[s.strip() for s in bbb[5].split(",")], gggggg=bbb[6])
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if 1:
           if 1:
@@ -2139,7 +2139,7 @@ instance = (
                   eeeeeeeeeee=[s.strip() for s in bbb[4].split(",")],
                   ffffffff=[s.strip() for s in bbb[5].split(",")],
                   gggggg=bbb[6])
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2152,7 +2152,7 @@ instance = (
           bad_slice = map(math.sqrt, an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A])
           a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
           bad_slice = ("I am a crazy, no good, string what's too long, etc." + " no really ")[:ARBITRARY_CONSTANT_A]
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def main(unused_argv):
           ARBITRARY_CONSTANT_A = 10
@@ -2164,7 +2164,7 @@ instance = (
                                                                        ARBITRARY_CONSTANT_A]
           bad_slice = ("I am a crazy, no good, string what's too long, etc." +
                        " no really ")[:ARBITRARY_CONSTANT_A]
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2174,7 +2174,7 @@ if True:
   if True:
     if True:
       print(("Return code was %d" + (", and the process timed out." if did_time_out else ".")) % errorcode)
-"""
+"""  # noqa
     expected_formatted_code = """\
 if True:
   if True:
@@ -2189,11 +2189,11 @@ if True:
   def testB15542157(self):
     unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaa = bbbb.ccccccccccccccc(dddddd.eeeeeeeeeeeeee, ffffffffffffffffff, gggggg.hhhhhhhhhhhhhhhhh)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaa = bbbb.ccccccccccccccc(dddddd.eeeeeeeeeeeeee, ffffffffffffffffff,
                                             gggggg.hhhhhhhhhhhhhhhhh)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2213,7 +2213,7 @@ if True:
                      iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk,
                      lllll.mm),
                  nnnnnnnnnn=ooooooo.pppppppppp)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if aaaaaaa.bbbbbbbbbb:
           cccccc.dddddddddd(eeeeeeeeeee=fffffffffffff.gggggggggggggggggg)
@@ -2228,7 +2228,7 @@ if True:
                 dddddddddddd=eeeeeeeeeeeeeeeeeee.fffffffffffffffff(
                     gggggg.hh, iiiiiiiiiiiiiiiiiii.jjjjjjjjjj.kkkkkkk, lllll.mm),
                 nnnnnnnnnn=ooooooo.pppppppppp)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2256,7 +2256,7 @@ parameter_5, parameter_6): pass
         def foo1(parameter_1, parameter_2, parameter_3, parameter_4, parameter_5,
                  parameter_6):
           pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2264,11 +2264,11 @@ parameter_5, parameter_6): pass
     unformatted_code = textwrap.dedent("""\
         self.aaaaaaaaaaa(  # A comment in the middle of it all.
                948.0/3600, self.bbb.ccccccccccccccccccccc(dddddddddddddddd.eeee, True))
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         self.aaaaaaaaaaa(  # A comment in the middle of it all.
             948.0 / 3600, self.bbb.ccccccccccccccccccccc(dddddddddddddddd.eeee, True))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2283,7 +2283,7 @@ parameter_5, parameter_6): pass
 
     unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc().dddddddddddddddddddddddddd(1, 2, 3, 4)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(
         ).dddddddddddddddddddddddddd(1, 2, 3, 4)
@@ -2293,7 +2293,7 @@ parameter_5, parameter_6): pass
 
     unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(x).dddddddddddddddddddddddddd(1, 2, 3, 4)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(
             x).dddddddddddddddddddddddddd(1, 2, 3, 4)
@@ -2303,11 +2303,11 @@ parameter_5, parameter_6): pass
 
     unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa(xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx).dddddddddddddddddddddddddd(1, 2, 3, 4)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa(
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx).dddddddddddddddddddddddddd(1, 2, 3, 4)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2341,7 +2341,7 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     expected_formatted_code = textwrap.dedent("""\
         shelf_renderer.expand_text = text.translate_to_unicode(expand_text %
                                                                {'creator': creator})
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 

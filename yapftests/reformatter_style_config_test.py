@@ -155,7 +155,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
 
           plt.plot(veryverylongvariablename, veryverylongvariablename, marker="x",
                    color="r")
-          """)
+          """)  # noqa
       uwlines = yapf_test_helper.ParseAndUnwrap(formatted_code)
       self.assertCodeEqual(formatted_code, reformatter.Reformat(uwlines))
     finally:

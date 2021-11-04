@@ -53,7 +53,7 @@ class TestsForFacebookStyle(yapf_test_helper.YAPFTest):
             first_argument_on_the_same_line, second_argument_makes_the_line_too_long
         ):
             pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -151,7 +151,7 @@ v, w, x, y, z
             pass
         except (IOError, OSError, LookupError, RuntimeError, OverflowError) as exception:
             pass
-        """)
+        """)  # noqa
     pass1_code = textwrap.dedent("""\
         try:
             pass
@@ -201,7 +201,7 @@ v, w, x, y, z
     unformatted_code = textwrap.dedent("""\
         if True:
             self.assertEqual(result.reason_not_added, "current preflight is still running")
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
             self.assertEqual(
@@ -220,7 +220,7 @@ v, w, x, y, z
                     if clues_lists:
                        return cls.single_constraint_not(clues_lists, effect, constraints[0], constraint_manager)
 
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class Foo:
             class Bar:
@@ -230,7 +230,7 @@ v, w, x, y, z
                         return cls.single_constraint_not(
                             clues_lists, effect, constraints[0], constraint_manager
                         )
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -241,7 +241,7 @@ v, w, x, y, z
                 cls.effect_clues = {
                     'effect': Clue((cls.effect_time, 'apache_host'), effect_line, 40)
                 }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -283,7 +283,7 @@ v, w, x, y, z
                     ('localhost', os.path.join(path, 'node_1.log'), super_parser),
                     ('localhost', os.path.join(path, 'node_2.log'), super_parser)
                 ]
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class Foo():
             def _pack_results_for_constraint_or():
@@ -319,7 +319,7 @@ v, w, x, y, z
                     ('localhost', os.path.join(path, 'node_1.log'), super_parser),
                     ('localhost', os.path.join(path, 'node_2.log'), super_parser)
                 ]
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -331,7 +331,7 @@ v, w, x, y, z
                     effect_line_offset, line_content,
                     LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
                 )
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -374,7 +374,7 @@ v, w, x, y, z
                     (clue for clue in combination if not clue == Verifier.UNMATCHED),
                     constraints, InvestigationResult.OR
                 )
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     reformatted_code = reformatter.Reformat(uwlines)
     self.assertCodeEqual(code, reformatted_code)
@@ -388,8 +388,8 @@ v, w, x, y, z
         def foo():
             if 0:
                 return False
-                
-                
+
+
             #a deadly comment
             elif 1:
                 return True
@@ -401,7 +401,7 @@ v, w, x, y, z
         def foo():
             if 0:
                 return False
-                
+
             #a deadly comment
             elif 1:
                 return True
@@ -416,7 +416,7 @@ v, w, x, y, z
     unformatted_code = """\
 if (isinstance(value  , (StopIteration  , StopAsyncIteration  )) and exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs):
     return False
-"""
+"""  # noqa
     expected_formatted_code = """\
 if (
     isinstance(value, (StopIteration, StopAsyncIteration)) and

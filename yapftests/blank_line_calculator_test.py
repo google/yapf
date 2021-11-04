@@ -249,7 +249,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
           #    reason="https://github.com/pypa/setuptools/issues/706")
           def test_unicode_filename_in_sdist(self, sdist_unicode, tmpdir, monkeypatch):
             pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 

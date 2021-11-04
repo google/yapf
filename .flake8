@@ -1,5 +1,7 @@
 [flake8]
 ignore =
+    # 'toml' imported but unused
+    F401,
     # closing bracket does not match visual indentation
     E124,
     # continuation line over-indented for hanging indent
@@ -10,10 +12,6 @@ ignore =
     W503,
     # line break after binary operator
     W504
-
-exclude =
-    yapf/yapflib/py3compat.py
-    yapftests/*
 
 disable-noqa 
 indent-size = 2

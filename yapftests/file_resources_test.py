@@ -525,7 +525,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
     self.assertEqual(stream.getvalue(), s)
 
   def test_write_encoded_to_stdout(self):
-    s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string
+    s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string # noqa
     stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
     with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
