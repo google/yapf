@@ -21,6 +21,8 @@ import yapf
 
 from yapf.yapflib import py3compat
 
+from yapftests import yapf_test_helper
+
 
 class IO(object):
   """IO is a thin wrapper around StringIO.
@@ -83,7 +85,7 @@ def patched_input(code):
     yapf.py3compat.raw_input = orig_raw_import
 
 
-class RunMainTest(unittest.TestCase):
+class RunMainTest(yapf_test_helper.YAPFTest):
 
   def testShouldHandleYapfError(self):
     """run_main should handle YapfError and sys.exit(1)."""
@@ -96,11 +98,11 @@ class RunMainTest(unittest.TestCase):
       self.assertEqual(err.getvalue(), expected_message)
 
 
-class MainTest(unittest.TestCase):
+class MainTest(yapf_test_helper.YAPFTest):
 
   def testNoPythonFilesMatched(self):
-    with self.assertRaisesRegexp(yapf.errors.YapfError,
-                                 'did not match any python files'):
+    with self.assertRaisesRegex(yapf.errors.YapfError,
+                                'did not match any python files'):
       yapf.main(['yapf', 'foo.c'])
 
   def testEchoInput(self):
@@ -112,7 +114,7 @@ class MainTest(unittest.TestCase):
         self.assertEqual(out.getvalue(), code)
 
   def testEchoInputWithStyle(self):
-    code = 'def f(a = 1):\n    return 2*a\n'
+    code = 'def f(a = 1\n\n):\n    return 2*a\n'
     yapf_code = 'def f(a=1):\n  return 2 * a\n'
     with patched_input(code):
       with captured_output() as (out, _):
@@ -124,7 +126,7 @@ class MainTest(unittest.TestCase):
     bad_syntax = '  a = 1\n'
     with patched_input(bad_syntax):
       with captured_output() as (_, _):
-        with self.assertRaisesRegexp(SyntaxError, 'unexpected indent'):
+        with self.assertRaisesRegex(SyntaxError, 'unexpected indent'):
           yapf.main([])
 
   def testHelp(self):

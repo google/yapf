@@ -21,6 +21,7 @@ from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
 from yapf.yapflib import identify_container
+from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_unwrapper
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
@@ -30,6 +31,11 @@ from yapf.yapflib import subtype_assigner
 
 
 class YAPFTest(unittest.TestCase):
+
+  def __init__(self, *args):
+    super(YAPFTest, self).__init__(*args)
+    if not py3compat.PY3:
+      self.assertRaisesRegex = self.assertRaisesRegexp
 
   def assertCodeEqual(self, expected_code, code):
     if code != expected_code:

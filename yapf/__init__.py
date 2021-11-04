@@ -81,7 +81,9 @@ def main(argv):
 
     original_source = []
     while True:
-      if sys.stdin.closed:
+      # Test that sys.stdin has the "closed" attribute. When using pytest, it
+      # co-opts sys.stdin, which makes the "main_tests.py" fail. This is gross.
+      if hasattr(sys.stdin, "closed") and sys.stdin.closed:
         break
       try:
         # Use 'raw_input' instead of 'sys.stdin.read', because otherwise the
