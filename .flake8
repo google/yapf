@@ -1,8 +1,15 @@
 [flake8]
 ignore =
-    # indentation is not a multiple of four,
-    E111,E114,
+    # continuation line over-indented for hanging indent
+    E126,
     # visually indented line with same indent as next logical line,
-    E129
+    E129,
+    # line break after binary operator
+    W504
 
-max-line-length=80
+exclude =
+    yapf/yapflib/py3compat.py
+
+disable-noqa 
+indent-size = 2
+max-line-length = 80

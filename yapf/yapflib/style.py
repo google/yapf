@@ -235,7 +235,8 @@ _STYLE_HELP = dict(
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
     SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent("""\
-      Adds a space after the opening '{' and before the ending '}' dict delimiters.
+      Adds a space after the opening '{' and before the ending '}' dict
+      delimiters.
 
         {1: 2}
 
@@ -244,7 +245,8 @@ _STYLE_HELP = dict(
         { 1: 2 }
       """),
     SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
-      Adds a space after the opening '[' and before the ending ']' list delimiters.
+      Adds a space after the opening '[' and before the ending ']' list
+      delimiters.
 
         [1, 2]
 
@@ -258,7 +260,8 @@ _STYLE_HELP = dict(
         my_list[1 : 10 : 2]
       """),
     SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
-      Adds a space after the opening '(' and before the ending ')' tuple delimiters.
+      Adds a space after the opening '(' and before the ending ')' tuple
+      delimiters.
 
         (1, 2, 3)
 
@@ -280,7 +283,8 @@ _STYLE_HELP = dict(
 
       will be formatted as:
 
-        1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
+        1 + 1     # Adding values <-- 5 spaces between the end of the
+                  # statement and comment
 
       With spaces_before_comment=15, 20:
 
@@ -295,16 +299,18 @@ _STYLE_HELP = dict(
 
       will be formatted as:
 
-        1 + 1          # Adding values <-- end of line comments in block aligned to col 15
+        1 + 1          # Adding values <-- end of line comments in block
+                       # aligned to col 15
         two + two      # More adding
 
-        longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
+        longer_statement    # This is a longer statement <-- end of line
+                            # comments in block aligned to col 20
         short               # This is a shorter statement
 
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
 
-      """),
+      """), # noqa
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
       Split before arguments if the argument list is terminated by a
       comma."""),
@@ -339,7 +345,7 @@ _STYLE_HELP = dict(
 
         foo = ('This is a really long string: {}, {}, {}, {}'
                .format(a, b, c, d))
-      """),
+      """), # noqa
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
       Split after the opening paren which surrounds an expression if it doesn't
       fit on a single line.
@@ -399,7 +405,7 @@ _STYLE_HELP = dict(
 
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
-      """),
+      """), # noqa
     SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the 'and' and 'or'
       operators."""),
@@ -747,7 +753,8 @@ def _CreateConfigParserFromConfigFile(config_filename):
         import toml
       except ImportError:
         raise errors.YapfError(
-            "toml package is needed for using pyproject.toml as a configuration file"
+            "toml package is needed for using pyproject.toml as a "
+            "configuration file"
         )
 
       pyproject_toml = toml.load(style_file)
