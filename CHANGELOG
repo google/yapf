@@ -8,6 +8,7 @@
   for YAPF.
 - New entry point `yapf_api.FormatTree` for formatting lib2to3 concrete
   syntax trees.
+- Add CI via GitHub Actions.
 ### Changes
 - Change tests to support "pytest".
 - Reformat so that "flake8" is happy.
