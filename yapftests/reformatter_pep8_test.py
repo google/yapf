@@ -132,7 +132,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                 zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxx.yyy + 1)
                 zzzzz = '%s-%s' % (xxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxxxxxx + 1)
                 zzzzz = '%s-%s'.ww(xxxxxxxxxxxxxxxxxxxxxxx + 1, xxxxxxxxxxxxxxxxxxxxx + 1)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def f():
             if True:
@@ -172,7 +172,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                    xxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'
                   ):
               pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def f():
 
@@ -181,7 +181,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                        and xxxxxxxxxxxxxxxxxxxx(
                            yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
                     pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -189,7 +189,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         if True:
           runtime_mins = (program_end_time - program_start_time).total_seconds() / 60.0
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
             runtime_mins = (program_end_time -
@@ -212,7 +212,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
 
             for connection in itertools.chain(branch.contact, branch.address, morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
                 dosomething(connection)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if (aaaaaaaaaaaaaa + bbbbbbbbbbbbbbbb == ccccccccccccccccc and xxxxxxxxxxxxx
                 or yyyyyyyyyyyyyyyyy):
@@ -233,7 +233,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                     branch.contact, branch.address,
                     morestuff.andmore.andmore.andmore.andmore.andmore.andmore.andmore):
                 dosomething(connection)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -250,7 +250,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                           update.message.supergroup_chat_created or update.message.channel_chat_created
                           or update.message.migrate_to_chat_id or update.message.migrate_from_chat_id or
                           update.message.pinned_message)
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           def foo():
               return bool(
@@ -263,7 +263,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                   or update.message.migrate_to_chat_id
                   or update.message.migrate_from_chat_id
                   or update.message.pinned_message)
-          """)
+          """)  # noqa
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -275,13 +275,13 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
         if True:
             if True:
                 keys.append(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
             if True:
                 keys.append(
                     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)  # may be unassigned.
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -293,7 +293,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
       unformatted_code = textwrap.dedent("""\
           a_very_long_function_name(long_argument_name_1=1, long_argument_name_2=2,
                                     long_argument_name_3=3, long_argument_name_4=4)
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           a_very_long_function_name(
               long_argument_name_1=1,
@@ -311,7 +311,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         def foo():
             df = df[(df['campaign_status'] == 'LIVE') & (df['action_status'] == 'LIVE')]
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             df = df[(df['campaign_status'] == 'LIVE')
@@ -390,7 +390,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
               'description': _("Lorem ipsum dolor met sit amet elit, si vis pacem para bellum "
                                "elites nihi very long string."),
           }
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           some_dict = {
               'title': _("I am example data"),
@@ -399,21 +399,21 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                   "elites nihi very long string."
               ),
           }
-          """)
+          """)  # noqa
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
 
       unformatted_code = textwrap.dedent("""\
           X = {'a': 1, 'b': 2, 'key': this_is_a_function_call_that_goes_over_the_column_limit_im_pretty_sure()}
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           X = {
               'a': 1,
               'b': 2,
               'key': this_is_a_function_call_that_goes_over_the_column_limit_im_pretty_sure()
           }
-          """)
+          """)  # noqa
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -423,7 +423,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
               'category': category,
               'role': forms.ModelChoiceField(label=_("Role"), required=False, queryset=category_roles, initial=selected_role, empty_label=_("No access"),),
           }
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           attrs = {
               'category': category,
@@ -446,7 +446,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
               required=False,
               help_text=_("Optional CSS class used to customize this category appearance from templates."),
           )
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           css_class = forms.CharField(
               label=_("CSS class"),
@@ -455,7 +455,7 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
                   "Optional CSS class used to customize this category appearance from templates."
               ),
           )
-          """)
+          """)  # noqa
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -528,7 +528,7 @@ class Demo:
       unformatted_code = """\
 def _():
     raise ValueError('This is a long message that ends with an argument: ' + str(42))
-"""
+"""  # noqa
       expected_formatted_code = """\
 def _():
     raise ValueError('This is a long message that ends with an argument: '
@@ -604,7 +604,7 @@ class _():
             justify: str = 'rjust'):
         self._cs = charset
         self._preprocess = preprocess
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
 class _():
 
@@ -654,7 +654,7 @@ class _():
     unformatted_code = textwrap.dedent("""\
         _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl is not ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj)
         _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl not in {ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj})
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         _ = (klsdfjdklsfjksdlfjdklsfjdslkfjsdkl
              is not ksldfjsdklfjdklsfjdklsfjdklsfjdsklfjdklsfj)
@@ -687,7 +687,7 @@ class _():
         def _():
             url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
                 value, urllib.urlencode({'action': 'update', 'parameter': value}))
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
             url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(

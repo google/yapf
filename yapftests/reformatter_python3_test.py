@@ -36,7 +36,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         def x(aaaaaaaaaaaaaaa:int,bbbbbbbbbbbbbbbb:str,ccccccccccccccc:dict,eeeeeeeeeeeeee:set={1, 2, 3})->bool:
           pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def x(aaaaaaaaaaaaaaa: int,
               bbbbbbbbbbbbbbbb: str,
@@ -51,12 +51,12 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         def func(arg=long_function_call_that_pushes_the_line_over_eighty_characters()) -> ReturnType:
           pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def func(arg=long_function_call_that_pushes_the_line_over_eighty_characters()
                  ) -> ReturnType:
             pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -253,7 +253,7 @@ None.__ne__()
             self, *args: Optional[automation_converter.PyiCollectionAbc]) -> List[
                 automation_converter.PyiCollectionAbc]:
             pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _ReduceAbstractContainers(
             self, *args: Optional[automation_converter.PyiCollectionAbc]
@@ -297,7 +297,7 @@ def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=
 
 def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
     pass
-"""
+"""  # noqa
     expected_formatted_code = """\
 async def open_file(
     file,
@@ -454,7 +454,7 @@ def rrrrrrrrrrrrrrrrrrrrrr(
         def raw_message(  # pylint: disable=too-many-arguments
                     self, text, user_id=1000, chat_type='private', forward_date=None, forward_from=None):
                 pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def raw_message(  # pylint: disable=too-many-arguments
                 self,

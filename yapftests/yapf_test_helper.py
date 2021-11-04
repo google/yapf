@@ -41,17 +41,17 @@ class YAPFTest(unittest.TestCase):
     if code != expected_code:
       msg = ['Code format mismatch:', 'Expected:']
       linelen = style.Get('COLUMN_LIMIT')
-      for l in expected_code.splitlines():
-        if len(l) > linelen:
-          msg.append('!> %s' % l)
+      for line in expected_code.splitlines():
+        if len(line) > linelen:
+          msg.append('!> %s' % line)
         else:
-          msg.append(' > %s' % l)
+          msg.append(' > %s' % line)
       msg.append('Actual:')
-      for l in code.splitlines():
-        if len(l) > linelen:
-          msg.append('!> %s' % l)
+      for line in code.splitlines():
+        if len(line) > linelen:
+          msg.append('!> %s' % line)
         else:
-          msg.append(' > %s' % l)
+          msg.append(' > %s' % line)
       msg.append('Diff:')
       msg.extend(
           difflib.unified_diff(

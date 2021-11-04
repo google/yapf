@@ -35,7 +35,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
             '{split_all_comma_separated_values: true, column_limit: 40}'))
     unformatted_code = textwrap.dedent("""\
           responseDict = {"timestamp": timestamp, "someValue":   value, "whatever": 120}
-          """)
+          """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
           responseDict = {
               "timestamp": timestamp,
@@ -60,7 +60,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
           def foo(long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args):
                 pass
-          """)
+          """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
           def foo(long_arg,
                   really_long_arg,
@@ -72,7 +72,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
     unformatted_code = textwrap.dedent("""\
           foo_tuple = [long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args]
-          """)
+          """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
           foo_tuple = [
               long_arg,
@@ -109,12 +109,13 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
   def testSplittingTopLevelAllArgs(self):
     style.SetGlobalStyle(
         style.CreateStyleFromConfig(
-            '{split_all_top_level_comma_separated_values: true, column_limit: 40}'
+            '{split_all_top_level_comma_separated_values: true, '
+            'column_limit: 40}'
         ))
     # Works the same way as split_all_comma_separated_values
     unformatted_code = textwrap.dedent("""\
           responseDict = {"timestamp": timestamp, "someValue":   value, "whatever": 120}
-          """)
+          """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
           responseDict = {
               "timestamp": timestamp,
@@ -128,7 +129,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
           def foo(long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args):
                 pass
-          """)
+          """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
           def foo(long_arg,
                   really_long_arg,
@@ -141,7 +142,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     # Works the same way as split_all_comma_separated_values
     unformatted_code = textwrap.dedent("""\
           foo_tuple = [long_arg, really_long_arg, really_really_long_arg, cant_keep_all_these_args]
-          """)
+          """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
           foo_tuple = [
               long_arg,
@@ -280,7 +281,8 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
-              '{based_on_style: yapf, blank_lines_between_top_level_imports_and_variables: 2}'
+              '{based_on_style: yapf, '
+              'blank_lines_between_top_level_imports_and_variables: 2}'
           ))
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
@@ -390,7 +392,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
         """)
     expected_formatted_code = """\
 class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(self, x, y):  # bar\n    \n    if x:\n      \n      return y\n\n\ndef bar():\n  \n  return 0
-"""
+"""  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -510,9 +512,7 @@ class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(se
 
   def testCommentsWithTrailingSpaces(self):
     unformatted_code = textwrap.dedent("""\
-        # Thing 1    
-        # Thing 2    
-        """)
+        # Thing 1    \n# Thing 2    \n""")
     expected_formatted_code = textwrap.dedent("""\
         # Thing 1
         # Thing 2
@@ -694,7 +694,7 @@ class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(se
         def f():
           assert port >= minimum, 'Unexpected port %d when minimum was %d.' % (port,
                                                                                minimum)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -772,7 +772,7 @@ class foo(object):\n  \n  def foobar(self):\n    \n    pass\n  \n  def barfoo(se
         def given(used_identifiers):
           return (sum(len(identifier)
                       for identifier in used_identifiers) / len(used_identifiers))
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def given(used_identifiers):
           return (sum(len(identifier) for identifier in used_identifiers) /
@@ -853,7 +853,7 @@ foo((
     # one are then splatted at the end of the line with no formatting.
     unformatted_code = """\
 find_symbol(node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
-"""
+"""  # noqa
     expected_formatted_code = """\
 find_symbol(node.type) + "< " + " ".join(
     find_pattern(n) for n in node.child) + " >"
@@ -918,7 +918,7 @@ find_symbol(node.type) + "< " + " ".join(
             'yield_stmt': 'import_stmt', lambda: 'global_stmt': 'exec_stmt', 'assert_stmt':
             'if_stmt', 'while_stmt': 'for_stmt',
         })
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         _PYTHON_STATEMENTS = frozenset({
             lambda x, y: 'simple_stmt': 'small_stmt',
@@ -949,7 +949,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                                                 vvvvvvvvv)
           aaaaaaaaaaaaaa.bbbbbbbbbbbbbb.ccccccc(zzzzzzzzzzzz, xxxxxxxxxxx, yyyyyyyyyyyy,
                                                 vvvvvvvvv)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -996,7 +996,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         <b>Residence: </b>"""+palace["Winter"]+"""<br>
         </body>
         </html>"""
-        ''')
+        ''')  # noqa
     expected_formatted_code = textwrap.dedent('''\
         def f():
           email_text += """<html>This is a really long docstring that goes over the column limit and is multi-line.<br><br>
@@ -1005,7 +1005,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         <b>Residence: </b>""" + palace["Winter"] + """<br>
         </body>
         </html>"""
-        ''')
+        ''')  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1057,7 +1057,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                     child,
                     subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
                                                           format_token.Subtype.NONE))
-        ''')
+        ''')  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1082,13 +1082,13 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
   def testI18n(self):
     code = textwrap.dedent("""\
         N_('Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.')  # A comment is here.
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
         foo('Fake function call')  #. Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1115,7 +1115,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
                    xxxxxxxxxxxxxxxxxxxxx(
                        yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) == 'bbbbbbb'):
               pass
-        ''')
+        ''')  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1186,7 +1186,7 @@ class foo:
                        #. Error message indicating an invalid e-mail address.
                        message=N_('Please check your email address.'), **kwargs):
             pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1356,7 +1356,7 @@ class foo:
     expected_formatted_code = textwrap.dedent("""\
         bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb = aaaaaaaaaaa(
             ("...", "."), "..", "..............................................")
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1390,7 +1390,7 @@ class foo:
             pass
         except:
           pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1436,14 +1436,14 @@ urlpatterns = patterns('', url(r'^$', 'homepage_view'),
                "ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis "\\
                "sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. "\\
                "Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet"
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
     code = textwrap.dedent("""\
         from __future__ import nested_scopes, generators, division, absolute_import, with_statement, \\
             print_function, unicode_literals
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1490,14 +1490,14 @@ s = 'foo \\
             'output_dirs', [],
             'Lorem ipsum dolor sit amet, consetetur adipiscing elit. Donec a diam lectus. '
             'Sed sit amet ipsum mauris. Maecenas congue.')
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testSplitStringsIfSurroundedByParens(self):
     unformatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx' 'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'bbbbbbbbbbbbbbbbbbbbbbbbbb' 'cccccccccccccccccccccccccccccccc' 'ddddddddddddddddddddddddddddd')
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         a = foo.bar({'xxxxxxxxxxxxxxxxxxxxxxx'
                      'yyyyyyyyyyyyyyyyyyyyyyyyyy': baz[42]} +
@@ -1563,7 +1563,7 @@ s = 'foo \\
             self.write(s=[
                 '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
             ])
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1573,7 +1573,7 @@ s = 'foo \\
             if True:
               if contract == allow_contract and attr_dict.get(if_attribute) == has_value:
                 return True
-        """)
+        """)  # noqa
     expected_code = textwrap.dedent("""\
         def _():
           if True:
@@ -1615,7 +1615,7 @@ s = 'foo \\
               if True:
                 remote_checksum = self.get_checksum(conn, tmp, dest, inject,
                                                     not directory_prepended, source)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1650,7 +1650,7 @@ class A(object):
         def test():
           if not "Foooooooooooooooooooooooooooooo" or "Foooooooooooooooooooooooooooooo" == "Foooooooooooooooooooooooooooooo":
             pass
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1675,7 +1675,7 @@ class A(object):
               ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
               ('aaaaaaaaaaaaa', 'bbbb'): 'ccccccccccccccccccccccccccccccccccccccccccc',
           }
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
       class Test:
 
@@ -1698,7 +1698,7 @@ class A(object):
           a="something",
           b="something requiring comment which is quite long",  # comment about b (pushes line over 79)
           c="something else, about which comment doesn't make sense")
-      """)
+      """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1752,7 +1752,7 @@ class A(object):
         if True:
           if True:
             status = cf.describe_stacks(StackName=stackname)[u'Stacks'][0][u'StackStatus']
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
           if True:
@@ -1780,7 +1780,7 @@ class A(object):
         xxxxxxxxxxxxxx = (
             re.search(r'(\\d+\\.\\d+\\.\\d+\\.)\\d+', aaaaaaa.bbbbbbbbbbbb).group(a.b) +
             re.search(r'\\d+\\.\\d+\\.\\d+\\.(\\d+)', ccccccc).group(c.d))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1790,7 +1790,7 @@ class A(object):
           while True:
             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list['bbbbbbbbbbbbbbbbbbbbbbbbb'].split(',')
             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = list('bbbbbbbbbbbbbbbbbbbbbbbbb').split(',')
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         while True:
           while True:
@@ -1808,14 +1808,14 @@ class A(object):
 
           def __repr__(self):
             tokens_repr = ','.join(['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class f:
 
           def __repr__(self):
             tokens_repr = ','.join(
                 ['{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens])
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1840,7 +1840,7 @@ class A(object):
             pytree_utils.InsertNodesBefore(
                 _CreateCommentsFromPrefix(
                     comment_prefix, comment_lineno, comment_column, standalone=True))
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -1872,7 +1872,7 @@ class A(object):
     code = textwrap.dedent("""\
       [retval1, retval2] = a_very_long_function(argument_1, argument2, argument_3,
                                                 argument_4)
-      """)
+      """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -1922,7 +1922,7 @@ class A(object):
             if self.do_something:
               d.addCallback(lambda _: self.aaaaaa.bbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccccc(dddddddddddddd))
             return d
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class SomeClass(object):
           do_something = True
@@ -1956,7 +1956,7 @@ class A(object):
             ('vehicula convallis nulla. Vestibulum dictum nisl in malesuada finibus.',):
                 3
         }
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         MAP_WITH_LONG_KEYS = {
             ('lorem ipsum', 'dolor sit amet'):
@@ -1967,7 +1967,7 @@ class A(object):
             ('vehicula convallis nulla. Vestibulum dictum nisl in malesuada finibus.',):
                 3
         }
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -1993,13 +1993,14 @@ class A(object):
                     }
                 }]
             }
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
               '{based_on_style: pep8, indent_width: 2, '
-              'continuation_indent_width: 4, indent_dictionary_value: True}'))
+              'continuation_indent_width: 4, '
+              'indent_dictionary_value: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       reformatted_code = reformatter.Reformat(uwlines)
@@ -2018,7 +2019,7 @@ class A(object):
           def _():
               url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
                   value, urllib.urlencode({'action': 'update', 'parameter': value}))
-          """)
+          """)  # noqa
       expected_formatted_code = textwrap.dedent("""\
           def _():
               url = "http://{0}/axis-cgi/admin/param.cgi?{1}".format(
@@ -2072,7 +2073,7 @@ class A(object):
                   x for x, y in self._heap_this_is_very_long if x.route[0] == choice
               ]
               self._heap = [x for x in self._heap if x.route and x.route[0] == choice]
-      """)
+      """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
@@ -2089,7 +2090,7 @@ class A(object):
             long_argument_name_1=1, long_argument_name_2=2, long_argument_name_3=3,
             long_argument_name_4=4
         )
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -2132,7 +2133,7 @@ class A(object):
                 if True:
                   if True:
                     boxes[id_] = np.concatenate((points.min(axis=0), qoints.max(axis=0)))
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
           if True:
@@ -2159,7 +2160,7 @@ class A(object):
                                   clue for clue in combination if not clue == Verifier.UNMATCHED
                           ), constraints, InvestigationResult.OR
                   )
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class _():
 
@@ -2171,7 +2172,7 @@ class A(object):
                   return cls._create_investigation_result(
                       (clue for clue in combination if not clue == Verifier.UNMATCHED),
                       constraints, InvestigationResult.OR)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2186,7 +2187,7 @@ class A(object):
         a_very_long_function_name(long_argument_name_1, long_argument_name_2, long_argument_name_3, long_argument_name_4,)
 
         r =f0 (1,  2,3,)
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
 
@@ -2289,7 +2290,7 @@ class A(object):
             'jjjjjjjjjjjjjjjjjjjjjjjjjj':
                 Check('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ', '=', False),
         }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2303,7 +2304,7 @@ class A(object):
     expected_formatted_code = textwrap.dedent("""\
         doc = test_utils.CreateTestDocumentViaController(
             content={'a': 'b'}, branch_key=branch.key, collection_key=collection.key)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2353,7 +2354,7 @@ class A(object):
             'cccccccccc': ('^21109',  # PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP.
                           ),
         }
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         _A = {
             'cccccccccc': ('^^1',),
@@ -2415,7 +2416,7 @@ class A(object):
                 },
             ]
             breadcrumbs = [{'name': 'Admin', 'url': url_for(".home")}, {'title': title}]
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
 
@@ -2435,18 +2436,18 @@ class A(object):
             Environment.YYYYYYY: 'some text more text even more text yet ag',
             Environment.ZZZZZZZZZZZ: 'some text more text even more text yet again tex',
         }
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(uwlines))
 
   def testNotInParams(self):
     unformatted_code = textwrap.dedent("""\
         list("a long line to break the line. a long line to break the brk a long lin", not True)
-        """)
+        """)  # noqa
     expected_code = textwrap.dedent("""\
         list("a long line to break the line. a long line to break the brk a long lin",
              not True)
-        """)
+        """)  # noqa
     uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_code, reformatter.Reformat(uwlines))
 
@@ -2834,7 +2835,7 @@ my_dict = {
 
         def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
           pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def function(
             first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None
@@ -2846,7 +2847,7 @@ my_dict = {
             first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None
         ) -> None:
           pass
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -2867,7 +2868,7 @@ my_dict = {
 
         def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
           pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def function(
             first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None
@@ -2879,7 +2880,7 @@ my_dict = {
             first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None
             ) -> None:
           pass
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -2900,7 +2901,7 @@ my_dict = {
 
         def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_and_last_argument=None):
           pass
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def function(
             first_argument_xxxxxxxxxxxxxxxx=(0,),
@@ -2914,7 +2915,7 @@ my_dict = {
             first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_and_last_argument=None
             ):
           pass
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -2936,7 +2937,7 @@ my_dict = {
         def function():
           some_var = ('a couple', 'small', 'elemens')
           return False
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def function():
           some_var = (
@@ -2949,7 +2950,7 @@ my_dict = {
         def function():
           some_var = ('a couple', 'small', 'elemens')
           return False
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
@@ -2971,7 +2972,7 @@ my_dict = {
         def function():
           some_var = ['a couple', 'small', 'elemens']
           return False
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def function():
           some_var = [
@@ -3006,7 +3007,7 @@ my_dict = {
         def function():
           some_var = {1: 'a couple', 2: 'small', 3: 'elemens'}
           return False
-        """)
+        """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def function():
           some_var = {
@@ -3025,7 +3026,7 @@ my_dict = {
         def function():
           some_var = {1: 'a couple', 2: 'small', 3: 'elemens'}
           return False
-        """)
+        """)  # noqa
 
     try:
       style.SetGlobalStyle(
