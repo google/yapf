@@ -672,6 +672,7 @@ class _():
 
 
         class A(object):
+
             def foo(self):
                 async.run()
 

@@ -2801,6 +2801,7 @@ my_dict = {
 
 
           class A(object):
+
               def foo(self):
                   async.run()
           """)

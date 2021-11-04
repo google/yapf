@@ -83,13 +83,14 @@ class GetExcludePatternsForDir(unittest.TestCase):
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
       f.write('ignore_patterns=[')
-      f.writelines('\n,'.join([f'"{p}"' for p in ignore_patterns]))
+      f.writelines('\n,'.join([str(p) for p in ignore_patterns]))
       f.write(']')
 
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
     try:
       import toml
@@ -100,7 +101,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
     with open(local_ignore_file, 'w') as f:
       f.write('[tool.yapfignore]\n')
       f.write('ignore_patterns=[')
-      f.writelines('\n,'.join([f'"{p}"' for p in ignore_patterns]))
+      f.writelines('\n,'.join([str(p) for p in ignore_patterns]))
       f.write(']')
 
     with self.assertRaises(errors.YapfError):
