@@ -110,8 +110,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(
         style.CreateStyleFromConfig(
             '{split_all_top_level_comma_separated_values: true, '
-            'column_limit: 40}'
-        ))
+            'column_limit: 40}'))
     # Works the same way as split_all_comma_separated_values
     unformatted_code = textwrap.dedent("""\
           responseDict = {"timestamp": timestamp, "someValue":   value, "whatever": 120}
@@ -282,8 +281,7 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
               '{based_on_style: yapf, '
-              'blank_lines_between_top_level_imports_and_variables: 2}'
-          ))
+              'blank_lines_between_top_level_imports_and_variables: 2}'))
       uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(uwlines))
@@ -1997,10 +1995,9 @@ class A(object):
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig(
-              '{based_on_style: pep8, indent_width: 2, '
-              'continuation_indent_width: 4, '
-              'indent_dictionary_value: True}'))
+          style.CreateStyleFromConfig('{based_on_style: pep8, indent_width: 2, '
+                                      'continuation_indent_width: 4, '
+                                      'indent_dictionary_value: True}'))
 
       uwlines = yapf_test_helper.ParseAndUnwrap(code)
       reformatted_code = reformatter.Reformat(uwlines)

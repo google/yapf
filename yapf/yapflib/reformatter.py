@@ -135,7 +135,7 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
 
   if prev_tok.is_string:
     prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
-  elif prev_tok.is_pseudo_paren:
+  elif prev_tok.is_pseudo:
     if not prev_tok.previous_token.is_multiline_string:
       prev_lineno = prev_tok.previous_token.lineno
     else:
@@ -400,7 +400,7 @@ def _FormatFinalLines(final_lines, verify):
   for line in final_lines:
     formatted_line = []
     for tok in line.tokens:
-      if not tok.is_pseudo_paren:
+      if not tok.is_pseudo:
         formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
       elif (not tok.next_token.whitespace_prefix.startswith('\n') and

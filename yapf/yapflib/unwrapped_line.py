@@ -74,7 +74,7 @@ class UnwrappedLine(object):
           _SpaceRequiredBetween(prev_token, token, self.disable)):
         token.spaces_required_before = 1
 
-      tok_len = len(token.value) if not token.is_pseudo_paren else 0
+      tok_len = len(token.value) if not token.is_pseudo else 0
 
       spaces_required_before = token.spaces_required_before
       if isinstance(spaces_required_before, list):
@@ -271,11 +271,11 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   """Return True if a space is required between the left and right token."""
   lval = left.value
   rval = right.value
-  if (left.is_pseudo_paren and _IsIdNumberStringToken(right) and
+  if (left.is_pseudo and _IsIdNumberStringToken(right) and
       left.previous_token and _IsIdNumberStringToken(left.previous_token)):
     # Space between keyword... tokens and pseudo parens.
     return True
-  if left.is_pseudo_paren or right.is_pseudo_paren:
+  if left.is_pseudo or right.is_pseudo:
     # There should be a space after the ':' in a dictionary.
     if left.OpensScope():
       return True
@@ -484,7 +484,7 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
 def _MustBreakBefore(prev_token, cur_token):
   """Return True if a line break is required before the current token."""
   if prev_token.is_comment or (prev_token.previous_token and
-                               prev_token.is_pseudo_paren and
+                               prev_token.is_pseudo and
                                prev_token.previous_token.is_comment):
     # Must break if the previous token was a comment.
     return True
