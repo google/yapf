@@ -629,8 +629,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     # The first line in the file. Don't add blank lines.
     # FIXME(morbo): Is this correct?
     if first_token.newlines is not None:
-      pytree_utils.SetNodeAnnotation(first_token.node,
-                                     pytree_utils.Annotation.NEWLINES, None)
+      first_token.newlines = None
     return 0
 
   if first_token.is_docstring:
@@ -661,8 +660,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     if (first_nested and
         not style.Get('BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF') and
         _IsClassOrDef(first_token)):
-      pytree_utils.SetNodeAnnotation(first_token.node,
-                                     pytree_utils.Annotation.NEWLINES, None)
+      first_token.newlines = None
       return NO_BLANK_LINES
     if _NoBlankLinesBeforeCurrentToken(prev_last_token.value, first_token,
                                        prev_last_token):
@@ -694,15 +692,12 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
             prev_last_token.AdjustNewlinesBefore(
                 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION'))
           if first_token.newlines is not None:
-            pytree_utils.SetNodeAnnotation(first_token.node,
-                                           pytree_utils.Annotation.NEWLINES,
-                                           None)
+            first_token.newlines = None
           return NO_BLANK_LINES
     elif _IsClassOrDef(prev_uwline.first):
       if first_nested and not style.Get(
           'BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
-        pytree_utils.SetNodeAnnotation(first_token.node,
-                                       pytree_utils.Annotation.NEWLINES, None)
+        first_token.newlines = None
         return NO_BLANK_LINES
 
   # Calculate how many newlines were between the original lines. We want to
