@@ -118,8 +118,6 @@ class UnwrappedLine(object):
       uwlines.append(uwline)
 
     for uwline in uwlines:
-      pytree_utils.SetNodeAnnotation(uwline.first.node,
-                                     pytree_utils.Annotation.MUST_SPLIT, True)
       uwline.first.previous_token = None
       uwline.last.next_token = None
 
@@ -494,8 +492,7 @@ def _MustBreakBefore(prev_token, cur_token):
     # reasonable assumption, because otherwise they should have written them
     # all on the same line, or with a '+'.
     return True
-  return pytree_utils.GetNodeAnnotation(
-      cur_token.node, pytree_utils.Annotation.MUST_SPLIT, default=False)
+  return cur_token.must_break_before
 
 
 def _CanBreakBefore(prev_token, cur_token):

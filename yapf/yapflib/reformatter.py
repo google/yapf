@@ -84,7 +84,7 @@ def Reformat(uwlines, verify=False, lines=None):
       _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
       _EmitLineUnformatted(state)
 
-    elif _CanPlaceOnSingleLine(uwline) and not any(tok.must_split
+    elif _CanPlaceOnSingleLine(uwline) and not any(tok.must_break_before
                                                    for tok in uwline.tokens):
       # The unwrapped line fits on one line.
       while state.next_token:

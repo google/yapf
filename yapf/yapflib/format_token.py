@@ -130,7 +130,8 @@ class FormatToken(object):
     self.container_elements = []
     self.whitespace_prefix = ''
     self.can_break_before = False
-    self.must_break_before = False
+    self.must_break_before = pytree_utils.GetNodeAnnotation(
+        node, pytree_utils.Annotation.MUST_SPLIT, default=False)
     self.total_length = 0
     self.split_penalty = 0
 
@@ -262,12 +263,6 @@ class FormatToken(object):
     """The number of newlines needed before this token."""
     return pytree_utils.GetNodeAnnotation(self.node,
                                           pytree_utils.Annotation.NEWLINES)
-
-  @property
-  def must_split(self):
-    """Return true if the token requires a split before it."""
-    return pytree_utils.GetNodeAnnotation(self.node,
-                                          pytree_utils.Annotation.MUST_SPLIT)
 
   @property
   def is_binary_op(self):
