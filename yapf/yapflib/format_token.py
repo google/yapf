@@ -107,12 +107,13 @@ class FormatToken(object):
       formatter won't place n spaces before all comments. Only those that are
       moved to the end of a line of code. The formatter may use different
       spacing when appropriate.
-    can_break_before: True if we're allowed to break before this token.
-    must_break_before: True if we're required to break before this token.
     total_length: The total length of the unwrapped line up to and including
       whitespace and this token. However, this doesn't include the initial
       indentation amount.
     split_penalty: The penalty for splitting the line before this token.
+    can_break_before: True if we're allowed to break before this token.
+    must_break_before: True if we're required to break before this token.
+    newlines: The number of newlines needed before this token.
   """
 
   def __init__(self, node):
@@ -129,11 +130,13 @@ class FormatToken(object):
     self.container_opening = None
     self.container_elements = []
     self.whitespace_prefix = ''
+    self.total_length = 0
+    self.split_penalty = 0
     self.can_break_before = False
     self.must_break_before = pytree_utils.GetNodeAnnotation(
         node, pytree_utils.Annotation.MUST_SPLIT, default=False)
-    self.total_length = 0
-    self.split_penalty = 0
+    self.newlines = pytree_utils.GetNodeAnnotation(
+        node, pytree_utils.Annotation.NEWLINES)
 
     self.type = node.type
     self.column = node.column
@@ -257,12 +260,6 @@ class FormatToken(object):
     """Split penalty attached to the pytree node of this token."""
     return pytree_utils.GetNodeAnnotation(
         self.node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
-
-  @property
-  def newlines(self):
-    """The number of newlines needed before this token."""
-    return pytree_utils.GetNodeAnnotation(self.node,
-                                          pytree_utils.Annotation.NEWLINES)
 
   @property
   def is_binary_op(self):
