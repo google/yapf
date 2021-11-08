@@ -132,7 +132,7 @@ class FormatDecisionState(object):
     current = self.next_token
     previous = current.previous_token
 
-    if current.is_pseudo_paren:
+    if current.is_pseudo:
       return False
 
     if (not must_split and
@@ -171,7 +171,7 @@ class FormatDecisionState(object):
     current = self.next_token
     previous = current.previous_token
 
-    if current.is_pseudo_paren:
+    if current.is_pseudo:
       return False
 
     if current.must_break_before:
@@ -268,7 +268,7 @@ class FormatDecisionState(object):
             token = token.next_token
         return False
 
-      if (previous.value == '(' and not previous.is_pseudo_paren and
+      if (previous.value == '(' and not previous.is_pseudo and
           not unwrapped_line.IsSurroundedByBrackets(previous)):
         pptoken = previous.previous_token
         if (pptoken and not pptoken.is_name and not pptoken.is_keyword and
@@ -350,7 +350,7 @@ class FormatDecisionState(object):
       return True
 
     if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
-        (previous.is_pseudo_paren and previous.value == '(' and
+        (previous.is_pseudo and previous.value == '(' and
          not current.is_comment)):
       # Split before the dictionary value if we can't fit every dictionary
       # entry on its own line.
@@ -674,7 +674,7 @@ class FormatDecisionState(object):
       # Don't penalize for a must split.
       return penalty
 
-    if previous.is_pseudo_paren and previous.value == '(':
+    if previous.is_pseudo and previous.value == '(':
       # Small penalty for splitting after a pseudo paren.
       penalty += 50
 
@@ -734,7 +734,7 @@ class FormatDecisionState(object):
     if is_multiline_string:
       # This is a multiline string. Only look at the first line.
       self.column += len(current.value.split('\n')[0])
-    elif not current.is_pseudo_paren:
+    elif not current.is_pseudo:
       self.column += len(current.value)
 
     self.next_token = self.next_token.next_token
@@ -965,7 +965,7 @@ class FormatDecisionState(object):
       return previous.column
 
     if style.Get('INDENT_DICTIONARY_VALUE'):
-      if previous and (previous.value == ':' or previous.is_pseudo_paren):
+      if previous and (previous.value == ':' or previous.is_pseudo):
         if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
           return top_of_stack.indent
 
@@ -993,7 +993,7 @@ class FormatDecisionState(object):
   def _FitsOnLine(self, start, end):
     """Determines if line between start and end can fit on the current line."""
     length = end.total_length - start.total_length
-    if not start.is_pseudo_paren:
+    if not start.is_pseudo:
       length += len(start.value)
     return length + self.column <= self.column_limit
 
@@ -1008,7 +1008,7 @@ class FormatDecisionState(object):
 
     def ImplicitStringConcatenation(tok):
       num_strings = 0
-      if tok.is_pseudo_paren:
+      if tok.is_pseudo:
         tok = tok.next_token
       while tok.is_string:
         num_strings += 1
@@ -1021,7 +1021,7 @@ class FormatDecisionState(object):
         return False
       colon = opening.previous_token
       while colon:
-        if not colon.is_pseudo_paren:
+        if not colon.is_pseudo:
           break
         colon = colon.previous_token
       if not colon or colon.value != ':':
@@ -1048,7 +1048,7 @@ class FormatDecisionState(object):
         entry_start = current
       if current.OpensScope():
         if ((current.value == '{' or
-             (current.is_pseudo_paren and current.next_token.value == '{') and
+             (current.is_pseudo and current.next_token.value == '{') and
              format_token.Subtype.DICTIONARY_VALUE in current.subtypes) or
             ImplicitStringConcatenation(current)):
           # A dictionary entry that cannot fit on a single line shouldn't matter
@@ -1141,13 +1141,13 @@ def _IsArgumentToFunction(token):
 
 def _GetOpeningBracket(current):
   """Get the opening bracket containing the current token."""
-  if current.matching_bracket and not current.is_pseudo_paren:
+  if current.matching_bracket and not current.is_pseudo:
     return current if current.OpensScope() else current.matching_bracket
 
   while current:
     if current.ClosesScope():
       current = current.matching_bracket
-    elif current.is_pseudo_paren:
+    elif current.is_pseudo:
       current = current.previous_token
     elif current.OpensScope():
       return current
