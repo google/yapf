@@ -15,6 +15,9 @@ YAPF
     :alt: Coverage status
 
 
+**YAPF fork with support for match/case statement (based on [blib2to3](https://github.com/psf/black/commits/main/src/blib2to3) and other personal
+modifications.**
+
 Introduction
 ============
 
