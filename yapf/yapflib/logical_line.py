@@ -26,7 +26,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
-from lib2to3.fixer_util import syms as python_symbols
+from ..ylib2to3.fixer_util import syms as python_symbols
 
 
 class LogicalLine(object):

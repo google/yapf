@@ -21,9 +21,9 @@ making them easier to process.
   SpliceComments(): the main function exported by this module.
 """
 
-from lib2to3 import pygram
-from lib2to3 import pytree
-from lib2to3.pgen2 import token
+from ..ylib2to3 import pygram
+from ..ylib2to3 import pytree
+from ..ylib2to3.pgen2 import token
 
 from yapf.pytree import pytree_utils
 

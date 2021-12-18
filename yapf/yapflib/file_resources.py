@@ -21,9 +21,7 @@ import fnmatch
 import os
 import re
 
-from yapf.yapflib import errors
-from yapf.yapflib import py3compat
-from yapf.yapflib import style
+from yapf.yapflib import errors, py3compat, style
 
 CR = '\r'
 LF = '\n'

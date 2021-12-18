@@ -36,21 +36,13 @@ import difflib
 import re
 import sys
 
-from yapf.pyparser import pyparser
+from yapf.pytree import (blank_line_calculator, comment_splicer,
+                         continuation_splicer, pytree_unwrapper, pytree_utils,
+                         split_penalty, subtype_assigner)
+from yapf.yapflib import (errors, file_resources, identify_container,
+                          py3compat, reformatter, style)
 
-from yapf.pytree import pytree_unwrapper
-from yapf.pytree import pytree_utils
-from yapf.pytree import blank_line_calculator
-from yapf.pytree import comment_splicer
-from yapf.pytree import continuation_splicer
-from yapf.pytree import split_penalty
-from yapf.pytree import subtype_assigner
-from yapf.yapflib import errors
-from yapf.yapflib import file_resources
-from yapf.yapflib import identify_container
-from yapf.yapflib import py3compat
-from yapf.yapflib import reformatter
-from yapf.yapflib import style
+from ..ylib2to3.pgen2 import parse
 
 
 def FormatFile(filename,
