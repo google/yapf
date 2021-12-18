@@ -1097,7 +1097,7 @@ class FormatDecisionState(object):
 
 
 _COMPOUND_STMTS = frozenset(
-    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
+    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class', 'match', 'case'})
 
 
 def _IsCompoundStatement(token):

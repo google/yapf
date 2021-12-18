@@ -125,6 +125,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       'try_stmt',
       'expect_clause',
       'with_stmt',
+      'match_stmt'
       'funcdef',
       'classdef',
   })
@@ -252,6 +253,19 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
 
   def Visit_with_stmt(self, node):  # pylint: disable=invalid-name
     self._VisitCompoundStatement(node, self._WITH_STMT_ELEMS)
+
+  _MATCH_STMT_ELEMS = frozenset({'match'})
+
+  def Visit_match_stmt(self, node):  # pylint: disable=invalid-name
+      self._VisitCompoundStatement(node, self._MATCH_STMT_ELEMS)
+
+  _CASE_BLOCK_ELEMS = frozenset({'match'})
+
+  def Visit_case_block(self, node):
+      self._cur_depth += 1
+      self._StartNewLine()
+      self._VisitCompoundStatement(node, self._CASE_BLOCK_ELEMS)
+      self._cur_depth -= 1
 
   def Visit_suite(self, node):  # pylint: disable=invalid-name
     # A 'suite' starts a new indentation level in Python.
