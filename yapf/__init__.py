@@ -59,10 +59,6 @@ def main(argv):
   """
   parser = _BuildParser()
   args = parser.parse_args(argv[1:])
-  if args.version:
-    print('yapf {}'.format(__version__))
-    return 0
-
   style_config = args.style
 
   if args.style_help:
@@ -276,12 +272,13 @@ def _BuildParser():
   Returns:
     An ArgumentParser instance for the CLI.
   """
-  parser = argparse.ArgumentParser(description='Formatter for Python code.')
+  parser = argparse.ArgumentParser(
+      prog='yapf', description='Formatter for Python code.')
   parser.add_argument(
       '-v',
       '--version',
-      action='store_true',
-      help='show version number and exit')
+      action='version',
+      version='%(prog)s {}'.format(__version__))
 
   diff_inplace_quiet_group = parser.add_mutually_exclusive_group()
   diff_inplace_quiet_group.add_argument(
