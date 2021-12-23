@@ -11,7 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""YAPF error object."""
+"""YAPF error objects."""
+
+
+def FormatErrorMsg(e):
+  """Convert an exception into a standard format.
+
+  The standard error message format is:
+
+      <filename>:<lineno>:<column>: <msg>
+
+  Arguments:
+    e: An exception.
+
+  Returns:
+    A properly formatted error message string.
+  """
+  return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
 
 
 class YapfError(Exception):

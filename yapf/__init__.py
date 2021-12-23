@@ -109,8 +109,8 @@ def main(argv):
           style_config=style_config,
           lines=lines,
           verify=args.verify)
-    except tokenize.TokenError as e:
-      raise errors.YapfError('%s:%s' % (e.args[1][0], e.args[0]))
+    except Exception as e:
+      raise errors.YapfError(errors.FormatErrorMsg(e))
 
     file_resources.WriteReformattedCode('<stdout>', reformatted_source)
     return 0
@@ -123,7 +123,7 @@ def main(argv):
                                              (args.exclude or []) +
                                              exclude_patterns_from_ignore_file)
   if not files:
-    raise errors.YapfError('Input filenames did not match any python files')
+    raise errors.YapfError('input filenames did not match any python files')
 
   changed = FormatFiles(
       files,
@@ -234,11 +234,10 @@ def _FormatFile(filename,
         print_diff=print_diff,
         verify=verify,
         logger=logging.warning)
-  except tokenize.TokenError as e:
-    raise errors.YapfError('%s:%s:%s' % (filename, e.args[1][0], e.args[0]))
-  except SyntaxError as e:
-    e.filename = filename
+  except errors.YapfError:
     raise
+  except Exception as e:
+    raise errors.YapfError(errors.FormatErrorMsg(e))
 
   if not in_place and not quiet and reformatted_code:
     file_resources.WriteReformattedCode(filename, reformatted_code, encoding,

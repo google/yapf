@@ -37,10 +37,12 @@ import re
 import sys
 
 from lib2to3.pgen2 import parse
+from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer
+from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import identify_container
 from yapf.yapflib import py3compat
@@ -179,8 +181,12 @@ def FormatCode(unformatted_source,
   """
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)
-  except parse.ParseError as e:
-    e.msg = filename + ': ' + e.msg
+  except tokenize.TokenError as e:
+    e.msg = e.args[0]
+    e.args = (e.msg, (filename, e.args[1][0], e.args[1][1]))
+    raise
+  except Exception as e:
+    e.args = (e.args[0], (filename, e.args[1][1], e.args[1][2], e.args[1][3]))
     raise
 
   reformatted_source = FormatTree(
@@ -236,15 +242,17 @@ def ReadFile(filename, logger=None):
     line_ending = file_resources.LineEnding(lines)
     source = '\n'.join(line.rstrip('\r\n') for line in lines) + '\n'
     return source, line_ending, encoding
-  except IOError as err:  # pragma: no cover
+  except IOError as e:  # pragma: no cover
     if logger:
-      logger(err)
+      logger(e)
+    e.args = (e.args[0], (filename, e.args[1][1], e.args[1][2], e.args[1][3]))
     raise
-  except UnicodeDecodeError as err:  # pragma: no cover
+  except UnicodeDecodeError as e:  # pragma: no cover
     if logger:
       logger('Could not parse %s! Consider excluding this file with --exclude.',
              filename)
-      logger(err)
+      logger(e)
+    e.args = (e.args[0], (filename, e.args[1][1], e.args[1][2], e.args[1][3]))
     raise
 
 
