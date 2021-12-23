@@ -89,7 +89,7 @@ class RunMainTest(yapf_test_helper.YAPFTest):
 
   def testShouldHandleYapfError(self):
     """run_main should handle YapfError and sys.exit(1)."""
-    expected_message = 'yapf: Input filenames did not match any python files\n'
+    expected_message = 'yapf: input filenames did not match any python files\n'
     sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
       with self.assertRaises(SystemExit):
@@ -126,7 +126,7 @@ class MainTest(yapf_test_helper.YAPFTest):
     bad_syntax = '  a = 1\n'
     with patched_input(bad_syntax):
       with captured_output() as (_, _):
-        with self.assertRaisesRegex(SyntaxError, 'unexpected indent'):
+        with self.assertRaisesRegex(yapf.errors.YapfError, 'unexpected indent'):
           yapf.main([])
 
   def testHelp(self):
