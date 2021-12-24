@@ -26,7 +26,7 @@ Annotations:
 """
 
 from lib2to3 import pytree
-from lib2to3.pgen2 import token
+from lib2to3.pgen2 import token as grammar_token
 from lib2to3.pygram import python_symbols as syms
 
 from yapf.yapflib import format_token
@@ -75,14 +75,14 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         comp_for = True
         _AppendFirstLeafTokenSubtype(child,
                                      format_token.Subtype.DICT_SET_GENERATOR)
-      elif pytree_utils.NodeName(child) in ('COLON', 'DOUBLESTAR'):
+      elif child.type in (grammar_token.COLON, grammar_token.DOUBLESTAR):
         dict_maker = True
 
     if not comp_for and dict_maker:
       last_was_colon = False
       unpacking = False
       for child in node.children:
-        if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+        if child.type == grammar_token.DOUBLESTAR:
           _AppendFirstLeafTokenSubtype(child,
                                        format_token.Subtype.KWARGS_STAR_STAR)
         if last_was_colon:
@@ -100,8 +100,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
             _AppendFirstLeafTokenSubtype(child,
                                          format_token.Subtype.DICTIONARY_KEY)
           _AppendSubtypeRec(child, format_token.Subtype.DICTIONARY_KEY_PART)
-        last_was_colon = pytree_utils.NodeName(child) == 'COLON'
-        if pytree_utils.NodeName(child) == 'DOUBLESTAR':
+        last_was_colon = child.type == grammar_token.COLON
+        if child.type == grammar_token.DOUBLESTAR:
           unpacking = True
         elif last_was_colon:
           unpacking = False
@@ -274,7 +274,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # funcdef ::=
     #     'def' NAME parameters ['->' test] ':' suite
     for child in node.children:
-      if pytree_utils.NodeName(child) == 'NAME' and child.value != 'def':
+      if child.type == grammar_token.NAME and child.value != 'def':
         _AppendTokenSubtype(child, format_token.Subtype.FUNC_DEF)
         break
     for child in node.children:
@@ -311,10 +311,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for i in range(1, len(node.children)):
       prev_child = node.children[i - 1]
       child = node.children[i]
-      if pytree_utils.NodeName(prev_child) == 'COMMA':
+      if prev_child.type == grammar_token.COMMA:
         _AppendFirstLeafTokenSubtype(child,
                                      format_token.Subtype.PARAMETER_START)
-      elif pytree_utils.NodeName(child) == 'COMMA':
+      elif child.type == grammar_token.COMMA:
         _AppendLastLeafTokenSubtype(prev_child,
                                     format_token.Subtype.PARAMETER_STOP)
 
@@ -322,9 +322,9 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         tname = True
         _SetArgListSubtype(child, format_token.Subtype.TYPED_NAME,
                            format_token.Subtype.TYPED_NAME_ARG_LIST)
-      elif pytree_utils.NodeName(child) == 'COMMA':
+      elif child.type == grammar_token.COMMA:
         tname = False
-      elif pytree_utils.NodeName(child) == 'EQUAL' and tname:
+      elif child.type == grammar_token.EQUAL and tname:
         _AppendTokenSubtype(child, subtype=format_token.Subtype.TYPED_NAME)
         tname = False
 
@@ -436,14 +436,14 @@ def _InsertPseudoParentheses(node):
   """Insert pseudo parentheses so that dicts can be formatted correctly."""
   comment_node = None
   if isinstance(node, pytree.Node):
-    if node.children[-1].type == token.COMMENT:
+    if node.children[-1].type == grammar_token.COMMENT:
       comment_node = node.children[-1].clone()
       node.children[-1].remove()
 
   first = pytree_utils.FirstLeafNode(node)
   last = pytree_utils.LastLeafNode(node)
 
-  if first == last and first.type == token.COMMENT:
+  if first == last and first.type == grammar_token.COMMENT:
     # A comment was inserted before the value, which is a pytree.Leaf.
     # Encompass the dictionary's value into an ATOM node.
     last = first.next_sibling
@@ -462,17 +462,19 @@ def _InsertPseudoParentheses(node):
     last = pytree_utils.LastLeafNode(node)
 
   lparen = pytree.Leaf(
-      token.LPAR, u'(', context=('', (first.get_lineno(), first.column - 1)))
+      grammar_token.LPAR,
+      u'(',
+      context=('', (first.get_lineno(), first.column - 1)))
   last_lineno = last.get_lineno()
-  if last.type == token.STRING and '\n' in last.value:
+  if last.type == grammar_token.STRING and '\n' in last.value:
     last_lineno += last.value.count('\n')
 
-  if last.type == token.STRING and '\n' in last.value:
+  if last.type == grammar_token.STRING and '\n' in last.value:
     last_column = len(last.value.split('\n')[-1]) + 1
   else:
     last_column = last.column + len(last.value) + 1
   rparen = pytree.Leaf(
-      token.RPAR, u')', context=('', (last_lineno, last_column)))
+      grammar_token.RPAR, u')', context=('', (last_lineno, last_column)))
 
   lparen.is_pseudo = True
   rparen.is_pseudo = True
