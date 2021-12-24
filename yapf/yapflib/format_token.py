@@ -141,6 +141,7 @@ class FormatToken(object):
     self.type = node.type
     self.column = node.column
     self.lineno = node.lineno
+    self.name = pytree_utils.NodeName(node)
 
     self.spaces_required_before = 0
     if self.is_comment:
@@ -153,9 +154,7 @@ class FormatToken(object):
     subtypes = pytree_utils.GetNodeAnnotation(node,
                                               pytree_utils.Annotation.SUBTYPE)
     self.subtypes = [Subtype.NONE] if subtypes is None else subtypes
-    self.name = pytree_utils.NodeName(node)
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
-    self.is_docstring = self.is_multiline_string and not node.prev_sibling
 
   @property
   def formatted_whitespace_prefix(self):
@@ -250,8 +249,9 @@ class FormatToken(object):
     return self.value in pytree_utils.CLOSING_BRACKETS
 
   def __repr__(self):
-    msg = 'FormatToken(name={0}, value={1}, lineno={2}'.format(
-        self.name, self.value, self.lineno)
+    msg = 'FormatToken(name={0}, value={1}, column={2}, lineno={3}'.format(
+        'DOCSTRING' if self.is_docstring else self.name, self.value,
+        self.column, self.lineno)
     msg += ', pseudo)' if self.is_pseudo else ')'
     return msg
 
@@ -326,6 +326,10 @@ class FormatToken(object):
       double or triple single quote mark.
     """
     return self.is_string and self.value.endswith(('"""', "'''"))
+
+  @property
+  def is_docstring(self):
+    return self.is_string and self.previous_token is None
 
   @property
   def is_pylint_comment(self):
