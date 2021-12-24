@@ -205,7 +205,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       index += 1
       self.Visit(child)
-      if pytree_utils.NodeName(child) == 'ASYNC':
+      if child.type == grammar_token.ASYNC:
         break
     for child in node.children[index].children:
       self.Visit(child)
@@ -221,18 +221,17 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       index += 1
       self.Visit(child)
-      if pytree_utils.NodeName(child) == 'ASYNC':
+      if child.type == grammar_token.ASYNC:
         break
     for child in node.children[index].children:
-      if pytree_utils.NodeName(child) == 'NAME' and child.value == 'else':
+      if child.type == grammar_token.NAME and child.value == 'else':
         self._StartNewLine()
       self.Visit(child)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self.Visit(child)
-      if (pytree_utils.NodeName(child) == 'COMMENT' and
-          child == node.children[0]):
+      if child.type == grammar_token.COMMENT and child == node.children[0]:
         self._StartNewLine()
 
   def Visit_decorators(self, node):  # pylint: disable=invalid-name
@@ -386,8 +385,7 @@ def _DetermineMustSplitAnnotation(node):
   if not _ContainsComments(node):
     token = next(node.parent.leaves())
     if token.value == '(':
-      if sum(1 for ch in node.children
-             if pytree_utils.NodeName(ch) == 'COMMA') < 2:
+      if sum(1 for ch in node.children if ch.type == grammar_token.COMMA) < 2:
         return
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):

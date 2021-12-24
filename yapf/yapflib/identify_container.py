@@ -19,6 +19,8 @@ to the opening bracket and vice-versa.
   IdentifyContainers(): the main function exported by this module.
 """
 
+from lib2to3.pgen2 import token as grammar_token
+
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 
@@ -42,7 +44,7 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
 
     if len(node.children) != 3:
       return
-    if pytree_utils.NodeName(node.children[0]) != 'LPAR':
+    if node.children[0].type != grammar_token.LPAR:
       return
 
     if pytree_utils.NodeName(node.children[1]) == 'arglist':
@@ -59,7 +61,7 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
 
     if len(node.children) != 3:
       return
-    if pytree_utils.NodeName(node.children[0]) != 'LPAR':
+    if node.children[0].type != grammar_token.LPAR:
       return
 
     for child in node.children[1].children:

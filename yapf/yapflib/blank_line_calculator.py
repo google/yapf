@@ -22,6 +22,8 @@ Annotations:
   newlines: The number of newlines required before the node.
 """
 
+from lib2to3.pgen2 import token as grammar_token
+
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
@@ -64,7 +66,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
   def Visit_simple_stmt(self, node):  # pylint: disable=invalid-name
     self.DefaultNodeVisit(node)
-    if pytree_utils.NodeName(node.children[0]) == 'COMMENT':
+    if node.children[0].type == grammar_token.COMMENT:
       self.last_comment_lineno = node.children[0].lineno
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
@@ -174,4 +176,4 @@ def _StartsInZerothColumn(node):
 
 def _AsyncFunction(node):
   return (py3compat.PY3 and node.prev_sibling and
-          pytree_utils.NodeName(node.prev_sibling) == 'ASYNC')
+          node.prev_sibling.type == grammar_token.ASYNC)
