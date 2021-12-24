@@ -32,8 +32,6 @@ import logging
 import os
 import sys
 
-from lib2to3.pgen2 import tokenize
-
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import py3compat
