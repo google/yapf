@@ -212,6 +212,24 @@ class UnwrappedLine(object):
     return self.first.lineno
 
   @property
+  def start(self):
+    """The start of the logical line.
+
+    Returns:
+      A tuple of the starting line number and column.
+    """
+    return (self.first.lineno, self.first.column)
+
+  @property
+  def end(self):
+    """The end of the logical line.
+
+    Returns:
+      A tuple of the ending line number and column.
+    """
+    return (self.last.lineno, self.last.column + len(self.last.value))
+
+  @property
   def is_comment(self):
     return self.first.is_comment
 
