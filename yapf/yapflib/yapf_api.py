@@ -181,13 +181,9 @@ def FormatCode(unformatted_source,
   """
   try:
     tree = pytree_utils.ParseCodeToTree(unformatted_source)
-  except tokenize.TokenError as e:
-    e.msg = e.args[0]
-    e.args = (e.msg, (filename, e.args[1][0], e.args[1][1]))
-    raise
   except Exception as e:
-    e.args = (e.args[0], (filename, e.args[1][1], e.args[1][2], e.args[1][3]))
-    raise
+    e.filename = filename
+    raise errors.YapfError(errors.FormatErrorMsg(e))
 
   reformatted_source = FormatTree(
       tree, style_config=style_config, lines=lines, verify=verify)
