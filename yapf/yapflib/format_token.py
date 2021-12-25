@@ -36,8 +36,6 @@ class Subtype(object):
   NONE = 0
   UNARY_OPERATOR = 1
   BINARY_OPERATOR = 2
-  A_EXPR_OPERATOR = 3
-  M_EXPR_OPERATOR = 4
   SUBSCRIPT_COLON = 5
   SUBSCRIPT_BRACKET = 6
   DEFAULT_OR_NAMED_ASSIGN = 7
@@ -267,19 +265,24 @@ class FormatToken(object):
     return Subtype.BINARY_OPERATOR in self.subtypes
 
   @property
-  def is_a_expr_op(self):
-    """Token is an a_expr operator."""
-    return Subtype.A_EXPR_OPERATOR in self.subtypes
-
-  @property
-  def is_m_expr_op(self):
-    """Token is an m_expr operator."""
-    return Subtype.M_EXPR_OPERATOR in self.subtypes
-
-  @property
+  @py3compat.lru_cache()
   def is_arithmetic_op(self):
     """Token is an arithmetic operator."""
-    return self.is_a_expr_op or self.is_m_expr_op
+    return self.value in frozenset({
+        '+',  # Add
+        '-',  # Subtract
+        '*',  # Multiply
+        '@',  # Matrix Multiply
+        '/',  # Divide
+        '//',  # Floor Divide
+        '%',  # Modulo
+        '<<',  # Left Shift
+        '>>',  # Right Shift
+        '|',  # Bitwise Or
+        '&',  # Bitwise Add
+        '^',  # Bitwise Xor
+        '**',  # Power
+    })
 
   @property
   def is_simple_expr(self):
