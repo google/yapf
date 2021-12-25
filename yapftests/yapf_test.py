@@ -26,6 +26,7 @@ import unittest
 
 from lib2to3.pgen2 import tokenize
 
+from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
@@ -62,6 +63,7 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testPrintAfterPeriod(self):
     unformatted_code = textwrap.dedent("""a.print\n""")
     expected_formatted_code = textwrap.dedent("""a.print\n""")
@@ -428,6 +430,7 @@ class CommandLineTest(unittest.TestCase):
     self.assertEqual(stderrdata, b'')
     self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
 
+  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testUnicodeEncodingPipedToFile(self):
     unformatted_code = textwrap.dedent(u"""\
         def foo():
@@ -1560,11 +1563,11 @@ class BadInputTest(unittest.TestCase):
 
   def testBadSyntax(self):
     code = '  a = 1\n'
-    self.assertRaises(SyntaxError, yapf_api.FormatCode, code)
+    self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
   def testBadCode(self):
     code = 'x = """hello\n'
-    self.assertRaises(tokenize.TokenError, yapf_api.FormatCode, code)
+    self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
 
 class DiffIndentTest(unittest.TestCase):

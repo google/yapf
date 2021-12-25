@@ -103,6 +103,8 @@ def main(argv):
           style_config=style_config,
           lines=lines,
           verify=args.verify)
+    except errors.YapfError:
+      raise
     except Exception as e:
       raise errors.YapfError(errors.FormatErrorMsg(e))
 
