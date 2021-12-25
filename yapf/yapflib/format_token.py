@@ -120,7 +120,7 @@ class FormatToken(object):
 
     stypes = pytree_utils.GetNodeAnnotation(node,
                                             pytree_utils.Annotation.SUBTYPE)
-    self.subtypes = [subtypes.NONE] if stypes is None else stypes
+    self.subtypes = {subtypes.NONE} if not stypes else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
   @property
@@ -214,6 +214,9 @@ class FormatToken(object):
 
   def ClosesScope(self):
     return self.value in pytree_utils.CLOSING_BRACKETS
+
+  def AddSubtype(self, subtype):
+    self.subtypes.add(subtype)
 
   def __repr__(self):
     msg = ('FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
