@@ -24,6 +24,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
+from yapf.yapflib import subtypes
 
 from lib2to3.fixer_util import syms as python_symbols
 
@@ -224,7 +225,7 @@ def _IsIdNumberStringToken(tok):
 
 
 def _IsUnaryOperator(tok):
-  return format_token.Subtype.UNARY_OPERATOR in tok.subtypes
+  return subtypes.UNARY_OPERATOR in tok.subtypes
 
 
 def _HasPrecedence(tok):
@@ -318,7 +319,7 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     # Space after the '.' in an import statement.
     return True
   if (lval == '=' and rval in {'.', ',,,'} and
-      format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN not in left.subtypes):
+      subtypes.DEFAULT_OR_NAMED_ASSIGN not in left.subtypes):
     # Space between equal and '.' as in "X = ...".
     return True
   if lval == ':' and rval in {'.', '...'}:
@@ -328,17 +329,17 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
       (left.is_keyword or left.is_name)):
     # Don't merge two keywords/identifiers.
     return True
-  if (format_token.Subtype.SUBSCRIPT_COLON in left.subtypes or
-      format_token.Subtype.SUBSCRIPT_COLON in right.subtypes):
+  if (subtypes.SUBSCRIPT_COLON in left.subtypes or
+      subtypes.SUBSCRIPT_COLON in right.subtypes):
     # A subscript shouldn't have spaces separating its colons.
     return False
-  if (format_token.Subtype.TYPED_NAME in left.subtypes or
-      format_token.Subtype.TYPED_NAME in right.subtypes):
+  if (subtypes.TYPED_NAME in left.subtypes or
+      subtypes.TYPED_NAME in right.subtypes):
     # A typed argument should have a space after the colon.
     return True
   if left.is_string:
-    if (rval == '=' and format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
-        in right.subtypes):
+    if (rval == '=' and
+        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in right.subtypes):
       # If there is a type hint, then we don't want to add a space between the
       # equal sign and the hint.
       return False
@@ -351,7 +352,7 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
       # depending on SPACE_INSIDE_BRACKETS.  A string followed by opening
       # brackets, however, should not.
       return style.Get('SPACE_INSIDE_BRACKETS')
-    if format_token.Subtype.SUBSCRIPT_BRACKET in right.subtypes:
+    if subtypes.SUBSCRIPT_BRACKET in right.subtypes:
       # It's legal to do this in Python: 'hello'[a]
       return False
   if left.is_binary_op and lval != '**' and _IsUnaryOperator(right):
@@ -383,22 +384,22 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     # The previous token was a unary op. No space is desired between it and
     # the current token.
     return False
-  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in left.subtypes and
-      format_token.Subtype.TYPED_NAME not in right.subtypes):
+  if (subtypes.DEFAULT_OR_NAMED_ASSIGN in left.subtypes and
+      subtypes.TYPED_NAME not in right.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
     return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
-  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in right.subtypes and
-      format_token.Subtype.TYPED_NAME not in left.subtypes):
+  if (subtypes.DEFAULT_OR_NAMED_ASSIGN in right.subtypes and
+      subtypes.TYPED_NAME not in left.subtypes):
     # A named argument or default parameter shouldn't have spaces around it.
     return style.Get('SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN')
-  if (format_token.Subtype.VARARGS_LIST in left.subtypes or
-      format_token.Subtype.VARARGS_LIST in right.subtypes):
+  if (subtypes.VARARGS_LIST in left.subtypes or
+      subtypes.VARARGS_LIST in right.subtypes):
     return False
-  if (format_token.Subtype.VARARGS_STAR in left.subtypes or
-      format_token.Subtype.KWARGS_STAR_STAR in left.subtypes):
+  if (subtypes.VARARGS_STAR in left.subtypes or
+      subtypes.KWARGS_STAR_STAR in left.subtypes):
     # Don't add a space after a vararg's star or a keyword's star-star.
     return False
-  if lval == '@' and format_token.Subtype.DECORATOR in left.subtypes:
+  if lval == '@' and subtypes.DECORATOR in left.subtypes:
     # Decorators shouldn't be separated from the 'at' sign.
     return False
   if left.is_keyword and rval == '.':
@@ -464,8 +465,8 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     # by SPACE_INSIDE_BRACKETS.
     return style.Get('SPACE_INSIDE_BRACKETS')
   if (lval in pytree_utils.OPENING_BRACKETS and
-      (format_token.Subtype.VARARGS_STAR in right.subtypes or
-       format_token.Subtype.KWARGS_STAR_STAR in right.subtypes)):
+      (subtypes.VARARGS_STAR in right.subtypes or
+       subtypes.KWARGS_STAR_STAR in right.subtypes)):
     # Don't separate a '*' or '**' from the opening bracket, unless enabled
     # by SPACE_INSIDE_BRACKETS.
     return style.Get('SPACE_INSIDE_BRACKETS')
@@ -526,12 +527,12 @@ def _CanBreakBefore(prev_token, cur_token):
   if cur_token.is_comment and prev_token.lineno == cur_token.lineno:
     # Don't break a comment at the end of the line.
     return False
-  if format_token.Subtype.UNARY_OPERATOR in prev_token.subtypes:
+  if subtypes.UNARY_OPERATOR in prev_token.subtypes:
     # Don't break after a unary token.
     return False
   if not style.Get('ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'):
-    if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes or
-        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in prev_token.subtypes):
+    if (subtypes.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes or
+        subtypes.DEFAULT_OR_NAMED_ASSIGN in prev_token.subtypes):
       return False
   return True
 
@@ -635,11 +636,11 @@ def _SplitPenalty(prev_token, cur_token):
     if cval in _BITWISE_OPERATORS:
       return style.Get('SPLIT_PENALTY_BITWISE_OPERATOR')
 
-  if (format_token.Subtype.COMP_FOR in cur_token.subtypes or
-      format_token.Subtype.COMP_IF in cur_token.subtypes):
+  if (subtypes.COMP_FOR in cur_token.subtypes or
+      subtypes.COMP_IF in cur_token.subtypes):
     # We don't mind breaking before the 'for' or 'if' of a list comprehension.
     return 0
-  if format_token.Subtype.UNARY_OPERATOR in prev_token.subtypes:
+  if subtypes.UNARY_OPERATOR in prev_token.subtypes:
     # Try not to break after a unary operator.
     return style.Get('SPLIT_PENALTY_AFTER_UNARY_OPERATOR')
   if pval == ',':
@@ -647,8 +648,8 @@ def _SplitPenalty(prev_token, cur_token):
     return 0
   if pval == '**' or cval == '**':
     return split_penalty.STRONGLY_CONNECTED
-  if (format_token.Subtype.VARARGS_STAR in prev_token.subtypes or
-      format_token.Subtype.KWARGS_STAR_STAR in prev_token.subtypes):
+  if (subtypes.VARARGS_STAR in prev_token.subtypes or
+      subtypes.KWARGS_STAR_STAR in prev_token.subtypes):
     # Don't split after a varargs * or kwargs **.
     return split_penalty.UNBREAKABLE
   if prev_token.OpensScope() and cval != '(':
@@ -660,8 +661,8 @@ def _SplitPenalty(prev_token, cur_token):
   if cval == '=':
     # Don't split before an assignment.
     return split_penalty.UNBREAKABLE
-  if (format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in prev_token.subtypes or
-      format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes):
+  if (subtypes.DEFAULT_OR_NAMED_ASSIGN in prev_token.subtypes or
+      subtypes.DEFAULT_OR_NAMED_ASSIGN in cur_token.subtypes):
     # Don't break before or after an default or named assignment.
     return split_penalty.UNBREAKABLE
   if cval == '==':

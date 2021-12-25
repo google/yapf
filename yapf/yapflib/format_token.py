@@ -24,40 +24,9 @@ from lib2to3.pgen2 import token
 from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
+from yapf.yapflib import subtypes
 
 CONTINUATION = token.N_TOKENS
-
-
-class Subtype(object):
-  """Subtype information about tokens.
-
-  Gleaned from parsing the code. Helps determine the best formatting.
-  """
-  NONE = 0
-  UNARY_OPERATOR = 1
-  BINARY_OPERATOR = 2
-  SUBSCRIPT_COLON = 5
-  SUBSCRIPT_BRACKET = 6
-  DEFAULT_OR_NAMED_ASSIGN = 7
-  DEFAULT_OR_NAMED_ASSIGN_ARG_LIST = 8
-  VARARGS_LIST = 9
-  VARARGS_STAR = 10
-  KWARGS_STAR_STAR = 11
-  ASSIGN_OPERATOR = 12
-  DICTIONARY_KEY = 13
-  DICTIONARY_KEY_PART = 14
-  DICTIONARY_VALUE = 15
-  DICT_SET_GENERATOR = 16
-  COMP_EXPR = 17
-  COMP_FOR = 18
-  COMP_IF = 19
-  FUNC_DEF = 20
-  DECORATOR = 21
-  TYPED_NAME = 22
-  TYPED_NAME_ARG_LIST = 23
-  SIMPLE_EXPRESSION = 24
-  PARAMETER_START = 25
-  PARAMETER_STOP = 26
 
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
@@ -149,9 +118,9 @@ class FormatToken(object):
     if self.is_continuation:
       self.value = node.value.rstrip()
 
-    subtypes = pytree_utils.GetNodeAnnotation(node,
-                                              pytree_utils.Annotation.SUBTYPE)
-    self.subtypes = [Subtype.NONE] if subtypes is None else subtypes
+    stypes = pytree_utils.GetNodeAnnotation(node,
+                                            pytree_utils.Annotation.SUBTYPE)
+    self.subtypes = [subtypes.NONE] if stypes is None else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
   @property
@@ -262,7 +231,7 @@ class FormatToken(object):
   @property
   def is_binary_op(self):
     """Token is a binary operator."""
-    return Subtype.BINARY_OPERATOR in self.subtypes
+    return subtypes.BINARY_OPERATOR in self.subtypes
 
   @property
   @py3compat.lru_cache()
@@ -287,12 +256,12 @@ class FormatToken(object):
   @property
   def is_simple_expr(self):
     """Token is an operator in a simple expression."""
-    return Subtype.SIMPLE_EXPRESSION in self.subtypes
+    return subtypes.SIMPLE_EXPRESSION in self.subtypes
 
   @property
   def is_subscript_colon(self):
     """Token is a subscript colon."""
-    return Subtype.SUBSCRIPT_COLON in self.subtypes
+    return subtypes.SUBSCRIPT_COLON in self.subtypes
 
   @property
   def is_comment(self):

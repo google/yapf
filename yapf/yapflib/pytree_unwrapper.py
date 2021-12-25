@@ -37,6 +37,7 @@ from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
+from yapf.yapflib import subtypes
 from yapf.yapflib import unwrapped_line
 
 
@@ -337,7 +338,7 @@ def _IdentifyParameterLists(uwline):
   param_stack = []
   for tok in uwline.tokens:
     # Identify parameter list objects.
-    if format_token.Subtype.FUNC_DEF in tok.subtypes:
+    if subtypes.FUNC_DEF in tok.subtypes:
       assert tok.next_token.value == '('
       func_stack.append(tok.next_token)
       continue
@@ -348,11 +349,11 @@ def _IdentifyParameterLists(uwline):
       continue
 
     # Identify parameter objects.
-    if format_token.Subtype.PARAMETER_START in tok.subtypes:
+    if subtypes.PARAMETER_START in tok.subtypes:
       param_stack.append(tok)
 
     # Not "elif", a parameter could be a single token.
-    if param_stack and format_token.Subtype.PARAMETER_STOP in tok.subtypes:
+    if param_stack and subtypes.PARAMETER_STOP in tok.subtypes:
       start = param_stack.pop()
       func_stack[-1].parameters.append(object_state.Parameter(start, tok))
 
