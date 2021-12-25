@@ -25,6 +25,7 @@ from __future__ import print_function
 from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
+from yapf.yapflib import subtypes
 
 
 class ComprehensionState(object):
@@ -210,7 +211,7 @@ class Parameter(object):
     """Returns true if the parameter has a default value."""
     tok = self.first_token
     while tok != self.last_token:
-      if format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN in tok.subtypes:
+      if subtypes.DEFAULT_OR_NAMED_ASSIGN in tok.subtypes:
         return True
       tok = tok.matching_bracket if tok.OpensScope() else tok.next_token
     return False

@@ -30,6 +30,7 @@ from yapf.yapflib import format_token
 from yapf.yapflib import object_state
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
+from yapf.yapflib import subtypes
 from yapf.yapflib import unwrapped_line
 
 
@@ -135,16 +136,14 @@ class FormatDecisionState(object):
     if current.is_pseudo:
       return False
 
-    if (not must_split and
-        format_token.Subtype.DICTIONARY_KEY_PART in current.subtypes and
-        format_token.Subtype.DICTIONARY_KEY not in current.subtypes and
+    if (not must_split and subtypes.DICTIONARY_KEY_PART in current.subtypes and
+        subtypes.DICTIONARY_KEY not in current.subtypes and
         not style.Get('ALLOW_MULTILINE_DICTIONARY_KEYS')):
       # In some situations, a dictionary may be multiline, but pylint doesn't
       # like it. So don't allow it unless forced to.
       return False
 
-    if (not must_split and
-        format_token.Subtype.DICTIONARY_VALUE in current.subtypes and
+    if (not must_split and subtypes.DICTIONARY_VALUE in current.subtypes and
         not style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE')):
       return False
 
@@ -157,7 +156,7 @@ class FormatDecisionState(object):
         if not prev or prev.name not in {'NAME', 'DOT'}:
           break
         token = token.previous_token
-      if token and format_token.Subtype.DICTIONARY_VALUE in token.subtypes:
+      if token and subtypes.DICTIONARY_VALUE in token.subtypes:
         if not style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE'):
           return False
 
@@ -207,7 +206,7 @@ class FormatDecisionState(object):
         (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
          current.value in '}])' and style.Get('INDENT_CLOSING_BRACKETS'))):
       # Split before the closing bracket if we can.
-      if format_token.Subtype.SUBSCRIPT_BRACKET not in current.subtypes:
+      if subtypes.SUBSCRIPT_BRACKET not in current.subtypes:
         return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if (current.value == ')' and previous.value == ',' and
@@ -227,7 +226,7 @@ class FormatDecisionState(object):
         style.Get('INDENT_CLOSING_BRACKETS') or
         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')):
       bracket = current if current.ClosesScope() else previous
-      if format_token.Subtype.SUBSCRIPT_BRACKET not in bracket.subtypes:
+      if subtypes.SUBSCRIPT_BRACKET not in bracket.subtypes:
         if bracket.OpensScope():
           if style.Get('COALESCE_BRACKETS'):
             if current.OpensScope():
@@ -312,20 +311,19 @@ class FormatDecisionState(object):
               return True
 
     if (current.OpensScope() and previous.value == ',' and
-        format_token.Subtype.DICTIONARY_KEY not in current.next_token.subtypes):
+        subtypes.DICTIONARY_KEY not in current.next_token.subtypes):
       # If we have a list of tuples, then we can get a similar look as above. If
       # the full list cannot fit on the line, then we want a split.
       open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
       if (open_bracket and open_bracket.value in '[{' and
-          format_token.Subtype.SUBSCRIPT_BRACKET not in open_bracket.subtypes):
+          subtypes.SUBSCRIPT_BRACKET not in open_bracket.subtypes):
         if not self._FitsOnLine(current, current.matching_bracket):
           return True
 
     ###########################################################################
     # Dict/Set Splitting
     if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
-        format_token.Subtype.DICTIONARY_KEY in current.subtypes and
-        not current.is_comment):
+        subtypes.DICTIONARY_KEY in current.subtypes and not current.is_comment):
       # Place each dictionary entry onto its own line.
       if previous.value == '{' and previous.previous_token:
         opening = _GetOpeningBracket(previous.previous_token)
@@ -345,11 +343,11 @@ class FormatDecisionState(object):
       return True
 
     if (style.Get('SPLIT_BEFORE_DICT_SET_GENERATOR') and
-        format_token.Subtype.DICT_SET_GENERATOR in current.subtypes):
+        subtypes.DICT_SET_GENERATOR in current.subtypes):
       # Split before a dict/set generator.
       return True
 
-    if (format_token.Subtype.DICTIONARY_VALUE in current.subtypes or
+    if (subtypes.DICTIONARY_VALUE in current.subtypes or
         (previous.is_pseudo and previous.value == '(' and
          not current.is_comment)):
       # Split before the dictionary value if we can't fit every dictionary
@@ -370,8 +368,7 @@ class FormatDecisionState(object):
     ###########################################################################
     # Argument List Splitting
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
-        format_token.Subtype.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
-        in current.subtypes):
+        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
           current.value not in ':=,)' and not _IsFunctionDefinition(previous)):
         # If we're going to split the lines because of named arguments, then we
@@ -506,7 +503,7 @@ class FormatDecisionState(object):
 
     if (previous.OpensScope() and not current.OpensScope() and
         not current.is_comment and
-        format_token.Subtype.SUBSCRIPT_BRACKET not in previous.subtypes):
+        subtypes.SUBSCRIPT_BRACKET not in previous.subtypes):
       if pprevious and not pprevious.is_keyword and not pprevious.is_name:
         # We want to split if there's a comment in the container.
         token = current
@@ -723,7 +720,7 @@ class FormatDecisionState(object):
     # If we encounter a closing bracket, we can remove a level from our
     # parenthesis stack.
     if len(self.stack) > 1 and current.ClosesScope():
-      if format_token.Subtype.DICTIONARY_KEY_PART in current.subtypes:
+      if subtypes.DICTIONARY_KEY_PART in current.subtypes:
         self.stack[-2].last_space = self.stack[-2].indent
       else:
         self.stack[-2].last_space = self.stack[-1].last_space
@@ -781,13 +778,12 @@ class FormatDecisionState(object):
       if newline:
         top_of_stack.has_interior_split = True
 
-    if (format_token.Subtype.COMP_EXPR in current.subtypes and
-        format_token.Subtype.COMP_EXPR not in previous.subtypes):
+    if (subtypes.COMP_EXPR in current.subtypes and
+        subtypes.COMP_EXPR not in previous.subtypes):
       self.comp_stack.append(object_state.ComprehensionState(current))
       return penalty
 
-    if (current.value == 'for' and
-        format_token.Subtype.COMP_FOR in current.subtypes):
+    if current.value == 'for' and subtypes.COMP_FOR in current.subtypes:
       if top_of_stack.for_token is not None:
         # Treat nested comprehensions like normal comp_if expressions.
         # Example:
@@ -811,8 +807,8 @@ class FormatDecisionState(object):
             top_of_stack.HasTrivialExpr()):
           penalty += split_penalty.CONNECTED
 
-    if (format_token.Subtype.COMP_IF in current.subtypes and
-        format_token.Subtype.COMP_IF not in previous.subtypes):
+    if (subtypes.COMP_IF in current.subtypes and
+        subtypes.COMP_IF not in previous.subtypes):
       # Penalize breaking at comp_if when it doesn't match the newline structure
       # in the rest of the comprehension.
       if (style.Get('SPLIT_COMPLEX_COMPREHENSION') and
@@ -914,7 +910,7 @@ class FormatDecisionState(object):
         param_list.has_default_values and
         current != param_list.parameters[0].first_token and
         current != param_list.closing_bracket and
-        format_token.Subtype.PARAMETER_START in current.subtypes):
+        subtypes.PARAMETER_START in current.subtypes):
       # If we want to split before parameters when there are named assigns,
       # then add a penalty for not splitting.
       penalty += split_penalty.STRONGLY_CONNECTED
@@ -961,12 +957,12 @@ class FormatDecisionState(object):
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
-        format_token.Subtype.DICTIONARY_VALUE in current.subtypes):
+        subtypes.DICTIONARY_VALUE in current.subtypes):
       return previous.column
 
     if style.Get('INDENT_DICTIONARY_VALUE'):
       if previous and (previous.value == ':' or previous.is_pseudo):
-        if format_token.Subtype.DICTIONARY_VALUE in current.subtypes:
+        if subtypes.DICTIONARY_VALUE in current.subtypes:
           return top_of_stack.indent
 
     if (not self.param_list_stack and _IsCompoundStatement(self.line.first) and
@@ -983,9 +979,9 @@ class FormatDecisionState(object):
         not self.param_list_stack[-1].SplitBeforeClosingBracket(
             top_of_stack.indent) and top_of_stack.indent
         == ((self.line.depth + 1) * style.Get('INDENT_WIDTH'))):
-      if (format_token.Subtype.PARAMETER_START in current.subtypes or
+      if (subtypes.PARAMETER_START in current.subtypes or
           (previous.is_comment and
-           format_token.Subtype.PARAMETER_START in previous.subtypes)):
+           subtypes.PARAMETER_START in previous.subtypes)):
         return top_of_stack.indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     return cont_aligned_indent
@@ -1029,14 +1025,14 @@ class FormatDecisionState(object):
       key = colon.previous_token
       if not key:
         return False
-      return format_token.Subtype.DICTIONARY_KEY_PART in key.subtypes
+      return subtypes.DICTIONARY_KEY_PART in key.subtypes
 
     closing = opening.matching_bracket
     entry_start = opening.next_token
     current = opening.next_token.next_token
 
     while current and current != closing:
-      if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
+      if subtypes.DICTIONARY_KEY in current.subtypes:
         prev = PreviousNonCommentToken(current)
         if prev.value == ',':
           prev = PreviousNonCommentToken(prev.previous_token)
@@ -1049,7 +1045,7 @@ class FormatDecisionState(object):
       if current.OpensScope():
         if ((current.value == '{' or
              (current.is_pseudo and current.next_token.value == '{') and
-             format_token.Subtype.DICTIONARY_VALUE in current.subtypes) or
+             subtypes.DICTIONARY_VALUE in current.subtypes) or
             ImplicitStringConcatenation(current)):
           # A dictionary entry that cannot fit on a single line shouldn't matter
           # to this calculation. If it can't fit on a single line, then the
@@ -1061,7 +1057,7 @@ class FormatDecisionState(object):
           while current:
             if current == closing:
               return True
-            if format_token.Subtype.DICTIONARY_KEY in current.subtypes:
+            if subtypes.DICTIONARY_KEY in current.subtypes:
               entry_start = current
               break
             current = current.next_token
@@ -1163,8 +1159,7 @@ def _LastTokenInLine(current):
 
 def _IsFunctionDefinition(current):
   prev = current.previous_token
-  return (current.value == '(' and prev and
-          format_token.Subtype.FUNC_DEF in prev.subtypes)
+  return current.value == '(' and prev and subtypes.FUNC_DEF in prev.subtypes
 
 
 def _IsLastScopeInLine(current):

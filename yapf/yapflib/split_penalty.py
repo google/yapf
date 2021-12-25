@@ -23,6 +23,7 @@ from yapf.yapflib import py3compat
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import style
+from yapf.yapflib import subtypes
 
 # TODO(morbo): Document the annotations in a centralized place. E.g., the
 # README file.
@@ -256,9 +257,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           'atom', 'power'
       }:
         # Don't split an argument list with one element if at all possible.
-        subtypes = pytree_utils.GetNodeAnnotation(
+        stypes = pytree_utils.GetNodeAnnotation(
             pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.SUBTYPE)
-        if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
+        if stypes and subtypes.SUBSCRIPT_BRACKET in stypes:
           _IncreasePenalty(node, SUBSCRIPT)
 
           # Bump up the split penalty for the first part of a subscript. We
@@ -319,9 +320,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         break
       if trailer.children[0].value in '([':
         if len(trailer.children) > 2:
-          subtypes = pytree_utils.GetNodeAnnotation(
+          stypes = pytree_utils.GetNodeAnnotation(
               trailer.children[0], pytree_utils.Annotation.SUBTYPE)
-          if subtypes and format_token.Subtype.SUBSCRIPT_BRACKET in subtypes:
+          if stypes and subtypes.SUBSCRIPT_BRACKET in stypes:
             _SetStronglyConnected(
                 pytree_utils.FirstLeafNode(trailer.children[1]))
 
