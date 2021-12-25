@@ -50,9 +50,12 @@ if PY3:
 
   import tokenize
   detect_encoding = tokenize.detect_encoding
+  TokenInfo = tokenize.TokenInfo
 else:
   import __builtin__
   import cStringIO
+  from itertools import ifilter
+
   StringIO = BytesIO = cStringIO.StringIO
 
   open_with_encoding = io.open
@@ -67,7 +70,6 @@ else:
 
   range = xrange  # noqa: F821
 
-  from itertools import ifilter
   raw_input = raw_input
 
   import ConfigParser as configparser
@@ -75,6 +77,12 @@ else:
 
   from lib2to3.pgen2 import tokenize
   detect_encoding = tokenize.detect_encoding
+
+  import collections
+
+  class TokenInfo(
+      collections.namedtuple('TokenInfo', 'type string start end line')):
+    pass
 
 
 def EncodeAndWriteToStdout(s, encoding='utf-8'):

@@ -83,11 +83,12 @@ class FormatToken(object):
     newlines: The number of newlines needed before this token.
   """
 
-  def __init__(self, node):
+  def __init__(self, node, node_name=None):
     """Constructor.
 
     Arguments:
       node: (pytree.Leaf) The node that's being wrapped.
+      none_name: (string) The name of the node.
     """
     self.node = node
     self.next_token = None
@@ -108,7 +109,7 @@ class FormatToken(object):
     self.type = node.type
     self.column = node.column
     self.lineno = node.lineno
-    self.name = pytree_utils.NodeName(node)
+    self.name = pytree_utils.NodeName(node) if not node_name else node_name
 
     self.spaces_required_before = 0
     if self.is_comment:
