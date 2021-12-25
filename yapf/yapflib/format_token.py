@@ -216,9 +216,10 @@ class FormatToken(object):
     return self.value in pytree_utils.CLOSING_BRACKETS
 
   def __repr__(self):
-    msg = 'FormatToken(name={0}, value={1}, column={2}, lineno={3}'.format(
-        'DOCSTRING' if self.is_docstring else self.name, self.value,
-        self.column, self.lineno)
+    msg = ('FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
+           'splitpenalty={4}'.format(
+               'DOCSTRING' if self.is_docstring else self.name, self.value,
+               self.column, self.lineno, self.split_penalty))
     msg += ', pseudo)' if self.is_pseudo else ')'
     return msg
 
