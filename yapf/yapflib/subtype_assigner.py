@@ -189,7 +189,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
       if _IsAExprOperator(child):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
-        _AppendTokenSubtype(child, format_token.Subtype.A_EXPR_OPERATOR)
 
     if _IsSimpleExpression(node):
       for child in node.children:
@@ -202,7 +201,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
       if _IsMExprOperator(child):
         _AppendTokenSubtype(child, format_token.Subtype.BINARY_OPERATOR)
-        _AppendTokenSubtype(child, format_token.Subtype.M_EXPR_OPERATOR)
 
     if _IsSimpleExpression(node):
       for child in node.children:
