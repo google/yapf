@@ -172,9 +172,8 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         not a
         """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckFormatTokenSubtypes(llines,
-                                   [[('not', {subtypes.UNARY_OPERATOR}),
-                                     ('a', {subtypes.NONE})]])
+    self._CheckFormatTokenSubtypes(llines, [[('not', {subtypes.UNARY_OPERATOR}),
+                                             ('a', {subtypes.NONE})]])
 
   def testBitwiseOperators(self):
     code = textwrap.dedent("""\
