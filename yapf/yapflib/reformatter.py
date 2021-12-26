@@ -67,8 +67,8 @@ def Reformat(llines, verify=False, lines=None):
       if prev_line and prev_line.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainRequiredVerticalSpacingBetweenTokens(lline.first,
-                                                    prev_line.last, lines)
+        _RetainRequiredVerticalSpacingBetweenTokens(lline.first, prev_line.last,
+                                                    lines)
       if any(tok.is_comment for tok in lline.tokens):
         _RetainVerticalSpacingBeforeComments(lline)
 
@@ -84,7 +84,7 @@ def Reformat(llines, verify=False, lines=None):
       _EmitLineUnformatted(state)
 
     elif _CanPlaceOnSingleLine(lline) and not any(tok.must_break_before
-                                                   for tok in lline.tokens):
+                                                  for tok in lline.tokens):
       # The logical line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
@@ -749,8 +749,7 @@ def _SingleOrMergedLines(lines):
       next_line = lines[index + 1]
       for tok in next_line.tokens:
         lines[index].AppendToken(tok)
-      if (len(next_line.tokens) == 1 and
-          next_line.first.is_multiline_string):
+      if (len(next_line.tokens) == 1 and next_line.first.is_multiline_string):
         # This may be a multiline shebang. In that case, we want to retain the
         # formatting. Otherwise, it could mess up the shell script's syntax.
         lines[index].disable = True
