@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Join unwrapped lines together.
+"""Join logical lines together.
 
 Determine how many lines can be joined into one line. For instance, we could
 join these statements into one line:
@@ -43,8 +43,8 @@ def CanMergeMultipleLines(lines, last_was_merged=False):
   """Determine if multiple lines can be joined into one.
 
   Arguments:
-    lines: (list of UnwrappedLine) This is a splice of UnwrappedLines from the
-      full code base.
+    lines: (list of LogicalLine) This is a splice of LogicalLines from the full
+      code base.
     last_was_merged: (bool) The last line was merged.
 
   Returns:
@@ -91,7 +91,7 @@ def _CanMergeLineIntoIfStatement(lines, limit):
   'continue', and 'break'.
 
   Arguments:
-    lines: (list of UnwrappedLine) The lines we are wanting to merge.
+    lines: (list of LogicalLine) The lines we are wanting to merge.
     limit: (int) The amount of space remaining on the line.
 
   Returns:

@@ -23,22 +23,22 @@ from yapftests import yapf_test_helper
 
 class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
 
-  def _CheckUnwrappedLines(self, uwlines, list_of_expected):
-    """Check that the given UnwrappedLines match expectations.
+  def _CheckLogicalLines(self, llines, list_of_expected):
+    """Check that the given LogicalLines match expectations.
 
     Args:
-      uwlines: list of UnwrappedLine
+      llines: list of LogicalLine
       list_of_expected: list of (depth, values) pairs. Non-semantic tokens are
         filtered out from the expected values.
     """
     actual = []
-    for uwl in uwlines:
+    for lline in llines:
       filtered_values = [
           ft.value
-          for ft in uwl.tokens
+          for ft in lline.tokens
           if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
       ]
-      actual.append((uwl.depth, filtered_values))
+      actual.append((lline.depth, filtered_values))
 
     self.assertEqual(list_of_expected, actual)
 
@@ -48,8 +48,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
       # a comment
       y = 2
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['x', '=', '1']),
         (0, ['# a comment']),
         (0, ['y', '=', '2']),
@@ -60,8 +60,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
       y = (1 +
            x)
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['y', '=', '(', '1', '+', 'x', ')']),
     ])
 
@@ -70,8 +70,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
       x = 1    # a comment
       y = 2
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['x', '=', '1', '# a comment']),
         (0, ['y', '=', '2']),
     ])
@@ -82,8 +82,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
           x = 1
           y = 2
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['if', 'foo', ':']),
         (1, ['x', '=', '1']),
         (1, ['y', '=', '2']),
@@ -96,8 +96,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
           x = 1
           y = 2
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['# c1']),
         (0, ['if', 'foo', ':', '# c2']),
         (1, ['x', '=', '1']),
@@ -112,8 +112,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
           # c3
           y = 2
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['if', 'foo', ':']),
         (1, ['# c1']),
         (1, ['x', '=', '1', '# c2']),
@@ -131,8 +131,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
          # c3
          z = 1
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['if', 'x', ':']),
         (1, ['x', '=', '1', '# c1']),
         (0, ['elif', 'y', ':', '# c2']),
@@ -151,8 +151,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
            j = 1
          k = 1
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['if', 'x', ':']),
         (1, ['x', '=', '1', '# c1']),
         (1, ['while', 't', ':']),
@@ -167,8 +167,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
           # c2
           x = 1
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['while', 'x', '>', '1', ':', '# c1']),
         (1, ['# c2']),
         (1, ['x', '=', '1']),
@@ -187,8 +187,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
       finally:
         pass
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['try', ':']),
         (1, ['pass']),
         (0, ['except', ':']),
@@ -207,8 +207,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
         # c2
         return x
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['def', 'foo', '(', 'x', ')', ':', '# c1']),
         (1, ['# c2']),
         (1, ['return', 'x']),
@@ -224,8 +224,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
         # c4
         return x
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['def', 'foo', '(', 'x', ')', ':', '# c1']),
         (1, ['# c2']),
         (1, ['return', 'x']),
@@ -240,8 +240,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
         # c2
         p = 1
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['class', 'Klass', ':', '# c1']),
         (1, ['# c2']),
         (1, ['p', '=', '1']),
@@ -251,8 +251,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent(r"""
         def f(): return 37
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['def', 'f', '(', ')', ':']),
         (1, ['return', '37']),
     ])
@@ -265,8 +265,8 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
         def f():
           pass
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [
         (0, ['# Comment #1']),
         (0, ['# Comment #2']),
         (0, ['def', 'f', '(', ')', ':']),
@@ -281,48 +281,48 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
           'c',  # hello world
       ]
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckUnwrappedLines(uwlines, [(0, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckLogicalLines(llines, [(0, [
         'a', '=', '[', "'a'", ',', "'b'", ',', "'c'", ',', '# hello world', ']'
     ])])
 
 
 class MatchBracketsTest(yapf_test_helper.YAPFTest):
 
-  def _CheckMatchingBrackets(self, uwlines, list_of_expected):
+  def _CheckMatchingBrackets(self, llines, list_of_expected):
     """Check that the tokens have the expected matching bracket.
 
     Arguments:
-      uwlines: list of UnwrappedLine.
+      llines: list of LogicalLine.
       list_of_expected: list of (index, index) pairs. The matching brackets at
         the indexes need to match. Non-semantic tokens are filtered out from the
         expected values.
     """
     actual = []
-    for uwl in uwlines:
+    for lline in llines:
       filtered_values = [(ft, ft.matching_bracket)
-                         for ft in uwl.tokens
+                         for ft in lline.tokens
                          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
 
     for index, bracket_list in enumerate(list_of_expected):
-      uwline = actual[index]
+      lline = actual[index]
       if not bracket_list:
-        for value in uwline:
+        for value in lline:
           self.assertIsNone(value[1])
       else:
         for open_bracket, close_bracket in bracket_list:
-          self.assertEqual(uwline[open_bracket][0], uwline[close_bracket][1])
-          self.assertEqual(uwline[close_bracket][0], uwline[open_bracket][1])
+          self.assertEqual(lline[open_bracket][0], lline[close_bracket][1])
+          self.assertEqual(lline[close_bracket][0], lline[open_bracket][1])
 
   def testFunctionDef(self):
     code = textwrap.dedent("""\
         def foo(a, b=['w','d'], c=[42, 37]):
           pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckMatchingBrackets(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckMatchingBrackets(llines, [
         [(2, 20), (7, 11), (15, 19)],
         [],
     ])
@@ -333,8 +333,8 @@ class MatchBracketsTest(yapf_test_helper.YAPFTest):
         def foo(a, b, c):
           pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckMatchingBrackets(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckMatchingBrackets(llines, [
         [(2, 3)],
         [(2, 8)],
         [],
@@ -345,8 +345,8 @@ class MatchBracketsTest(yapf_test_helper.YAPFTest):
         class A(B, C, D):
           pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self._CheckMatchingBrackets(uwlines, [
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckMatchingBrackets(llines, [
         [(2, 8)],
         [],
     ])

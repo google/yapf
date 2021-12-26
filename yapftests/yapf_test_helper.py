@@ -64,7 +64,7 @@ class YAPFTest(unittest.TestCase):
 
 
 def ParseAndUnwrap(code, dumptree=False):
-  """Produces unwrapped lines from the given code.
+  """Produces logical lines from the given code.
 
   Parses the code into a tree, performs comment splicing and runs the
   unwrapper.
@@ -75,7 +75,7 @@ def ParseAndUnwrap(code, dumptree=False):
               to stderr. Useful for debugging.
 
   Returns:
-    List of unwrapped lines.
+    List of logical lines.
   """
   tree = pytree_utils.ParseCodeToTree(code)
   comment_splicer.SpliceComments(tree)
@@ -88,8 +88,8 @@ def ParseAndUnwrap(code, dumptree=False):
   if dumptree:
     pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
 
-  uwlines = pytree_unwrapper.UnwrapPyTree(tree)
-  for uwl in uwlines:
-    uwl.CalculateFormattingInformation()
+  llines = pytree_unwrapper.UnwrapPyTree(tree)
+  for lline in llines:
+    lline.CalculateFormattingInformation()
 
-  return uwlines
+  return llines

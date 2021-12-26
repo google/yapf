@@ -15,6 +15,8 @@
 - Use GitHub Actions instead of Travis for CI.
 - Clean up the FormatToken interface to limit how much it relies upon the
   pytree node object.
+- Rename "unwrapped_line" module to "logical_line."
+- Rename "UnwrappedLine" class to "LogicalLine."
 ### Fixed
 - Enable `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF` knob for "pep8" style, so
   method definitions inside a class are surrounded by a single blank line as

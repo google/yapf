@@ -36,10 +36,10 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
         class ABC(metaclass=type):
           pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     with self.assertRaises(verifier.InternalError):
-      reformatter.Reformat(uwlines, verify=True)
-    reformatter.Reformat(uwlines)  # verify should be False by default.
+      reformatter.Reformat(llines, verify=True)
+    reformatter.Reformat(llines)  # verify should be False by default.
 
   def testNoVerify(self):
     unformatted_code = textwrap.dedent("""\
@@ -50,9 +50,9 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
         class ABC(metaclass=type):
             pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(uwlines, verify=False))
+                         reformatter.Reformat(llines, verify=False))
 
   def testVerifyFutureImport(self):
     unformatted_code = textwrap.dedent("""\
@@ -64,9 +64,9 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
         if __name__ == "__main__":
           call_my_function(print)
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     with self.assertRaises(verifier.InternalError):
-      reformatter.Reformat(uwlines, verify=True)
+      reformatter.Reformat(llines, verify=True)
 
     expected_formatted_code = textwrap.dedent("""\
         from __future__ import print_function
@@ -79,9 +79,9 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
         if __name__ == "__main__":
             call_my_function(print)
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(uwlines, verify=False))
+                         reformatter.Reformat(llines, verify=False))
 
   def testContinuationLineShouldBeDistinguished(self):
     code = textwrap.dedent("""\
@@ -92,8 +92,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
                         self.generators + self.next_batch) == 1:
                     pass
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(uwlines, verify=False))
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(code, reformatter.Reformat(llines, verify=False))
 
 
 if __name__ == '__main__':

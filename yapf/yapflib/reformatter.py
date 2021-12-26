@@ -13,9 +13,8 @@
 # limitations under the License.
 """Decide what the format for the code should be.
 
-The `unwrapped_line.UnwrappedLine`s are now ready to be formatted.
-UnwrappedLines that can be merged together are. The best formatting is returned
-as a string.
+The `logical_line.LogicalLine`s are now ready to be formatted. LogicalLInes that
+can be merged together are. The best formatting is returned as a string.
 
   Reformat(): the main function exported by this module.
 """
@@ -36,11 +35,11 @@ from yapf.yapflib import style
 from yapf.yapflib import verifier
 
 
-def Reformat(uwlines, verify=False, lines=None):
-  """Reformat the unwrapped lines.
+def Reformat(llines, verify=False, lines=None):
+  """Reformat the logical lines.
 
   Arguments:
-    uwlines: (list of unwrapped_line.UnwrappedLine) Lines we want to format.
+    llines: (list of logical_line.LogicalLine) Lines we want to format.
     verify: (bool) True if reformatted code should be verified for syntax.
     lines: (set of int) The lines which can be modified or None if there is no
       line range restriction.
@@ -49,81 +48,81 @@ def Reformat(uwlines, verify=False, lines=None):
     A string representing the reformatted code.
   """
   final_lines = []
-  prev_uwline = None  # The previous line.
+  prev_line = None  # The previous line.
   indent_width = style.Get('INDENT_WIDTH')
 
-  for uwline in _SingleOrMergedLines(uwlines):
-    first_token = uwline.first
-    _FormatFirstToken(first_token, uwline.depth, prev_uwline, final_lines)
+  for lline in _SingleOrMergedLines(llines):
+    first_token = lline.first
+    _FormatFirstToken(first_token, lline.depth, prev_line, final_lines)
 
-    indent_amt = indent_width * uwline.depth
-    state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+    indent_amt = indent_width * lline.depth
+    state = format_decision_state.FormatDecisionState(lline, indent_amt)
     state.MoveStateToNextToken()
 
-    if not uwline.disable:
-      if uwline.first.is_comment:
-        uwline.first.node.value = uwline.first.node.value.rstrip()
-      elif uwline.last.is_comment:
-        uwline.last.node.value = uwline.last.node.value.rstrip()
-      if prev_uwline and prev_uwline.disable:
+    if not lline.disable:
+      if lline.first.is_comment:
+        lline.first.node.value = lline.first.node.value.rstrip()
+      elif lline.last.is_comment:
+        lline.last.node.value = lline.last.node.value.rstrip()
+      if prev_line and prev_line.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainRequiredVerticalSpacingBetweenTokens(uwline.first,
-                                                    prev_uwline.last, lines)
-      if any(tok.is_comment for tok in uwline.tokens):
-        _RetainVerticalSpacingBeforeComments(uwline)
+        _RetainRequiredVerticalSpacingBetweenTokens(lline.first,
+                                                    prev_line.last, lines)
+      if any(tok.is_comment for tok in lline.tokens):
+        _RetainVerticalSpacingBeforeComments(lline)
 
-    if uwline.disable or _LineHasContinuationMarkers(uwline):
-      _RetainHorizontalSpacing(uwline)
-      _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
+    if lline.disable or _LineHasContinuationMarkers(lline):
+      _RetainHorizontalSpacing(lline)
+      _RetainRequiredVerticalSpacing(lline, prev_line, lines)
       _EmitLineUnformatted(state)
 
-    elif (_LineContainsPylintDisableLineTooLong(uwline) or
-          _LineContainsI18n(uwline)):
+    elif (_LineContainsPylintDisableLineTooLong(lline) or
+          _LineContainsI18n(lline)):
       # Don't modify vertical spacing, but fix any horizontal spacing issues.
-      _RetainRequiredVerticalSpacing(uwline, prev_uwline, lines)
+      _RetainRequiredVerticalSpacing(lline, prev_line, lines)
       _EmitLineUnformatted(state)
 
-    elif _CanPlaceOnSingleLine(uwline) and not any(tok.must_break_before
-                                                   for tok in uwline.tokens):
-      # The unwrapped line fits on one line.
+    elif _CanPlaceOnSingleLine(lline) and not any(tok.must_break_before
+                                                   for tok in lline.tokens):
+      # The logical line fits on one line.
       while state.next_token:
         state.AddTokenToState(newline=False, dry_run=False)
 
     elif not _AnalyzeSolutionSpace(state):
       # Failsafe mode. If there isn't a solution to the line, then just emit
       # it as is.
-      state = format_decision_state.FormatDecisionState(uwline, indent_amt)
+      state = format_decision_state.FormatDecisionState(lline, indent_amt)
       state.MoveStateToNextToken()
-      _RetainHorizontalSpacing(uwline)
-      _RetainRequiredVerticalSpacing(uwline, prev_uwline, None)
+      _RetainHorizontalSpacing(lline)
+      _RetainRequiredVerticalSpacing(lline, prev_line, None)
       _EmitLineUnformatted(state)
 
-    final_lines.append(uwline)
-    prev_uwline = uwline
+    final_lines.append(lline)
+    prev_line = lline
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
 
 
-def _RetainHorizontalSpacing(uwline):
+def _RetainHorizontalSpacing(line):
   """Retain all horizontal spacing between tokens."""
-  for tok in uwline.tokens:
-    tok.RetainHorizontalSpacing(uwline.first.column, uwline.depth)
+  for tok in line.tokens:
+    tok.RetainHorizontalSpacing(line.first.column, line.depth)
 
 
-def _RetainRequiredVerticalSpacing(cur_uwline, prev_uwline, lines):
+def _RetainRequiredVerticalSpacing(cur_line, prev_line, lines):
   """Retain all vertical spacing between lines."""
   prev_tok = None
-  if prev_uwline is not None:
-    prev_tok = prev_uwline.last
+  if prev_line is not None:
+    prev_tok = prev_line.last
 
-  if cur_uwline.disable:
+  if cur_line.disable:
     # After the first token we are acting on a single line. So if it is
     # disabled we must not reformat.
     lines = set()
 
-  for cur_tok in cur_uwline.tokens:
+  for cur_tok in cur_line.tokens:
     _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines)
     prev_tok = cur_tok
 
@@ -165,10 +164,10 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
   cur_tok.AdjustNewlinesBefore(required_newlines)
 
 
-def _RetainVerticalSpacingBeforeComments(uwline):
+def _RetainVerticalSpacingBeforeComments(line):
   """Retain vertical spacing before comments."""
   prev_token = None
-  for tok in uwline.tokens:
+  for tok in line.tokens:
     if tok.is_comment and prev_token:
       if tok.lineno - tok.value.count('\n') - prev_token.lineno > 1:
         tok.AdjustNewlinesBefore(ONE_BLANK_LINE)
@@ -203,57 +202,57 @@ def _EmitLineUnformatted(state):
     state.AddTokenToState(newline=newline, dry_run=False)
 
 
-def _LineContainsI18n(uwline):
+def _LineContainsI18n(line):
   """Return true if there are i18n comments or function calls in the line.
 
   I18n comments and pseudo-function calls are closely related. They cannot
   be moved apart without breaking i18n.
 
   Arguments:
-    uwline: (unwrapped_line.UnwrappedLine) The line currently being formatted.
+    line: (logical_line.LogicalLine) The line currently being formatted.
 
   Returns:
     True if the line contains i18n comments or function calls. False otherwise.
   """
   if style.Get('I18N_COMMENT'):
-    for tok in uwline.tokens:
+    for tok in line.tokens:
       if tok.is_comment and re.match(style.Get('I18N_COMMENT'), tok.value):
         # Contains an i18n comment.
         return True
 
   if style.Get('I18N_FUNCTION_CALL'):
-    length = len(uwline.tokens)
+    length = len(line.tokens)
     for index in range(length - 1):
-      if (uwline.tokens[index + 1].value == '(' and
-          uwline.tokens[index].value in style.Get('I18N_FUNCTION_CALL')):
+      if (line.tokens[index + 1].value == '(' and
+          line.tokens[index].value in style.Get('I18N_FUNCTION_CALL')):
         return True
   return False
 
 
-def _LineContainsPylintDisableLineTooLong(uwline):
+def _LineContainsPylintDisableLineTooLong(line):
   """Return true if there is a "pylint: disable=line-too-long" comment."""
-  return re.search(r'\bpylint:\s+disable=line-too-long\b', uwline.last.value)
+  return re.search(r'\bpylint:\s+disable=line-too-long\b', line.last.value)
 
 
-def _LineHasContinuationMarkers(uwline):
+def _LineHasContinuationMarkers(line):
   """Return true if the line has continuation markers in it."""
-  return any(tok.is_continuation for tok in uwline.tokens)
+  return any(tok.is_continuation for tok in line.tokens)
 
 
-def _CanPlaceOnSingleLine(uwline):
-  """Determine if the unwrapped line can go on a single line.
+def _CanPlaceOnSingleLine(line):
+  """Determine if the logical line can go on a single line.
 
   Arguments:
-    uwline: (unwrapped_line.UnwrappedLine) The line currently being formatted.
+    line: (logical_line.LogicalLine) The line currently being formatted.
 
   Returns:
     True if the line can or should be added to a single line. False otherwise.
   """
-  token_names = [x.name for x in uwline.tokens]
+  token_names = [x.name for x in line.tokens]
   if (style.Get('FORCE_MULTILINE_DICT') and 'LBRACE' in token_names):
     return False
-  indent_amt = style.Get('INDENT_WIDTH') * uwline.depth
-  last = uwline.last
+  indent_amt = style.Get('INDENT_WIDTH') * line.depth
+  last = line.last
   last_index = -1
   if (last.is_pylint_comment or last.is_pytype_comment or
       last.is_copybara_comment):
@@ -262,7 +261,7 @@ def _CanPlaceOnSingleLine(uwline):
   if last is None:
     return True
   return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
-          not any(tok.is_comment for tok in uwline.tokens[:last_index]))
+          not any(tok.is_comment for tok in line.tokens[:last_index]))
 
 
 def _AlignTrailingComments(final_lines):
@@ -305,7 +304,7 @@ def _AlignTrailingComments(final_lines):
             all_pc_line_lengths.append([])
             continue
 
-          # Calculate the length of each line in this unwrapped line.
+          # Calculate the length of each line in this logical line.
           line_content = ''
           pc_line_lengths = []
 
@@ -561,20 +560,19 @@ def _ReconstructPath(initial_state, current):
 NESTED_DEPTH = []
 
 
-def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
-  """Format the first token in the unwrapped line.
+def _FormatFirstToken(first_token, indent_depth, prev_line, final_lines):
+  """Format the first token in the logical line.
 
-  Add a newline and the required indent before the first token of the unwrapped
+  Add a newline and the required indent before the first token of the logical
   line.
 
   Arguments:
-    first_token: (format_token.FormatToken) The first token in the unwrapped
-      line.
+    first_token: (format_token.FormatToken) The first token in the logical line.
     indent_depth: (int) The line's indentation depth.
-    prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
-      previous to this line.
-    final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
-      that have already been processed.
+    prev_line: (list of logical_line.LogicalLine) The logical line previous to
+      this line.
+    final_lines: (list of logical_line.LogicalLine) The logical lines that have
+      already been processed.
   """
   global NESTED_DEPTH
   while NESTED_DEPTH and NESTED_DEPTH[-1] > indent_depth:
@@ -589,7 +587,7 @@ def _FormatFirstToken(first_token, indent_depth, prev_uwline, final_lines):
       NESTED_DEPTH.append(indent_depth)
 
   first_token.AddWhitespacePrefix(
-      _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
+      _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
                                  final_lines, first_nested),
       indent_level=indent_depth)
 
@@ -606,18 +604,18 @@ def _IsClassOrDef(tok):
           tok.next_token.value == 'def')
 
 
-def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
                                final_lines, first_nested):
   """Calculate the number of newlines we need to add.
 
   Arguments:
-    first_token: (format_token.FormatToken) The first token in the unwrapped
+    first_token: (format_token.FormatToken) The first token in the logical
       line.
     indent_depth: (int) The line's indentation depth.
-    prev_uwline: (list of unwrapped_line.UnwrappedLine) The unwrapped line
-      previous to this line.
-    final_lines: (list of unwrapped_line.UnwrappedLine) The unwrapped lines
-      that have already been processed.
+    prev_line: (list of logical_line.LogicalLine) The logical line previous to
+      this line.
+    final_lines: (list of logical_line.LogicalLine) The logical lines that have
+      already been processed.
     first_nested: (boolean) Whether this is the first nested class or function.
 
   Returns:
@@ -625,7 +623,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
   """
   # TODO(morbo): Special handling for imports.
   # TODO(morbo): Create a knob that can tune these.
-  if prev_uwline is None:
+  if prev_line is None:
     # The first line in the file. Don't add blank lines.
     # FIXME(morbo): Is this correct?
     if first_token.newlines is not None:
@@ -633,11 +631,11 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     return 0
 
   if first_token.is_docstring:
-    if (prev_uwline.first.value == 'class' and
+    if (prev_line.first.value == 'class' and
         style.Get('BLANK_LINE_BEFORE_CLASS_DOCSTRING')):
       # Enforce a blank line before a class's docstring.
       return ONE_BLANK_LINE
-    elif (prev_uwline.first.value.startswith('#') and
+    elif (prev_line.first.value.startswith('#') and
           style.Get('BLANK_LINE_BEFORE_MODULE_DOCSTRING')):
       # Enforce a blank line before a module's docstring.
       return ONE_BLANK_LINE
@@ -645,13 +643,13 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     return NO_BLANK_LINES
 
   if first_token.is_name and not indent_depth:
-    if prev_uwline.first.value in {'from', 'import'}:
+    if prev_line.first.value in {'from', 'import'}:
       # Support custom number of blank lines between top-level imports and
       # variable definitions.
       return 1 + style.Get(
           'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES')
 
-  prev_last_token = prev_uwline.last
+  prev_last_token = prev_line.last
   if prev_last_token.is_docstring:
     if (not indent_depth and first_token.value in {'class', 'def', 'async'}):
       # Separate a class or function from the module-level docstring with
@@ -674,7 +672,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
     if not indent_depth:
       # This is a top-level class or function.
       is_inline_comment = prev_last_token.whitespace_prefix.count('\n') == 0
-      if (not prev_uwline.disable and prev_last_token.is_comment and
+      if (not prev_line.disable and prev_last_token.is_comment and
           not is_inline_comment):
         # This token follows a non-inline comment.
         if _NoBlankLinesBeforeCurrentToken(prev_last_token.value, first_token,
@@ -694,7 +692,7 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
           if first_token.newlines is not None:
             first_token.newlines = None
           return NO_BLANK_LINES
-    elif _IsClassOrDef(prev_uwline.first):
+    elif _IsClassOrDef(prev_line.first):
       if first_nested and not style.Get(
           'BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'):
         first_token.newlines = None
@@ -717,11 +715,11 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_uwline,
   return NO_BLANK_LINES
 
 
-def _SingleOrMergedLines(uwlines):
+def _SingleOrMergedLines(lines):
   """Generate the lines we want to format.
 
   Arguments:
-    uwlines: (list of unwrapped_line.UnwrappedLine) Lines we want to format.
+    lines: (list of logical_line.LogicalLine) Lines we want to format.
 
   Yields:
     Either a single line, if the current line cannot be merged with the
@@ -729,38 +727,38 @@ def _SingleOrMergedLines(uwlines):
   """
   index = 0
   last_was_merged = False
-  while index < len(uwlines):
-    if uwlines[index].disable:
-      uwline = uwlines[index]
+  while index < len(lines):
+    if lines[index].disable:
+      line = lines[index]
       index += 1
-      while index < len(uwlines):
-        column = uwline.last.column + 2
-        if uwlines[index].lineno != uwline.lineno:
+      while index < len(lines):
+        column = line.last.column + 2
+        if lines[index].lineno != line.lineno:
           break
-        if uwline.last.value != ':':
+        if line.last.value != ':':
           leaf = pytree.Leaf(
-              type=token.SEMI, value=';', context=('', (uwline.lineno, column)))
-          uwline.AppendToken(format_token.FormatToken(leaf))
-        for tok in uwlines[index].tokens:
-          uwline.AppendToken(tok)
+              type=token.SEMI, value=';', context=('', (line.lineno, column)))
+          line.AppendToken(format_token.FormatToken(leaf))
+        for tok in lines[index].tokens:
+          line.AppendToken(tok)
         index += 1
-      yield uwline
-    elif line_joiner.CanMergeMultipleLines(uwlines[index:], last_was_merged):
+      yield line
+    elif line_joiner.CanMergeMultipleLines(lines[index:], last_was_merged):
       # TODO(morbo): This splice is potentially very slow. Come up with a more
       # performance-friendly way of determining if two lines can be merged.
-      next_uwline = uwlines[index + 1]
-      for tok in next_uwline.tokens:
-        uwlines[index].AppendToken(tok)
-      if (len(next_uwline.tokens) == 1 and
-          next_uwline.first.is_multiline_string):
+      next_line = lines[index + 1]
+      for tok in next_line.tokens:
+        lines[index].AppendToken(tok)
+      if (len(next_line.tokens) == 1 and
+          next_line.first.is_multiline_string):
         # This may be a multiline shebang. In that case, we want to retain the
         # formatting. Otherwise, it could mess up the shell script's syntax.
-        uwlines[index].disable = True
-      yield uwlines[index]
+        lines[index].disable = True
+      yield lines[index]
       index += 2
       last_was_merged = True
     else:
-      yield uwlines[index]
+      yield lines[index]
       index += 1
       last_was_merged = False
 
@@ -777,9 +775,8 @@ def _NoBlankLinesBeforeCurrentToken(text, cur_token, prev_token):
   Arguments:
     text: (unicode) The text of the docstring or comment before the current
       token.
-    cur_token: (format_token.FormatToken) The current token in the unwrapped
-      line.
-    prev_token: (format_token.FormatToken) The previous token in the unwrapped
+    cur_token: (format_token.FormatToken) The current token in the logical line.
+    prev_token: (format_token.FormatToken) The previous token in the logical
       line.
 
   Returns:

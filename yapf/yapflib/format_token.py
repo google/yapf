@@ -55,10 +55,10 @@ class FormatToken(object):
 
   Attributes:
     node: The PyTree node this token represents.
-    next_token: The token in the unwrapped line after this token or None if this
-      is the last token in the unwrapped line.
-    previous_token: The token in the unwrapped line before this token or None if
-      this is the first token in the unwrapped line.
+    next_token: The token in the logical line after this token or None if this
+      is the last token in the logical line.
+    previous_token: The token in the logical line before this token or None if
+      this is the first token in the logical line.
     matching_bracket: If a bracket token ('[', '{', or '(') the matching
       bracket.
     parameters: If this and its following tokens make up a parameter list, then
@@ -74,7 +74,7 @@ class FormatToken(object):
       formatter won't place n spaces before all comments. Only those that are
       moved to the end of a line of code. The formatter may use different
       spacing when appropriate.
-    total_length: The total length of the unwrapped line up to and including
+    total_length: The total length of the logical line up to and including
       whitespace and this token. However, this doesn't include the initial
       indentation amount.
     split_penalty: The penalty for splitting the line before this token.

@@ -392,7 +392,7 @@ _STYLE_HELP = dict(
     SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
       The penalty for characters over the column limit."""),
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
-      The penalty incurred by adding a line split to the unwrapped line. The
+      The penalty incurred by adding a line split to the logical line. The
       more line splits added the higher the penalty."""),
     SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
       The penalty of splitting a list of "import as" names. For example:

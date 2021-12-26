@@ -142,13 +142,13 @@ def FormatTree(tree, style_config=None, lines=None, verify=False):
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)
 
-  uwlines = pytree_unwrapper.UnwrapPyTree(tree)
-  for uwl in uwlines:
-    uwl.CalculateFormattingInformation()
+  llines = pytree_unwrapper.UnwrapPyTree(tree)
+  for lline in llines:
+    lline.CalculateFormattingInformation()
 
   lines = _LineRangesToSet(lines)
-  _MarkLinesToFormat(uwlines, lines)
-  return reformatter.Reformat(_SplitSemicolons(uwlines), verify, lines)
+  _MarkLinesToFormat(llines, lines)
+  return reformatter.Reformat(_SplitSemicolons(llines), verify, lines)
 
 
 def FormatCode(unformatted_source,
@@ -252,10 +252,10 @@ def ReadFile(filename, logger=None):
     raise
 
 
-def _SplitSemicolons(uwlines):
+def _SplitSemicolons(lines):
   res = []
-  for uwline in uwlines:
-    res.extend(uwline.Split())
+  for line in lines:
+    res.extend(line.Split())
   return res
 
 
@@ -276,23 +276,23 @@ def _LineRangesToSet(line_ranges):
   return line_set
 
 
-def _MarkLinesToFormat(uwlines, lines):
+def _MarkLinesToFormat(llines, lines):
   """Skip sections of code that we shouldn't reformat."""
   if lines:
-    for uwline in uwlines:
+    for uwline in llines:
       uwline.disable = not lines.intersection(
           range(uwline.lineno, uwline.last.lineno + 1))
 
   # Now go through the lines and disable any lines explicitly marked as
   # disabled.
   index = 0
-  while index < len(uwlines):
-    uwline = uwlines[index]
+  while index < len(llines):
+    uwline = llines[index]
     if uwline.is_comment:
       if _DisableYAPF(uwline.first.value.strip()):
         index += 1
-        while index < len(uwlines):
-          uwline = uwlines[index]
+        while index < len(llines):
+          uwline = llines[index]
           line = uwline.first.value.strip()
           if uwline.is_comment and _EnableYAPF(line):
             if not _DisableYAPF(line):

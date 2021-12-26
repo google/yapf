@@ -27,22 +27,22 @@ through the code to commit the whitespace formatting.
 """
 
 from yapf.yapflib import format_token
+from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
-from yapf.yapflib import unwrapped_line
 
 
 class FormatDecisionState(object):
-  """The current state when indenting an unwrapped line.
+  """The current state when indenting a logical line.
 
   The FormatDecisionState object is meant to be copied instead of referenced.
 
   Attributes:
     first_indent: The indent of the first token.
     column: The number of used columns in the current line.
-    line: The unwrapped line we're currently processing.
+    line: The logical line we're currently processing.
     next_token: The next token to be formatted.
     paren_level: The level of nesting inside (), [], and {}.
     lowest_level_on_line: The lowest paren_level on the current line.
@@ -64,7 +64,7 @@ class FormatDecisionState(object):
     'first_indent'.
 
     Arguments:
-      line: (UnwrappedLine) The unwrapped line we're currently processing.
+      line: (LogicalLine) The logical line we're currently processing.
       first_indent: (int) The indent of the first token.
     """
     self.next_token = line.first
@@ -234,7 +234,7 @@ class FormatDecisionState(object):
               return False
 
           if (not _IsLastScopeInLine(bracket) or
-              unwrapped_line.IsSurroundedByBrackets(bracket)):
+              logical_line.IsSurroundedByBrackets(bracket)):
             last_token = bracket.matching_bracket
           else:
             last_token = _LastTokenInLine(bracket.matching_bracket)
@@ -268,7 +268,7 @@ class FormatDecisionState(object):
         return False
 
       if (previous.value == '(' and not previous.is_pseudo and
-          not unwrapped_line.IsSurroundedByBrackets(previous)):
+          not logical_line.IsSurroundedByBrackets(previous)):
         pptoken = previous.previous_token
         if (pptoken and not pptoken.is_name and not pptoken.is_keyword and
             SurroundedByParens(current)):
@@ -300,7 +300,7 @@ class FormatDecisionState(object):
           tok = tok.next_token
         func_call_or_string_format = tok and tok.value == '%'
       if func_call_or_string_format:
-        open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
+        open_bracket = logical_line.IsSurroundedByBrackets(current)
         if open_bracket:
           if open_bracket.value in '[{':
             if not self._FitsOnLine(open_bracket,
@@ -314,7 +314,7 @@ class FormatDecisionState(object):
         subtypes.DICTIONARY_KEY not in current.next_token.subtypes):
       # If we have a list of tuples, then we can get a similar look as above. If
       # the full list cannot fit on the line, then we want a split.
-      open_bracket = unwrapped_line.IsSurroundedByBrackets(current)
+      open_bracket = logical_line.IsSurroundedByBrackets(current)
       if (open_bracket and open_bracket.value in '[{' and
           subtypes.SUBSCRIPT_BRACKET not in open_bracket.subtypes):
         if not self._FitsOnLine(current, current.matching_bracket):
@@ -382,7 +382,7 @@ class FormatDecisionState(object):
           #      b=1,
           #      c=2)
           if (self._FitsOnLine(previous, previous.matching_bracket) and
-              unwrapped_line.IsSurroundedByBrackets(previous)):
+              logical_line.IsSurroundedByBrackets(previous)):
             # An argument to a function is a function call with named
             # assigns.
             return False
@@ -551,7 +551,7 @@ class FormatDecisionState(object):
 
     if (current.is_comment and
         previous.lineno < current.lineno - current.value.count('\n')):
-      # If a comment comes in the middle of an unwrapped line (like an if
+      # If a comment comes in the middle of a logical line (like an if
       # conditional with comments interspersed), then we want to split if the
       # original comments were on a separate line.
       return True
@@ -1088,14 +1088,7 @@ class FormatDecisionState(object):
     return False
 
   def _ContainerFitsOnStartLine(self, opening):
-    """Check if the container can fit on its starting line.
-
-    Arguments:
-      opening: (FormatToken) The unwrapped line we're currently processing.
-
-    Returns:
-      True if the container fits on the start line.
-    """
+    """Check if the container can fit on its starting line."""
     return (opening.matching_bracket.total_length - opening.total_length +
             self.stack[-1].indent) <= self.column_limit
 
@@ -1128,7 +1121,7 @@ def _IsFunctionCallWithArguments(token):
 
 
 def _IsArgumentToFunction(token):
-  bracket = unwrapped_line.IsSurroundedByBrackets(token)
+  bracket = logical_line.IsSurroundedByBrackets(token)
   if not bracket or bracket.value != '(':
     return False
   previous = bracket.previous_token
