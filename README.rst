@@ -843,7 +843,7 @@ Knobs
     The penalty for characters over the column limit.
 
 ``SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT``
-    The penalty incurred by adding a line split to the unwrapped line. The more
+    The penalty incurred by adding a line split to the logical line. The more
     line splits added the higher the penalty.
 
 ``SPLIT_PENALTY_IMPORT_NAMES``
@@ -962,15 +962,15 @@ Gory Details
 Algorithm Design
 ----------------
 
-The main data structure in YAPF is the ``UnwrappedLine`` object. It holds a list
-of ``FormatToken``\s, that we would want to place on a single line if there were
-no column limit. An exception being a comment in the middle of an expression
-statement will force the line to be formatted on more than one line. The
-formatter works on one ``UnwrappedLine`` object at a time.
+The main data structure in YAPF is the ``LogicalLine`` object. It holds a list
+of ``FormatToken``\s, that we would want to place on a single line if there
+were no column limit. An exception being a comment in the middle of an
+expression statement will force the line to be formatted on more than one line.
+The formatter works on one ``LogicalLine`` object at a time.
 
-An ``UnwrappedLine`` typically won't affect the formatting of lines before or
+An ``LogicalLine`` typically won't affect the formatting of lines before or
 after it. There is a part of the algorithm that may join two or more
-``UnwrappedLine``\s into one line. For instance, an if-then statement with a
+``LogicalLine``\s into one line. For instance, an if-then statement with a
 short body can be placed on a single line:
 
 .. code-block:: python

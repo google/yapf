@@ -17,9 +17,9 @@ import textwrap
 import unittest
 
 from yapf.yapflib import format_decision_state
+from yapf.yapflib import logical_line
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
-from yapf.yapflib import unwrapped_line
 
 from yapftests import yapf_test_helper
 
@@ -35,12 +35,12 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
       def f(a, b):
         pass
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    uwline = unwrapped_line.UnwrappedLine(0, _FilterLine(uwlines[0]))
-    uwline.CalculateFormattingInformation()
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    lline = logical_line.LogicalLine(0, _FilterLine(llines[0]))
+    lline.CalculateFormattingInformation()
 
     # Add: 'f'
-    state = format_decision_state.FormatDecisionState(uwline, 0)
+    state = format_decision_state.FormatDecisionState(lline, 0)
     state.MoveStateToNextToken()
     self.assertEqual('f', state.next_token.value)
     self.assertFalse(state.CanSplit(False))
@@ -89,12 +89,12 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
       def f(a, b):
         pass
       """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    uwline = unwrapped_line.UnwrappedLine(0, _FilterLine(uwlines[0]))
-    uwline.CalculateFormattingInformation()
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    lline = logical_line.LogicalLine(0, _FilterLine(llines[0]))
+    lline.CalculateFormattingInformation()
 
     # Add: 'f'
-    state = format_decision_state.FormatDecisionState(uwline, 0)
+    state = format_decision_state.FormatDecisionState(lline, 0)
     state.MoveStateToNextToken()
     self.assertEqual('f', state.next_token.value)
     self.assertFalse(state.CanSplit(False))
@@ -133,10 +133,10 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     self.assertEqual(repr(state), repr(clone))
 
 
-def _FilterLine(uwline):
-  """Filter out nonsemantic tokens from the UnwrappedLines."""
+def _FilterLine(lline):
+  """Filter out nonsemantic tokens from the LogicalLines."""
   return [
-      ft for ft in uwline.tokens
+      ft for ft in lline.tokens
       if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
   ]
 

@@ -29,14 +29,14 @@ class LineJoinerTest(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def _CheckLineJoining(self, code, join_lines):
-    """Check that the given UnwrappedLines are joined as expected.
+    """Check that the given LogicalLines are joined as expected.
 
     Arguments:
       code: The code to check to see if we can join it.
       join_lines: True if we expect the lines to be joined.
     """
-    uwlines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(line_joiner.CanMergeMultipleLines(uwlines), join_lines)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(line_joiner.CanMergeMultipleLines(llines), join_lines)
 
   def testSimpleSingleLineStatement(self):
     code = textwrap.dedent(u"""\

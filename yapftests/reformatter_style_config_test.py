@@ -38,9 +38,9 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           for i in range(5):
             print('bar')
           """)
-      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(uwlines))
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
@@ -53,8 +53,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
         for i in range(5):
             print('bar')
         """)
-    uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(uwlines))
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testOperatorNoSpaceStyle(self):
     try:
@@ -71,9 +71,9 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           b = '0'*1
           """)
 
-      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(uwlines))
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
@@ -114,9 +114,9 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           k = (1*2*3) + (4*5*6*7*8)
           """)
 
-      uwlines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(uwlines))
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
@@ -156,8 +156,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           plt.plot(veryverylongvariablename, veryverylongvariablename, marker="x",
                    color="r")
           """)  # noqa
-      uwlines = yapf_test_helper.ParseAndUnwrap(formatted_code)
-      self.assertCodeEqual(formatted_code, reformatter.Reformat(uwlines))
+      llines = yapf_test_helper.ParseAndUnwrap(formatted_code)
+      self.assertCodeEqual(formatted_code, reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
@@ -187,8 +187,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
                    marker="x",
                    color="r")
           """)
-      uwlines = yapf_test_helper.ParseAndUnwrap(formatted_code)
-      self.assertCodeEqual(formatted_code, reformatter.Reformat(uwlines))
+      llines = yapf_test_helper.ParseAndUnwrap(formatted_code)
+      self.assertCodeEqual(formatted_code, reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style

@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""UnwrappedLine primitive for formatting.
+"""LogicalLine primitive for formatting.
 
-An unwrapped line is the containing data structure produced by the parser. It
-collects all nodes (stored in FormatToken objects) that could appear on a
-single line if there were no line length restrictions. It's then used by the
-parser to perform the wrapping required to comply with the style guide.
+A logical line is the containing data structure produced by the parser. It
+collects all nodes (stored in FormatToken objects) that could appear on a single
+line if there were no line length restrictions. It's then used by the parser to
+perform the wrapping required to comply with the style guide.
 """
 
 from yapf.yapflib import format_token
@@ -29,8 +29,8 @@ from yapf.yapflib import subtypes
 from lib2to3.fixer_util import syms as python_symbols
 
 
-class UnwrappedLine(object):
-  """Represents a single unwrapped line in the output.
+class LogicalLine(object):
+  """Represents a single logical line in the output.
 
   Attributes:
     depth: indentation depth of this line. This is just a numeric value used to
@@ -41,7 +41,7 @@ class UnwrappedLine(object):
   def __init__(self, depth, tokens=None):
     """Constructor.
 
-    Creates a new unwrapped line with the given depth an initial list of tokens.
+    Creates a new logical line with the given depth an initial list of tokens.
     Constructs the doubly-linked lists for format tokens using their built-in
     next_token and previous_token attributes.
 
@@ -63,7 +63,7 @@ class UnwrappedLine(object):
   def CalculateFormattingInformation(self):
     """Calculate the split penalty and total length for the tokens."""
     # Say that the first token in the line should have a space before it. This
-    # means only that if this unwrapped line is joined with a predecessor line,
+    # means only that if this logical line is joined with a predecessor line,
     # then there will be a space between them.
     self.first.spaces_required_before = 1
     self.first.total_length = len(self.first.value)
@@ -106,23 +106,23 @@ class UnwrappedLine(object):
     if not self.has_semicolon or self.disable:
       return [self]
 
-    uwlines = []
-    uwline = UnwrappedLine(self.depth)
+    llines = []
+    lline = LogicalLine(self.depth)
     for tok in self._tokens:
       if tok.value == ';':
-        uwlines.append(uwline)
-        uwline = UnwrappedLine(self.depth)
+        llines.append(lline)
+        lline = LogicalLine(self.depth)
       else:
-        uwline.AppendToken(tok)
+        lline.AppendToken(tok)
 
-    if uwline.tokens:
-      uwlines.append(uwline)
+    if lline.tokens:
+      llines.append(lline)
 
-    for uwline in uwlines:
-      uwline.first.previous_token = None
-      uwline.last.next_token = None
+    for lline in llines:
+      lline.first.previous_token = None
+      lline.last.next_token = None
 
-    return uwlines
+    return llines
 
   ############################################################################
   # Token Access and Manipulation Methods                                    #
@@ -184,7 +184,7 @@ class UnwrappedLine(object):
   def __repr__(self):  # pragma: no cover
     tokens_repr = ','.join(
         '{0}({1!r})'.format(tok.name, tok.value) for tok in self._tokens)
-    return 'UnwrappedLine(depth={0}, tokens=[{1}])'.format(
+    return 'LogicalLine(depth={0}, tokens=[{1}])'.format(
         self.depth, tokens_repr)
 
   ############################################################################
@@ -204,10 +204,10 @@ class UnwrappedLine(object):
 
   @property
   def lineno(self):
-    """Return the line number of this unwrapped line.
+    """Return the line number of this logical line.
 
     Returns:
-      The line number of the first token in this unwrapped line.
+      The line number of the first token in this logical line.
     """
     return self.first.lineno
 
