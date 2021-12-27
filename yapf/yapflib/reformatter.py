@@ -20,6 +20,7 @@ can be merged together are. The best formatting is returned as a string.
 """
 
 from __future__ import unicode_literals
+
 import collections
 import heapq
 import re
@@ -30,7 +31,6 @@ from lib2to3.pgen2 import token
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
-from yapf.yapflib import pytree_utils
 from yapf.yapflib import style
 from yapf.yapflib import verifier
 
