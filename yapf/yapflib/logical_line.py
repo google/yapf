@@ -19,9 +19,9 @@ line if there were no line length restrictions. It's then used by the parser to
 perform the wrapping required to comply with the style guide.
 """
 
+from yapf.pytree import pytree_utils
 from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
-from yapf.yapflib import pytree_utils
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import subtypes

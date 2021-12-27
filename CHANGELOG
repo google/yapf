@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.40.0] UNRELEASED
+### Changes
+- Moved 'pytree' parsing tools into its own subdirectory.
+
 ## [0.32.0] 2021-12-26
 ### Added
 - Look at the 'pyproject.toml' file to see if it contains ignore file information

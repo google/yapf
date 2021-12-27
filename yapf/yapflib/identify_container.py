@@ -21,8 +21,8 @@ to the opening bracket and vice-versa.
 
 from lib2to3.pgen2 import token as grammar_token
 
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
+from yapf.pytree import pytree_utils
+from yapf.pytree import pytree_visitor
 
 
 def IdentifyContainers(tree):

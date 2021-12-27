@@ -19,8 +19,8 @@ import unittest
 
 from lib2to3 import pytree
 
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
+from yapf.pytree import pytree_utils
+from yapf.pytree import pytree_visitor
 from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 

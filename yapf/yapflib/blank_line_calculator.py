@@ -24,9 +24,9 @@ Annotations:
 
 from lib2to3.pgen2 import token as grammar_token
 
+from yapf.pytree import pytree_utils
+from yapf.pytree import pytree_visitor
 from yapf.yapflib import py3compat
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
 from yapf.yapflib import style
 
 _NO_BLANK_LINES = 1

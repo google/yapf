@@ -15,9 +15,9 @@
 
 import unittest
 
+from yapf.pytree import pytree_utils
+from yapf.pytree import pytree_visitor
 from yapf.yapflib import py3compat
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
 
 
 class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
