@@ -28,7 +28,6 @@ from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 from lib2to3.pygram import python_symbols as syms
 
-from yapf.yapflib import format_token
 from yapf.yapflib import pytree_utils
 from yapf.yapflib import pytree_visitor
 from yapf.yapflib import style

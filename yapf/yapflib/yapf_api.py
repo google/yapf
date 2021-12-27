@@ -36,9 +36,6 @@ import difflib
 import re
 import sys
 
-from lib2to3.pgen2 import parse
-from lib2to3.pgen2 import tokenize
-
 from yapf.yapflib import blank_line_calculator
 from yapf.yapflib import comment_splicer
 from yapf.yapflib import continuation_splicer

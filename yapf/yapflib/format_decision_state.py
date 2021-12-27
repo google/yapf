@@ -26,7 +26,6 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
-from yapf.yapflib import format_token
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
 from yapf.yapflib import split_penalty

@@ -22,7 +22,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from yapf.yapflib import format_token
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
