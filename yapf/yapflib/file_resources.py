@@ -21,8 +21,6 @@ import fnmatch
 import os
 import re
 
-from lib2to3.pgen2 import tokenize
-
 from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
@@ -264,7 +262,7 @@ def IsPythonFile(filename):
 
   try:
     with open(filename, 'rb') as fd:
-      encoding = tokenize.detect_encoding(fd.readline)[0]
+      encoding = py3compat.detect_encoding(fd.readline)[0]
 
     # Check for correctness of encoding.
     with py3compat.open_with_encoding(
@@ -291,4 +289,4 @@ def IsPythonFile(filename):
 def FileEncoding(filename):
   """Return the file's encoding."""
   with open(filename, 'rb') as fd:
-    return tokenize.detect_encoding(fd.readline)[0]
+    return py3compat.detect_encoding(fd.readline)[0]

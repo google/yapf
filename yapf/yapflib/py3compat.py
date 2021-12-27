@@ -47,6 +47,9 @@ if PY3:
   # Mappings from strings to booleans (such as '1' to True, 'false' to False,
   # etc.)
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser.BOOLEAN_STATES
+
+  import tokenize
+  detect_encoding = tokenize.detect_encoding
 else:
   import __builtin__
   import cStringIO
@@ -69,6 +72,9 @@ else:
 
   import ConfigParser as configparser
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access # noqa
+
+  from lib2to3.pgen2 import tokenize
+  detect_encoding = tokenize.detect_encoding
 
 
 def EncodeAndWriteToStdout(s, encoding='utf-8'):
