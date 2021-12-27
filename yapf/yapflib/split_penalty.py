@@ -18,9 +18,9 @@ import re
 from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 
+from yapf.pytree import pytree_utils
+from yapf.pytree import pytree_visitor
 from yapf.yapflib import py3compat
-from yapf.yapflib import pytree_utils
-from yapf.yapflib import pytree_visitor
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
