@@ -17,7 +17,8 @@ import textwrap
 import unittest
 
 from yapf.pytree import pytree_utils
-from yapf.yapflib import comment_splicer
+from yapf.pytree import comment_splicer
+
 from yapf.yapflib import py3compat
 
 
