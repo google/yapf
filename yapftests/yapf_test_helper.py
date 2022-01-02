@@ -17,17 +17,17 @@ import difflib
 import sys
 import unittest
 
+from yapf.pytree import blank_line_calculator
+from yapf.pytree import comment_splicer
+from yapf.pytree import continuation_splicer
 from yapf.pytree import pytree_unwrapper
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
-from yapf.yapflib import blank_line_calculator
-from yapf.yapflib import comment_splicer
-from yapf.yapflib import continuation_splicer
+from yapf.pytree import split_penalty
+from yapf.pytree import subtype_assigner
 from yapf.yapflib import identify_container
 from yapf.yapflib import py3compat
-from yapf.yapflib import split_penalty
 from yapf.yapflib import style
-from yapf.yapflib import subtype_assigner
 
 
 class YAPFTest(unittest.TestCase):

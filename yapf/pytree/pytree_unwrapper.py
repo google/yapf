@@ -33,9 +33,9 @@ from lib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
+from yapf.pytree import split_penalty
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
-from yapf.yapflib import split_penalty
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
