@@ -135,16 +135,6 @@ class LogicalLine(object):
       self.last.next_token = token
     self._tokens.append(token)
 
-  def AppendNode(self, node):
-    """Convenience method to append a pytree node directly.
-
-    Wraps the node with a FormatToken.
-
-    Arguments:
-      node: the node to append
-    """
-    self.AppendToken(format_token.FormatToken(node))
-
   @property
   def first(self):
     """Returns the first non-whitespace token."""

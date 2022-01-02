@@ -11,10 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Pytree nodes with extra formatting information.
-
-This is a thin wrapper around a pytree.Leaf node.
-"""
+"""Enhanced token information for formatting."""
 
 import keyword
 import re
@@ -48,13 +45,13 @@ def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
 
 
 class FormatToken(object):
-  """A wrapper around pytree Leaf nodes.
+  """Enhanced token information for formatting.
 
   This represents the token plus additional information useful for reformatting
   the code.
 
   Attributes:
-    node: The PyTree node this token represents.
+    node: The original token node.
     next_token: The token in the logical line after this token or None if this
       is the last token in the logical line.
     previous_token: The token in the logical line before this token or None if
