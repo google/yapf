@@ -5,6 +5,7 @@
 ## [0.40.0] UNRELEASED
 ### Changes
 - Moved 'pytree' parsing tools into its own subdirectory.
+- Add support for Python 3.10.
 
 ## [0.32.0] 2021-12-26
 ### Added

@@ -198,12 +198,12 @@ def FormatCode(unformatted_source,
 
 
 def _CheckPythonVersion():  # pragma: no cover
-  errmsg = 'yapf is only supported for Python 2.7 or 3.4+'
+  errmsg = 'yapf is only supported for Python 2.7 or 3.6+'
   if sys.version_info[0] == 2:
     if sys.version_info[1] < 7:
       raise RuntimeError(errmsg)
   elif sys.version_info[0] == 3:
-    if sys.version_info[1] < 4:
+    if sys.version_info[1] < 6:
       raise RuntimeError(errmsg)
 
 
