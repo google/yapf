@@ -40,6 +40,9 @@ from yapf.yapflib import object_state
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
+_OPENING_BRACKETS = frozenset({'(', '[', '{'})
+_CLOSING_BRACKETS = frozenset({')', ']', '}'})
+
 
 def UnwrapPyTree(tree):
   """Create and return a list of logical lines from the given pytree.
@@ -312,9 +315,9 @@ def _MatchBrackets(line):
   """
   bracket_stack = []
   for token in line.tokens:
-    if token.value in pytree_utils.OPENING_BRACKETS:
+    if token.value in _OPENING_BRACKETS:
       bracket_stack.append(token)
-    elif token.value in pytree_utils.CLOSING_BRACKETS:
+    elif token.value in _CLOSING_BRACKETS:
       bracket_stack[-1].matching_bracket = token
       token.matching_bracket = bracket_stack[-1]
       bracket_stack.pop()
@@ -373,9 +376,9 @@ def _AdjustSplitPenalty(line):
       pytree_utils.SetNodeAnnotation(token.node,
                                      pytree_utils.Annotation.SPLIT_PENALTY,
                                      split_penalty.UNBREAKABLE)
-    if token.value in pytree_utils.OPENING_BRACKETS:
+    if token.value in _OPENING_BRACKETS:
       bracket_level += 1
-    elif token.value in pytree_utils.CLOSING_BRACKETS:
+    elif token.value in _CLOSING_BRACKETS:
       bracket_level -= 1
 
 

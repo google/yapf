@@ -39,9 +39,6 @@ from lib2to3.pgen2 import token
 # unwrapper.
 NONSEMANTIC_TOKENS = frozenset(['DEDENT', 'INDENT', 'NEWLINE', 'ENDMARKER'])
 
-OPENING_BRACKETS = frozenset({'(', '[', '{'})
-CLOSING_BRACKETS = frozenset({')', ']', '}'})
-
 
 class Annotation(object):
   """Annotation names associated with pytrees."""

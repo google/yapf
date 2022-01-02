@@ -25,6 +25,9 @@ from yapf.yapflib import subtypes
 
 CONTINUATION = token.N_TOKENS
 
+_OPENING_BRACKETS = frozenset({'(', '[', '{'})
+_CLOSING_BRACKETS = frozenset({')', ']', '}'})
+
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
   """Build padding string for continuation alignment in tabbed indentation.
@@ -207,10 +210,10 @@ class FormatToken(object):
     self.spaces_required_before = cur_column - (prev_column + prev_len)
 
   def OpensScope(self):
-    return self.value in pytree_utils.OPENING_BRACKETS
+    return self.value in _OPENING_BRACKETS
 
   def ClosesScope(self):
-    return self.value in pytree_utils.CLOSING_BRACKETS
+    return self.value in _CLOSING_BRACKETS
 
   def AddSubtype(self, subtype):
     self.subtypes.add(subtype)
