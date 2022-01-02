@@ -54,12 +54,6 @@ class LogicalLineBasicTest(unittest.TestCase):
     lline.AppendToken(_MakeFormatTokenLeaf(token.RPAR, ')'))
     self.assertEqual(['LPAR', 'RPAR'], [tok.name for tok in lline.tokens])
 
-  def testAppendNode(self):
-    lline = logical_line.LogicalLine(0)
-    lline.AppendNode(pytree.Leaf(token.LPAR, '('))
-    lline.AppendNode(pytree.Leaf(token.RPAR, ')'))
-    self.assertEqual(['LPAR', 'RPAR'], [tok.name for tok in lline.tokens])
-
 
 class LogicalLineFormattingInformationTest(yapf_test_helper.YAPFTest):
 

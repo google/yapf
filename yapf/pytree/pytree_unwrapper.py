@@ -34,6 +34,7 @@ from lib2to3.pgen2 import token as grammar_token
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
 from yapf.pytree import split_penalty
+from yapf.yapflib import format_token
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
 from yapf.yapflib import style
@@ -293,7 +294,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       self._StartNewLine()
     elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
       # Add non-whitespace tokens and comments that aren't empty.
-      self._cur_logical_line.AppendNode(leaf)
+      self._cur_logical_line.AppendToken(format_token.FormatToken(leaf))
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}
