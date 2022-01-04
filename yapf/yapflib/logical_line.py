@@ -470,9 +470,8 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     # Don't separate a unary operator from the opening bracket, unless enabled
     # by SPACE_INSIDE_BRACKETS.
     return style.Get('SPACE_INSIDE_BRACKETS')
-  if (left.OpensScope() and
-      (subtypes.VARARGS_STAR in right.subtypes or
-       subtypes.KWARGS_STAR_STAR in right.subtypes)):
+  if (left.OpensScope() and (subtypes.VARARGS_STAR in right.subtypes or
+                             subtypes.KWARGS_STAR_STAR in right.subtypes)):
     # Don't separate a '*' or '**' from the opening bracket, unless enabled
     # by SPACE_INSIDE_BRACKETS.
     return style.Get('SPACE_INSIDE_BRACKETS')
