@@ -603,6 +603,9 @@ def _RecAnnotate(tree, annotate_name, annotate_value):
       pytree_utils.SetNodeAnnotation(tree, annotate_name, annotate_value)
 
 
+_COMP_OPS = frozenset({'==', '!=', '<=', '<', '>', '>=', '<>', 'in', 'is'})
+
+
 def _StronglyConnectedCompOp(op):
   if (len(op.children[1].children) == 2 and
       pytree_utils.NodeName(op.children[1]) == 'comp_op'):
@@ -613,7 +616,7 @@ def _StronglyConnectedCompOp(op):
         pytree_utils.LastLeafNode(op.children[1]).value == 'not'):
       return True
   if (isinstance(op.children[1], pytree.Leaf) and
-      op.children[1].value in {'==', 'in'}):
+      op.children[1].value in _COMP_OPS):
     return True
   return False
 
