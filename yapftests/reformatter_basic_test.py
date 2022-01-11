@@ -1551,7 +1551,7 @@ s = 'foo \\
 
         c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa is bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
         c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <= bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
-        """)
+        """)  # noqa
     expected_code = textwrap.dedent("""\
         c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
              is not bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
