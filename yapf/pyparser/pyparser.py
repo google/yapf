@@ -68,7 +68,7 @@ def ParseCode(unformatted_source, filename='<unknown>'):
     ast_tree = ast.parse(unformatted_source, filename)
     readline = py3compat.StringIO(unformatted_source).readline
     tokens = tokenize.generate_tokens(readline)
-  except Exception as e:
+  except Exception:
     raise
 
   logical_lines = _CreateLogicalLines(tokens)
