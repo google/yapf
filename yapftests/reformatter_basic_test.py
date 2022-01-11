@@ -1543,6 +1543,31 @@ s = 'foo \\
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
+  def testNoSplittingAroundCompOperators(self):
+    code = textwrap.dedent("""\
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa is not bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa not in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa is bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <= bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        """)
+    expected_code = textwrap.dedent("""\
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+             is not bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+             in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+             not in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+             is bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+             <= bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self.assertCodeEqual(expected_code, reformatter.Reformat(llines))
+
   def testNoSplittingWithinSubscriptList(self):
     code = textwrap.dedent("""\
         somequitelongvariablename.somemember[(a, b)] = {
