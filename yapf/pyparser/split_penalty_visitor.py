@@ -462,7 +462,7 @@ class SplitPenalty(ast.NodeVisitor):
   def visit_Await(self, node):
     # Await(value=Expr)
     tokens = self._GetTokens(node)
-    _IncreasePenalty(element[1:], split_penalty.EXPR)
+    _IncreasePenalty(tokens[1:], split_penalty.EXPR)
     return self.generic_visit(node)
 
   def visit_Yield(self, node):
