@@ -35,7 +35,7 @@ project and there's no point arguing about style in every code review.
 
 The ultimate goal is that the code YAPF produces is as good as the code that a
 programmer would write if they were following the style guide. It takes away
-some of the drudgery of maintaining your code.
+most of the drudgery of maintaining your code.
 
 .. footer::
 
