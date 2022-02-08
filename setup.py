@@ -77,4 +77,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       cmdclass={
           'test': RunTests,
       },
+      extras_require={
+          'pyproject': ['toml'],
+      },
   )
