@@ -27,6 +27,7 @@
 - Rename "unwrapped_line" module to "logical_line."
 - Rename "UnwrappedLine" class to "LogicalLine."
 ### Fixed
+- Added pyproject extra to install toml package as an optional dependency.
 - Enable `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF` knob for "pep8" style, so
   method definitions inside a class are surrounded by a single blank line as
   prescribed by PEP8.
