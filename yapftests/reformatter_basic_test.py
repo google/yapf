@@ -1553,17 +1553,22 @@ s = 'foo \\
         c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa <= bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
         """)  # noqa
     expected_code = textwrap.dedent("""\
-        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-             is not bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
-        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-             in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
-        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-             not in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            is not bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            not in bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
 
-        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-             is bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
-        c = (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-             <= bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            is bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
+        c = (
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            <= bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)
         """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(expected_code, reformatter.Reformat(llines))

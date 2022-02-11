@@ -2221,8 +2221,8 @@ if True:
             # This is a comment in the middle of it all.
             kkkkkkk.llllllllll.mmmmmmmmmmmmm = True
           if (aaaaaa.bbbbb.ccccccccccccc != ddddddd.eeeeeeeeee.fffffffffffff or
-              eeeeee.fffff.ggggggggggggggggggggggggggg() !=
-              hhhhhhh.iiiiiiiiii.jjjjjjjjjjjj):
+              eeeeee.fffff.ggggggggggggggggggggggggggg()
+              != hhhhhhh.iiiiiiiiii.jjjjjjjjjjjj):
             aaaaaaaa.bbbbbbbbbbbb(
                 aaaaaa.bbbbb.cc,
                 dddddddddddd=eeeeeeeeeeeeeeeeeee.fffffffffffffffff(
