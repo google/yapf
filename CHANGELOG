@@ -10,6 +10,7 @@
 - Moved 'pytree' parsing tools into its own subdirectory.
 - Add support for Python 3.10.
 - Format generated dicts with respect to same rules as regular dicts
+- Generalized the ending comma heuristic to subscripts.
 ### Fixed
 - Split line before all comparison operators.
 

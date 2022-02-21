@@ -205,7 +205,9 @@ class FormatDecisionState(object):
         (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
          current.value in '}])' and style.Get('INDENT_CLOSING_BRACKETS'))):
       # Split before the closing bracket if we can.
-      if subtypes.SUBSCRIPT_BRACKET not in current.subtypes:
+      if (subtypes.SUBSCRIPT_BRACKET not in current.subtypes or
+          (previous.value == ',' and
+           not style.Get('DISABLE_ENDING_COMMA_HEURISTIC'))):
         return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if (current.value == ')' and previous.value == ',' and
