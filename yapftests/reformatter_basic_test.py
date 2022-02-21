@@ -2633,6 +2633,19 @@ class A(object):
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
+  def testSubscriptExpressionTerminatedByComma(self):
+    unformatted_code = textwrap.dedent("""\
+        A[B, C,]
+        """)
+    expected_code = textwrap.dedent("""\
+        A[
+            B,
+            C,
+        ]
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_code, reformatter.Reformat(llines))
+
   def testListWithFunctionCalls(self):
     unformatted_code = textwrap.dedent("""\
         def foo():
