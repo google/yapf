@@ -24,9 +24,9 @@ the pyparser.
   GetNextTokenIndex: Get the index of the next token after a given position.
   GetPrevTokenIndex: Get the index of the previous token before a given
     position.
+  TokenStart: Convenience function to return the token's start as a tuple.
+  TokenEnd: Convenience function to return the token's end as a tuple.
 """
-
-import ast
 
 
 def FindTokensInRange(logical_lines, node):
@@ -91,4 +91,6 @@ def TokenEnd(node):
 
 
 def AstDump(node):
+  """Debugging code."""
+  import ast
   print(ast.dump(node, include_attributes=True, indent=4))
