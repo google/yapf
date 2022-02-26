@@ -320,8 +320,7 @@ class SplitPenalty(ast.NodeVisitor):
     _IncreasePenalty(tokens[1:], split_penalty.LAMBDA)
 
     if style.Get('ALLOW_MULTILINE_LAMBDAS'):
-      tokens = self._GetTokens(node.body)
-      _DecreasePenalty(tokens[1], split_penalty.LAMBDA)
+      _SetPenalty(self._GetTokens(node.body), split_penalty.MULTIPLINE_LAMBDA)
 
     return self.generic_visit(node)
 
