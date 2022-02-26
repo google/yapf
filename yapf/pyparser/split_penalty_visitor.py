@@ -529,7 +529,7 @@ class SplitPenalty(ast.NodeVisitor):
   def visit_FormattedValue(self, node):
     # FormattedValue(value=Expr,
     #                conversion=-1)
-    return self.generic_visit(node)
+    return node  # Ignore formatted values.
 
   def visit_JoinedStr(self, node):
     # JoinedStr(values=[Expr_1, Expr_2, ..., Expr_n])
