@@ -74,6 +74,7 @@ def ParseCode(unformatted_source, filename='<unknown>'):
   logical_lines = _CreateLogicalLines(tokens)
 
   # Process the logical lines.
+  ast.fix_missing_locations(ast_tree)
   split_penalty_visitor.SplitPenalty(logical_lines).visit(ast_tree)
   return logical_lines
 
