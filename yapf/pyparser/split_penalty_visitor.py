@@ -35,7 +35,7 @@ class SplitPenalty(ast.NodeVisitor):
           token.split_penalty = split_penalty.UNBREAKABLE
 
   def _GetTokens(self, node):
-    return pyutils.FindTokensInRange(self.logical_lines, node)
+    return pyutils.GetTokens(self.logical_lines, node)
 
   ############################################################################
   # Statements                                                               #
@@ -53,14 +53,13 @@ class SplitPenalty(ast.NodeVisitor):
     #             body=[...],
     #             decorator_list=[Call_1, Call_2, ..., Call_n],
     #             keywords=[])
+    tokens = self._GetTokens(node)
     for decorator in node.decorator_list:
       # The decorator token list begins after the '@'. The body of the decorator
       # is formatted like a normal "call."
-      tokens = self._GetTokens(decorator)
+      subrange = pyutils.GetTokensInSubRange(tokens, decorator)
       # Don't split after the '@'.
-      tokens[0].split_penalty = split_penalty.UNBREAKABLE
-
-    tokens = self._GetTokens(node)
+      subrange[0].split_penalty = split_penalty.UNBREAKABLE
 
     if node.returns:
       start_index = pyutils.GetTokenIndex(tokens,
@@ -342,13 +341,11 @@ class SplitPenalty(ast.NodeVisitor):
 
     # The keys should be on a single line if at all possible.
     for key in node.keys:
-      subrange = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(key),
-                                             pyutils.TokenEnd(key))
+      subrange = pyutils.GetTokensInSubRange(tokens, key)
       _IncreasePenalty(subrange[1:], split_penalty.DICT_KEY_EXPR)
 
     for value in node.values:
-      subrange = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(value),
-                                             pyutils.TokenEnd(value))
+      subrange = pyutils.GetTokensInSubRange(tokens, value)
       _IncreasePenalty(subrange[1:], split_penalty.DICT_VALUE_EXPR)
 
     return self.generic_visit(node)
@@ -357,9 +354,7 @@ class SplitPenalty(ast.NodeVisitor):
     # Set(elts=[Expr_1, Expr_2, ..., Expr_n])
     tokens = self._GetTokens(node)
     for element in node.elts:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(element),
-                                             pyutils.TokenEnd(element))
+      subrange = pyutils.GetTokensInSubRange(tokens, element)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
     return self.generic_visit(node)
@@ -375,20 +370,15 @@ class SplitPenalty(ast.NodeVisitor):
     #               ...
     #          ])
     tokens = self._GetTokens(node)
-    element = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(node.elt),
-                                          pyutils.TokenEnd(node.elt))
+    element = pyutils.GetTokensInSubRange(tokens, node.elt)
     _IncreasePenalty(element[1:], split_penalty.EXPR)
 
     for comp in node.generators:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(comp.iter),
-                                             pyutils.TokenEnd(comp.iter))
+      subrange = pyutils.GetTokensInSubRange(tokens, comp.iter)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
       for if_expr in comp.ifs:
-        subrange = pyutils.GetTokensInSubRange(tokens,
-                                               pyutils.TokenStart(if_expr),
-                                               pyutils.TokenEnd(if_expr))
+        subrange = pyutils.GetTokensInSubRange(tokens, if_expr)
         _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
     return self.generic_visit(node)
@@ -404,20 +394,15 @@ class SplitPenalty(ast.NodeVisitor):
     #           ...
     #         ])
     tokens = self._GetTokens(node)
-    element = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(node.elt),
-                                          pyutils.TokenEnd(node.elt))
+    element = pyutils.GetTokensInSubRange(tokens, node.elt)
     _IncreasePenalty(element[1:], split_penalty.EXPR)
 
     for comp in node.generators:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(comp.iter),
-                                             pyutils.TokenEnd(comp.iter))
+      subrange = pyutils.GetTokensInSubRange(tokens, comp.iter)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
       for if_expr in comp.ifs:
-        subrange = pyutils.GetTokensInSubRange(tokens,
-                                               pyutils.TokenStart(if_expr),
-                                               pyutils.TokenEnd(if_expr))
+        subrange = pyutils.GetTokensInSubRange(tokens, if_expr)
         _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
     return self.generic_visit(node)
@@ -434,24 +419,18 @@ class SplitPenalty(ast.NodeVisitor):
     #           ...
     #         ])
     tokens = self._GetTokens(node)
-    key = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(node.key),
-                                      pyutils.TokenEnd(node.key))
+    key = pyutils.GetTokensInSubRange(tokens, node.key)
     _IncreasePenalty(key[1:], split_penalty.EXPR)
 
-    value = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(node.value),
-                                        pyutils.TokenEnd(node.value))
+    value = pyutils.GetTokensInSubRange(tokens, node.value)
     _IncreasePenalty(value[1:], split_penalty.EXPR)
 
     for comp in node.generators:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(comp.iter),
-                                             pyutils.TokenEnd(comp.iter))
+      subrange = pyutils.GetTokensInSubRange(tokens, comp.iter)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
       for if_expr in comp.ifs:
-        subrange = pyutils.GetTokensInSubRange(tokens,
-                                               pyutils.TokenStart(if_expr),
-                                               pyutils.TokenEnd(if_expr))
+        subrange = pyutils.GetTokensInSubRange(tokens, if_expr)
         _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
     return self.generic_visit(node)
@@ -467,20 +446,15 @@ class SplitPenalty(ast.NodeVisitor):
     #                ...
     #              ])
     tokens = self._GetTokens(node)
-    element = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(node.elt),
-                                          pyutils.TokenEnd(node.elt))
+    element = pyutils.GetTokensInSubRange(tokens, node.elt)
     _IncreasePenalty(element[1:], split_penalty.EXPR)
 
     for comp in node.generators:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(comp.iter),
-                                             pyutils.TokenEnd(comp.iter))
+      subrange = pyutils.GetTokensInSubRange(tokens, comp.iter)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
       for if_expr in comp.ifs:
-        subrange = pyutils.GetTokensInSubRange(tokens,
-                                               pyutils.TokenStart(if_expr),
-                                               pyutils.TokenEnd(if_expr))
+        subrange = pyutils.GetTokensInSubRange(tokens, if_expr)
         _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
     return self.generic_visit(node)
@@ -545,8 +519,7 @@ class SplitPenalty(ast.NodeVisitor):
     _IncreasePenalty(tokens[paren_index], split_penalty.UNBREAKABLE)
 
     for arg in node.args:
-      subrange = pyutils.GetTokensInSubRange(tokens, pyutils.TokenStart(arg),
-                                             pyutils.TokenEnd(arg))
+      subrange = pyutils.GetTokensInSubRange(tokens, arg)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
 
     return self.generic_visit(node)
@@ -606,9 +579,7 @@ class SplitPenalty(ast.NodeVisitor):
     tokens = self._GetTokens(node)
 
     for element in node.elts:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(element),
-                                             pyutils.TokenEnd(element))
+      subrange = pyutils.GetTokensInSubRange(tokens, element)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
@@ -619,9 +590,7 @@ class SplitPenalty(ast.NodeVisitor):
     tokens = self._GetTokens(node)
 
     for element in node.elts:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(element),
-                                             pyutils.TokenEnd(element))
+      subrange = pyutils.GetTokensInSubRange(tokens, element)
       _IncreasePenalty(subrange[1:], split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
@@ -634,9 +603,7 @@ class SplitPenalty(ast.NodeVisitor):
     tokens = self._GetTokens(node)
 
     if hasattr(node, 'lower') and node.lower:
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(node.lower),
-                                             pyutils.TokenEnd(node.lower))
+      subrange = pyutils.GetTokensInSubRange(tokens, node.lower)
       _IncreasePenalty(subrange, split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
@@ -644,9 +611,7 @@ class SplitPenalty(ast.NodeVisitor):
       colon_index = pyutils.GetPrevTokenIndex(tokens,
                                               pyutils.TokenStart(node.upper))
       _IncreasePenalty(tokens[colon_index], split_penalty.UNBREAKABLE)
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(node.upper),
-                                             pyutils.TokenEnd(node.upper))
+      subrange = pyutils.GetTokensInSubRange(tokens, node.upper)
       _IncreasePenalty(subrange, split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
@@ -654,9 +619,7 @@ class SplitPenalty(ast.NodeVisitor):
       colon_index = pyutils.GetPrevTokenIndex(tokens,
                                               pyutils.TokenStart(node.step))
       _IncreasePenalty(tokens[colon_index], split_penalty.UNBREAKABLE)
-      subrange = pyutils.GetTokensInSubRange(tokens,
-                                             pyutils.TokenStart(node.step),
-                                             pyutils.TokenEnd(node.step))
+      subrange = pyutils.GetTokensInSubRange(tokens, node.step)
       _IncreasePenalty(subrange, split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
@@ -934,3 +897,10 @@ def _DecreasePenalty(tokens, amt):
     tokens = [tokens]
   for token in tokens:
     token.split_penalty -= amt
+
+
+def _SetPenalty(tokens, amt):
+  if not isinstance(tokens, list):
+    tokens = [tokens]
+  for token in tokens:
+    token.split_penalty = amt
