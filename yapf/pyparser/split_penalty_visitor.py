@@ -858,7 +858,12 @@ class SplitPenalty(ast.NodeVisitor):
     #     annotation=Expr,
     #     type_comment='')
     tokens = self._GetTokens(node)
-    _IncreasePenalty(tokens[1:], split_penalty.ARGUMENT)
+
+    # Process any annotations.
+    if hasattr(node, 'annotation') and node.annotation:
+      annotation = node.annotation
+      subrange = pyutils.GetTokensInSubRange(tokens, annotation)
+      _IncreasePenalty(subrange, split_penalty.ANNOTATION)
 
     return self.generic_visit(node)
 
