@@ -342,7 +342,7 @@ def _BuildParser():
       '-p',
       '--parallel',
       action='store_true',
-      help=('run yapf in parallel when formatting multiple files. Requires '
+      help=('run YAPF in parallel when formatting multiple files. Requires '
             'concurrent.futures in Python 2.X'))
   parser.add_argument(
       '-vv',
