@@ -16,7 +16,7 @@
 This module collects various utilities related to the parse trees produced by
 the pyparser.
 
-  FindTokensInRange: produces a list of tokens from the logical lines within a
+  GetNodeTokens: produces a list of tokens from the logical lines within a
     range.
   GetTokensInSubRange: produces a sublist of tokens from a current token list
     within a range.
@@ -29,23 +29,25 @@ the pyparser.
 """
 
 
-def FindTokensInRange(logical_lines, node):
-  """Get a list of tokens within the range [start, end)."""
-  start = (node.lineno, node.col_offset)
-  end = (node.end_lineno, node.end_col_offset)
+def GetTokens(logical_lines, node):
+  """Get a list of tokens within the node's range from the logical lines."""
+  start = TokenStart(node)
+  end = TokenEnd(node)
   tokens = []
 
   for line in logical_lines:
     if line.start > end:
       break
     if line.start <= start or line.end >= end:
-      tokens.extend(GetTokensInSubRange(line.tokens, start, end))
+      tokens.extend(GetTokensInSubRange(line.tokens, node))
 
   return tokens
 
 
-def GetTokensInSubRange(tokens, start, end):
-  """Get a subset of tokens within the range [start, end)."""
+def GetTokensInSubRange(tokens, node):
+  """Get a subset of tokens representing the node."""
+  start = TokenStart(node)
+  end = TokenEnd(node)
   tokens_in_range = []
 
   for tok in tokens:
@@ -57,7 +59,7 @@ def GetTokensInSubRange(tokens, start, end):
 
 
 def GetTokenIndex(tokens, pos):
-  """Get the index of the token at 'pos.'"""
+  """Get the index of the token at pos."""
   for index, token in enumerate(tokens):
     if (token.lineno, token.column) == pos:
       return index
@@ -66,7 +68,7 @@ def GetTokenIndex(tokens, pos):
 
 
 def GetNextTokenIndex(tokens, pos):
-  """Get the index of the next token after 'pos.'"""
+  """Get the index of the next token after pos."""
   for index, token in enumerate(tokens):
     if (token.lineno, token.column) >= pos:
       return index
@@ -75,7 +77,7 @@ def GetNextTokenIndex(tokens, pos):
 
 
 def GetPrevTokenIndex(tokens, pos):
-  """Get the index of the previous token before 'pos.'"""
+  """Get the index of the previous token before pos."""
   for index, token in enumerate(tokens):
     if index > 0 and (token.lineno, token.column) >= pos:
       return index - 1
@@ -91,7 +93,11 @@ def TokenEnd(node):
   return (node.end_lineno, node.end_col_offset)
 
 
+#############################################################################
+### Code for debugging                                                    ###
+#############################################################################
+
+
 def AstDump(node):
-  """Debugging code."""
   import ast
   print(ast.dump(node, include_attributes=True, indent=4))
