@@ -600,13 +600,14 @@ class SplitPenalty(ast.NodeVisitor):
     #       step=Expr)
     tokens = self._GetTokens(node)
 
-    if hasattr(node, 'lower'):
-      subrange = pyutils.GetTokensInSubRange(
-          tokens, pyutils.TokenStart(node.lower), pyutils.TokenEnd(node.lower))
+    if hasattr(node, 'lower') and node.lower:
+      subrange = pyutils.GetTokensInSubRange(tokens,
+                                             pyutils.TokenStart(node.lower),
+                                             pyutils.TokenEnd(node.lower))
       _IncreasePenalty(subrange, split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
-    if hasattr(node, 'upper'):
+    if hasattr(node, 'upper') and node.upper:
       colon_index = pyutils.GetPrevTokenIndex(tokens,
                                               pyutils.TokenStart(node.upper))
       _IncreasePenalty(tokens[colon_index], split_penalty.UNBREAKABLE)
@@ -616,7 +617,7 @@ class SplitPenalty(ast.NodeVisitor):
       _IncreasePenalty(subrange, split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
-    if hasattr(node, 'step'):
+    if hasattr(node, 'step') and node.step:
       colon_index = pyutils.GetPrevTokenIndex(tokens,
                                               pyutils.TokenStart(node.step))
       _IncreasePenalty(tokens[colon_index], split_penalty.UNBREAKABLE)
