@@ -34,52 +34,53 @@ def FindTokensInRange(logical_lines, node):
   start = (node.lineno, node.col_offset)
   end = (node.end_lineno, node.end_col_offset)
   tokens = []
+
   for line in logical_lines:
     if line.start > end:
       break
     if line.start <= start or line.end >= end:
       tokens.extend(GetTokensInSubRange(line.tokens, start, end))
+
   return tokens
 
 
 def GetTokensInSubRange(tokens, start, end):
   """Get a subset of tokens within the range [start, end)."""
   tokens_in_range = []
+
   for tok in tokens:
     tok_range = (tok.lineno, tok.column)
     if tok_range >= start and tok_range < end:
       tokens_in_range.append(tok)
+
   return tokens_in_range
 
 
 def GetTokenIndex(tokens, pos):
   """Get the index of the token at 'pos.'"""
-  index = 0
-  while index < len(tokens):
-    if (tokens[index].lineno, tokens[index].column) == pos:
-      break
-    index += 1
-  return index
+  for index, token in enumerate(tokens):
+    if (token.lineno, token.column) == pos:
+      return index
+
+  return None
 
 
 def GetNextTokenIndex(tokens, pos):
   """Get the index of the next token after 'pos.'"""
-  index = 0
-  while index < len(tokens):
-    if (tokens[index].lineno, tokens[index].column) >= pos:
-      break
-    index += 1
-  return index
+  for index, token in enumerate(tokens):
+    if (token.lineno, token.column) >= pos:
+      return index
+
+  return None
 
 
 def GetPrevTokenIndex(tokens, pos):
   """Get the index of the previous token before 'pos.'"""
-  index = 1
-  while index < len(tokens):
-    if (tokens[index].lineno, tokens[index].column) >= pos:
-      break
-    index += 1
-  return index - 1
+  for index, token in enumerate(tokens):
+    if index > 0 and (token.lineno, token.column) >= pos:
+      return index - 1
+
+  return None
 
 
 def TokenStart(node):
