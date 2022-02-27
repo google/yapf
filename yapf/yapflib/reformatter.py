@@ -738,7 +738,8 @@ def _SingleOrMergedLines(lines):
         if line.last.value != ':':
           leaf = pytree.Leaf(
               type=token.SEMI, value=';', context=('', (line.lineno, column)))
-          line.AppendToken(format_token.FormatToken(leaf))
+          line.AppendToken(
+              format_token.FormatToken(leaf, pytree_utils.NodeName(leaf)))
         for tok in lines[index].tokens:
           line.AppendToken(tok)
         index += 1

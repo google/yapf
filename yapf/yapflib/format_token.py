@@ -83,14 +83,23 @@ class FormatToken(object):
     newlines: The number of newlines needed before this token.
   """
 
-  def __init__(self, node, node_name=None):
+  def __init__(self, node, name):
     """Constructor.
 
     Arguments:
       node: (pytree.Leaf) The node that's being wrapped.
-      none_name: (string) The name of the node.
+      name: (string) The name of the node.
     """
     self.node = node
+    self.name = name
+    self.type = node.type
+    self.column = node.column
+    self.lineno = node.lineno
+    self.value = node.value
+
+    if self.is_continuation:
+      self.value = node.value.rstrip()
+
     self.next_token = None
     self.previous_token = None
     self.matching_bracket = None
@@ -105,19 +114,10 @@ class FormatToken(object):
         node, pytree_utils.Annotation.MUST_SPLIT, default=False)
     self.newlines = pytree_utils.GetNodeAnnotation(
         node, pytree_utils.Annotation.NEWLINES)
-
-    self.type = node.type
-    self.column = node.column
-    self.lineno = node.lineno
-    self.name = pytree_utils.NodeName(node) if not node_name else node_name
-
     self.spaces_required_before = 0
+
     if self.is_comment:
       self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
-
-    self.value = node.value
-    if self.is_continuation:
-      self.value = node.value.rstrip()
 
     stypes = pytree_utils.GetNodeAnnotation(node,
                                             pytree_utils.Annotation.SUBTYPE)
