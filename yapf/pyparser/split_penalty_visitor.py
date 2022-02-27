@@ -57,9 +57,9 @@ class SplitPenalty(ast.NodeVisitor):
     for decorator in node.decorator_list:
       # The decorator token list begins after the '@'. The body of the decorator
       # is formatted like a normal "call."
-      subrange = pyutils.GetTokensInSubRange(tokens, decorator)
+      decorator_range = self._GetTokens(decorator)
       # Don't split after the '@'.
-      subrange[0].split_penalty = split_penalty.UNBREAKABLE
+      decorator_range[0].split_penalty = split_penalty.UNBREAKABLE
 
     if node.returns:
       start_index = pyutils.GetTokenIndex(tokens,
@@ -101,8 +101,8 @@ class SplitPenalty(ast.NodeVisitor):
 
     for decorator in node.decorator_list:
       # Don't split after the '@'.
-      tokens = self._GetTokens(decorator)
-      tokens[0].split_penalty = split_penalty.UNBREAKABLE
+      decorator_range = self._GetTokens(decorator)
+      decorator_range[0].split_penalty = split_penalty.UNBREAKABLE
 
     return self.generic_visit(node)
 
