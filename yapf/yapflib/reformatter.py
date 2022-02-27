@@ -61,9 +61,9 @@ def Reformat(llines, verify=False, lines=None):
 
     if not lline.disable:
       if lline.first.is_comment:
-        lline.first.node.value = lline.first.node.value.rstrip()
+        lline.first.value = lline.first.value.rstrip()
       elif lline.last.is_comment:
-        lline.last.node.value = lline.last.node.value.rstrip()
+        lline.last.value = lline.last.value.rstrip()
       if prev_line and prev_line.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.

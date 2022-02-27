@@ -196,7 +196,7 @@ class FormatToken(object):
       return
 
     cur_column = self.column
-    prev_column = previous.node.column
+    prev_column = previous.column
     prev_len = len(previous.value)
 
     if previous.is_pseudo and previous.value == ')':
