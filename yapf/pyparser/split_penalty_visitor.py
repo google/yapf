@@ -61,6 +61,11 @@ class SplitPenalty(ast.NodeVisitor):
       # Don't split after the '@'.
       decorator_range[0].split_penalty = split_penalty.UNBREAKABLE
 
+    for token in tokens[1:]:
+      if token.value == '(':
+        break
+      _SetPenalty(token, split_penalty.UNBREAKABLE)
+
     if node.returns:
       start_index = pyutils.GetTokenIndex(tokens,
                                           pyutils.TokenStart(node.returns))
@@ -84,9 +89,6 @@ class SplitPenalty(ast.NodeVisitor):
     #                  body=[...],
     #                  decorator_list=[Expr_1, Expr_2, ..., Expr_n],
     #                  keywords=[])
-    tokens = self._GetTokens(node)
-    _IncreasePenalty(tokens[1], split_penalty.UNBREAKABLE)
-
     return self.visit_FunctionDef(node)
 
   def visit_ClassDef(self, node):

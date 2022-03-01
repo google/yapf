@@ -20,7 +20,7 @@ VERY_STRONGLY_CONNECTED = 5000
 STRONGLY_CONNECTED = 2500
 
 #############################################################################
-### Grammar-specific penalties - should be <= 1000                        ###
+# Grammar-specific penalties - should be <= 1000                            #
 #############################################################################
 
 # Lambdas shouldn't be split unless absolutely necessary or if
