@@ -28,6 +28,7 @@ import re
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
+from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
