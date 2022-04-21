@@ -62,6 +62,17 @@ def Reformat(llines, verify=False, lines=None):
 
     if not lline.disable:
       if lline.first.is_comment:
+        for character in lline.first.value:
+          if character == '#':
+            comment_before_tab = True
+          elif character == '\t':
+            break
+
+        if comment_before_tab:
+          non_comment_text_index = (len(lline.first.value[1:]) - len(lline.first.value[1:].lstrip())) + 1
+          new_string = '# ' + lline.first.value[non_comment_text_index:]
+        
+        lline.first.value = new_string
         lline.first.value = lline.first.value.rstrip()
       elif lline.last.is_comment:
         lline.last.value = lline.last.value.rstrip()

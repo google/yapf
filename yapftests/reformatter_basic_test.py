@@ -3165,6 +3165,64 @@ my_dict = {
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
+  def testIndentBlockComments(self):
+    unformatted_code = textwrap.dedent("""\
+        class Foo(object):
+          def __init__(self):
+          # pass
+            pass
+        """)
+
+    expected = textwrap.dedent("""\
+      class Foo(object):
+
+        def __init__(self):
+          # pass
+          pass
+    """)
+
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+  
+  def testIndentBlockCommentsMultipleTabs(self):
+    unformatted_code = textwrap.dedent("""\
+        class Foo(object):
+          def __init__(self):
+                      # pass
+               pass
+        """)
+    
+    expected = textwrap.dedent("""\
+      class Foo(object):
+
+        def __init__(self):
+          # pass
+          pass
+    """)
+
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+
+  def testIndentBlockCommentsRepeats(self):
+    unformatted_code = textwrap.dedent("""\
+        class Foo(object):
+          def __init__(self):
+            # pass
+            # pass
+            pass
+        """)
+    
+    expected = textwrap.dedent("""\
+      class Foo(object):
+
+        def __init__(self):
+          # pass
+          # pass
+          pass
+    """)
+
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
 if __name__ == '__main__':
   unittest.main()
