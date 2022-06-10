@@ -14,6 +14,7 @@
 """Enhanced token information for formatting."""
 
 import keyword
+from operator import sub
 import re
 
 from lib2to3.pgen2 import token
@@ -322,3 +323,41 @@ class FormatToken(object):
   def is_copybara_comment(self):
     return self.is_comment and re.match(
         r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
+
+  """Implemented by Lisa"""
+  @property
+  def is_assign(self):
+    return (subtypes.ASSIGN_OPERATOR in self.subtypes 
+        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
+        and subtypes.VARARGS_LIST not in self.subtypes
+        and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST not in self.subtypes)
+
+  """Implemented by Lisa"""
+  @property
+  def is_dict_colon(self): 
+    # if the token is dictionary colon and 
+    # the dictionary has no comp_for
+    return self.value == ':' and self.previous_token.is_dict_key
+
+
+  """Implemented by Lisa"""
+  @property
+  def is_dict_key(self): 
+    # if the token is dictionary key which is not preceded by doubel stars and 
+    # the dictionary has no comp_for
+    return subtypes.DICTIONARY_KEY_PART in self.subtypes
+  
+  """Implemented by Lisa"""
+  @property
+  def is_dict_value(self):
+    return subtypes.DICTIONARY_VALUE in self.subtypes
+  
+  """Implemented by Lisa"""
+  @property
+  def is_augassign(self):
+    augassigns = {'+=', '-=' , '*=' , '@=' , '/=' , '%=' , '&=' , '|=' , '^=' ,
+            '<<=' , '>>=' , '**=' , '//='}
+    return self.value in augassigns
+
+  
+
