@@ -27,6 +27,7 @@ import re
 
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
+import this
 
 from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
@@ -403,8 +404,7 @@ def _AlignTrailingComments(final_lines):
 
 #########################################################################
 
-
-""" LISA IMPLEMENTATION  """
+""" XIAO'S IMPLEMENTATION  """
 
 def _AlignAssignment(final_lines):
   """Align assignment operators and augmented assignment operators to the same column"""
@@ -417,7 +417,7 @@ def _AlignAssignment(final_lines):
     
     for tok in line.tokens:
       if tok.is_assign or tok.is_augassign:
-      # all pre assignment variable lengths in one block of lines
+        # all pre assignment variable lengths in one block of lines
         all_pa_variables_lengths = [] 
         max_variables_length = 0
 
@@ -450,7 +450,7 @@ def _AlignAssignment(final_lines):
           variables_content = ''
           pa_variables_lengths = []
 
-          # only one assignment expression is on one line
+          # only one assignment expression is on each line
           for line_tok in this_line.tokens:
             prefix = line_tok.formatted_whitespace_prefix
             newline_index = prefix.rfind('\n')
@@ -485,37 +485,33 @@ def _AlignAssignment(final_lines):
 
         max_variables_length += 2
 
-          # Update the assignment token values based on the aligned values
+        # Update the assignment token values based on the max variable length
         for all_pa_variables_lengths_index, pa_variables_lengths in enumerate(
                   all_pa_variables_lengths):
             if not pa_variables_lengths:
                 continue
             this_line = final_lines[final_lines_index + all_pa_variables_lengths_index]
             
-            pa_variables_lengths_index = 0
+            # only one assignment operator on each lline
             for line_tok in this_line.tokens:
-              if line_tok.is_assign or line_tok.is_augassign: 
-                  assert pa_variables_lengths_index < len(pa_variables_lengths)
-                  assert pa_variables_lengths[pa_variables_lengths_index] < max_variables_length
+              if line_tok.is_assign or line_tok.is_augassign:
+                assert len(pa_variables_lengths) == 1
+                assert pa_variables_lengths[0] < max_variables_length
 
-                  whitespace = ' ' * (
-                      max_variables_length - pa_variables_lengths[pa_variables_lengths_index] - 1)
-                  pa_variables_lengths_index += 1
+                whitespace = ' ' * (
+                max_variables_length - pa_variables_lengths[0] - 1) 
 
-                  # if the token after assignment has nextlines, align to the same level here
+                assign_content = '{}{}'.format(whitespace, line_tok.value.strip())
 
-                  assign_content = '{}{}'.format(whitespace, line_tok.value.strip())
-
-                  existing_whitespace_prefix = \
-                      line_tok.formatted_whitespace_prefix.lstrip('\n')
+                existing_whitespace_prefix = \
+                    line_tok.formatted_whitespace_prefix.lstrip('\n')
                     
-                  if assign_content.startswith(existing_whitespace_prefix):
-                      assign_content = assign_content[len(existing_whitespace_prefix):]
+                if assign_content.startswith(existing_whitespace_prefix):
+                    assign_content = assign_content[len(existing_whitespace_prefix):]
                     
                   # update the assignment operator value
-                  line_tok.value = assign_content
-
-            assert pa_variables_lengths_index == len(pa_variables_lengths)
+                line_tok.value = assign_content   
+                       
 
         final_lines_index += len(all_pa_variables_lengths)
 
@@ -526,7 +522,6 @@ def _AlignAssignment(final_lines):
         final_lines_index += 1
                   
 
-
 def _AlignDictColon(final_lines):
   """Align colons in a dict to the same column"""
   """IMPORTANT!!! One (nested) dict/list is one logical line!"""
@@ -534,21 +529,18 @@ def _AlignDictColon(final_lines):
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]
     assert line.tokens
-    print('At line num:', final_lines_index)
-    print('Line Content:', line)
     process_content = False
 
     for tok in line.tokens:
-        # make sure each dict entry on separate lines and 
-        # the dict has more than one entry
+      # make sure each dict entry on separate lines and 
+      # the dict has more than one entry
       if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and 
           tok.is_dict_key and tok.formatted_whitespace_prefix.startswith('\n') and
             not tok.is_comment):
 
             this_line = line
-              
+            
             line_tokens = this_line.tokens
-            print('length of the line:', len(line_tokens))
             # from innermost dict to outmost dict in the line 
             for open_index in range(len(line_tokens)-1, -1, -1):
               line_tok = line_tokens[open_index]                
@@ -556,12 +548,12 @@ def _AlignDictColon(final_lines):
               # check each time if the detected dict is the dict we aim for                
               if (line_tok.value == '{'and line_tok.next_token.is_dict_key and
                 line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
-                print('open_index:', open_index)
+
                 if line_tok.formatted_whitespace_prefix.startswith('\n'):
                   open_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
                 else:
                   open_column = line_tok.column
-                print('open_column:', open_column)
+
                 closing = False # the closing bracket in dict '}'.
                 max_keys_length = 0
                 keys_content = ''
@@ -570,27 +562,21 @@ def _AlignDictColon(final_lines):
                 # go to next token, the first key of the dict
                 index += 1 
                 line_tok = line_tokens[index]
-                print('first key:', line_tok)
-                print('newline index in first key prefix:', line_tok.formatted_whitespace_prefix.rfind('\n'))
                 # record the column number of the first key
                 first_key_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
                 
                 # while not closing:
                 while not closing: 
                   prefix = line_tok.formatted_whitespace_prefix
-                  print('prefix len with newline:', len(prefix))
                   newline_index = prefix.rfind('\n')
                   if line_tok.is_dict_key and newline_index != -1:
-                    max_keys_length = max(max_keys_length, len(keys_content))
                     keys_content = ''
                     prefix = prefix[newline_index + 1:]
                     key_column = len(prefix)
-                    print('prefix len without newline:', len(prefix))
 
                   if line_tok.is_dict_colon and key_column == first_key_column:
                     dict_keys_lengths.append(len(keys_content))
                   elif line_tok.is_dict_key and key_column == first_key_column: 
-                    print('key:', line_tok)
                     keys_content += '{}{}'.format(prefix, line_tok.value)
                   
                   # the matching closing bracket is either same indented or dedented
@@ -602,13 +588,13 @@ def _AlignDictColon(final_lines):
                     if close_column <= open_column:
                       closing == True
                       break
+                  
+                  if dict_keys_lengths:
+                    max_keys_length = max(max_keys_length, max(dict_keys_lengths))
                                   
                   index += 1
                   if index < len(line_tokens):
-                    line_tok = line_tokens[index]
-                
-                print('max_length:', max_keys_length)
-                print('index:', index)                     
+                    line_tok = line_tokens[index]                   
 
                 max_keys_length += 2
                 
@@ -629,7 +615,6 @@ def _AlignDictColon(final_lines):
                       padded_spaces = ' ' * (
                         max_keys_length - dict_keys_lengths[keys_lengths_index] - 1)
                       keys_lengths_index += 1
-                      print('pc_keys_index:', keys_lengths_index)
 
                       colon_content = '{}{}'.format(padded_spaces, token.value.strip())
                       existing_whitespace_prefix = \
@@ -649,24 +634,8 @@ def _AlignDictColon(final_lines):
   
     if not process_content:
       final_lines_index += 1
-                
-
-
-
-
+    
 ########################################################################
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def _FormatFinalLines(final_lines, verify):
