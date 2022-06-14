@@ -54,6 +54,12 @@ def SetGlobalStyle(style):
 _STYLE_HELP = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
       Align closing bracket with visual indentation."""),
+    ALIGN_ASSIGNMENT=textwrap.dedent("""\
+      Align assignment or augmented assignment operators.
+      If there is a blank line in between, it will start new alignment."""),
+    ALIGN_DICT_COLON=textwrap.dedent("""\
+      Align the colons in the dictionary 
+      if entries in dictionay are split on different lines."""),
     ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
     ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
@@ -419,6 +425,8 @@ def CreatePEP8Style():
   """Create the PEP8 formatting style."""
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
+      ALIGN_ASSIGNMENT=False,
+      ALIGN_DICT_COLON=False,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
@@ -509,6 +517,8 @@ def CreateYapfStyle():
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
+  style['ALIGN_ASSIGNMENT']=True,
+  style['ALIGN_DICT_COLON']=True,
   return style
 
 
@@ -607,6 +617,8 @@ def _IntOrIntListConverter(s):
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
+    ALIGN_ASSIGNMENT=_BoolConverter,
+    ALIGN_DICT_COLON=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,

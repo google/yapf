@@ -104,9 +104,11 @@ def Reformat(llines, verify=False, lines=None):
     prev_line = lline
  
   
-  """Lisa's alignment implementation"""
-  _AlignAssignment(final_lines)
-  _AlignDictColon(final_lines)
+  """Xiao's alignment implementation"""
+  if style.Get('ALIGN_ASSIGNMENT'):
+    _AlignAssignment(final_lines)
+  if style.Get('ALIGN_DICT_COLON'):
+    _AlignDictColon(final_lines)
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
