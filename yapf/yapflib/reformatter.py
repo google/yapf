@@ -27,7 +27,6 @@ import re
 
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
-import this
 
 from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
@@ -109,6 +108,8 @@ def Reformat(llines, verify=False, lines=None):
     _AlignAssignment(final_lines)
   if style.Get('ALIGN_DICT_COLON'):
     _AlignDictColon(final_lines)
+  
+  _AlignArgAssign(final_lines)
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
@@ -414,7 +415,7 @@ def _AlignAssignment(final_lines):
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]
     assert line.tokens
-
+    print('line:', line)
     process_content = False
     
     for tok in line.tokens:
@@ -522,7 +523,104 @@ def _AlignAssignment(final_lines):
     
     if not process_content:
         final_lines_index += 1
-                  
+
+
+def _AlignArgAssign(final_lines):
+  """Align the assign operators in a argument list to the same column"""
+  """IMPORTANT!!! Argument list of one function is on one logical line!"""
+  final_lines_index = 0
+  while final_lines_index < len(final_lines):
+    line = final_lines[final_lines_index]
+    assert line.tokens
+    process_content = False
+
+    for tok in line.tokens:
+      if tok.is_argassign:
+
+        this_line = line
+        line_tokens = this_line.tokens
+        max_name_length = 0
+        arg_name_lengths = []
+        name_content = ''
+
+        for index in range(len(line_tokens)):
+
+          line_tok = line_tokens[index]  
+
+          if line_tok.value == '(':
+            if line_tok.next_token.formatted_whitespace_prefix.startswith('\n'):
+              # go to the first argument
+              index += 1   
+            else:
+              # if arguments are not put on seperate lines,
+              # no need to calulate the max_name_length
+              break   
+            
+            while index < len(line_tokens):
+              line_tok = line_tokens[index]
+
+              if line_tok.value == ')':
+                  break
+            
+              prefix = line_tok.formatted_whitespace_prefix
+              newline_index = prefix.rfind('\n')
+              if line_tok.is_argname and newline_index != -1:
+                name_content = ''
+                prefix = prefix[newline_index + 1:]
+
+              if line_tok.is_argassign:
+                arg_name_lengths.append(len(name_content))
+
+              ### Exclused when the value has more than one token like a list/dict 
+              elif (line_tok.value not in [',', '**']
+                    and line_tok.previous_token
+                    and not line_tok.previous_token.is_argassign
+                    and line_tok.next_token 
+                    and line_tok.next_token.value not in ',)}'):
+                  print('value before assign: ', line_tok.value)
+                  # add up all token values before the arg assign operator
+                  name_content += '{}{}'.format(prefix, line_tok.value)
+               
+              if arg_name_lengths:
+                max_name_length = max(max_name_length, max(arg_name_lengths))
+                              
+              index += 1    
+
+        # only when the arguments are on seperate lines, there will be
+        # max_name_length calculated
+        if max_name_length > 0:            
+
+          max_name_length += 2
+                
+          # update the alignment once the arg list/the line is processed
+          arg_lengths_index = 0
+          for token in line_tokens:
+            if token.is_argassign:
+              assert arg_name_lengths[arg_lengths_index] < max_name_length
+
+              padded_spaces = ' ' * (
+                max_name_length - arg_name_lengths[arg_lengths_index] - 1)
+              arg_lengths_index += 1
+
+              assign_content = '{}{}'.format(padded_spaces, token.value.strip())
+              existing_whitespace_prefix = \
+                    token.formatted_whitespace_prefix.lstrip('\n')
+
+              if assign_content.startswith(existing_whitespace_prefix):
+                assign_content = assign_content[len(existing_whitespace_prefix):]
+
+              token.value = assign_content
+
+          assert arg_lengths_index == len(arg_name_lengths)               
+    
+        final_lines_index += 1
+
+        process_content = True
+        break
+
+    if not process_content:
+      final_lines_index += 1
+
 
 def _AlignDictColon(final_lines):
   """Align colons in a dict to the same column"""
