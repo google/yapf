@@ -327,10 +327,7 @@ class FormatToken(object):
   """Implemented by Lisa"""
   @property
   def is_assign(self):
-    return (subtypes.ASSIGN_OPERATOR in self.subtypes 
-        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
-        and subtypes.VARARGS_LIST not in self.subtypes
-        and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST not in self.subtypes)
+    return subtypes.ASSIGN_OPERATOR in self.subtypes 
 
   """Implemented by Xiao"""
   @property
@@ -358,6 +355,25 @@ class FormatToken(object):
     augassigns = {'+=', '-=' , '*=' , '@=' , '/=' , '%=' , '&=' , '|=' , '^=' ,
             '<<=' , '>>=' , '**=' , '//='}
     return self.value in augassigns
+
+  @property
+  def is_argassign(self):
+     return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes 
+            or subtypes.VARARGS_LIST in self.subtypes)
+  
+  @property
+  def is_argname(self):
+    # it's the argument name in the argument list, not the assign operator 
+    # or the value after the assign operator and before comma
+    return (subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
+            and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
+            and subtypes.PARAMETER_STOP not in self.subtypes)
+
+  #def is_typedname(self):
+    # including the argument name and its type and the colon
+    #return subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
+       
+      
 
   
 
