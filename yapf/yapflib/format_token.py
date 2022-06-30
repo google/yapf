@@ -125,6 +125,7 @@ class FormatToken(object):
     self.subtypes = {subtypes.NONE} if not stypes else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
+  
   @property
   def formatted_whitespace_prefix(self):
     if style.Get('INDENT_BLANK_LINES'):
@@ -356,22 +357,61 @@ class FormatToken(object):
             '<<=' , '>>=' , '**=' , '//='}
     return self.value in augassigns
 
+  """Implemented by Xiao"""
   @property
   def is_argassign(self):
      return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes 
             or subtypes.VARARGS_LIST in self.subtypes)
-  
+ 
+  """Implemented by Xiao"""
   @property
   def is_argname(self):
-    # it's the argument name in the argument list, not the assign operator 
-    # or the value after the assign operator and before comma
-    return (subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
-            and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
-            and subtypes.PARAMETER_STOP not in self.subtypes)
+    # it's the argument part before argument assignment operator,
+    # including tnames and data type 
+    # not the assign operator,
+    # not the value after the assign operator and before comma
+    #dtypes = {'int', 'str', 'dict', 'bool', 'list', 'float', 'Callable'}
 
-  #def is_typedname(self):
-    # including the argument name and its type and the colon
-    #return subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
+    previous_stypes = pytree_utils.GetNodeAnnotation(self.previous_token.node,
+                                            pytree_utils.Annotation.SUBTYPE)
+    previous_substypes = {subtypes.NONE} if not previous_stypes else previous_stypes
+    next_stypes = pytree_utils.GetNodeAnnotation(self.next_token.node,
+                                            pytree_utils.Annotation.SUBTYPE)
+    next_substypes = {subtypes.NONE} if not next_stypes else next_stypes
+    
+    # assignment operator is not included
+    # argument without assignment is not included
+    # the token is arg part before '=' but not after '='
+    if self.is_argname_start:
+        return True
+    # the token is tnames or colon after tnames or data type names after colon
+    if subtypes.TYPED_NAME_ARG_LIST in self.subtypes:
+      return True
+    # the token is open subscript bracket that follows tname list
+    if (subtypes.SUBSCRIPT_BRACKET in self.subtypes
+          and subtypes.TYPED_NAME_ARG_LIST in previous_substypes):
+      return True
+    # or the close subscript bracket that is followed by '='
+    if (subtypes.SUBSCRIPT_BRACKET in self.subtypes
+          and subtypes.DEFAULT_OR_NAMED_ASSIGN in next_substypes):
+      return True
+    # the token is the value inside the subscript brackets
+    # TODO is there more than one token inside the brackets??
+    if subtypes.SUBSCRIPT_BRACKET in next_substypes:
+      return True
+
+    return False
+
+  """Implemented by Xiao"""          
+  @property
+  def is_argname_start(self):
+    # return true if it's the start of every argument entry
+    return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
+        and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
+        and subtypes.PARAMETER_STOP not in self.subtypes
+        or subtypes.PARAMETER_START in self.subtypes)
+        
+ 
        
       
 
