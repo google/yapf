@@ -369,8 +369,7 @@ class FormatToken(object):
     # it's the argument part before argument assignment operator,
     # including tnames and data type 
     # not the assign operator,
-    # not the value after the assign operator and before comma
-    #dtypes = {'int', 'str', 'dict', 'bool', 'list', 'float', 'Callable'}
+    # not the value after the assign operator
 
     previous_stypes = pytree_utils.GetNodeAnnotation(self.previous_token.node,
                                             pytree_utils.Annotation.SUBTYPE)
@@ -380,7 +379,7 @@ class FormatToken(object):
     next_substypes = {subtypes.NONE} if not next_stypes else next_stypes
     
     # assignment operator is not included
-    # argument without assignment is not included
+    # argument without assignment is also included
     # the token is arg part before '=' but not after '='
     if self.is_argname_start:
         return True
@@ -406,7 +405,8 @@ class FormatToken(object):
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
-    return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
+    return (not self.is_comment
+        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
         and subtypes.PARAMETER_STOP not in self.subtypes
         or subtypes.PARAMETER_START in self.subtypes)

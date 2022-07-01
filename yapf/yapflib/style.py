@@ -57,9 +57,12 @@ _STYLE_HELP = dict(
     ALIGN_ASSIGNMENT=textwrap.dedent("""\
       Align assignment or augmented assignment operators.
       If there is a blank line in between, it will start new alignment."""),
+    ALIGN_ARGUMENT_ASSIGNMENT=textwrap.dedent("""\
+      Align assignment operators in the argument list if they are all split on newlines.
+      Arguments without assignment are ignored."""),
     ALIGN_DICT_COLON=textwrap.dedent("""\
       Align the colons in the dictionary 
-      if entries in dictionay are split on different lines."""),
+      if entries in dictionay are split on newlines."""),
     ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
     ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
@@ -426,6 +429,7 @@ def CreatePEP8Style():
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
       ALIGN_ASSIGNMENT=False,
+      ALIGN_ARGUMENT_ASSIGNMENT=False,
       ALIGN_DICT_COLON=False,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
@@ -517,8 +521,9 @@ def CreateYapfStyle():
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
-  style['ALIGN_ASSIGNMENT']=True,
-  style['ALIGN_DICT_COLON']=True,
+  style['ALIGN_ASSIGNMENT']=True
+  style['ALIGN_DICT_COLON']=True
+  style['ALIGN_ARGUMENT_ASSIGNMENT']=True
   return style
 
 
@@ -619,6 +624,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
     ALIGN_ASSIGNMENT=_BoolConverter,
     ALIGN_DICT_COLON=_BoolConverter,
+    ALIGN_ARGUMENT_ASSIGNMENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,

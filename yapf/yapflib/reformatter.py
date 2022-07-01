@@ -108,8 +108,8 @@ def Reformat(llines, verify=False, lines=None):
     _AlignAssignment(final_lines)
   if style.Get('ALIGN_DICT_COLON'):
     _AlignDictColon(final_lines)
-  
-  _AlignArgAssign(final_lines)
+  if style.Get('ALIGN_ARGUMENT_ASSIGNMENT'):
+    _AlignArgAssign(final_lines)
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
@@ -544,113 +544,112 @@ def _AlignArgAssign(final_lines):
 
         this_line = line
         line_tokens = this_line.tokens
+        assign_index = 0
 
-        for open_index in range(len(line_tokens)):
-
-          line_tok = line_tokens[open_index]  
-      
-          if line_tok.value == '(':
-            if line_tok.next_token.formatted_whitespace_prefix.startswith('\n'):    
-              # go to the first argument
-              index = open_index
-              index += 1   
+        while assign_index < len(line_tokens):
+          
+          index = assign_index
+          line_tok = line_tokens[index]            
+          # skip all the arguments wihtout assignment
+          if line_tok.is_argassign:
+            last_assign_index = index
+            # go to the start of the argname
+            index -= 1
+            line_tok = line_tokens[index]
+            while line_tok.is_argname and not line_tok.is_argname_start:
+              index -= 1
               line_tok = line_tokens[index]
-              first_arg_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
-            else:
-              # if arguments are not put on seperate lines,
-              # no need to calulate the max_name_length
-              break              
+            # check if the argname is on newline
+            if line_tok.formatted_whitespace_prefix.startswith('\n'):
+              first_arg_index = index
+              first_arg_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))             
 
-            closing = False
-            max_name_length = 0
-            arg_name_lengths = []
-            name_content = ''
-            arg_column = first_arg_column
+              closing = False
+              max_name_length = 0
+              arg_name_lengths = []
+              name_content = ''
+              arg_column = first_arg_column
 
-            while not closing:
-              # start with the first argument 
-              # that has nextline prefix         
-              if line_tok.value == ')':
-                if line_tok.formatted_whitespace_prefix.startswith('\n'):
-                  close_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
-                else: close_column = line_tok.column
-                if close_column < first_arg_column:
-                  closing == True
-                  break
-            
-              prefix = line_tok.formatted_whitespace_prefix
-              newline_index = prefix.rfind('\n')
-              
-              
-              if line_tok.is_argname_start and newline_index != -1:
-                # to update the max length of argnames with assignment
-                max_name_length = max(max_name_length, len(name_content))
-                name_content = ''
-                prefix = prefix[newline_index + 1:]
-                arg_column = len(prefix)
-              
-              # if any argument after the first argument
-              # is not on newline, break
-              if (line_tok.is_argname_start
-                and newline_index == -1
-                and arg_column == first_arg_column 
-                ):
-                break 
+              while not closing:
+                # start with the first argument 
+                # that has nextline prefix                   
+                prefix = line_tok.formatted_whitespace_prefix
+                newline_index = prefix.rfind('\n')              
                 
-              if line_tok.is_argassign and arg_column == first_arg_column:
-                arg_name_lengths.append(len(name_content))
-              elif line_tok.is_argname and arg_column == first_arg_column:
-                # arguments without assignment will add the ',' after it as well
-                if line_tok.is_argname_start and line_tok.next_token.value == ',':
-                  name_content = '{}{}'.format(prefix, line_tok.value + ',')
-                  # skip the comma
-                  index += 1
-                else:
-                  # add up all token values before the arg assign operator
+                if line_tok.is_argname_start and newline_index != -1:
+                  # this is commented out because argument without assignment 
+                  # is not included in the max length calculation
+                  # max_name_length = max(max_name_length, len(name_content))
+                  name_content = ''
+                  prefix = prefix[newline_index + 1:]
+                  arg_column = len(prefix)
+                
+                # if any argument after the first argument of the same level
+                # is not on newline, break
+                if (line_tok.is_argname_start
+                  and newline_index == -1
+                  and arg_column == first_arg_column):
+                    break 
+                  
+                if line_tok.is_argassign and arg_column == first_arg_column:
+                  arg_name_lengths.append(len(name_content))
+                  last_assign_index = index
+                elif line_tok.is_argname and arg_column == first_arg_column:
                   name_content += '{}{}'.format(prefix, line_tok.value)
-                              
-              index += 1  
-              line_tok = line_tokens[index]  
+                  # add up all token values before the arg assign operator
+                                        
+                index += 1  
+                line_tok = line_tokens[index]  
 
-            # in case that the name of assigned argument is longer 
-            # than the argument without assignment
-            if arg_name_lengths:
-              max_name_length = max(max_name_length, max(arg_name_lengths))
-            # only when ALL arguments are on seperate lines, there will be
-            # max_name_length calculated
-            if max_name_length > 0:            
+                if line_tok.value == ')':
+                  if line_tok.formatted_whitespace_prefix.startswith('\n'):
+                    close_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
+                  else: close_column = line_tok.column
+                  if close_column < first_arg_column:
+                    closing = True
 
-              max_name_length += 2
-                    
-              # update the alignment once the arg list/the line is processed
-              arg_lengths_index = 0
-              for token in line_tokens[open_index+1:index]:
-                if token.is_argassign:
+              # update the max length in the argument list that is processed
+              if arg_name_lengths:
+                max_name_length = max(max_name_length, max(arg_name_lengths))
+              # only when ALL arguments are on seperate lines, there will be
+              # max_name_length calculated
+              if max_name_length > 0:            
 
-                  name_token = token.previous_token
-                  while name_token.previous_token.is_argname:
-                    name_token = name_token.previous_token
-                  name_column = len(name_token.formatted_whitespace_prefix.lstrip('\n'))
-                  if name_column == first_arg_column:
-                    assert arg_name_lengths[arg_lengths_index] < max_name_length
+                max_name_length += 2
+                      
+                # update the alignment once one arg list/the line is processed
+                arg_lengths_index = 0
+                for token in line_tokens[first_arg_index:index]:
+                  if token.is_argassign:
 
-                    padded_spaces = ' ' * (
-                      max_name_length - arg_name_lengths[arg_lengths_index] - 1)
-                    arg_lengths_index += 1
+                    name_token = token.previous_token
+                    while name_token.previous_token.is_argname:
+                      name_token = name_token.previous_token
+                    name_column = len(name_token.formatted_whitespace_prefix.lstrip('\n'))
+                    if name_column == first_arg_column:
+                      assert arg_name_lengths[arg_lengths_index] < max_name_length
 
-                    assign_content = '{}{}'.format(padded_spaces, token.value.strip())
-                    existing_whitespace_prefix = \
-                          token.formatted_whitespace_prefix.lstrip('\n')
+                      padded_spaces = ' ' * (
+                        max_name_length - arg_name_lengths[arg_lengths_index] - 1)
+                      arg_lengths_index += 1
 
-                    if assign_content.startswith(existing_whitespace_prefix):
-                      assign_content = assign_content[len(existing_whitespace_prefix):]
+                      assign_content = '{}{}'.format(padded_spaces, token.value.strip())
+                      existing_whitespace_prefix = \
+                            token.formatted_whitespace_prefix.lstrip('\n')
 
-                    token.value = assign_content
+                      if assign_content.startswith(existing_whitespace_prefix):
+                        assign_content = assign_content[len(existing_whitespace_prefix):]
 
-              assert arg_lengths_index == len(arg_name_lengths)               
-      
+                      token.value = assign_content
+
+                assert arg_lengths_index == len(arg_name_lengths)  
+
+            assign_index = last_assign_index + 1  
+
+          else:
+            assign_index += 1  
+        
         final_lines_index += 1
-
         process_content = True
         break
 
@@ -708,7 +707,11 @@ def _AlignDictColon(final_lines):
                     dict_keys_lengths.append(len(keys_content))
                   elif line_tok.is_dict_key and key_column == first_key_column: 
                     keys_content += '{}{}'.format(prefix, line_tok.value)
-                  
+                                  
+                  index += 1
+                  if index < len(line_tokens):
+                    line_tok = line_tokens[index] 
+
                   # the matching closing bracket is either same indented or dedented
                   # accordingly to its key indentation
                   # the first found, immediately break the while loop
@@ -717,16 +720,10 @@ def _AlignDictColon(final_lines):
                       close_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
                     else: close_column = line_tok.column
                     if close_column <= first_key_column:
-                      closing == True
-                      break
-                  
-                  if dict_keys_lengths:
-                    max_keys_length = max(max_keys_length, max(dict_keys_lengths))
-                                  
-                  index += 1
-                  if index < len(line_tokens):
-                    line_tok = line_tokens[index]                   
+                      closing = True                 
 
+                if dict_keys_lengths:
+                    max_keys_length = max(max_keys_length, max(dict_keys_lengths))
                 max_keys_length += 2
                 
                 # update the alignment once one dict is processed
