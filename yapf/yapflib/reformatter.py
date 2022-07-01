@@ -277,7 +277,8 @@ def _AlignTrailingComments(final_lines):
     for tok in line.tokens:
       if (tok.is_comment and isinstance(tok.spaces_required_before, list) and
           tok.value.startswith('#')):
-        # All trailing comments and comments that appear on a line by themselves
+        # All trailing comments 
+        # NOTE not including comments that appear on a line by themselves
         # in this block should be indented at the same level. The block is
         # terminated by an empty line or EOF. Enumerate through each line in
         # the block and calculate the max line length. Once complete, use the
@@ -319,10 +320,20 @@ def _AlignTrailingComments(final_lines):
 
               whitespace_prefix = whitespace_prefix[newline_index + 1:]
 
-            if line_tok.is_comment:
-              pc_line_lengths.append(len(line_content))
+            '''The part is added by Xiao on the top of original yapf code
+              because we don't want comments on newlines align with comments inline
+            '''
+            if style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
+              if line_tok.is_comment: 
+                pc_line_lengths.append(len(line_content))
+              else:
+                line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
             else:
-              line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
+              if line_tok.is_comment and not line_tok.formatted_whitespace_prefix.startswith('\n'):
+                pc_line_lengths.append(len(line_content))
+              else:
+                line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
+
 
           if pc_line_lengths:
             max_line_length = max(max_line_length, max(pc_line_lengths))
@@ -351,7 +362,7 @@ def _AlignTrailingComments(final_lines):
 
           pc_line_length_index = 0
           for line_tok in this_line.tokens:
-            if line_tok.is_comment:
+            if line_tok.is_comment and '\n' not in line_tok.formatted_whitespace_prefix:
               assert pc_line_length_index < len(pc_line_lengths)
               assert pc_line_lengths[pc_line_length_index] < aligned_col
 
@@ -360,19 +371,25 @@ def _AlignTrailingComments(final_lines):
               whitespace = ' ' * (
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
               pc_line_length_index += 1
+              
+              ''' this is added by Xiao because we don't want comments on newlines
+                  to align with comments inline
+              '''
+              if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
+                line_content = '{}{}'.format(whitespace, line_tok.value.strip())
+              else:                  
+                line_content = []
 
-              line_content = []
-
-              for comment_line_index, comment_line in enumerate(
-                  line_tok.value.split('\n')):
-                line_content.append('{}{}'.format(whitespace,
+                for comment_line_index, comment_line in enumerate(
+                    line_tok.value.split('\n')):
+                  line_content.append('{}{}'.format(whitespace,
                                                   comment_line.strip()))
 
-                if comment_line_index == 0:
-                  whitespace = ' ' * (aligned_col - 1)
+                  if comment_line_index == 0:
+                    whitespace = ' ' * (aligned_col - 1)
 
-              line_content = '\n'.join(line_content)
-
+                line_content = '\n'.join(line_content)
+              
               # Account for initial whitespace already slated for the
               # beginning of the line.
               existing_whitespace_prefix = \
@@ -392,6 +409,7 @@ def _AlignTrailingComments(final_lines):
 
     if not processed_content:
       final_lines_index += 1
+
 
 
 def _FormatFinalLines(final_lines, verify):
