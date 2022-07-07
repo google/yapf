@@ -293,14 +293,19 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     if not node.children:
       return
 
-    _AppendFirstLeafTokenSubtype(node.children[0], subtypes.PARAMETER_START)
+    # exclude comments in the beginning
+    if node.children[0].type != grammar_token.COMMENT:
+      _AppendFirstLeafTokenSubtype(node.children[0], subtypes.PARAMETER_START)
     _AppendLastLeafTokenSubtype(node.children[-1], subtypes.PARAMETER_STOP)
 
     tname = pytree_utils.NodeName(node.children[0]) == 'tname'
     for i in range(1, len(node.children)):
       prev_child = node.children[i - 1]
       child = node.children[i]
-      if prev_child.type == grammar_token.COMMA:
+      # exclude inline comments
+      if prev_child.type == grammar_token.COMMA and child.type != grammar_token.COMMENT:
+        _AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
+      elif prev_child.type == grammar_token.COMMENT:
         _AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
       elif child.type == grammar_token.COMMA:
         _AppendLastLeafTokenSubtype(prev_child, subtypes.PARAMETER_STOP)
@@ -383,6 +388,7 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
 
   for child in node.children:
     node_name = pytree_utils.NodeName(child)
+    # exclude it if the first leaf is a comment in appendfirstleaftokensubtype
     if node_name not in {'atom', 'COMMA'}:
       _AppendFirstLeafTokenSubtype(child, list_subtype)
 
@@ -392,13 +398,20 @@ def _AppendTokenSubtype(node, subtype):
   pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                     subtype)
 
-
+#TODO should exclude comment child to all Appendsubtypes functions
 def _AppendFirstLeafTokenSubtype(node, subtype):
   """Append the first leaf token's subtypes."""
+   ## exclude the comment first leaf
+
   if isinstance(node, pytree.Leaf):
-    _AppendTokenSubtype(node, subtype)
-    return
-  _AppendFirstLeafTokenSubtype(node.children[0], subtype)
+    if node.type != grammar_token.COMMENT:
+      _AppendTokenSubtype(node, subtype)
+      return 
+  else:
+    if node.children[0].type == grammar_token.COMMENT:   
+      _AppendFirstLeafTokenSubtype(node.children[1], subtype)
+    else:
+      _AppendFirstLeafTokenSubtype(node.children[0], subtype)
 
 
 def _AppendLastLeafTokenSubtype(node, subtype):

@@ -56,10 +56,14 @@ _STYLE_HELP = dict(
       Align closing bracket with visual indentation."""),
     ALIGN_ASSIGNMENT=textwrap.dedent("""\
       Align assignment or augmented assignment operators.
-      If there is a blank line in between, it will start new alignment."""),
+      If there is a blank line or newline comment or objects with newline entries in between, 
+      it will start new block alignment."""),
     ALIGN_ARGUMENT_ASSIGNMENT=textwrap.dedent("""\
       Align assignment operators in the argument list if they are all split on newlines.
-      Arguments without assignment are ignored."""),
+      Please use this with DEDENT_CLOSING_BRACKETS = True.
+      Arguments without assignment are ignored.
+      Arguments without assignment in between will initiate new block alignment calulation.
+      Newline comments or objects with newline entries will also start new block alignment."""),
     ALIGN_DICT_COLON=textwrap.dedent("""\
       Align the colons in the dictionary 
       if entries in dictionay are split on newlines."""),

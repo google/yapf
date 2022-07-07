@@ -364,6 +364,20 @@ class FormatToken(object):
             or subtypes.VARARGS_LIST in self.subtypes)
  
   """Implemented by Xiao"""
+  
+  def get_previous_and_next_subtypes(self):
+    if self is not None:
+      previous_subtypes, next_subtypes = {}, {}
+      if self.previous_token:
+        previous_stypes = pytree_utils.GetNodeAnnotation(self.previous_token.node,
+                                              pytree_utils.Annotation.SUBTYPE)
+        previous_subtypes = {subtypes.NONE} if not previous_stypes else previous_stypes
+      if self.next_token:
+        next_stypes = pytree_utils.GetNodeAnnotation(self.next_token.node,
+                                              pytree_utils.Annotation.SUBTYPE)
+        next_subtypes = {subtypes.NONE} if not next_stypes else next_stypes
+        return previous_subtypes, next_subtypes
+    
   @property
   def is_argname(self):
     # it's the argument part before argument assignment operator,
@@ -371,16 +385,10 @@ class FormatToken(object):
     # not the assign operator,
     # not the value after the assign operator
 
-    previous_stypes = pytree_utils.GetNodeAnnotation(self.previous_token.node,
-                                            pytree_utils.Annotation.SUBTYPE)
-    previous_substypes = {subtypes.NONE} if not previous_stypes else previous_stypes
-    next_stypes = pytree_utils.GetNodeAnnotation(self.next_token.node,
-                                            pytree_utils.Annotation.SUBTYPE)
-    next_substypes = {subtypes.NONE} if not next_stypes else next_stypes
-    
-    # assignment operator is not included
     # argument without assignment is also included
     # the token is arg part before '=' but not after '='
+    previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
+
     if self.is_argname_start:
         return True
     # the token is tnames or colon after tnames or data type names after colon
@@ -388,15 +396,15 @@ class FormatToken(object):
       return True
     # the token is open subscript bracket that follows tname list
     if (subtypes.SUBSCRIPT_BRACKET in self.subtypes
-          and subtypes.TYPED_NAME_ARG_LIST in previous_substypes):
+          and subtypes.TYPED_NAME_ARG_LIST in previous_subtypes):
       return True
     # or the close subscript bracket that is followed by '='
     if (subtypes.SUBSCRIPT_BRACKET in self.subtypes
-          and subtypes.DEFAULT_OR_NAMED_ASSIGN in next_substypes):
+          and subtypes.DEFAULT_OR_NAMED_ASSIGN in next_subtypes):
       return True
     # the token is the value inside the subscript brackets
-    # TODO is there more than one token inside the brackets??
-    if subtypes.SUBSCRIPT_BRACKET in next_substypes:
+    # TODO Are there more than one token inside the brackets??
+    if subtypes.SUBSCRIPT_BRACKET in next_subtypes:
       return True
 
     return False
@@ -405,11 +413,12 @@ class FormatToken(object):
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
-    return (not self.is_comment
-        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
+    return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
         and subtypes.PARAMETER_STOP not in self.subtypes
         or subtypes.PARAMETER_START in self.subtypes)
+        
+
         
  
        
