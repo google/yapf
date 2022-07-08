@@ -549,10 +549,6 @@ def _AlignArgAssign(final_lines):
      But funtion calls/argument lists can be in argument list.
   """
 
-  for l in final_lines:
-    for t in l.tokens:
-      print('token:', t.value, t.subtypes)
-
   final_lines_index = 0
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]
