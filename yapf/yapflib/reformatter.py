@@ -548,9 +548,9 @@ def _AlignArgAssign(final_lines):
   """NOTE One argument list of one function is on one logical line!
      But funtion calls/argument lists can be in argument list.
   """
-  for l in final_lines:
-    for t in l.tokens:
-      print('tokens:', t.value, t.subtypes)
+  #for l in final_lines:
+    #for t in l.tokens:
+      #print('tokens:', t.value, t.subtypes)
 
   final_lines_index = 0
   while final_lines_index < len(final_lines):
@@ -642,7 +642,8 @@ def _AlignArgAssign(final_lines):
                 # save, reset and continue to calulate new alignment
                 if (line_tok.value in ['(', '[','{']
                   and line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
-                  all_arg_name_lengths.append(arg_name_lengths)
+                  if arg_name_lengths:
+                    all_arg_name_lengths.append(arg_name_lengths)
                   arg_name_lengths = []
                   index += 1
                   line_tok = line_tokens[index]
@@ -653,7 +654,7 @@ def _AlignArgAssign(final_lines):
                     close_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
                   else: close_column = line_tok.column
                   if close_column < first_arg_column:
-                    if not arg_name_lengths:
+                    if arg_name_lengths:
                       all_arg_name_lengths.append(arg_name_lengths)
                     closing = True
 
@@ -786,7 +787,8 @@ def _AlignDictColon(final_lines):
                     # save, reset and continue to calulate new alignment
                     if (line_tok.value in ['(', '[', '{']
                       and line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
-                      all_dict_keys_lengths.append(dict_keys_lengths)
+                      if dict_keys_lengths:
+                        all_dict_keys_lengths.append(dict_keys_lengths)
                       dict_keys_lengths = []
                       index += 1
                       line_tok = line_tokens[index]
@@ -799,7 +801,8 @@ def _AlignDictColon(final_lines):
                         close_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
                       else: close_column = line_tok.column
                       if close_column < first_key_column:
-                        all_dict_keys_lengths.append(dict_keys_lengths)
+                        if dict_keys_lengths:
+                          all_dict_keys_lengths.append(dict_keys_lengths)
                         closing = True
 
                   # update the alignment once one dict is processed

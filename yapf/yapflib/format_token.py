@@ -407,9 +407,6 @@ class FormatToken(object):
     if (subtypes.SUBSCRIPT_BRACKET in next_subtypes
       or subtypes.SUBSCRIPT_BRACKET in previous_subtypes):
       return True
-    # at last make sure value after '=' is not included
-    if subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes:
-      return True
 
     return False
 
