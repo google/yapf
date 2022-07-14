@@ -548,6 +548,9 @@ def _AlignArgAssign(final_lines):
   """NOTE One argument list of one function is on one logical line!
      But funtion calls/argument lists can be in argument list.
   """
+  #for l in final_lines:
+    #for t in l.tokens:
+      #print('tokens:', t.value, t.subtypes)
 
   final_lines_index = 0
   while final_lines_index < len(final_lines):
@@ -567,16 +570,18 @@ def _AlignArgAssign(final_lines):
 
         for open_index in range(len(line_tokens)):
           line_tok = line_tokens[open_index]
-          if line_tok.value == '(':
+          if line_tok.value == '('and not line_tok.is_pseudo:
             index = open_index
             # go to the first argname start of the arg list
             index += 1
             line_tok = line_tokens[index]
-            while not line_tok.is_argname_start:
+
+            while not line_tok.is_argname_start and index < len(line_tokens)-1:
               index += 1
               line_tok = line_tokens[index]
+            #print('token:', line_tok, line_tok.subtypes)
             # check if the argstart is on newline
-            if line_tok.formatted_whitespace_prefix.startswith('\n'):
+            if line_tok.value != ')' and line_tok.formatted_whitespace_prefix.startswith('\n'):
               first_arg_index = index
               first_arg_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
 
@@ -628,8 +633,9 @@ def _AlignArgAssign(final_lines):
                   name_content += '{}{}'.format(prefix, line_tok.value)
                   # add up all token values before the arg assign operator
 
-                index += 1
-                line_tok = line_tokens[index]
+                if index < len(line_tokens)-1:
+                  index += 1
+                  line_tok = line_tokens[index]
 
                 # if there is a new object(list/tuple/dict) with its entries on newlines,
                 # save, reset and continue to calulate new alignment
@@ -641,12 +647,13 @@ def _AlignArgAssign(final_lines):
                   line_tok = line_tokens[index]
                   continue
 
-                if line_tok.value == ')':
+                if line_tok.value == ')'and not line_tok.is_pseudo:
                   if line_tok.formatted_whitespace_prefix.startswith('\n'):
                     close_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
                   else: close_column = line_tok.column
                   if close_column < first_arg_column:
-                    all_arg_name_lengths.append(arg_name_lengths)
+                    if not arg_name_lengths:
+                      all_arg_name_lengths.append(arg_name_lengths)
                     closing = True
 
               # update the alignment once one full arg list is processed
@@ -659,10 +666,7 @@ def _AlignArgAssign(final_lines):
                 max_name_length = 0
                 all_arg_name_lengths_index = 0
                 arg_name_lengths = all_arg_name_lengths[all_arg_name_lengths_index]
-                if arg_name_lengths:
-                  max_name_length = max(arg_name_lengths) + 2
-                else:
-                  max_name_length = 2
+                max_name_length = max(arg_name_lengths or [0]) + 2
                 arg_lengths_index = 0
                 for token in line_tokens[first_arg_index:index]:
                   if token.is_argassign:
@@ -675,10 +679,14 @@ def _AlignArgAssign(final_lines):
                         if arg_lengths_index == len(arg_name_lengths):
                           all_arg_name_lengths_index += 1
                           arg_name_lengths = all_arg_name_lengths[all_arg_name_lengths_index]
-                          max_name_length = max(arg_name_lengths) + 2
+                          try:
+                            max_name_length = max(arg_name_lengths or [0]) + 2
+                          except:
+                            print('Fail:', index, token, this_line)
+                            raise
                           arg_lengths_index = 0
 
-                        if arg_lengths_index < len(arg_name_lengths):
+                        elif arg_lengths_index < len(arg_name_lengths):
 
                           assert arg_name_lengths[arg_lengths_index] < max_name_length
 

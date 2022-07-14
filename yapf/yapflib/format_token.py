@@ -125,7 +125,7 @@ class FormatToken(object):
     self.subtypes = {subtypes.NONE} if not stypes else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
-  
+
   @property
   def formatted_whitespace_prefix(self):
     if style.Get('INDENT_BLANK_LINES'):
@@ -328,28 +328,28 @@ class FormatToken(object):
   """Implemented by Lisa"""
   @property
   def is_assign(self):
-    return subtypes.ASSIGN_OPERATOR in self.subtypes 
+    return subtypes.ASSIGN_OPERATOR in self.subtypes
 
   """Implemented by Xiao"""
   @property
-  def is_dict_colon(self): 
-    # if the token is dictionary colon and 
+  def is_dict_colon(self):
+    # if the token is dictionary colon and
     # the dictionary has no comp_for
     return self.value == ':' and self.previous_token.is_dict_key
 
 
   """Implemented by Xiao"""
   @property
-  def is_dict_key(self): 
-    # if the token is dictionary key which is not preceded by doubel stars and 
+  def is_dict_key(self):
+    # if the token is dictionary key which is not preceded by doubel stars and
     # the dictionary has no comp_for
     return subtypes.DICTIONARY_KEY_PART in self.subtypes
-  
+
   """Implemented by Xiao"""
   @property
   def is_dict_value(self):
     return subtypes.DICTIONARY_VALUE in self.subtypes
-  
+
   """Implemented by Xiao"""
   @property
   def is_augassign(self):
@@ -360,14 +360,14 @@ class FormatToken(object):
   """Implemented by Xiao"""
   @property
   def is_argassign(self):
-     return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes 
+     return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes
             or subtypes.VARARGS_LIST in self.subtypes)
- 
+
   """Implemented by Xiao"""
-  
+
   def get_previous_and_next_subtypes(self):
     if self is not None:
-      previous_subtypes, next_subtypes = {}, {}
+      previous_subtypes, next_subtypes = {},{}
       if self.previous_token:
         previous_stypes = pytree_utils.GetNodeAnnotation(self.previous_token.node,
                                               pytree_utils.Annotation.SUBTYPE)
@@ -376,18 +376,22 @@ class FormatToken(object):
         next_stypes = pytree_utils.GetNodeAnnotation(self.next_token.node,
                                               pytree_utils.Annotation.SUBTYPE)
         next_subtypes = {subtypes.NONE} if not next_stypes else next_stypes
-        return previous_subtypes, next_subtypes
-    
+    return previous_subtypes, next_subtypes
+
   @property
   def is_argname(self):
     # it's the argument part before argument assignment operator,
-    # including tnames and data type 
+    # including tnames and data type
     # not the assign operator,
     # not the value after the assign operator
 
     # argument without assignment is also included
     # the token is arg part before '=' but not after '='
-    previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
+    try:
+      previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
+    except:
+      print('self:', self)
+      raise
 
     if self.is_argname_start:
         return True
@@ -409,20 +413,19 @@ class FormatToken(object):
 
     return False
 
-  """Implemented by Xiao"""          
+  """Implemented by Xiao"""
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
     return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
-        and subtypes.PARAMETER_STOP not in self.subtypes
-        or subtypes.PARAMETER_START in self.subtypes)
-        
+        and subtypes.PARAMETER_STOP not in self.subtypes)
 
-        
- 
-       
-      
 
-  
+
+
+
+
+
+
 
