@@ -659,7 +659,10 @@ def _AlignArgAssign(final_lines):
                 max_name_length = 0
                 all_arg_name_lengths_index = 0
                 arg_name_lengths = all_arg_name_lengths[all_arg_name_lengths_index]
-                max_name_length = max(arg_name_lengths) + 2
+                if arg_name_lengths:
+                  max_name_length = max(arg_name_lengths) + 2
+                else:
+                  max_name_length = 2
                 arg_lengths_index = 0
                 for token in line_tokens[first_arg_index:index]:
                   if token.is_argassign:
