@@ -387,11 +387,7 @@ class FormatToken(object):
 
     # argument without assignment is also included
     # the token is arg part before '=' but not after '='
-    try:
-      previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
-    except:
-      print('self:', self)
-      raise
+    previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
 
     if self.is_argname_start:
         return True
@@ -408,7 +404,11 @@ class FormatToken(object):
       return True
     # the token is the value inside the subscript brackets
     # TODO Are there more than one token inside the brackets??
-    if subtypes.SUBSCRIPT_BRACKET in next_subtypes:
+    if (subtypes.SUBSCRIPT_BRACKET in next_subtypes
+      or subtypes.SUBSCRIPT_BRACKET in previous_subtypes):
+      return True
+    # at last make sure value after '=' is not included
+    if subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes:
       return True
 
     return False
@@ -417,9 +417,11 @@ class FormatToken(object):
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
+    previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
     return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
-        and subtypes.PARAMETER_STOP not in self.subtypes)
+        and subtypes.PARAMETER_STOP not in self.subtypes
+        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes)
 
 
 
