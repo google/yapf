@@ -159,7 +159,7 @@ class LogicalLine(object):
     have spaces around them, for example).
 
     Arguments:
-      indent_per_depth: how much spaces to indend per depth level.
+      indent_per_depth: how much spaces to indent per depth level.
 
     Returns:
       A string representing the line as code.
