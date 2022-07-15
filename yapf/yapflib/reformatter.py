@@ -442,17 +442,17 @@ def _AlignAssignment(final_lines):
           # align them differently when there is a blank line in between
           if (all_pa_variables_lengths and
                 this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
-                ):
-                break
-
-          # if there is a standalone comment or statement in between
-          if (#style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE')
-             all_pa_variables_lengths
-            and this_line.tokens[0].is_comment):
+            ):
               break
-          if (all_pa_variables_lengths
-            and this_line.tokens[0].is_keyword):
-            break
+
+          # if there is a standalone comment or keyword statement line
+          # or other lines without assignment in between, break
+          elif (all_pa_variables_lengths and
+            True not in [tok.is_assign or tok.is_augassign for tok in this_line.tokens]):
+            if this_line.tokens[0].is_comment:
+              if style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE'):
+                break
+            else: break
 
           if this_line.disable:
             all_pa_variables_lengths.append([])
@@ -460,32 +460,32 @@ def _AlignAssignment(final_lines):
 
           variables_content = ''
           pa_variables_lengths = []
-          contain_object_with_newlines = False
           # only one assignment expression is on each line
           for line_tok in this_line.tokens:
-
-            # if there is object(list/tuple/dict) with newline entries, break,
-            # update the alignment so far and start to calulate new alignment
-            if line_tok.is_assign or line_tok.is_augassign:
-              next_token = line_tok.next_token
-              if (next_token.value in ['(', '[', '{']
-              and next_token.next_token.formatted_whitespace_prefix.startswith('\n')):
-                contain_object_with_newlines = True
-
             prefix = line_tok.formatted_whitespace_prefix
             newline_index = prefix.rfind('\n')
             if newline_index != -1:
               variables_content = ''
               prefix = prefix[newline_index + 1:]
 
-            # don't add the tokens after the assignment operator
-            if line_tok.is_assign:
-              pa_variables_lengths.append(len(variables_content))
-              break
-            # if augassign, add the extra augmented part to the max length caculation
-            elif line_tok.is_augassign:
-              pa_variables_lengths.append(len(variables_content) + len(line_tok.value) - 1 )
-              break
+            if line_tok.is_assign or line_tok.is_augassign:
+              next_tok = line_tok.next_token
+              while next_tok and next_tok.value not in ['(', '[', '{']:
+                next_tok = next_tok.next_token
+              # if there is object(list/tuple/dict) with newline entries, break,
+              # update the alignment so far and start to calulate new alignment
+              if (next_tok and next_tok.value in ['(', '[', '{'] and
+                next_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
+                #contain_object_with_newlines = True
+                break
+              else:
+                if line_tok.is_assign:
+                  pa_variables_lengths.append(len(variables_content))
+                # if augassign, add the extra augmented part to the max length caculation
+                elif line_tok.is_augassign:
+                  pa_variables_lengths.append(len(variables_content) + len(line_tok.value) - 1 )
+                # don't add the tokens after the assignment operator
+                break
             else:
               variables_content += '{}{}'.format(prefix, line_tok.value)
 
@@ -502,8 +502,8 @@ def _AlignAssignment(final_lines):
           if next_line:
             if this_line.depth != next_line.depth:
               break
-          if contain_object_with_newlines:
-            break
+        # if no update of max_length, just go to the next block
+        if max_variables_length == 0: continue
 
         max_variables_length += 2
 
@@ -592,10 +592,10 @@ def _AlignArgAssign(final_lines):
 
               # start with the first argument
               # that has nextline prefix
-
               while not closing:
                 # if there is a comment in between, save, reset and continue to calulate new alignment
-                if (arg_name_lengths and line_tok.is_comment
+                if (style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE')
+                  and arg_name_lengths and line_tok.is_comment
                   and line_tok.formatted_whitespace_prefix.startswith('\n')):
                   all_arg_name_lengths.append(arg_name_lengths)
                   arg_name_lengths = []
@@ -660,11 +660,6 @@ def _AlignArgAssign(final_lines):
 
               # update the alignment once one full arg list is processed
               if all_arg_name_lengths:
-                # if only contains one empty arg_name_lengths,
-                # then the whole arg list is on oneline, just go to next arglist
-                if (len(all_arg_name_lengths) == 1
-                  and not all_arg_name_lengths[0]):
-                  continue
                 max_name_length = 0
                 all_arg_name_lengths_index = 0
                 arg_name_lengths = all_arg_name_lengths[all_arg_name_lengths_index]
@@ -762,7 +757,8 @@ def _AlignDictColon(final_lines):
                     newline_index = prefix.rfind('\n')
                     if newline_index != -1:
                       # if comments inbetween, save, reset and continue to caluclate new alignment
-                      if dict_keys_lengths and line_tok.is_comment:
+                      if (style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE')
+                        and dict_keys_lengths and line_tok.is_comment):
                         all_dict_keys_lengths.append(dict_keys_lengths)
                         dict_keys_lengths =[]
                         index += 1
