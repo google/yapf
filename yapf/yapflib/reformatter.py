@@ -460,6 +460,7 @@ def _AlignAssignment(final_lines):
 
           variables_content = ''
           pa_variables_lengths = []
+          contain_objects = False
           # only one assignment expression is on each line
           for line_tok in this_line.tokens:
             prefix = line_tok.formatted_whitespace_prefix
@@ -476,8 +477,8 @@ def _AlignAssignment(final_lines):
               # update the alignment so far and start to calulate new alignment
               if (next_tok and next_tok.value in ['(', '[', '{'] and
                 next_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
-                #contain_object_with_newlines = True
-                break
+                pa_variables_lengths.append(len(variables_content))
+                contain_objects = True
               else:
                 if line_tok.is_assign:
                   pa_variables_lengths.append(len(variables_content))
@@ -502,6 +503,11 @@ def _AlignAssignment(final_lines):
           if next_line:
             if this_line.depth != next_line.depth:
               break
+          # if this line contains object that has newlines entries,
+          # start new block alignment
+          if contain_objects:
+            break
+
         # if no update of max_length, just go to the next block
         if max_variables_length == 0: continue
 
