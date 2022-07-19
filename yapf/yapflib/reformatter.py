@@ -320,7 +320,15 @@ def _AlignTrailingComments(final_lines):
           line_content = ''
           pc_line_lengths = []
 
+          #NOTE added by Xiao
+          contain_object = False
           for line_tok in this_line.tokens:
+
+            #NOTE added by Xiao
+            if (line_tok.value in [')', ']','}']
+              and line_tok.formatted_whitespace_prefix.startswith('\n')):
+              contain_object = True
+
             whitespace_prefix = line_tok.formatted_whitespace_prefix
 
             newline_index = whitespace_prefix.rfind('\n')
@@ -333,22 +341,22 @@ def _AlignTrailingComments(final_lines):
             '''The part is added by Xiao on the top of original yapf code
               because we don't want comments on newlines align with comments inline
             '''
-            if style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
-              if line_tok.is_comment:
-                pc_line_lengths.append(len(line_content))
-              else:
-                line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
+            # if comment starts with '\n', it will save length 0
+            if line_tok.is_comment:
+              pc_line_lengths.append(len(line_content))
             else:
-              if line_tok.is_comment and not line_tok.formatted_whitespace_prefix.startswith('\n'):
-                pc_line_lengths.append(len(line_content))
-              else:
-                line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
-
+              line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
 
           if pc_line_lengths:
             max_line_length = max(max_line_length, max(pc_line_lengths))
 
           all_pc_line_lengths.append(pc_line_lengths)
+
+          #NOTE added by Xiao
+          # if it's a logical line with object(dict/list/tuple)
+          # that have its items in separate lines
+          if contain_object:
+            break
 
         # Calculate the aligned column value
         max_line_length += 2
@@ -372,7 +380,7 @@ def _AlignTrailingComments(final_lines):
 
           pc_line_length_index = 0
           for line_tok in this_line.tokens:
-            if line_tok.is_comment and '\n' not in line_tok.formatted_whitespace_prefix:
+            if line_tok.is_comment:
               assert pc_line_length_index < len(pc_line_lengths)
               assert pc_line_lengths[pc_line_length_index] < aligned_col
 
@@ -380,12 +388,16 @@ def _AlignTrailingComments(final_lines):
               # we need to apply a whitespace prefix to each line.
               whitespace = ' ' * (
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
-              pc_line_length_index += 1
+
 
               ''' this is added by Xiao because we don't want comments on newlines
                   to align with comments inline
               '''
               if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
+                # if this comment starts with '\n', pass and go to next comment
+                if pc_line_lengths[pc_line_length_index] == 0:
+                  pc_line_length_index += 1
+                  continue
                 line_content = '{}{}'.format(whitespace, line_tok.value.strip())
               else:
                 line_content = []
@@ -399,6 +411,9 @@ def _AlignTrailingComments(final_lines):
                     whitespace = ' ' * (aligned_col - 1)
 
                 line_content = '\n'.join(line_content)
+
+              # after process, go to next pre comment tokens length
+              pc_line_length_index += 1
 
               # Account for initial whitespace already slated for the
               # beginning of the line.
@@ -477,6 +492,7 @@ def _AlignAssignment(final_lines):
 
           variables_content = ''
           pa_variables_lengths = []
+          contain_object = False
           # only one assignment expression is on each line
           for line_tok in this_line.tokens:
             prefix = line_tok.formatted_whitespace_prefix
@@ -493,8 +509,8 @@ def _AlignAssignment(final_lines):
               # update the alignment so far and start to calulate new alignment
               if (next_tok and next_tok.value in ['(', '[', '{'] and
                 next_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
-                #contain_object_with_newlines = True
-                break
+                pa_variables_lengths.append(len(variables_content))
+                contain_object = True
               else:
                 if line_tok.is_assign:
                   pa_variables_lengths.append(len(variables_content))
@@ -519,6 +535,11 @@ def _AlignAssignment(final_lines):
           if next_line:
             if this_line.depth != next_line.depth:
               break
+          # if this line contains objects with newline entries,
+          # start new block alignment
+          if contain_object:
+            break
+
         # if no update of max_length, just go to the next block
         if max_variables_length == 0: continue
 
@@ -531,25 +552,28 @@ def _AlignAssignment(final_lines):
                 continue
             this_line = final_lines[final_lines_index + all_pa_variables_lengths_index]
 
-            # only one assignment operator on each lline
+            # only the first assignment operator on each line
+            pa_variables_lengths_index = 0
             for line_tok in this_line.tokens:
               if line_tok.is_assign or line_tok.is_augassign:
-                assert len(pa_variables_lengths) == 1
                 assert pa_variables_lengths[0] < max_variables_length
 
-                whitespace = ' ' * (
-                max_variables_length - pa_variables_lengths[0] - 1)
+                if pa_variables_lengths_index < len(pa_variables_lengths):
+                  whitespace = ' ' * (
+                  max_variables_length - pa_variables_lengths[0] - 1)
 
-                assign_content = '{}{}'.format(whitespace, line_tok.value.strip())
+                  assign_content = '{}{}'.format(whitespace, line_tok.value.strip())
 
-                existing_whitespace_prefix = \
-                    line_tok.formatted_whitespace_prefix.lstrip('\n')
+                  existing_whitespace_prefix = \
+                      line_tok.formatted_whitespace_prefix.lstrip('\n')
 
-                if assign_content.startswith(existing_whitespace_prefix):
-                    assign_content = assign_content[len(existing_whitespace_prefix):]
+                  if assign_content.startswith(existing_whitespace_prefix):
+                      assign_content = assign_content[len(existing_whitespace_prefix):]
 
                   # update the assignment operator value
-                line_tok.value = assign_content
+                  line_tok.value = assign_content
+
+                pa_variables_lengths_index += 1
 
         final_lines_index += len(all_pa_variables_lengths)
 
