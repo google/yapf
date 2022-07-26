@@ -436,7 +436,6 @@ def _AlignTrailingComments(final_lines):
       final_lines_index += 1
 
 
-<<<<<<< HEAD
 
 #########################################################################
 
@@ -612,7 +611,8 @@ def _AlignArgAssign(final_lines):
 
         for open_index in range(len(line_tokens)):
           line_tok = line_tokens[open_index]
-          if line_tok.value == '('and not line_tok.is_pseudo:
+          if (line_tok.value == '(' and not line_tok.is_pseudo
+            and line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
             index = open_index
             # skip the comments in the beginning
             index += 1
@@ -648,10 +648,14 @@ def _AlignArgAssign(final_lines):
                 prefix = line_tok.formatted_whitespace_prefix
                 newline_index = prefix.rfind('\n')
 
-                if line_tok.is_argname_start and newline_index != -1:
-                  name_content = ''
-                  prefix = prefix[newline_index + 1:]
-                  arg_column = len(prefix)
+                if newline_index != -1:
+                  if line_tok.is_argname_start:
+                    name_content = ''
+                    prefix = prefix[newline_index + 1:]
+                    arg_column = len(prefix)
+                # if any argument not on newline
+                elif line_tok.is_argname_start:
+                  arg_column = line_tok.column
 
                   if arg_name_lengths:
                     argname_end = line_tok
@@ -664,11 +668,6 @@ def _AlignArgAssign(final_lines):
                       index += 1
                       line_tok = line_tokens[index]
                       continue
-
-                # if any argument not on newline
-                if (line_tok.is_argname_start
-                  and newline_index == -1):
-                  arg_column = line_tok.column
 
                 if line_tok.is_argassign and arg_column == first_arg_column:
                   arg_name_lengths.append(len(name_content))
@@ -810,6 +809,8 @@ def _AlignDictColon(final_lines):
                         keys_content = ''
                         prefix = prefix[newline_index + 1:]
                         key_column = len(prefix)
+                    elif line_tok.is_dict_key:
+                      key_column = line_tok.column
 
                     if line_tok.is_dict_colon and key_column == first_key_column:
                       dict_keys_lengths.append(len(keys_content))
@@ -823,7 +824,7 @@ def _AlignDictColon(final_lines):
                     # if there is new objects(list/tuple/dict) with its entries on newlines,
                     # or a function call with any of its arguments on newlines,
                     # save, reset and continue to calulate new alignment
-                    if (line_tok.value in ['(', '[', '{']
+                    if (line_tok.value in ['(', '[', '{'] and not line_tok.is_pseudo
                       and line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
                       if dict_keys_lengths:
                         all_dict_keys_lengths.append(dict_keys_lengths)
@@ -895,8 +896,6 @@ def _AlignDictColon(final_lines):
 
 
 
-=======
->>>>>>> fix_align_inline_comment
 def _FormatFinalLines(final_lines, verify):
   """Compose the final output from the finalized lines."""
   formatted_code = []
