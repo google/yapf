@@ -874,7 +874,7 @@ def _AlignDictColon(final_lines):
                             padded_spaces = ' ' * (
                               max_keys_length - dict_keys_lengths[keys_lengths_index] - 1)
                             keys_lengths_index += 1
-
+                            #TODO if the existing whitespaces are larger than padded spaces
                             colon_content = '{}{}'.format(padded_spaces, token.value.strip())
                             existing_whitespace_prefix = \
                                   token.formatted_whitespace_prefix.lstrip('\n')
