@@ -436,6 +436,7 @@ def _AlignTrailingComments(final_lines):
       final_lines_index += 1
 
 
+<<<<<<< HEAD
 
 #########################################################################
 
@@ -894,6 +895,8 @@ def _AlignDictColon(final_lines):
 
 
 
+=======
+>>>>>>> fix_align_inline_comment
 def _FormatFinalLines(final_lines, verify):
   """Compose the final output from the finalized lines."""
   formatted_code = []
