@@ -325,7 +325,8 @@ class FormatToken(object):
     return self.is_comment and re.match(
         r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
 
-  """Implemented by Lisa"""
+  #--------------------------------------------------------------------
+  """Implemented by Xiao"""
   @property
   def is_assign(self):
     return subtypes.ASSIGN_OPERATOR in self.subtypes
@@ -336,7 +337,6 @@ class FormatToken(object):
     # if the token is dictionary colon and
     # the dictionary has no comp_for
     return self.value == ':' and self.previous_token.is_dict_key
-
 
   """Implemented by Xiao"""
   @property
@@ -414,13 +414,12 @@ class FormatToken(object):
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
-    previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
+    previous_subtypes, _ = self.get_previous_and_next_subtypes()
     return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
         and subtypes.PARAMETER_STOP not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes)
-
-
+#-------------------------------------------------------------------------
 
 
 

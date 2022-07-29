@@ -15,10 +15,11 @@
 
 import unittest
 
-from lib2to3 import pytree
+from lib2to3 import pytree, pygram
 from lib2to3.pgen2 import token
 
 from yapf.yapflib import format_token
+from yapf.pytree import subtype_assigner
 
 
 class TabbedContinuationAlignPaddingTest(unittest.TestCase):
@@ -89,6 +90,23 @@ class FormatTokenTest(unittest.TestCase):
         pytree.Leaf(token.STRING, 'r"""hello"""'), 'STRING')
     self.assertTrue(tok.is_multiline_string)
 
+#--------------------below added by Xiao----------------------
+  # fun(a='hello world')
+  child1 = pytree.Leaf(token.NAME, 'a')
+  child2 = pytree.Leaf(token.EQUAL, '=')
+  child3 = pytree.Leaf(token.STRING, "'hello world'")
+  node_type = pygram.python_grammar.symbol2number['arglist']
+  node = pytree.Node(node_type, [child1, child2, child3])
+  subtype_assigner.AssignSubtypes(node)
+
+  def testIsArgName(self, node=node):
+    tok = format_token.FormatToken(node.children[0],'NAME')
+    self.assertTrue(tok.is_argname)
+
+  def testIsArgAssign(self, node=node):
+    tok = format_token.FormatToken(node.children[1], 'EQUAL')
+    self.assertTrue(tok.is_argassign)
+#-------------------------------------------------------------
 
 if __name__ == '__main__':
   unittest.main()

@@ -60,13 +60,16 @@ _STYLE_HELP = dict(
       it will start new block alignment."""),
     ALIGN_ARGUMENT_ASSIGNMENT=textwrap.dedent("""\
       Align assignment operators in the argument list if they are all split on newlines.
-      Please use this with DEDENT_CLOSING_BRACKETS = True.
+      Please use this with 'DEDENT_CLOSING_BRACKETS = True'.
       Arguments without assignment are ignored.
       Arguments without assignment in between will initiate new block alignment calulation.
       Newline comments or objects with newline entries will also start new block alignment."""),
     ALIGN_DICT_COLON=textwrap.dedent("""\
       Align the colons in the dictionary
-      if entries in dictionay are split on newlines."""),
+      if entries in dictionay are split on newlines.
+      Please use it with both 'DEDENT_CLOSING_BRACKETS'
+      and 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' set True.
+      """),
     NEW_ALIGNMENT_AFTER_COMMENTLINE=textwrap.dedent("""\
       Start new assignment or colon alignment when there is a newline comment in between."""),
     ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=textwrap.dedent("""\
@@ -532,10 +535,6 @@ def CreateYapfStyle():
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
-  style['ALIGN_ASSIGNMENT']=True
-  style['ALIGN_DICT_COLON']=True
-  style['ALIGN_ARGUMENT_ASSIGNMENT']=True
-  style['NEW_ALIGNMENT_AFTER_COMMENTLINE']=True
   style['ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'] = True
   return style
 

@@ -107,9 +107,10 @@ def Reformat(llines, verify=False, lines=None):
   """Xiao's alignment implementation"""
   if style.Get('ALIGN_ASSIGNMENT'):
     _AlignAssignment(final_lines)
-  if style.Get('ALIGN_DICT_COLON'):
+  if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and style.Get('DEDENT_CLOSING_BRACKETS')
+    and style.Get('ALIGN_DICT_COLON')):
     _AlignDictColon(final_lines)
-  if style.Get('ALIGN_ARGUMENT_ASSIGNMENT'):
+  if style.Get('DEDENT_CLOSING_BRACKETS') and style.Get('ALIGN_ARGUMENT_ASSIGNMENT'):
     _AlignArgAssign(final_lines)
 
   _AlignTrailingComments(final_lines)
@@ -614,6 +615,7 @@ def _AlignArgAssign(final_lines):
 
         for open_index in range(len(line_tokens)):
           line_tok = line_tokens[open_index]
+
           if (line_tok.value == '(' and not line_tok.is_pseudo
             and line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
             index = open_index
@@ -768,8 +770,7 @@ def _AlignDictColon(final_lines):
     for tok in line.tokens:
       # make sure each dict entry on separate lines and
       # the dict has more than one entry
-      if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
-          tok.is_dict_key and tok.formatted_whitespace_prefix.startswith('\n') and
+      if (tok.is_dict_key and tok.formatted_whitespace_prefix.startswith('\n') and
             not tok.is_comment):
 
             this_line = line
@@ -879,7 +880,7 @@ def _AlignDictColon(final_lines):
                             assert dict_keys_lengths[keys_lengths_index] < max_keys_length
 
                             padded_spaces = ' ' * (
-                              max_keys_length - dict_keys_lengths[keys_lengths_index] - 2)
+                              max_keys_length - dict_keys_lengths[keys_lengths_index] - 1)
                             keys_lengths_index += 1
                             #TODO if the existing whitespaces are larger than padded spaces
                             existing_whitespace_prefix = \

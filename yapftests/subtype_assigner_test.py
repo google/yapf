@@ -123,11 +123,53 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
                 subtypes.NONE,
                 subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
             }),
-            ('=', {subtypes.DEFAULT_OR_NAMED_ASSIGN}),
-            ("'hello world'", {subtypes.NONE}),
+            ('=', {
+                subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+            }),
+            ("'hello world'", {
+                subtypes.NONE,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+            }),
             (')', {subtypes.NONE}),
         ],
     ])
+
+  #---------------------------below added by Xiao---------------------------
+  def testCommentSubtypesInsideArglist(self):
+    code = textwrap.dedent("""\
+        foo(
+            # comment
+            x,
+            a='hello world')
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('foo', {subtypes.NONE}),
+            ('(', {subtypes.NONE}),
+            ('# comment', {subtypes.NONE}),
+            ('x', {
+                subtypes.NONE,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            (',', {subtypes.NONE}),
+            ('a', {
+                subtypes.NONE,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+            }),
+            ('=', {
+                subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+            }),
+            ("'hello world'", {
+                subtypes.NONE,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+            }),
+            (')', {subtypes.NONE}),
+        ],
+    ])
+    #------------------------------------------------------------------
 
   def testSetComprehension(self):
     code = textwrap.dedent("""\

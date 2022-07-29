@@ -644,7 +644,7 @@ class FormatDecisionState(object):
 
     if not dry_run:
       indent_level = self.line.depth
-      #-----------------------NOTE-----------------------------------
+      #-----------------------NOTE below -----------------------------------
       # we want newline comments inside the lline to
       # keep their original indentations
       if current.is_comment:

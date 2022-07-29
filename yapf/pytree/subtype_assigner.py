@@ -249,7 +249,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #     (argument ',')* (argument [',']
     #                     | '*' test (',' argument)* [',' '**' test]
     #                     | '**' test)
-
     self._ProcessArgLists(node)
     _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
                        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
