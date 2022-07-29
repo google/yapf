@@ -71,10 +71,8 @@ _STYLE_HELP = dict(
       and 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' set True.
       """),
     NEW_ALIGNMENT_AFTER_COMMENTLINE=textwrap.dedent("""\
-      Start new assignment or colon alignment when there is a newline comment in between."""),
-    ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=textwrap.dedent("""\
-      Align comments on newlines with the inline comments in the
-      same block. This is the default setting for yapf."""),
+      Start new assignment or colon alignment when there is a newline comment in between.
+      """),
     ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
     ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
@@ -444,7 +442,6 @@ def CreatePEP8Style():
       ALIGN_ARGUMENT_ASSIGNMENT=False,
       ALIGN_DICT_COLON=False,
       NEW_ALIGNMENT_AFTER_COMMENTLINE=False,
-      ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=False,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
@@ -535,7 +532,6 @@ def CreateYapfStyle():
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
-  style['ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'] = True
   return style
 
 
@@ -638,7 +634,6 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_DICT_COLON=_BoolConverter,
     NEW_ALIGNMENT_AFTER_COMMENTLINE=_BoolConverter,
     ALIGN_ARGUMENT_ASSIGNMENT=_BoolConverter,
-    ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,

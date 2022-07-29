@@ -288,8 +288,7 @@ def _AlignTrailingComments(final_lines):
     for tok in line.tokens:
       if (tok.is_comment and isinstance(tok.spaces_required_before, list) and
           tok.value.startswith('#')):
-        # All trailing comments
-        # NOTE not including comments that appear on a line by themselves
+        # All trailing comments and comments that appear on a line by themselves
         # in this block should be indented at the same level. The block is
         # terminated by an empty line or EOF. Enumerate through each line in
         # the block and calculate the max line length. Once complete, use the
@@ -321,16 +320,7 @@ def _AlignTrailingComments(final_lines):
           line_content = ''
           pc_line_lengths = []
 
-          #NOTE added by Xiao
-          contain_object = False
           for line_tok in this_line.tokens:
-
-            #NOTE-------------- added by Xiao----------------------------
-            if (line_tok.value in [')', ']','}']
-              and line_tok.formatted_whitespace_prefix.startswith('\n')):
-              contain_object = True
-            #------------------------------------------------------------
-
             whitespace_prefix = line_tok.formatted_whitespace_prefix
 
             newline_index = whitespace_prefix.rfind('\n')
@@ -340,7 +330,6 @@ def _AlignTrailingComments(final_lines):
 
               whitespace_prefix = whitespace_prefix[newline_index + 1:]
 
-            # if comment starts with '\n', it will save length 0
             if line_tok.is_comment:
               pc_line_lengths.append(len(line_content))
             else:
@@ -351,12 +340,6 @@ def _AlignTrailingComments(final_lines):
 
           all_pc_line_lengths.append(pc_line_lengths)
 
-          #NOTE---------------------added by Xiao-----------------
-          # if it's a logical line with object(dict/list/tuple)
-          # that have its items in separate lines
-          if contain_object:
-            break
-          #-------------------------------------------------------
         # Calculate the aligned column value
         max_line_length += 2
 
@@ -387,32 +370,19 @@ def _AlignTrailingComments(final_lines):
               # we need to apply a whitespace prefix to each line.
               whitespace = ' ' * (
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
+              pc_line_length_index += 1
 
-              #NOTE--------------------------------------------------------------#
-              ''' this is added by Xiao because we don't want comments on newlines
-                  to align with comments inline
-              '''
-              if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
-                # if this comment starts with '\n', pass and go to next comment
-                if pc_line_lengths[pc_line_length_index] == 0:
-                  pc_line_length_index += 1
-                  continue
-                line_content = '{}{}'.format(whitespace, line_tok.value.strip())
-              else:
-                line_content = []
+              line_content = []
 
-                for comment_line_index, comment_line in enumerate(
-                    line_tok.value.split('\n')):
-                  line_content.append('{}{}'.format(whitespace,
+              for comment_line_index, comment_line in enumerate(
+                  line_tok.value.split('\n')):
+                line_content.append('{}{}'.format(whitespace,
                                                   comment_line.strip()))
 
-                  if comment_line_index == 0:
-                    whitespace = ' ' * (aligned_col - 1)
+                if comment_line_index == 0:
+                  whitespace = ' ' * (aligned_col - 1)
 
-                line_content = '\n'.join(line_content)
-              #----------------------------------------------------------------#
-              # after process, go to next pre comment tokens length
-              pc_line_length_index += 1
+              line_content = '\n'.join(line_content)
 
               # Account for initial whitespace already slated for the
               # beginning of the line.
