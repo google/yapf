@@ -676,6 +676,9 @@ def _AlignArgAssign(final_lines):
 
               # update the alignment once one full arg list is processed
               if all_arg_name_lengths:
+                # if argument list with only the first argument on newline
+                if len(all_arg_name_lengths) == 1 and len(all_arg_name_lengths[0]) == 1:
+                  continue
                 max_name_length = 0
                 all_arg_name_lengths_index = 0
                 arg_name_lengths = all_arg_name_lengths[all_arg_name_lengths_index]
