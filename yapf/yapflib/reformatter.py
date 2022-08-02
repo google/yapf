@@ -563,10 +563,6 @@ def _AlignArgAssign(final_lines):
   """NOTE One argument list of one function is on one logical line!
      But funtion calls/argument lists can be in argument list.
   """
-  #for l in final_lines:
-    #for t in l.tokens:
-      #print('tokens:', t.value, t.subtypes)
-
   final_lines_index = 0
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]
@@ -630,19 +626,25 @@ def _AlignArgAssign(final_lines):
                     arg_column = len(prefix)
                 # if any argument not on newline
                 elif line_tok.is_argname_start:
-                  arg_column = line_tok.column
-
-                  if arg_name_lengths:
-                    argname_end = line_tok
-                    while argname_end.is_argname:
-                      argname_end = argname_end.next_token
-                    # argument without assignment in between
-                    if not argname_end.is_argassign:
-                      all_arg_name_lengths.append(arg_name_lengths)
-                      arg_name_lengths = []
-                      index += 1
-                      line_tok = line_tokens[index]
-                      continue
+                  name_content = ''
+                  arg_column =  line_tok.column
+                  # in case they are formatted into one line in final_line
+                  # but are put in separated lines in original codes
+                  if arg_column == first_arg_column:
+                    arg_column = line_tok.formatted_whitespace_prefix
+                # on the same argument level
+                if (line_tok.is_argname_start and arg_name_lengths
+                  and arg_column==first_arg_column):
+                  argname_end = line_tok
+                  while argname_end.is_argname:
+                    argname_end = argname_end.next_token
+                  # argument without assignment in between
+                  if not argname_end.is_argassign:
+                    all_arg_name_lengths.append(arg_name_lengths)
+                    arg_name_lengths = []
+                    index += 1
+                    line_tok = line_tokens[index]
+                    continue
 
                 if line_tok.is_argassign and arg_column == first_arg_column:
                   arg_name_lengths.append(len(name_content))
