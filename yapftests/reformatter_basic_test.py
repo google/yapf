@@ -3465,7 +3465,7 @@ fields = [
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig('{align_dict_colon: true,'
-          'dedent_closing_brackets: true'
+          'dedent_closing_brackets: true,'
           'new_alignment_after_commentline: true}'))
       unformatted_code = textwrap.dedent("""\
 fields = [{

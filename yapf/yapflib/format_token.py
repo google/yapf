@@ -387,35 +387,15 @@ class FormatToken(object):
 
     # argument without assignment is also included
     # the token is arg part before '=' but not after '='
-    previous_subtypes, next_subtypes = self.get_previous_and_next_subtypes()
-    if self.previous_token:
-      pprevious_subtypes,_ = self.previous_token.get_previous_and_next_subtypes()
 
     if self.is_argname_start:
         return True
-    # the token is tnames or colon after tnames or data type names after colon
-    if subtypes.TYPED_NAME_ARG_LIST in self.subtypes:
-      return True
-    # the value after the tnames colon before '='
-    if subtypes.TYPED_NAME in self.subtypes and not subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes:
-      return True
-    # opening bracket '[' after 'Optional' in tnames
-    if subtypes.SUBSCRIPT_BRACKET in self.subtypes and subtypes.TYPED_NAME in pprevious_subtypes:
-      return True
-    # the token is open subscript bracket that follows tname list
-    if (subtypes.SUBSCRIPT_BRACKET in self.subtypes
-          and subtypes.TYPED_NAME_ARG_LIST in previous_subtypes):
-      return True
-    # or the close subscript bracket that is followed by '='
-    if (subtypes.SUBSCRIPT_BRACKET in self.subtypes
-          and subtypes.DEFAULT_OR_NAMED_ASSIGN in next_subtypes):
-      return True
-    # the token is the value inside the subscript brackets
-    # TODO Are there more than one token inside the brackets??
-    if (subtypes.SUBSCRIPT_BRACKET in next_subtypes
-      or (subtypes.SUBSCRIPT_BRACKET in previous_subtypes
-      and not subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes)):
-      return True
+
+    # exclude comment inside argument list
+    if not self.is_comment:
+      # the token is any element in typed arglist
+      if subtypes.TYPED_NAME_ARG_LIST in self.subtypes:
+        return True
 
     return False
 
@@ -424,11 +404,18 @@ class FormatToken(object):
   def is_argname_start(self):
     # return true if it's the start of every argument entry
     previous_subtypes, _ = self.get_previous_and_next_subtypes()
-    return (subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
+    return (
+        (not self.is_comment
+        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
         and subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes
-        and subtypes.PARAMETER_STOP not in self.subtypes
-        or subtypes.PARAMETER_START in self.subtypes
+        and (not subtypes.PARAMETER_STOP in self.subtypes
+        or subtypes.PARAMETER_START in self.subtypes)
+        )
+        or # if there is comment, the arg after it is the argname start
+        (not self.is_comment and self.previous_token and self.previous_token.is_comment
+        and (subtypes.TYPED_NAME_ARG_LIST in self.subtypes
+        or subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes))
         )
 #-------------------------------------------------------------------------
 

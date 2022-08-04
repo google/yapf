@@ -296,20 +296,20 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     if not node.children:
       return
 
-    #NOTE exclude comments in the beginning by Xiao
-    if node.children[0].type != grammar_token.COMMENT:
-      _AppendFirstLeafTokenSubtype(node.children[0], subtypes.PARAMETER_START)
+    #TODO exclude comments in the beginning by Xiao
+    #if node.children[0].type != grammar_token.COMMENT:
+    _AppendFirstLeafTokenSubtype(node.children[0], subtypes.PARAMETER_START)
     _AppendLastLeafTokenSubtype(node.children[-1], subtypes.PARAMETER_STOP)
 
     tname = pytree_utils.NodeName(node.children[0]) == 'tname'
     for i in range(1, len(node.children)):
       prev_child = node.children[i - 1]
       child = node.children[i]
-      #NOTE exclude inline comments by Xiao
-      if prev_child.type == grammar_token.COMMA and child.type != grammar_token.COMMENT:
+      #TODO exclude inline comments by Xiao
+      if prev_child.type == grammar_token.COMMA: #and child.type != grammar_token.COMMENT:
         _AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
-      elif prev_child.type == grammar_token.COMMENT:
-        _AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
+      #elif prev_child.type == grammar_token.COMMENT:
+        #_AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
       elif child.type == grammar_token.COMMA:
         _AppendLastLeafTokenSubtype(prev_child, subtypes.PARAMETER_STOP)
 
@@ -317,6 +317,11 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         tname = True
         _SetArgListSubtype(child, subtypes.TYPED_NAME,
                            subtypes.TYPED_NAME_ARG_LIST)
+        #NOTE------------added by Xiao--------------------------
+        # we want every element of the tynamme argument list
+        # has this list type
+        _AppendSubtypeRec(child, subtypes.TYPED_NAME_ARG_LIST)
+        #-------------------------------------------------------
       elif child.type == grammar_token.COMMA:
         tname = False
       elif child.type == grammar_token.EQUAL and tname:
@@ -391,9 +396,10 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
 
   for child in node.children:
     node_name = pytree_utils.NodeName(child)
-    # exclude it if the first leaf is a comment in appendfirstleaftokensubtype
+    #TODO exclude it if the first leaf is a comment in appendfirstleaftokensubtype
     if node_name not in {'atom', 'COMMA'}:
       _AppendFirstLeafTokenSubtype(child, list_subtype)
+
 
 
 def _AppendTokenSubtype(node, subtype):
@@ -404,17 +410,17 @@ def _AppendTokenSubtype(node, subtype):
 #TODO should exclude comment child to all Appendsubtypes functions
 def _AppendFirstLeafTokenSubtype(node, subtype):
   """Append the first leaf token's subtypes."""
-   ##NOTE exclude the comment leaf by Xiao
+   ##TODO exclude the comment leaf by Xiao
   if isinstance(node, pytree.Leaf):
-    if node.type != grammar_token.COMMENT:
+    #if node.type != grammar_token.COMMENT:
       _AppendTokenSubtype(node, subtype)
       return
-  else:
-    #NOTE exclude first comment leaf by Xiao
-    if node.children[0].type == grammar_token.COMMENT:
-      _AppendFirstLeafTokenSubtype(node.children[1], subtype)
-    else:
-      _AppendFirstLeafTokenSubtype(node.children[0], subtype)
+  #else:
+    #TODO exclude first comment leaf by Xiao
+    #if node.children[0].type == grammar_token.COMMENT:
+      #_AppendFirstLeafTokenSubtype(node.children[1], subtype)
+    #else:
+  _AppendFirstLeafTokenSubtype(node.children[0], subtype)
 
 
 def _AppendLastLeafTokenSubtype(node, subtype):

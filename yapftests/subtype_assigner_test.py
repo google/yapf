@@ -148,7 +148,8 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         [
             ('foo', {subtypes.NONE}),
             ('(', {subtypes.NONE}),
-            ('# comment', {subtypes.NONE}),
+            ('# comment', {subtypes.NONE,
+                            subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST}),
             ('x', {
                 subtypes.NONE,
                 subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
@@ -167,6 +168,71 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
                 subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
             }),
             (')', {subtypes.NONE}),
+        ],
+    ])
+
+  def testTypedArgumentsInsideArglist(self):
+    code = textwrap.dedent("""\
+def foo(
+    self,
+    preprocess: Callable[[str], str] = identity
+    ): pass
+""")
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('self', {subtypes.NONE,
+                    subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+                    subtypes.PARAMETER_START,
+                    subtypes.PARAMETER_STOP
+            }),
+            (',', {subtypes.NONE}),
+            ('preprocess', {
+                subtypes.NONE,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+                subtypes.PARAMETER_START,
+                subtypes.TYPED_NAME_ARG_LIST
+            }),
+            (':', {
+                subtypes.TYPED_NAME,
+                subtypes.TYPED_NAME_ARG_LIST,
+            }),
+            ('Callable', {subtypes.TYPED_NAME_ARG_LIST
+            }),
+            ('[', {
+                subtypes.SUBSCRIPT_BRACKET,
+                subtypes.TYPED_NAME_ARG_LIST
+            }),
+            ('[', {subtypes.TYPED_NAME_ARG_LIST
+            }),
+            ('str', {subtypes.TYPED_NAME_ARG_LIST
+            }),
+            (']', {subtypes.TYPED_NAME_ARG_LIST
+            }),
+            (',', {subtypes.TYPED_NAME_ARG_LIST
+            }),
+            ('str', {subtypes.TYPED_NAME_ARG_LIST
+            }),
+            (']', {
+                subtypes.SUBSCRIPT_BRACKET,
+                subtypes.TYPED_NAME_ARG_LIST
+            }),
+            ('=', {
+                subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+                subtypes.TYPED_NAME
+            }),
+            ('identity', {
+                subtypes.NONE,
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
+                subtypes.PARAMETER_STOP
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE})],
+            [('pass', {subtypes.NONE}),
         ],
     ])
     #------------------------------------------------------------------
