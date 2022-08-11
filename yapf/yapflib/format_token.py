@@ -325,58 +325,42 @@ class FormatToken(object):
     return self.is_comment and re.match(
         r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
 
-  #--------------------------------------------------------------------
-  """Implemented by Xiao"""
+
   @property
   def is_assign(self):
     return subtypes.ASSIGN_OPERATOR in self.subtypes
 
-  """Implemented by Xiao"""
   @property
   def is_dict_colon(self):
     # if the token is dictionary colon and
     # the dictionary has no comp_for
     return self.value == ':' and self.previous_token.is_dict_key
 
-  """Implemented by Xiao"""
   @property
   def is_dict_key(self):
     # if the token is dictionary key which is not preceded by doubel stars and
     # the dictionary has no comp_for
     return subtypes.DICTIONARY_KEY_PART in self.subtypes
 
-  """Implemented by Xiao"""
+  @property
+  def is_dict_key_start(self):
+    # if the token is dictionary key start
+    return subtypes.DICTIONARY_KEY in self.subtypes
+
   @property
   def is_dict_value(self):
     return subtypes.DICTIONARY_VALUE in self.subtypes
 
-  """Implemented by Xiao"""
   @property
   def is_augassign(self):
     augassigns = {'+=', '-=' , '*=' , '@=' , '/=' , '%=' , '&=' , '|=' , '^=' ,
             '<<=' , '>>=' , '**=' , '//='}
     return self.value in augassigns
 
-  """Implemented by Xiao"""
   @property
   def is_argassign(self):
      return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes
             or subtypes.VARARGS_LIST in self.subtypes)
-
-  """Implemented by Xiao"""
-
-  def get_previous_and_next_subtypes(self):
-    if self is not None:
-      previous_subtypes, next_subtypes = {},{}
-      if self.previous_token:
-        previous_stypes = pytree_utils.GetNodeAnnotation(self.previous_token.node,
-                                              pytree_utils.Annotation.SUBTYPE)
-        previous_subtypes = {subtypes.NONE} if not previous_stypes else previous_stypes
-      if self.next_token:
-        next_stypes = pytree_utils.GetNodeAnnotation(self.next_token.node,
-                                              pytree_utils.Annotation.SUBTYPE)
-        next_subtypes = {subtypes.NONE} if not next_stypes else next_stypes
-    return previous_subtypes, next_subtypes
 
   @property
   def is_argname(self):
@@ -387,7 +371,6 @@ class FormatToken(object):
 
     # argument without assignment is also included
     # the token is arg part before '=' but not after '='
-
     if self.is_argname_start:
         return True
 
@@ -399,11 +382,13 @@ class FormatToken(object):
 
     return False
 
-  """Implemented by Xiao"""
+
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
-    previous_subtypes, _ = self.get_previous_and_next_subtypes()
+    if self.previous_token:
+      previous_subtypes = self.previous_token.subtypes
+
     return (
         (not self.is_comment
         and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
@@ -417,7 +402,6 @@ class FormatToken(object):
         and (subtypes.TYPED_NAME_ARG_LIST in self.subtypes
         or subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes))
         )
-#-------------------------------------------------------------------------
 
 
 

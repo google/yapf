@@ -104,13 +104,12 @@ def Reformat(llines, verify=False, lines=None):
     prev_line = lline
 
 
-  """Xiao's alignment implementation"""
   if style.Get('ALIGN_ASSIGNMENT'):
     _AlignAssignment(final_lines)
-  if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and style.Get('DEDENT_CLOSING_BRACKETS')
+  if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE')
     and style.Get('ALIGN_DICT_COLON')):
     _AlignDictColon(final_lines)
-  if style.Get('DEDENT_CLOSING_BRACKETS') and style.Get('ALIGN_ARGUMENT_ASSIGNMENT'):
+  if style.Get('ALIGN_ARGUMENT_ASSIGNMENT'):
     _AlignArgAssign(final_lines)
 
   _AlignTrailingComments(final_lines)
@@ -282,13 +281,13 @@ def _AlignTrailingComments(final_lines):
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]
     assert line.tokens
+
     processed_content = False
 
     for tok in line.tokens:
-      if (isinstance(tok.spaces_required_before, list) and tok.is_comment and
+      if (tok.is_comment and isinstance(tok.spaces_required_before, list) and
           tok.value.startswith('#')):
-        # All trailing comments
-        # NOTE not including comments that appear on a line by themselves
+        # All trailing comments and comments that appear on a line by themselves
         # in this block should be indented at the same level. The block is
         # terminated by an empty line or EOF. Enumerate through each line in
         # the block and calculate the max line length. Once complete, use the
@@ -320,16 +319,7 @@ def _AlignTrailingComments(final_lines):
           line_content = ''
           pc_line_lengths = []
 
-          #NOTE added by Xiao
-          contain_object = False
           for line_tok in this_line.tokens:
-
-            #NOTE-------------- added by Xiao----------------------------
-            if (line_tok.value in [')', ']','}']
-              and line_tok.formatted_whitespace_prefix.startswith('\n')):
-              contain_object = True
-            #------------------------------------------------------------
-
             whitespace_prefix = line_tok.formatted_whitespace_prefix
 
             newline_index = whitespace_prefix.rfind('\n')
@@ -339,7 +329,6 @@ def _AlignTrailingComments(final_lines):
 
               whitespace_prefix = whitespace_prefix[newline_index + 1:]
 
-            # if comment starts with '\n', it will save length 0
             if line_tok.is_comment:
               pc_line_lengths.append(len(line_content))
             else:
@@ -350,12 +339,6 @@ def _AlignTrailingComments(final_lines):
 
           all_pc_line_lengths.append(pc_line_lengths)
 
-          #NOTE---------------------added by Xiao-----------------
-          # if it's a logical line with object(dict/list/tuple)
-          # that have its items in separate lines
-          if contain_object:
-            break
-          #-------------------------------------------------------
         # Calculate the aligned column value
         max_line_length += 2
 
@@ -386,32 +369,19 @@ def _AlignTrailingComments(final_lines):
               # we need to apply a whitespace prefix to each line.
               whitespace = ' ' * (
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
+              pc_line_length_index += 1
 
-              #NOTE--------------------------------------------------------------#
-              ''' this is added by Xiao because we don't want comments on newlines
-                  to align with comments inline
-              '''
-              if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
-                # if this comment starts with '\n', pass and go to next comment
-                if pc_line_lengths[pc_line_length_index] == 0:
-                  pc_line_length_index += 1
-                  continue
-                line_content = '{}{}'.format(whitespace, line_tok.value.strip())
-              else:
-                line_content = []
+              line_content = []
 
-                for comment_line_index, comment_line in enumerate(
-                    line_tok.value.split('\n')):
-                  line_content.append('{}{}'.format(whitespace,
+              for comment_line_index, comment_line in enumerate(
+                  line_tok.value.split('\n')):
+                line_content.append('{}{}'.format(whitespace,
                                                   comment_line.strip()))
 
-                  if comment_line_index == 0:
-                    whitespace = ' ' * (aligned_col - 1)
+                if comment_line_index == 0:
+                  whitespace = ' ' * (aligned_col - 1)
 
-                line_content = '\n'.join(line_content)
-              #----------------------------------------------------------------#
-              # after process, go to next pre comment tokens length
-              pc_line_length_index += 1
+              line_content = '\n'.join(line_content)
 
               # Account for initial whitespace already slated for the
               # beginning of the line.
@@ -432,13 +402,6 @@ def _AlignTrailingComments(final_lines):
 
     if not processed_content:
       final_lines_index += 1
-
-
-
-#########################################################################
-
-
-""" XIAO'S IMPLEMENTATION  """
 
 def _AlignAssignment(final_lines):
   """Align assignment operators and augmented assignment operators to the same column"""
@@ -492,8 +455,11 @@ def _AlignAssignment(final_lines):
           variables_content = ''
           pa_variables_lengths = []
           contain_object = False
+          line_tokens = this_line.tokens
           # only one assignment expression is on each line
-          for line_tok in this_line.tokens:
+          for index in range(len(line_tokens)):
+            line_tok = line_tokens[index]
+
             prefix = line_tok.formatted_whitespace_prefix
             newline_index = prefix.rfind('\n')
             if newline_index != -1:
@@ -501,23 +467,24 @@ def _AlignAssignment(final_lines):
               prefix = prefix[newline_index + 1:]
 
             if line_tok.is_assign or line_tok.is_augassign:
-              next_tok = line_tok.next_token
-              while next_tok and next_tok.value not in ['(', '[', '{']:
-                next_tok = next_tok.next_token
+              next_toks = [line_tokens[i] for i in range(index+1, len(line_tokens))]
               # if there is object(list/tuple/dict) with newline entries, break,
               # update the alignment so far and start to calulate new alignment
-              if (next_tok and next_tok.value in ['(', '[', '{'] and
-                next_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
-                pa_variables_lengths.append(len(variables_content))
-                contain_object = True
-              else:
+              for tok in next_toks:
+                if (tok.value in ['(', '[', '{'] and tok.next_token
+                and tok.next_token.formatted_whitespace_prefix.startswith('\n')):
+                  pa_variables_lengths.append(len(variables_content))
+                  contain_object = True
+                  break
+              if not contain_object:
                 if line_tok.is_assign:
                   pa_variables_lengths.append(len(variables_content))
                 # if augassign, add the extra augmented part to the max length caculation
                 elif line_tok.is_augassign:
                   pa_variables_lengths.append(len(variables_content) + len(line_tok.value) - 1 )
-                # don't add the tokens after the assignment operator
-                break
+              # don't add the tokens
+              # after the assignment operator
+              break
             else:
               variables_content += '{}{}'.format(prefix, line_tok.value)
 
@@ -592,10 +559,6 @@ def _AlignArgAssign(final_lines):
   """NOTE One argument list of one function is on one logical line!
      But funtion calls/argument lists can be in argument list.
   """
-  #for l in final_lines:
-    #for t in l.tokens:
-      #print('token:', t.value, t.subtypes, t.is_comment, t.is_argname_start, t.is_argname)
-
   final_lines_index = 0
   while final_lines_index < len(final_lines):
     line = final_lines[final_lines_index]
@@ -657,6 +620,12 @@ def _AlignArgAssign(final_lines):
                     name_content = ''
                     prefix = prefix[newline_index + 1:]
                     arg_column = len(prefix)
+                  # if a typed arg name is so long
+                  # that there are newlines inside
+                  # only calulate the last line arg_name that has the assignment
+                  elif line_tok.is_argname:
+                    name_content = ''
+                    prefix = prefix[newline_index + 1:]
                 # if any argument not on newline
                 elif line_tok.is_argname_start:
                   name_content = ''
@@ -688,6 +657,12 @@ def _AlignArgAssign(final_lines):
                 index += 1
                 if index < len(line_tokens):
                   line_tok = line_tokens[index]
+                # when the matching closing bracket never found
+                # due to edge cases where the closing bracket
+                # is not indented or dedented
+                else:
+                  all_arg_name_lengths.append(arg_name_lengths)
+                  break
 
                 # if there is a new object(list/tuple/dict) with its entries on newlines,
                 # save, reset and continue to calulate new alignment
@@ -802,7 +777,6 @@ def _AlignDictColon(final_lines):
                   keys_content = ''
                   all_dict_keys_lengths = []
                   dict_keys_lengths = []
-                  index = open_index
 
                   # record the column number of the first key
                   first_key_column = len(line_tok.formatted_whitespace_prefix.lstrip('\n'))
@@ -821,11 +795,16 @@ def _AlignDictColon(final_lines):
                         index += 1
                         line_tok = line_tokens[index]
                         continue
-                      if line_tok.is_dict_key:
+                      if line_tok.is_dict_key_start:
                         keys_content = ''
                         prefix = prefix.lstrip('\n')
                         key_column = len(prefix)
-                    elif line_tok.is_dict_key:
+                      # if the dict key is so long that it has multi-lines
+                      # only caculate the last line that has the colon
+                      elif line_tok.is_dict_key:
+                        keys_content = ''
+                        prefix = prefix.lstrip('\n')
+                    elif line_tok.is_dict_key_start:
                       key_column = line_tok.column
 
                     if line_tok.is_dict_colon and key_column == first_key_column:
@@ -836,6 +815,12 @@ def _AlignDictColon(final_lines):
                     index += 1
                     if index < len(line_tokens):
                       line_tok = line_tokens[index]
+                    # when the matching closing bracket never found
+                    # due to edge cases where the closing bracket
+                    # is not indented or dedented, e.g. ']}', with another bracket before
+                    else:
+                      all_dict_keys_lengths.append(dict_keys_lengths)
+                      break
 
                     # if there is new objects(list/tuple/dict) with its entries on newlines,
                     # or a function call with any of its arguments on newlines,
@@ -890,13 +875,13 @@ def _AlignDictColon(final_lines):
                             padded_spaces = ' ' * (
                               max_keys_length - dict_keys_lengths[keys_lengths_index] - 1)
                             keys_lengths_index += 1
-                            #TODO if the existing whitespaces are larger than padded spaces
+                            #NOTE if the existing whitespaces are larger than padded spaces
                             existing_whitespace_prefix = \
                                   token.formatted_whitespace_prefix.lstrip('\n')
                             colon_content = '{}{}'.format(padded_spaces, token.value.strip())
 
                             # in case the existing spaces are larger than the paddes spaces
-                            if (len(padded_spaces) == 0 or len(padded_spaces) > 0
+                            if (len(padded_spaces) == 1 or len(padded_spaces) > 1
                               and len(existing_whitespace_prefix) >= len(padded_spaces)):
                               # remove the existing spaces
                               token.whitespace_prefix = ''
@@ -912,8 +897,6 @@ def _AlignDictColon(final_lines):
 
     if not process_content:
       final_lines_index += 1
-
-########################################################################
 
 
 def _FormatFinalLines(final_lines, verify):

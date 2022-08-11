@@ -1583,17 +1583,19 @@ s = 'foo \\
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
+
   def testExcessCharacters(self):
     code = textwrap.dedent("""\
-        class foo:
+      class foo:
 
-          def bar(self):
-            self.write(s=[
-                '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
-            ])
-        """)  # noqa
+        def bar(self):
+          self.write(s=[
+              '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
+          ])
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
+
 
     unformatted_code = textwrap.dedent("""\
         def _():
@@ -3168,7 +3170,7 @@ my_dict = {
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
-  #-----------------------below added by Xiao---------------------------
+  #------tests for alignment functions--------
   def testAlignAssignBlankLineInbetween(self):
     try:
       style.SetGlobalStyle(
@@ -3513,7 +3515,7 @@ fields = [{
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
-#----------------------------------------------------------------------
+
 
 
 

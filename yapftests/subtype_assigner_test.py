@@ -124,18 +124,16 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
                 subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
             }),
             ('=', {
-                subtypes.DEFAULT_OR_NAMED_ASSIGN,
-                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+                subtypes.DEFAULT_OR_NAMED_ASSIGN
             }),
             ("'hello world'", {
-                subtypes.NONE,
-                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+                subtypes.NONE
             }),
             (')', {subtypes.NONE}),
         ],
     ])
 
-  #---------------------------below added by Xiao---------------------------
+  #----test comment subtype inside the argument list----
   def testCommentSubtypesInsideArglist(self):
     code = textwrap.dedent("""\
         foo(
@@ -160,17 +158,16 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
                 subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST,
             }),
             ('=', {
-                subtypes.DEFAULT_OR_NAMED_ASSIGN,
-                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+                subtypes.DEFAULT_OR_NAMED_ASSIGN
             }),
             ("'hello world'", {
-                subtypes.NONE,
-                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST
+                subtypes.NONE
             }),
             (')', {subtypes.NONE}),
         ],
     ])
 
+  # ----test typed arguments subtypes------
   def testTypedArgumentsInsideArglist(self):
     code = textwrap.dedent("""\
 def foo(
@@ -235,7 +232,7 @@ def foo(
             [('pass', {subtypes.NONE}),
         ],
     ])
-    #------------------------------------------------------------------
+
 
   def testSetComprehension(self):
     code = textwrap.dedent("""\

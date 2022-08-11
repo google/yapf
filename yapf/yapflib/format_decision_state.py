@@ -644,12 +644,6 @@ class FormatDecisionState(object):
 
     if not dry_run:
       indent_level = self.line.depth
-      #-----------------------NOTE below -----------------------------------
-      # we want newline comments inside the lline to
-      # keep their original indentations
-      #if current.is_comment:
-        #indent_level = int(current.column/style.Get('INDENT_WIDTH'))
-      #---------------------Added by Xiao----------------------------
       spaces = self.column
       if spaces:
         spaces -= indent_level * style.Get('INDENT_WIDTH')
