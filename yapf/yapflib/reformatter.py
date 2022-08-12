@@ -488,6 +488,7 @@ def _AlignAssignment(final_lines):
             else:
               variables_content += '{}{}'.format(prefix, line_tok.value)
 
+
           if pa_variables_lengths:
             max_variables_length = max(max_variables_length, max(pa_variables_lengths))
 

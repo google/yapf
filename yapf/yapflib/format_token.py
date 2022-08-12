@@ -399,7 +399,9 @@ class FormatToken(object):
         )
         or # if there is comment, the arg after it is the argname start
         (not self.is_comment and self.previous_token and self.previous_token.is_comment
-        and (subtypes.TYPED_NAME_ARG_LIST in self.subtypes
+        and
+        (subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in previous_subtypes
+        or subtypes.TYPED_NAME_ARG_LIST in self.subtypes
         or subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes))
         )
 
