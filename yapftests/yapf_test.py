@@ -1919,23 +1919,21 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func( 1 ) # Line 1
         func( 2 ) # Line 2
         d = {key1: value1, key2: value2, key3: value3} # Line 3
-func( 3 )     # Line 4
-func( 4 )     # line 5
+        func( 3 ) # Line 4
+        func( 4 ) # line 5
         """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
-        if True:
-            if True:
-                if True:
-                    func(1)               # comment 1
-                    func(2)               # comment 2
-                    # comment 3
-                    func(3)               # comment 4 inline
-                    # comment 4 newline
-                    # comment 4 newline
-
-                    # comment 5 Not aligned
+        func( 1 )               # Line 1
+        func( 2 )               # Line 2
+        d = {
+            key1: value1,
+            key2: value2,
+            key3: value3,
+        }                       # Line 3
+        func( 3 )     # Line 4
+        func( 4 )     # line 5
         """)
-
+    self._Check(unformatted_code, expected_formatted_code)
 
 
 class _SpacesAroundDictListTupleTestImpl(unittest.TestCase):
