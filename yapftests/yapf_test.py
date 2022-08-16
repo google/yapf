@@ -1918,20 +1918,20 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         func( 1 ) # Line 1
         func( 2 ) # Line 2
-        d = {key1: value1, key2: value2, key3: value3} # Line 3
+        d = {key1: value1, key2: value2, key3: value3,} # Line 3
         func( 3 ) # Line 4
         func( 4 ) # line 5
         """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
-        func( 1 )               # Line 1
-        func( 2 )               # Line 2
+        func(1)                 # Line 1
+        func(2)                 # Line 2
         d = {
             key1: value1,
             key2: value2,
             key3: value3,
         }                       # Line 3
-        func( 3 )     # Line 4
-        func( 4 )     # line 5
+        func(3)       # Line 4
+        func(4)       # line 5
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
