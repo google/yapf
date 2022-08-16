@@ -55,7 +55,7 @@ _STYLE_HELP = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
       Align closing bracket with visual indentation."""),
     ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=textwrap.dedent("""\
-      Align comments on newlines with the inline comments in the 
+      Align comments on newlines with the inline comments in the
       same block. This is the default setting for yapf."""),
     ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
@@ -422,7 +422,7 @@ def CreatePEP8Style():
   """Create the PEP8 formatting style."""
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
-      ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=False,
+      ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS=True,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
@@ -513,7 +513,6 @@ def CreateYapfStyle():
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
   style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
-  style['ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'] = True
   return style
 
 

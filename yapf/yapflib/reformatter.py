@@ -311,11 +311,12 @@ def _AlignTrailingComments(final_lines):
           line_content = ''
           pc_line_lengths = []
 
-          #NOTE added by Xiao
+          #NOTE
           contain_object = False
           for line_tok in this_line.tokens:
 
-            #NOTE added by Xiao
+            #NOTE if a line with inline comment is itself
+            # with newlines object, we want to start new alignment
             if (line_tok.value in [')', ']','}']
               and line_tok.formatted_whitespace_prefix.startswith('\n')):
               contain_object = True
@@ -329,13 +330,10 @@ def _AlignTrailingComments(final_lines):
 
               whitespace_prefix = whitespace_prefix[newline_index + 1:]
 
-            '''The part is added by Xiao on the top of original yapf code
-              because we don't want comments on newlines align with comments inline
-            '''
             # if comment starts with '\n', it will save length 0
             if line_tok.is_comment:
               pc_line_lengths.append(len(line_content))
-            else:
+            elif not line_tok.is_pseudo:
               line_content += '{}{}'.format(whitespace_prefix, line_tok.value)
 
           if pc_line_lengths:
@@ -343,8 +341,7 @@ def _AlignTrailingComments(final_lines):
 
           all_pc_line_lengths.append(pc_line_lengths)
 
-          #NOTE added by Xiao
-          # if it's a logical line with object(dict/list/tuple)
+          #NOTE if it's a logical line with object(dict/list/tuple)
           # that have its items in separate lines
           if contain_object:
             break
@@ -381,7 +378,7 @@ def _AlignTrailingComments(final_lines):
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
 
 
-              ''' this is added by Xiao because we don't want comments on newlines
+              ''' this is added when we don't want comments on newlines
                   to align with comments inline
               '''
               if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
@@ -410,8 +407,11 @@ def _AlignTrailingComments(final_lines):
               # beginning of the line.
               existing_whitespace_prefix = \
                 line_tok.formatted_whitespace_prefix.lstrip('\n')
-
-              if line_content.startswith(existing_whitespace_prefix):
+              # in case that the existing spaces larger than spaces that needed to pad
+              if (len(whitespace) == 1 or len(whitespace) > 1 and
+                    len(existing_whitespace_prefix)>len(whitespace)):
+                    line_tok.whitespace_prefix = ''
+              elif line_content.startswith(existing_whitespace_prefix):
                 line_content = line_content[len(existing_whitespace_prefix):]
 
               line_tok.value = line_content
