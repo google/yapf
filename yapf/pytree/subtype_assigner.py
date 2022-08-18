@@ -240,6 +240,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # argument ::=
     #     test [comp_for] | test '=' test
     self._ProcessArgLists(node)
+    #TODO add a subtype to each argument?
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
     # arglist ::=
@@ -300,6 +301,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for i in range(1, len(node.children)):
       prev_child = node.children[i - 1]
       child = node.children[i]
+
       if prev_child.type == grammar_token.COMMA:
         _AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
       elif child.type == grammar_token.COMMA:
@@ -309,6 +311,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         tname = True
         _SetArgListSubtype(child, subtypes.TYPED_NAME,
                            subtypes.TYPED_NAME_ARG_LIST)
+        # NOTE Every element of the tynamme argument list
+        # should have this list type
+        _AppendSubtypeRec(child, subtypes.TYPED_NAME_ARG_LIST)
+
       elif child.type == grammar_token.COMMA:
         tname = False
       elif child.type == grammar_token.EQUAL and tname:
@@ -383,8 +389,10 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
 
   for child in node.children:
     node_name = pytree_utils.NodeName(child)
+    #TODO exclude it if the first leaf is a comment in appendfirstleaftokensubtype
     if node_name not in {'atom', 'COMMA'}:
       _AppendFirstLeafTokenSubtype(child, list_subtype)
+
 
 
 def _AppendTokenSubtype(node, subtype):
@@ -392,12 +400,14 @@ def _AppendTokenSubtype(node, subtype):
   pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
                                     subtype)
 
-
+#TODO should exclude comment child to all Appendsubtypes functions
 def _AppendFirstLeafTokenSubtype(node, subtype):
   """Append the first leaf token's subtypes."""
+  #TODO exclude the comment leaf
   if isinstance(node, pytree.Leaf):
-    _AppendTokenSubtype(node, subtype)
-    return
+      _AppendTokenSubtype(node, subtype)
+      return
+
   _AppendFirstLeafTokenSubtype(node.children[0], subtype)
 
 
