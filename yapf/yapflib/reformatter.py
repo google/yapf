@@ -389,14 +389,14 @@ def _AlignTrailingComments(final_lines):
                 line_content = '{}{}'.format(whitespace, line_tok.value.strip())
               else:
                 line_content = []
-
+                padded_space = whitespace
                 for comment_line_index, comment_line in enumerate(
                     line_tok.value.split('\n')):
-                  line_content.append('{}{}'.format(whitespace,
+                  line_content.append('{}{}'.format(padded_space,
                                                   comment_line.strip()))
 
                   if comment_line_index == 0:
-                    whitespace = ' ' * (aligned_col - 1)
+                    padded_space = ' ' * (aligned_col - 1)
 
                 line_content = '\n'.join(line_content)
 
@@ -407,9 +407,9 @@ def _AlignTrailingComments(final_lines):
               # beginning of the line.
               existing_whitespace_prefix = \
                 line_tok.formatted_whitespace_prefix.lstrip('\n')
-              # in case that the existing spaces larger than spaces that needed to pad
-              if (len(whitespace) == 1 or len(whitespace) > 1 and
-                    len(existing_whitespace_prefix)>len(whitespace)):
+              # in case that the existing spaces larger than
+              # spaces that needed to pad, set the whitespace_prefix to empty
+              if len(existing_whitespace_prefix)>len(whitespace):
                     line_tok.whitespace_prefix = ''
               elif line_content.startswith(existing_whitespace_prefix):
                 line_content = line_content[len(existing_whitespace_prefix):]
