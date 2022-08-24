@@ -275,7 +275,7 @@ def _LineRangesToSet(line_ranges):
 
 def _MarkLinesToFormat(llines, lines):
   """Skip sections of code that we shouldn't reformat."""
-  if lines:
+  if lines is not None:
     for uwline in llines:
       uwline.disable = not lines.intersection(
           range(uwline.lineno, uwline.last.lineno + 1))
