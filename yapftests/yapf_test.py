@@ -26,7 +26,7 @@ import unittest
 
 from lib2to3.pgen2 import tokenize
 
-from yapf.yapflib import errors, reformatter
+from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
@@ -1875,42 +1875,41 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
-  #NOTE test if don't align newline comments with inline comments
+  # test if don't align newline comments with inline comments
   def testNewlineCommentsInsideInlineComment(self):
-    try:
-        style.SetGlobalStyle(
-            style.CreateStyleFromConfig('{align_newline_comments_with_inline_comments:false,'
-            'spaces_before_comment:15, 25,35}'))
-        unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent("""\
+        if True:
             if True:
                 if True:
-                    if True:
-                        func(1)     # comment 1
-                        func(2) # comment 2
-                        # comment 3
-                        func(3)                             # comment 4 inline
-                                                            # comment 4 newline
-                                                            # comment 4 newline
+                    func(1)     # comment 1
+                    func(2) # comment 2
+                    # comment 3
+                    func(3)                             # comment 4 inline
+                                                        # comment 4 newline
+                                                        # comment 4 newline
 
-                                                            # comment 5 Not aligned
-            """)  # noqa
-        expected_formatted_code = textwrap.dedent("""\
+                                                        # comment 5 Not aligned
+        """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
             if True:
                 if True:
-                    if True:
-                        func(1)               # comment 1
-                        func(2)               # comment 2
-                        # comment 3
-                        func(3)               # comment 4 inline
-                        # comment 4 newline
-                        # comment 4 newline
+                    func(1)               # comment 1
+                    func(2)               # comment 2
+                    # comment 3
+                    func(3)               # comment 4 inline
+                    # comment 4 newline
+                    # comment 4 newline
 
-                        # comment 5 Not aligned
-            """)
-        llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-        self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
-    finally:
-        style.SetGlobalStyle(self._OwnStyle())
+                    # comment 5 Not aligned
+        """)
+
+    formatted_code, _ = yapf_api.FormatCode(
+    unformatted_code, style_config=style.SetGlobalStyle(style.CreateStyleFromConfig(
+        '{align_newline_comments_with_inline_comments:false,'
+        'spaces_before_comment:15, 25,35}')))
+    self.assertCodeEqual(expected_formatted_code, formatted_code)
+
 
   # test when there is an object with newline entries in between
   def testObjectWithNewlineEntriesInBetween(self):

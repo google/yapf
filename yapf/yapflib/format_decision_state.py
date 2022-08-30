@@ -938,8 +938,9 @@ class FormatDecisionState(object):
         top_of_stack.indent)
 
     if isinstance(current.spaces_required_before, list):
-      # only when the commet is not inside an object(list, dictionary,
-      # function call)logical line that is in many output lines
+      # only when the commet is not inside an object logical line that has
+      # its entries output on separate output lines(e.g. list, dictionary,
+      # function call), aka when the comment' parent level is 0
       if self.paren_level == 0:
         # Don't set the value here, as we need to look at the lines near
         # this one to determine the actual horizontal alignment value.

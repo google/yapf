@@ -390,6 +390,19 @@ Options::
 Knobs
 =====
 
+``ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS``
+    Align newline comments with the inline comments. The default setting is True.
+    If it is set to be False, new lines comments will not align with inline comments,
+    as following:
+
+    .. code-block:: python
+        def f():
+            result = {
+                "a": 1,       # comment inline
+                # comment newline
+                "abc": 2
+            }
+
 ``ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT``
     Align closing bracket with visual indentation.
 

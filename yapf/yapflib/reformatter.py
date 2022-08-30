@@ -278,13 +278,14 @@ def _AlignTrailingComments(final_lines):
     for tok in line.tokens:
       if (tok.is_comment and isinstance(tok.spaces_required_before, list) and
           tok.value.startswith('#')):
-        # All trailing comments
-        # NOTE not including comments that appear on a line by themselves
+        # All trailing comments and comments that appear on a line by themselves
         # in this block should be indented at the same level. The block is
         # terminated by an empty line or EOF. Enumerate through each line in
         # the block and calculate the max line length. Once complete, use the
         # first col value greater than that value and create the necessary for
         # each line accordingly.
+        # NOTE comments that appear on a line by themselves will be excluded if
+        # align_newline_comments_with_inline_comments is false.
         all_pc_line_lengths = []  # All pre-comment line lengths
         max_line_length = 0
 
@@ -311,11 +312,10 @@ def _AlignTrailingComments(final_lines):
           line_content = ''
           pc_line_lengths = []
 
-          #NOTE
           contain_object = False
           for line_tok in this_line.tokens:
 
-            #NOTE if a line with inline comment is itself
+            #if a line with inline comment is itself
             # with newlines object, we want to start new alignment
             if (line_tok.value in [')', ']','}']
               and line_tok.formatted_whitespace_prefix.startswith('\n')):
@@ -377,10 +377,8 @@ def _AlignTrailingComments(final_lines):
               whitespace = ' ' * (
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
 
-
-              ''' this is added when we don't want comments on newlines
-                  to align with comments inline
-              '''
+              #this is added when we don't want comments on newlines
+              #to align with comments inline
               if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
                 # if this comment starts with '\n', pass and go to next comment
                 if pc_line_lengths[pc_line_length_index] == 0:
