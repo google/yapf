@@ -26,7 +26,7 @@ import unittest
 
 from lib2to3.pgen2 import tokenize
 
-from yapf.yapflib import errors, reformatter
+from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api

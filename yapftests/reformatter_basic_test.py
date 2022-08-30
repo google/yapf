@@ -1583,19 +1583,17 @@ s = 'foo \\
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
-
   def testExcessCharacters(self):
     code = textwrap.dedent("""\
-      class foo:
+        class foo:
 
-        def bar(self):
-          self.write(s=[
-              '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
-          ])
-    """)  # noqa
+          def bar(self):
+            self.write(s=[
+                '%s%s %s' % ('many of really', 'long strings', '+ just makes up 81')
+            ])
+        """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
-
 
     unformatted_code = textwrap.dedent("""\
         def _():
@@ -2865,8 +2863,6 @@ my_dict = {
         def function(first_argument_xxxxxxxxxxxxxxxxxxxxxxx=(0,), second_argument=None) -> None:
           pass
         """)  # noqa
-    # if dedent closing brackets and Align argAssign are true, there will be
-    # spaces before the argassign
     expected_formatted_code = textwrap.dedent("""\
         def function(
             first_argument_xxxxxxxxxxxxxxxx=(0,), second_argument=None
@@ -2883,8 +2879,7 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig('{based_on_style: yapf,'
-                                      ' dedent_closing_brackets: True,'
-                                      ' align_argument_assignment: False}'))
+                                      ' dedent_closing_brackets: True}'))
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,

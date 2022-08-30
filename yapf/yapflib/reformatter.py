@@ -103,7 +103,6 @@ def Reformat(llines, verify=False, lines=None):
     final_lines.append(lline)
     prev_line = lline
 
-
   if style.Get('ALIGN_ASSIGNMENT'):
     _AlignAssignment(final_lines)
   if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE')
