@@ -361,9 +361,6 @@ def _AlignTrailingComments(final_lines):
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
               pc_line_length_index += 1
 
-              print('line_tok:', len(line_tok.formatted_whitespace_prefix.lstrip('\n')))
-              print('padded spaces:', len(whitespace))
-
               line_content = []
               padded_space = whitespace
               for comment_line_index, comment_line in enumerate(
