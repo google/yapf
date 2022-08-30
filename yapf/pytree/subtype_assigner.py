@@ -401,8 +401,8 @@ def _AppendTokenSubtype(node, subtype):
 def _AppendFirstLeafTokenSubtype(node, subtype):
   """Append the first leaf token's subtypes."""
   if isinstance(node, pytree.Leaf):
-      _AppendTokenSubtype(node, subtype)
-      return
+    _AppendTokenSubtype(node, subtype)
+    return
   _AppendFirstLeafTokenSubtype(node.children[0], subtype)
 
 

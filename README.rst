@@ -438,7 +438,7 @@ Knobs
             }
 
 ``NEW_ALIGNMENT_AFTER_COMMENTLINE``
-    Make it optional to whether start a new alignmetn block for assignment
+    Make it optional to start a new alignmetn block for assignment
     alignment and colon alignment after a comment line.
 
 ``ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT``
