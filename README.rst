@@ -398,6 +398,7 @@ Knobs
     indentation level.
 
     .. code-block:: python
+    
         a   = 1
         abc = 2
         if condition == None:
@@ -413,22 +414,25 @@ Knobs
     Multiline objects in between will also initiate a new alignment block.
 
     .. code-block:: python
-        rglist = test(
-            var_first  = 0,
-            var_second = '',
-            var_dict   = {
-                "key_1" : '',
-                "key_2" : 2,
-                "key_3" : True,
-            },
-            var_third     = 1,
-            var_very_long = None )
+    
+            rglist = test(
+                var_first  = 0,
+                var_second = '',
+                var_dict   = {
+                    "key_1" : '',
+                    "key_2" : 2,
+                    "key_3" : True,
+                },
+                var_third     = 1,
+                var_very_long = None )
 
 ``ALIGN_DICT_COLON``
     Align the colons in the dictionary if all entries in dictionay are split on newlines
     or 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' is set True.
     A commentline or multi-line object in between will start new alignment block.
+    
     .. code-block:: python
+    
         fields =
             {
                 "field" : "ediid",
