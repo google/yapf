@@ -42,6 +42,7 @@ def SpliceComments(tree):
   # This is a list because Python 2.x doesn't have 'nonlocal' :)
   prev_leaf = [None]
   _AnnotateIndents(tree)
+
   def _VisitNodeRec(node):
     """Recursively visit each node to splice comments into the AST."""
     # This loop may insert into node.children, so we'll iterate over a copy.

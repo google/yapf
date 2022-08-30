@@ -66,7 +66,7 @@ _STYLE_HELP = dict(
     ALIGN_DICT_COLON=textwrap.dedent("""\
       Align the colons in the dictionary
       if all entries in dictionay are split on newlines.
-      and 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' set True.
+      or 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' is set True.
       """),
     NEW_ALIGNMENT_AFTER_COMMENTLINE=textwrap.dedent("""\
       Start new assignment or colon alignment when there is a newline comment in between."""),
