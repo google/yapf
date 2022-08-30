@@ -396,6 +396,7 @@ Knobs
     as following:
 
     .. code-block:: python
+
         def f():
             result = {
                 "a": 1,       # comment inline
