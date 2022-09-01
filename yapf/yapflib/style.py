@@ -168,6 +168,9 @@ _STYLE_HELP = dict(
         config = {
             'key1': 'value1'
         }"""),
+    FUNCTION_CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
+      Indent width used for function definition line continuations. Defaults to
+      CONTINUATION_INDENT_WIDTH."""),
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
@@ -438,6 +441,7 @@ def CreatePEP8Style():
       DISABLE_ENDING_COMMA_HEURISTIC=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
       FORCE_MULTILINE_DICT=False,
+      FUNCTION_CONTINUATION_INDENT_WIDTH=4,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
       INDENT_DICTIONARY_VALUE=False,
@@ -626,6 +630,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     DISABLE_ENDING_COMMA_HEURISTIC=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
     FORCE_MULTILINE_DICT=_BoolConverter,
+    FUNCTION_CONTINUATION_INDENT_WIDTH=int,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
