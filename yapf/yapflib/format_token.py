@@ -382,6 +382,7 @@ class FormatToken(object):
   @property
   def is_argname_start(self):
     # return true if it's the start of every argument entry
+    previous_subtypes = {0}
     if self.previous_token:
       previous_subtypes = self.previous_token.subtypes
 
