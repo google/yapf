@@ -858,7 +858,7 @@ def _AlignDictColon(final_lines):
                         # check if the key has multiple tokens and
                         # get the first key token in this key
                         key_token = token.previous_token
-                        while key_token.previous_token.is_dict_key:
+                        while key_token.is_dict_key and not key_token.is_dict_key_start:
                           key_token = key_token.previous_token
                         key_column = len(key_token.formatted_whitespace_prefix.lstrip('\n'))
 
