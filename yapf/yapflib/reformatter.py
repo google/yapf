@@ -658,7 +658,7 @@ def _AlignArgAssign(final_lines):
                 index += 1
                 if index < len(line_tokens):
                   line_tok = line_tokens[index]
-                # when the matching closing bracket never found
+                # when the matching closing bracket is never found
                 # due to edge cases where the closing bracket
                 # is not indented or dedented
                 else:
@@ -816,7 +816,7 @@ def _AlignDictColon(final_lines):
                     index += 1
                     if index < len(line_tokens):
                       line_tok = line_tokens[index]
-                    # when the matching closing bracket never found
+                    # when the matching closing bracket is never found
                     # due to edge cases where the closing bracket
                     # is not indented or dedented, e.g. ']}', with another bracket before
                     else:
