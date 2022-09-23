@@ -5,6 +5,7 @@
 ## [0.40.0] UNRELEASED
 ### Added
 - Add a new Python parser to generate logical lines.
+- Added support for `# fmt: on` and `# fmt: off` pragmas.
 ### Changes
 - Moved 'pytree' parsing tools into its own subdirectory.
 - Add support for Python 3.10.

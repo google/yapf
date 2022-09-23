@@ -256,8 +256,8 @@ def _SplitSemicolons(lines):
   return res
 
 
-DISABLE_PATTERN = r'^#.*\byapf:\s*disable\b'
-ENABLE_PATTERN = r'^#.*\byapf:\s*enable\b'
+DISABLE_PATTERN = r'^#.*\b(?:yapf:\s*disable|fmt: ?off)\b'
+ENABLE_PATTERN = r'^#.*\b(?:yapf:\s*enable|fmt: ?on)\b'
 
 
 def _LineRangesToSet(line_ranges):

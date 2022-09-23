@@ -152,6 +152,29 @@ class FormatFileTest(unittest.TestCase):
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
 
+  def testFmtOnOff(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        # fmt: off
+        if f:    g
+        # fmt: on
+
+        if h:    i
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+        # fmt: off
+        if f:    g
+        # fmt: on
+
+        if h: i
+        """)
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
+      self.assertCodeEqual(expected_formatted_code, formatted_code)
+
   def testDisablePartOfMultilineComment(self):
     unformatted_code = textwrap.dedent(u"""\
         if a:    b
