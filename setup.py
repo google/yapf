@@ -51,7 +51,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       maintainer_email='morbo@google.com',
       packages=find_packages('.'),
       project_urls={
-        'Source': 'https://github.com/google/yapf',
+          'Source': 'https://github.com/google/yapf',
       },
       classifiers=[
           'Development Status :: 4 - Beta',
