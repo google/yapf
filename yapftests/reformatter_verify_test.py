@@ -32,7 +32,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testVerifyException(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         class ABC(metaclass=type):
           pass
         """)
@@ -42,20 +43,23 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
     reformatter.Reformat(llines)  # verify should be False by default.
 
   def testNoVerify(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         class ABC(metaclass=type):
           pass
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         class ABC(metaclass=type):
             pass
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(llines, verify=False))
+    self.assertCodeEqual(
+        expected_formatted_code, reformatter.Reformat(llines, verify=False))
 
   def testVerifyFutureImport(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         from __future__ import print_function
 
         def call_my_function(the_function):
@@ -68,7 +72,8 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
     with self.assertRaises(verifier.InternalError):
       reformatter.Reformat(llines, verify=True)
 
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         from __future__ import print_function
 
 
@@ -80,11 +85,12 @@ class TestVerifyNoVerify(yapf_test_helper.YAPFTest):
             call_my_function(print)
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code,
-                         reformatter.Reformat(llines, verify=False))
+    self.assertCodeEqual(
+        expected_formatted_code, reformatter.Reformat(llines, verify=False))
 
   def testContinuationLineShouldBeDistinguished(self):
-    code = textwrap.dedent("""\
+    code = textwrap.dedent(
+        """\
         class Foo(object):
 
             def bar(self):

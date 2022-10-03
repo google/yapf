@@ -66,59 +66,62 @@ class FormatDecisionState(object):
       line: (LogicalLine) The logical line we're currently processing.
       first_indent: (int) The indent of the first token.
     """
-    self.next_token = line.first
-    self.column = first_indent
-    self.line = line
-    self.paren_level = 0
-    self.lowest_level_on_line = 0
+    self.next_token                  = line.first
+    self.column                      = first_indent
+    self.line                        = line
+    self.paren_level                 = 0
+    self.lowest_level_on_line        = 0
     self.ignore_stack_for_comparison = False
-    self.stack = [_ParenState(first_indent, first_indent)]
-    self.comp_stack = []
-    self.param_list_stack = []
-    self.first_indent = first_indent
-    self.column_limit = style.Get('COLUMN_LIMIT')
+    self.stack                       = [_ParenState(first_indent, first_indent)]
+    self.comp_stack                  = []
+    self.param_list_stack            = []
+    self.first_indent                = first_indent
+    self.column_limit                = style.Get('COLUMN_LIMIT')
 
   def Clone(self):
     """Clones a FormatDecisionState object."""
-    new = FormatDecisionState(self.line, self.first_indent)
-    new.next_token = self.next_token
-    new.column = self.column
-    new.line = self.line
-    new.paren_level = self.paren_level
-    new.line.depth = self.line.depth
-    new.lowest_level_on_line = self.lowest_level_on_line
+    new                             = FormatDecisionState(self.line, self.first_indent)
+    new.next_token                  = self.next_token
+    new.column                      = self.column
+    new.line                        = self.line
+    new.paren_level                 = self.paren_level
+    new.line.depth                  = self.line.depth
+    new.lowest_level_on_line        = self.lowest_level_on_line
     new.ignore_stack_for_comparison = self.ignore_stack_for_comparison
-    new.first_indent = self.first_indent
-    new.stack = [state.Clone() for state in self.stack]
-    new.comp_stack = [state.Clone() for state in self.comp_stack]
-    new.param_list_stack = [state.Clone() for state in self.param_list_stack]
+    new.first_indent                = self.first_indent
+    new.stack                       = [state.Clone() for state in self.stack]
+    new.comp_stack                  = [state.Clone() for state in self.comp_stack]
+    new.param_list_stack            = [state.Clone() for state in self.param_list_stack]
     return new
 
   def __eq__(self, other):
     # Note: 'first_indent' is implicit in the stack. Also, we ignore 'previous',
     # because it shouldn't have a bearing on this comparison. (I.e., it will
     # report equal if 'next_token' does.)
-    return (self.next_token == other.next_token and
-            self.column == other.column and
-            self.paren_level == other.paren_level and
-            self.line.depth == other.line.depth and
-            self.lowest_level_on_line == other.lowest_level_on_line and
-            (self.ignore_stack_for_comparison or
-             other.ignore_stack_for_comparison or self.stack == other.stack and
-             self.comp_stack == other.comp_stack and
-             self.param_list_stack == other.param_list_stack))
+    return (
+        self.next_token == other.next_token and self.column == other.column and
+        self.paren_level == other.paren_level and
+        self.line.depth == other.line.depth and
+        self.lowest_level_on_line == other.lowest_level_on_line and (
+            self.ignore_stack_for_comparison or
+            other.ignore_stack_for_comparison or self.stack == other.stack and
+            self.comp_stack == other.comp_stack and
+            self.param_list_stack == other.param_list_stack))
 
   def __ne__(self, other):
     return not self == other
 
   def __hash__(self):
-    return hash((self.next_token, self.column, self.paren_level,
-                 self.line.depth, self.lowest_level_on_line))
+    return hash(
+        (
+            self.next_token, self.column, self.paren_level, self.line.depth,
+            self.lowest_level_on_line))
 
   def __repr__(self):
-    return ('column::%d, next_token::%s, paren_level::%d, stack::[\n\t%s' %
-            (self.column, repr(self.next_token), self.paren_level,
-             '\n\t'.join(repr(s) for s in self.stack) + ']'))
+    return (
+        'column::%d, next_token::%s, paren_level::%d, stack::[\n\t%s' % (
+            self.column, repr(self.next_token), self.paren_level,
+            '\n\t'.join(repr(s) for s in self.stack) + ']'))
 
   def CanSplit(self, must_split):
     """Determine if we can split before the next token.
@@ -129,7 +132,7 @@ class FormatDecisionState(object):
     Returns:
       True if the line can be split before the next token.
     """
-    current = self.next_token
+    current  = self.next_token
     previous = current.previous_token
 
     if current.is_pseudo:
@@ -166,7 +169,7 @@ class FormatDecisionState(object):
 
   def MustSplit(self):
     """Returns True if the line must split before the next token."""
-    current = self.next_token
+    current  = self.next_token
     previous = current.previous_token
 
     if current.is_pseudo:
@@ -289,7 +292,7 @@ class FormatDecisionState(object):
       #
       # or when a string formatting syntax.
       func_call_or_string_format = False
-      tok = current.next_token
+      tok                        = current.next_token
       if current.is_name:
         while tok and (tok.is_name or tok.value == '.'):
           tok = tok.next_token
@@ -421,7 +424,7 @@ class FormatDecisionState(object):
           (opening.previous_token.is_name or
            opening.previous_token.value in {'*', '**'})):
         is_func_call = False
-        opening = current
+        opening      = current
         while opening:
           if opening.value == '(':
             is_func_call = True
@@ -452,7 +455,7 @@ class FormatDecisionState(object):
     #                   default=False)
     if (current.value == '{' and previous.value == '(' and pprevious and
         pprevious.is_name):
-      dict_end = current.matching_bracket
+      dict_end   = current.matching_bracket
       next_token = dict_end.next_token
       if next_token.value == ',' and not self._FitsOnLine(current, dict_end):
         return True
@@ -483,7 +486,7 @@ class FormatDecisionState(object):
             (opening.previous_token.is_name or
              opening.previous_token.value in {'*', '**'})):
           is_func_call = False
-          opening = current
+          opening      = current
           while opening:
             if opening.value == '(':
               is_func_call = True
@@ -522,7 +525,7 @@ class FormatDecisionState(object):
             return False
 
           elements = previous.container_elements + [previous.matching_bracket]
-          i = 1
+          i        = 1
           while i < len(elements):
             if (not elements[i - 1].OpensScope() and
                 not self._FitsOnLine(elements[i - 1], elements[i])):
@@ -594,7 +597,7 @@ class FormatDecisionState(object):
     Arguments:
       dry_run: (bool) Commit whitespace changes to the FormatToken if True.
     """
-    current = self.next_token
+    current  = self.next_token
     previous = current.previous_token
 
     spaces = current.spaces_required_before
@@ -637,14 +640,14 @@ class FormatDecisionState(object):
     Returns:
       The split penalty for splitting after the current state.
     """
-    current = self.next_token
+    current  = self.next_token
     previous = current.previous_token
 
     self.column = self._GetNewlineColumn()
 
     if not dry_run:
       indent_level = self.line.depth
-      spaces = self.column
+      spaces       = self.column
       if spaces:
         spaces -= indent_level * style.Get('INDENT_WIDTH')
       current.AddWhitespacePrefix(
@@ -657,7 +660,7 @@ class FormatDecisionState(object):
     if (previous.OpensScope() or
         (previous.is_comment and previous.previous_token is not None and
          previous.previous_token.OpensScope())):
-      dedent = (style.Get('CONTINUATION_INDENT_WIDTH'),
+      dedent                              = (style.Get('CONTINUATION_INDENT_WIDTH'),
                 0)[style.Get('INDENT_CLOSING_BRACKETS')]
       self.stack[-1].closing_scope_indent = (
           max(0, self.stack[-1].indent - dedent))
@@ -677,9 +680,9 @@ class FormatDecisionState(object):
     # Add a penalty for each increasing newline we add, but don't penalize for
     # splitting before an if-expression or list comprehension.
     if current.value not in {'if', 'for'}:
-      last = self.stack[-1]
+      last                  = self.stack[-1]
       last.num_line_splits += 1
-      penalty += (
+      penalty               += (
           style.Get('SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT') *
           last.num_line_splits)
 
@@ -704,13 +707,13 @@ class FormatDecisionState(object):
     """
     current = self.next_token
     if not current.OpensScope() and not current.ClosesScope():
-      self.lowest_level_on_line = min(self.lowest_level_on_line,
-                                      self.paren_level)
+      self.lowest_level_on_line = min(
+          self.lowest_level_on_line, self.paren_level)
 
     # If we encounter an opening bracket, we add a level to our stack to prepare
     # for the subsequent tokens.
     if current.OpensScope():
-      last = self.stack[-1]
+      last       = self.stack[-1]
       new_indent = style.Get('CONTINUATION_INDENT_WIDTH') + last.last_space
 
       self.stack.append(_ParenState(new_indent, self.stack[-1].last_space))
@@ -740,7 +743,7 @@ class FormatDecisionState(object):
     if (not current.is_pylint_comment and not current.is_pytype_comment and
         not current.is_copybara_comment and self.column > self.column_limit):
       excess_characters = self.column - self.column_limit
-      penalty += style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
+      penalty          += style.Get('SPLIT_PENALTY_EXCESS_CHARACTER') * excess_characters
 
     if is_multiline_string:
       # If this is a multiline string, the column is actually the
@@ -759,10 +762,10 @@ class FormatDecisionState(object):
       The penalty for the token-newline combination given the current
       comprehension state.
     """
-    current = self.next_token
-    previous = current.previous_token
+    current      = self.next_token
+    previous     = current.previous_token
     top_of_stack = self.comp_stack[-1] if self.comp_stack else None
-    penalty = 0
+    penalty      = 0
 
     if top_of_stack is not None:
       # Check if the token terminates the current comprehension.
@@ -798,7 +801,7 @@ class FormatDecisionState(object):
              not top_of_stack.HasTrivialExpr())):
           penalty += split_penalty.UNBREAKABLE
       else:
-        top_of_stack.for_token = current
+        top_of_stack.for_token        = current
         top_of_stack.has_split_at_for = newline
 
         # Try to keep trivial expressions on the same line as the comp_for.
@@ -823,14 +826,14 @@ class FormatDecisionState(object):
     Args:
       newline: Whether the current token is to be added on a newline.
     """
-    current = self.next_token
+    current  = self.next_token
     previous = current.previous_token
 
     if _IsFunctionDefinition(previous):
       first_param_column = previous.total_length + self.stack[-2].indent
       self.param_list_stack.append(
-          object_state.ParameterListState(previous, newline,
-                                          first_param_column))
+          object_state.ParameterListState(
+              previous, newline, first_param_column))
 
   def _CalculateParameterListState(self, newline):
     """Makes required changes to parameter list state.
@@ -842,18 +845,18 @@ class FormatDecisionState(object):
       The penalty for the token-newline combination given the current
       parameter state.
     """
-    current = self.next_token
+    current  = self.next_token
     previous = current.previous_token
-    penalty = 0
+    penalty  = 0
 
     if _IsFunctionDefinition(previous):
       first_param_column = previous.total_length + self.stack[-2].indent
       if not newline:
         param_list = self.param_list_stack[-1]
         if param_list.parameters and param_list.has_typed_return:
-          last_param = param_list.parameters[-1].first_token
-          last_token = _LastTokenInLine(previous.matching_bracket)
-          total_length = last_token.total_length
+          last_param    = param_list.parameters[-1].first_token
+          last_token    = _LastTokenInLine(previous.matching_bracket)
+          total_length  = last_token.total_length
           total_length -= last_param.total_length - len(last_param.value)
           if total_length + self.column > self.column_limit:
             # If we need to split before the trailing code of a function
@@ -921,8 +924,9 @@ class FormatDecisionState(object):
       return column
     align_style = style.Get('CONTINUATION_ALIGN_STYLE')
     if align_style == 'FIXED':
-      return ((self.line.depth * style.Get('INDENT_WIDTH')) +
-              style.Get('CONTINUATION_INDENT_WIDTH'))
+      return (
+          (self.line.depth * style.Get('INDENT_WIDTH')) +
+          style.Get('CONTINUATION_INDENT_WIDTH'))
     if align_style == 'VALIGN-RIGHT':
       indent_width = style.Get('INDENT_WIDTH')
       return indent_width * int((column + indent_width - 1) / indent_width)
@@ -930,8 +934,8 @@ class FormatDecisionState(object):
 
   def _GetNewlineColumn(self):
     """Return the new column on the newline."""
-    current = self.next_token
-    previous = current.previous_token
+    current      = self.next_token
+    previous     = current.previous_token
     top_of_stack = self.stack[-1]
 
     if isinstance(current.spaces_required_before, list):
@@ -951,8 +955,8 @@ class FormatDecisionState(object):
       if (previous.OpensScope() or
           (previous.is_comment and previous.previous_token is not None and
            previous.previous_token.OpensScope())):
-        return max(0,
-                   top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+        return max(
+            0, top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
@@ -1008,7 +1012,7 @@ class FormatDecisionState(object):
         tok = tok.next_token
       while tok.is_string:
         num_strings += 1
-        tok = tok.next_token
+        tok          = tok.next_token
       return num_strings > 1
 
     def DictValueIsContainer(opening, closing):
@@ -1027,9 +1031,9 @@ class FormatDecisionState(object):
         return False
       return subtypes.DICTIONARY_KEY_PART in key.subtypes
 
-    closing = opening.matching_bracket
+    closing     = opening.matching_bracket
     entry_start = opening.next_token
-    current = opening.next_token.next_token
+    current     = opening.next_token.next_token
 
     while current and current != closing:
       if subtypes.DICTIONARY_KEY in current.subtypes:
@@ -1037,7 +1041,7 @@ class FormatDecisionState(object):
         if prev.value == ',':
           prev = PreviousNonCommentToken(prev.previous_token)
         if not DictValueIsContainer(prev.matching_bracket, prev):
-          length = prev.total_length - entry_start.total_length
+          length  = prev.total_length - entry_start.total_length
           length += len(entry_start.value)
           if length + self.stack[-2].indent >= self.column_limit:
             return False
@@ -1069,7 +1073,7 @@ class FormatDecisionState(object):
     # At this point, current is the closing bracket. Go back one to get the end
     # of the dictionary entry.
     current = PreviousNonCommentToken(current)
-    length = current.total_length - entry_start.total_length
+    length  = current.total_length - entry_start.total_length
     length += len(entry_start.value)
     return length + self.stack[-2].indent <= self.column_limit
 
@@ -1089,8 +1093,9 @@ class FormatDecisionState(object):
 
   def _ContainerFitsOnStartLine(self, opening):
     """Check if the container can fit on its starting line."""
-    return (opening.matching_bracket.total_length - opening.total_length +
-            self.stack[-1].indent) <= self.column_limit
+    return (
+        opening.matching_bracket.total_length - opening.total_length +
+        self.stack[-1].indent) <= self.column_limit
 
 
 _COMPOUND_STMTS = frozenset(
@@ -1166,8 +1171,8 @@ def _IsLastScopeInLine(current):
 
 def _IsSingleElementTuple(token):
   """Check if it's a single-element tuple."""
-  close = token.matching_bracket
-  token = token.next_token
+  close      = token.matching_bracket
+  token      = token.next_token
   num_commas = 0
   while token != close:
     if token.value == ',':
@@ -1208,17 +1213,17 @@ class _ParenState(object):
   # TODO(morbo): This doesn't track "bin packing."
 
   def __init__(self, indent, last_space):
-    self.indent = indent
-    self.last_space = last_space
-    self.closing_scope_indent = 0
+    self.indent                       = indent
+    self.last_space                   = last_space
+    self.closing_scope_indent         = 0
     self.split_before_closing_bracket = False
-    self.num_line_splits = 0
+    self.num_line_splits              = 0
 
   def Clone(self):
-    state = _ParenState(self.indent, self.last_space)
-    state.closing_scope_indent = self.closing_scope_indent
+    state                              = _ParenState(self.indent, self.last_space)
+    state.closing_scope_indent         = self.closing_scope_indent
     state.split_before_closing_bracket = self.split_before_closing_bracket
-    state.num_line_splits = self.num_line_splits
+    state.num_line_splits              = self.num_line_splits
     return state
 
   def __repr__(self):
@@ -1232,5 +1237,7 @@ class _ParenState(object):
     return not self == other
 
   def __hash__(self, *args, **kwargs):
-    return hash((self.indent, self.last_space, self.closing_scope_indent,
-                 self.split_before_closing_bracket, self.num_line_splits))
+    return hash(
+        (
+            self.indent, self.last_space, self.closing_scope_indent,
+            self.split_before_closing_bracket, self.num_line_splits))

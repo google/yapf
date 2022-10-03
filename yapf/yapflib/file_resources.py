@@ -25,8 +25,8 @@ from yapf.yapflib import errors
 from yapf.yapflib import py3compat
 from yapf.yapflib import style
 
-CR = '\r'
-LF = '\n'
+CR   = '\r'
+LF   = '\n'
 CRLF = '\r\n'
 
 
@@ -56,7 +56,7 @@ def _GetExcludePatternsFromPyprojectToml(filename):
         "configuration file")
 
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
-    pyproject_toml = toml.load(filename)
+    pyproject_toml  = toml.load(filename)
     ignore_patterns = pyproject_toml.get('tool',
                                          {}).get('yapfignore',
                                                  {}).get('ignore_patterns', [])
@@ -140,7 +140,7 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
               "configuration file")
 
         pyproject_toml = toml.load(config_file)
-        style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
+        style_dict     = pyproject_toml.get('tool', {}).get('yapf', None)
         if style_dict is not None:
           return config_file
 
@@ -161,10 +161,8 @@ def GetCommandLineFiles(command_line_file_list, recursive, exclude):
   return _FindPythonFiles(command_line_file_list, recursive, exclude)
 
 
-def WriteReformattedCode(filename,
-                         reformatted_code,
-                         encoding='',
-                         in_place=False):
+def WriteReformattedCode(
+    filename, reformatted_code, encoding='', in_place=False):
   """Emit the reformatted code.
 
   Write the reformatted code into the file, if in_place is True. Otherwise,
@@ -177,8 +175,8 @@ def WriteReformattedCode(filename,
     in_place: (bool) If True, then write the reformatted code to the file.
   """
   if in_place:
-    with py3compat.open_with_encoding(
-        filename, mode='w', encoding=encoding, newline='') as fd:
+    with py3compat.open_with_encoding(filename, mode='w', encoding=encoding,
+                                      newline='') as fd:
       fd.write(reformatted_code)
   else:
     py3compat.EncodeAndWriteToStdout(reformatted_code)
@@ -265,8 +263,8 @@ def IsPythonFile(filename):
       encoding = py3compat.detect_encoding(fd.readline)[0]
 
     # Check for correctness of encoding.
-    with py3compat.open_with_encoding(
-        filename, mode='r', encoding=encoding) as fd:
+    with py3compat.open_with_encoding(filename, mode='r',
+                                      encoding=encoding) as fd:
       fd.read()
   except UnicodeDecodeError:
     encoding = 'latin-1'
@@ -277,8 +275,8 @@ def IsPythonFile(filename):
     return False
 
   try:
-    with py3compat.open_with_encoding(
-        filename, mode='r', encoding=encoding) as fd:
+    with py3compat.open_with_encoding(filename, mode='r',
+                                      encoding=encoding) as fd:
       first_line = fd.readline(256)
   except IOError:
     return False

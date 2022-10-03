@@ -60,7 +60,7 @@ def SpliceComments(tree):
           # Remember the leading indentation of this prefix and clear it.
           # Mopping up the prefix is important because we may go over this same
           # child in the next iteration...
-          child_prefix = child.prefix.lstrip('\n')
+          child_prefix  = child.prefix.lstrip('\n')
           prefix_indent = child_prefix[:child_prefix.find('#')]
           if '\n' in prefix_indent:
             prefix_indent = prefix_indent[prefix_indent.rfind('\n') + 1:]
@@ -171,22 +171,23 @@ def SpliceComments(tree):
               else:
                 if comment_lineno == prev_leaf[0].lineno:
                   comment_lines = comment_prefix.splitlines()
-                  value = comment_lines[0].lstrip()
+                  value         = comment_lines[0].lstrip()
                   if value.rstrip('\n'):
-                    comment_column = prev_leaf[0].column
+                    comment_column  = prev_leaf[0].column
                     comment_column += len(prev_leaf[0].value)
-                    comment_column += (
+                    comment_column  += (
                         len(comment_lines[0]) - len(comment_lines[0].lstrip()))
                     comment_leaf = pytree.Leaf(
-                        type=token.COMMENT,
-                        value=value.rstrip('\n'),
-                        context=('', (comment_lineno, comment_column)))
+                        type    =token.COMMENT,
+                        value   =value.rstrip('\n'),
+                        context =('', (comment_lineno, comment_column)))
                     pytree_utils.InsertNodesAfter([comment_leaf], prev_leaf[0])
-                    comment_prefix = '\n'.join(comment_lines[1:])
+                    comment_prefix  = '\n'.join(comment_lines[1:])
                     comment_lineno += 1
 
-                rindex = (0 if '\n' not in comment_prefix.rstrip() else
-                          comment_prefix.rstrip().rindex('\n') + 1)
+                rindex = (
+                    0 if '\n' not in comment_prefix.rstrip() else
+                    comment_prefix.rstrip().rindex('\n') + 1)
                 comment_column = (
                     len(comment_prefix[rindex:]) -
                     len(comment_prefix[rindex:].lstrip()))
@@ -203,10 +204,8 @@ def SpliceComments(tree):
   _VisitNodeRec(tree)
 
 
-def _CreateCommentsFromPrefix(comment_prefix,
-                              comment_lineno,
-                              comment_column,
-                              standalone=False):
+def _CreateCommentsFromPrefix(
+    comment_prefix, comment_lineno, comment_column, standalone=False):
   """Create pytree nodes to represent the given comment prefix.
 
   Args:
@@ -234,13 +233,13 @@ def _CreateCommentsFromPrefix(comment_prefix,
       index += 1
 
     if comment_block:
-      new_lineno = comment_lineno + index - 1
-      comment_block[0] = comment_block[0].strip()
+      new_lineno        = comment_lineno + index - 1
+      comment_block[0]  = comment_block[0].strip()
       comment_block[-1] = comment_block[-1].strip()
-      comment_leaf = pytree.Leaf(
-          type=token.COMMENT,
-          value='\n'.join(comment_block),
-          context=('', (new_lineno, comment_column)))
+      comment_leaf      = pytree.Leaf(
+          type    =token.COMMENT,
+          value   ='\n'.join(comment_block),
+          context =('', (new_lineno, comment_column)))
       comment_node = comment_leaf if not standalone else pytree.Node(
           pygram.python_symbols.simple_stmt, [comment_leaf])
       comments.append(comment_node)
@@ -262,10 +261,11 @@ def _CreateCommentsFromPrefix(comment_prefix,
 # line, not on the same line with other code), it's important to insert it into
 # an appropriate parent of the node it's attached to. An appropriate parent
 # is the first "standalone line node" in the parent chain of a node.
-_STANDALONE_LINE_NODES = frozenset([
-    'suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
-    'funcdef', 'classdef', 'decorated', 'file_input'
-])
+_STANDALONE_LINE_NODES = frozenset(
+    [
+        'suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
+        'funcdef', 'classdef', 'decorated', 'file_input'
+    ])
 
 
 def _FindNodeWithStandaloneLineParent(node):
@@ -352,14 +352,14 @@ def _AnnotateIndents(tree):
   """
   # Annotate the root of the tree with zero indent.
   if tree.parent is None:
-    pytree_utils.SetNodeAnnotation(tree, pytree_utils.Annotation.CHILD_INDENT,
-                                   '')
+    pytree_utils.SetNodeAnnotation(
+        tree, pytree_utils.Annotation.CHILD_INDENT, '')
   for child in tree.children:
     if child.type == token.INDENT:
       child_indent = pytree_utils.GetNodeAnnotation(
           tree, pytree_utils.Annotation.CHILD_INDENT)
       if child_indent is not None and child_indent != child.value:
         raise RuntimeError('inconsistent indentation for child', (tree, child))
-      pytree_utils.SetNodeAnnotation(tree, pytree_utils.Annotation.CHILD_INDENT,
-                                     child.value)
+      pytree_utils.SetNodeAnnotation(
+          tree, pytree_utils.Annotation.CHILD_INDENT, child.value)
     _AnnotateIndents(child)
