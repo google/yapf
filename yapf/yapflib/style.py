@@ -22,33 +22,33 @@ from yapf.yapflib import py3compat
 
 
 class StyleConfigError(errors.YapfError):
-    """Raised when there's a problem reading the style configuration."""
-    pass
+  """Raised when there's a problem reading the style configuration."""
+  pass
 
 
 def Get(setting_name):
-    """Get a style setting."""
-    return _style[setting_name]
+  """Get a style setting."""
+  return _style[setting_name]
 
 
 def GetOrDefault(setting_name, default_value):
-    """Get a style setting or default value if the setting does not exist."""
-    return _style.get(setting_name, default_value)
+  """Get a style setting or default value if the setting does not exist."""
+  return _style.get(setting_name, default_value)
 
 
 def Help():
-    """Return dict mapping style names to help strings."""
-    return _STYLE_HELP
+  """Return dict mapping style names to help strings."""
+  return _STYLE_HELP
 
 
 def SetGlobalStyle(style):
-    """Set a style dict."""
-    global _style
-    global _GLOBAL_STYLE_FACTORY
-    factory = _GetStyleFactory(style)
-    if factory:
-        _GLOBAL_STYLE_FACTORY = factory
-    _style = style
+  """Set a style dict."""
+  global _style
+  global _GLOBAL_STYLE_FACTORY
+  factory = _GetStyleFactory(style)
+  if factory:
+    _GLOBAL_STYLE_FACTORY = factory
+  _style = style
 
 
 _STYLE_HELP = dict(
@@ -355,7 +355,7 @@ _STYLE_HELP = dict(
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
 
-      """), # noqa
+      """),  # noqa
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED =textwrap.dedent(
         """\
       Split before arguments if the argument list is terminated by a
@@ -398,7 +398,7 @@ _STYLE_HELP = dict(
 
         foo = ('This is a really long string: {}, {}, {}, {}'
                .format(a, b, c, d))
-      """),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 # noqa
+      """),  # noqa
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN =textwrap.dedent(
         """\
       Split after the opening paren which surrounds an expression if it doesn't
@@ -472,133 +472,134 @@ _STYLE_HELP = dict(
 
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
-      """),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     # noqa
+      """),  # noqa
     SPLIT_PENALTY_LOGICAL_OPERATOR =textwrap.dedent(
         """\
       The penalty of splitting the line around the 'and' and 'or'
       operators."""),
-    USE_TABS =textwrap.dedent("""\
+    USE_TABS =textwrap.dedent(
+        """\
       Use the Tab character for indentation."""),
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            # BASED_ON_STYLE='Which predefined style this style is based on',
+    # BASED_ON_STYLE='Which predefined style this style is based on',
 )
 
 
 def CreatePEP8Style():
-    """Create the PEP8 formatting style."""
-    return dict(
-        ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT            =True,
-        ALIGN_ARGUMENT_ASSIGNMENT                           =False,
-        NEW_ALIGNMENT_AFTER_COMMENTLINE                     =False,
-        ALLOW_MULTILINE_LAMBDAS                             =False,
-        ALLOW_MULTILINE_DICTIONARY_KEYS                     =False,
-        ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS         =True,
-        ALLOW_SPLIT_BEFORE_DICT_VALUE                       =True,
-        ARITHMETIC_PRECEDENCE_INDICATION                    =False,
-        BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF               =True,
-        BLANK_LINE_BEFORE_CLASS_DOCSTRING                   =False,
-        BLANK_LINE_BEFORE_MODULE_DOCSTRING                  =False,
-        BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION             =2,
-        BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES =1,
-        COALESCE_BRACKETS                                   =False,
-        COLUMN_LIMIT                                        =79,
-        CONTINUATION_ALIGN_STYLE                            ='SPACE',
-        CONTINUATION_INDENT_WIDTH                           =4,
-        DEDENT_CLOSING_BRACKETS                             =False,
-        INDENT_CLOSING_BRACKETS                             =False,
-        DISABLE_ENDING_COMMA_HEURISTIC                      =False,
-        EACH_DICT_ENTRY_ON_SEPARATE_LINE                    =True,
-        FORCE_MULTILINE_DICT                                =False,
-        I18N_COMMENT                                        ='',
-        I18N_FUNCTION_CALL                                  ='',
-        INDENT_DICTIONARY_VALUE                             =False,
-        INDENT_WIDTH                                        =4,
-        INDENT_BLANK_LINES                                  =False,
-        JOIN_MULTIPLE_LINES                                 =True,
-        NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS          =set(),
-        SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET      =True,
-        SPACE_INSIDE_BRACKETS                               =False,
-        SPACES_AROUND_POWER_OPERATOR                        =False,
-        SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN               =False,
-        SPACES_AROUND_DICT_DELIMITERS                       =False,
-        SPACES_AROUND_LIST_DELIMITERS                       =False,
-        SPACES_AROUND_SUBSCRIPT_COLON                       =False,
-        SPACES_AROUND_TUPLE_DELIMITERS                      =False,
-        SPACES_BEFORE_COMMENT                               =2,
-        SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED               =False,
-        SPLIT_ALL_COMMA_SEPARATED_VALUES                    =False,
-        SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES          =False,
-        SPLIT_BEFORE_ARITHMETIC_OPERATOR                    =False,
-        SPLIT_BEFORE_BITWISE_OPERATOR                       =True,
-        SPLIT_BEFORE_CLOSING_BRACKET                        =True,
-        SPLIT_BEFORE_DICT_SET_GENERATOR                     =True,
-        SPLIT_BEFORE_DOT                                    =False,
-        SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN         =False,
-        SPLIT_BEFORE_FIRST_ARGUMENT                         =False,
-        SPLIT_BEFORE_LOGICAL_OPERATOR                       =True,
-        SPLIT_BEFORE_NAMED_ASSIGNS                          =True,
-        SPLIT_COMPLEX_COMPREHENSION                         =False,
-        SPLIT_PENALTY_AFTER_OPENING_BRACKET                 =300,
-        SPLIT_PENALTY_AFTER_UNARY_OPERATOR                  =10000,
-        SPLIT_PENALTY_ARITHMETIC_OPERATOR                   =300,
-        SPLIT_PENALTY_BEFORE_IF_EXPR                        =0,
-        SPLIT_PENALTY_BITWISE_OPERATOR                      =300,
-        SPLIT_PENALTY_COMPREHENSION                         =80,
-        SPLIT_PENALTY_EXCESS_CHARACTER                      =7000,
-        SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT                  =30,
-        SPLIT_PENALTY_IMPORT_NAMES                          =0,
-        SPLIT_PENALTY_LOGICAL_OPERATOR                      =300,
-        USE_TABS                                            =False,
-    )
+  """Create the PEP8 formatting style."""
+  return dict(
+      ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT            =True,
+      ALIGN_ARGUMENT_ASSIGNMENT                           =False,
+      NEW_ALIGNMENT_AFTER_COMMENTLINE                     =False,
+      ALLOW_MULTILINE_LAMBDAS                             =False,
+      ALLOW_MULTILINE_DICTIONARY_KEYS                     =False,
+      ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS         =True,
+      ALLOW_SPLIT_BEFORE_DICT_VALUE                       =True,
+      ARITHMETIC_PRECEDENCE_INDICATION                    =False,
+      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF               =True,
+      BLANK_LINE_BEFORE_CLASS_DOCSTRING                   =False,
+      BLANK_LINE_BEFORE_MODULE_DOCSTRING                  =False,
+      BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION             =2,
+      BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES =1,
+      COALESCE_BRACKETS                                   =False,
+      COLUMN_LIMIT                                        =79,
+      CONTINUATION_ALIGN_STYLE                            ='SPACE',
+      CONTINUATION_INDENT_WIDTH                           =4,
+      DEDENT_CLOSING_BRACKETS                             =False,
+      INDENT_CLOSING_BRACKETS                             =False,
+      DISABLE_ENDING_COMMA_HEURISTIC                      =False,
+      EACH_DICT_ENTRY_ON_SEPARATE_LINE                    =True,
+      FORCE_MULTILINE_DICT                                =False,
+      I18N_COMMENT                                        ='',
+      I18N_FUNCTION_CALL                                  ='',
+      INDENT_DICTIONARY_VALUE                             =False,
+      INDENT_WIDTH                                        =4,
+      INDENT_BLANK_LINES                                  =False,
+      JOIN_MULTIPLE_LINES                                 =True,
+      NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS          =set(),
+      SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET      =True,
+      SPACE_INSIDE_BRACKETS                               =False,
+      SPACES_AROUND_POWER_OPERATOR                        =False,
+      SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN               =False,
+      SPACES_AROUND_DICT_DELIMITERS                       =False,
+      SPACES_AROUND_LIST_DELIMITERS                       =False,
+      SPACES_AROUND_SUBSCRIPT_COLON                       =False,
+      SPACES_AROUND_TUPLE_DELIMITERS                      =False,
+      SPACES_BEFORE_COMMENT                               =2,
+      SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED               =False,
+      SPLIT_ALL_COMMA_SEPARATED_VALUES                    =False,
+      SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES          =False,
+      SPLIT_BEFORE_ARITHMETIC_OPERATOR                    =False,
+      SPLIT_BEFORE_BITWISE_OPERATOR                       =True,
+      SPLIT_BEFORE_CLOSING_BRACKET                        =True,
+      SPLIT_BEFORE_DICT_SET_GENERATOR                     =True,
+      SPLIT_BEFORE_DOT                                    =False,
+      SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN         =False,
+      SPLIT_BEFORE_FIRST_ARGUMENT                         =False,
+      SPLIT_BEFORE_LOGICAL_OPERATOR                       =True,
+      SPLIT_BEFORE_NAMED_ASSIGNS                          =True,
+      SPLIT_COMPLEX_COMPREHENSION                         =False,
+      SPLIT_PENALTY_AFTER_OPENING_BRACKET                 =300,
+      SPLIT_PENALTY_AFTER_UNARY_OPERATOR                  =10000,
+      SPLIT_PENALTY_ARITHMETIC_OPERATOR                   =300,
+      SPLIT_PENALTY_BEFORE_IF_EXPR                        =0,
+      SPLIT_PENALTY_BITWISE_OPERATOR                      =300,
+      SPLIT_PENALTY_COMPREHENSION                         =80,
+      SPLIT_PENALTY_EXCESS_CHARACTER                      =7000,
+      SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT                  =30,
+      SPLIT_PENALTY_IMPORT_NAMES                          =0,
+      SPLIT_PENALTY_LOGICAL_OPERATOR                      =300,
+      USE_TABS                                            =False,
+  )
 
 
 def CreateGoogleStyle():
-    """Create the Google formatting style."""
-    style = CreatePEP8Style()
-    style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
-    style['COLUMN_LIMIT'] = 80
-    style['INDENT_DICTIONARY_VALUE'] = True
-    style['INDENT_WIDTH'] = 4
-    style['I18N_COMMENT'] = r'#\..*'
-    style['I18N_FUNCTION_CALL'] = ['N_', '_']
-    style['JOIN_MULTIPLE_LINES'] = False
-    style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
-    style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
-    style['SPLIT_BEFORE_DICT_SET_GENERATOR'] = False
-    style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
-    style['SPLIT_COMPLEX_COMPREHENSION'] = True
-    style['SPLIT_PENALTY_COMPREHENSION'] = 2100
-    return style
+  """Create the Google formatting style."""
+  style = CreatePEP8Style()
+  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
+  style['COLUMN_LIMIT'] = 80
+  style['INDENT_DICTIONARY_VALUE'] = True
+  style['INDENT_WIDTH'] = 4
+  style['I18N_COMMENT'] = r'#\..*'
+  style['I18N_FUNCTION_CALL'] = ['N_', '_']
+  style['JOIN_MULTIPLE_LINES'] = False
+  style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
+  style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
+  style['SPLIT_BEFORE_DICT_SET_GENERATOR'] = False
+  style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
+  style['SPLIT_COMPLEX_COMPREHENSION'] = True
+  style['SPLIT_PENALTY_COMPREHENSION'] = 2100
+  return style
 
 
 def CreateYapfStyle():
-    """Create the YAPF formatting style."""
-    style = CreateGoogleStyle()
-    style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
-    style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
-    style['INDENT_WIDTH'] = 2
-    style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
-    style['SPLIT_BEFORE_DOT'] = True
-    style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
-    return style
+  """Create the YAPF formatting style."""
+  style = CreateGoogleStyle()
+  style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
+  style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
+  style['INDENT_WIDTH'] = 2
+  style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
+  style['SPLIT_BEFORE_DOT'] = True
+  style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
+  return style
 
 
 def CreateFacebookStyle():
-    """Create the Facebook formatting style."""
-    style = CreatePEP8Style()
-    style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
-    style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = False
-    style['COLUMN_LIMIT'] = 80
-    style['DEDENT_CLOSING_BRACKETS'] = True
-    style['INDENT_CLOSING_BRACKETS'] = False
-    style['INDENT_DICTIONARY_VALUE'] = True
-    style['JOIN_MULTIPLE_LINES'] = False
-    style['SPACES_BEFORE_COMMENT'] = 2
-    style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
-    style['SPLIT_PENALTY_BEFORE_IF_EXPR'] = 30
-    style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 30
-    style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
-    style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
-    return style
+  """Create the Facebook formatting style."""
+  style = CreatePEP8Style()
+  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
+  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = False
+  style['COLUMN_LIMIT'] = 80
+  style['DEDENT_CLOSING_BRACKETS'] = True
+  style['INDENT_CLOSING_BRACKETS'] = False
+  style['INDENT_DICTIONARY_VALUE'] = True
+  style['JOIN_MULTIPLE_LINES'] = False
+  style['SPACES_BEFORE_COMMENT'] = 2
+  style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
+  style['SPLIT_PENALTY_BEFORE_IF_EXPR'] = 30
+  style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 30
+  style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
+  style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
+  return style
 
 
 _STYLE_NAME_TO_FACTORY = dict(
@@ -617,55 +618,55 @@ _DEFAULT_STYLE_TO_FACTORY = [
 
 
 def _GetStyleFactory(style):
-    for def_style, factory in _DEFAULT_STYLE_TO_FACTORY:
-        if style == def_style:
-            return factory
-    return None
+  for def_style, factory in _DEFAULT_STYLE_TO_FACTORY:
+    if style == def_style:
+      return factory
+  return None
 
 
 def _ContinuationAlignStyleStringConverter(s):
-    """Option value converter for a continuation align style string."""
-    accepted_styles = ('SPACE', 'FIXED', 'VALIGN-RIGHT')
-    if s:
-        r = s.strip('"\'').replace('_', '-').upper()
-        if r not in accepted_styles:
-            raise ValueError('unknown continuation align style: %r' % (s,))
-    else:
-        r = accepted_styles[0]
-    return r
+  """Option value converter for a continuation align style string."""
+  accepted_styles = ('SPACE', 'FIXED', 'VALIGN-RIGHT')
+  if s:
+    r = s.strip('"\'').replace('_', '-').upper()
+    if r not in accepted_styles:
+      raise ValueError('unknown continuation align style: %r' % (s,))
+  else:
+    r = accepted_styles[0]
+  return r
 
 
 def _StringListConverter(s):
-    """Option value converter for a comma-separated list of strings."""
-    return [part.strip() for part in s.split(',')]
+  """Option value converter for a comma-separated list of strings."""
+  return [part.strip() for part in s.split(',')]
 
 
 def _StringSetConverter(s):
-    """Option value converter for a comma-separated set of strings."""
-    if len(s) > 2 and s[0] in '"\'':
-        s = s[1:-1]
-    return {part.strip() for part in s.split(',')}
+  """Option value converter for a comma-separated set of strings."""
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
+  return {part.strip() for part in s.split(',')}
 
 
 def _BoolConverter(s):
-    """Option value converter for a boolean."""
-    return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
+  """Option value converter for a boolean."""
+  return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
 
 
 def _IntListConverter(s):
-    """Option value converter for a comma-separated list of integers."""
-    s = s.strip()
-    if s.startswith('[') and s.endswith(']'):
-        s = s[1:-1]
+  """Option value converter for a comma-separated list of integers."""
+  s = s.strip()
+  if s.startswith('[') and s.endswith(']'):
+    s = s[1:-1]
 
-    return [int(part.strip()) for part in s.split(',') if part.strip()]
+  return [int(part.strip()) for part in s.split(',') if part.strip()]
 
 
 def _IntOrIntListConverter(s):
-    """Option value converter for an integer or list of integers."""
-    if len(s) > 2 and s[0] in '"\'':
-        s = s[1:-1]
-    return _IntListConverter(s) if ',' in s else int(s)
+  """Option value converter for an integer or list of integers."""
+  if len(s) > 2 and s[0] in '"\'':
+    s = s[1:-1]
+  return _IntListConverter(s) if ',' in s else int(s)
 
 
 # Different style options need to have their values interpreted differently when
@@ -742,7 +743,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
 
 
 def CreateStyleFromConfig(style_config):
-    """Create a style dict from the given config.
+  """Create a style dict from the given config.
 
   Arguments:
     style_config: either a style name or a file name. The file is expected to
@@ -758,106 +759,107 @@ def CreateStyleFromConfig(style_config):
     StyleConfigError: if an unknown style option was encountered.
   """
 
-    def GlobalStyles():
-        for style, _ in _DEFAULT_STYLE_TO_FACTORY:
-            yield style
+  def GlobalStyles():
+    for style, _ in _DEFAULT_STYLE_TO_FACTORY:
+      yield style
 
-    def_style = False
-    if style_config is None:
-        for style in GlobalStyles():
-            if _style == style:
-                def_style = True
-                break
-        if not def_style:
-            return _style
-        return _GLOBAL_STYLE_FACTORY()
+  def_style = False
+  if style_config is None:
+    for style in GlobalStyles():
+      if _style == style:
+        def_style = True
+        break
+    if not def_style:
+      return _style
+    return _GLOBAL_STYLE_FACTORY()
 
-    if isinstance(style_config, dict):
-        config = _CreateConfigParserFromConfigDict(style_config)
-    elif isinstance(style_config, py3compat.basestring):
-        style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
-        if style_factory is not None:
-            return style_factory()
-        if style_config.startswith('{'):
-            # Most likely a style specification from the command line.
-            config = _CreateConfigParserFromConfigString(style_config)
-        else:
-            # Unknown config name: assume it's a file name then.
-            config = _CreateConfigParserFromConfigFile(style_config)
-    return _CreateStyleFromConfigParser(config)
+  if isinstance(style_config, dict):
+    config = _CreateConfigParserFromConfigDict(style_config)
+  elif isinstance(style_config, py3compat.basestring):
+    style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
+    if style_factory is not None:
+      return style_factory()
+    if style_config.startswith('{'):
+      # Most likely a style specification from the command line.
+      config = _CreateConfigParserFromConfigString(style_config)
+    else:
+      # Unknown config name: assume it's a file name then.
+      config = _CreateConfigParserFromConfigFile(style_config)
+  return _CreateStyleFromConfigParser(config)
 
 
 def _CreateConfigParserFromConfigDict(config_dict):
-    config = py3compat.ConfigParser()
-    config.add_section('style')
-    for key, value in config_dict.items():
-        config.set('style', key, str(value))
-    return config
+  config = py3compat.ConfigParser()
+  config.add_section('style')
+  for key, value in config_dict.items():
+    config.set('style', key, str(value))
+  return config
 
 
 def _CreateConfigParserFromConfigString(config_string):
-    """Given a config string from the command line, return a config parser."""
-    if config_string[0] != '{' or config_string[-1] != '}':
-        raise StyleConfigError("Invalid style dict syntax: '{}'.".format(config_string))
-    config = py3compat.ConfigParser()
-    config.add_section('style')
-    for key, value, _ in re.findall(
-        r'([a-zA-Z0-9_]+)\s*[:=]\s*'
-        r'(?:'
-        r'((?P<quote>[\'"]).*?(?P=quote)|'
-        r'[a-zA-Z0-9_]+)'
-        r')', config_string):  # yapf: disable
-        config.set('style', key, value)
-    return config
+  """Given a config string from the command line, return a config parser."""
+  if config_string[0] != '{' or config_string[-1] != '}':
+    raise StyleConfigError(
+        "Invalid style dict syntax: '{}'.".format(config_string))
+  config = py3compat.ConfigParser()
+  config.add_section('style')
+  for key, value, _ in re.findall(
+      r'([a-zA-Z0-9_]+)\s*[:=]\s*'
+      r'(?:'
+      r'((?P<quote>[\'"]).*?(?P=quote)|'
+      r'[a-zA-Z0-9_]+)'
+      r')', config_string):  # yapf: disable
+    config.set('style', key, value)
+  return config
 
 
 def _CreateConfigParserFromConfigFile(config_filename):
-    """Read the file and return a ConfigParser object."""
-    if not os.path.exists(config_filename):
-        # Provide a more meaningful error here.
+  """Read the file and return a ConfigParser object."""
+  if not os.path.exists(config_filename):
+    # Provide a more meaningful error here.
+    raise StyleConfigError(
+        '"{0}" is not a valid style or file path'.format(config_filename))
+  with open(config_filename) as style_file:
+    config = py3compat.ConfigParser()
+    if config_filename.endswith(PYPROJECT_TOML):
+      try:
+        import toml
+      except ImportError:
+        raise errors.YapfError(
+            "toml package is needed for using pyproject.toml as a "
+            "configuration file")
+
+      pyproject_toml = toml.load(style_file)
+      style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
+      if style_dict is None:
         raise StyleConfigError(
-            '"{0}" is not a valid style or file path'.format(config_filename))
-    with open(config_filename) as style_file:
-        config = py3compat.ConfigParser()
-        if config_filename.endswith(PYPROJECT_TOML):
-            try:
-                import toml
-            except ImportError:
-                raise errors.YapfError(
-                    "toml package is needed for using pyproject.toml as a "
-                    "configuration file")
+            'Unable to find section [tool.yapf] in {0}'.format(config_filename))
+      config.add_section('style')
+      for k, v in style_dict.items():
+        config.set('style', k, str(v))
+      return config
 
-            pyproject_toml = toml.load(style_file)
-            style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
-            if style_dict is None:
-                raise StyleConfigError(
-                    'Unable to find section [tool.yapf] in {0}'.format(config_filename))
-            config.add_section('style')
-            for k, v in style_dict.items():
-                config.set('style', k, str(v))
-            return config
+    config.read_file(style_file)
+    if config_filename.endswith(SETUP_CONFIG):
+      if not config.has_section('yapf'):
+        raise StyleConfigError(
+            'Unable to find section [yapf] in {0}'.format(config_filename))
+      return config
 
-        config.read_file(style_file)
-        if config_filename.endswith(SETUP_CONFIG):
-            if not config.has_section('yapf'):
-                raise StyleConfigError(
-                    'Unable to find section [yapf] in {0}'.format(config_filename))
-            return config
+    if config_filename.endswith(LOCAL_STYLE):
+      if not config.has_section('style'):
+        raise StyleConfigError(
+            'Unable to find section [style] in {0}'.format(config_filename))
+      return config
 
-        if config_filename.endswith(LOCAL_STYLE):
-            if not config.has_section('style'):
-                raise StyleConfigError(
-                    'Unable to find section [style] in {0}'.format(config_filename))
-            return config
-
-        if not config.has_section('style'):
-            raise StyleConfigError(
-                'Unable to find section [style] in {0}'.format(config_filename))
-        return config
+    if not config.has_section('style'):
+      raise StyleConfigError(
+          'Unable to find section [style] in {0}'.format(config_filename))
+    return config
 
 
 def _CreateStyleFromConfigParser(config):
-    """Create a style dict from a configuration file.
+  """Create a style dict from a configuration file.
 
   Arguments:
     config: a ConfigParser object.
@@ -868,32 +870,32 @@ def _CreateStyleFromConfigParser(config):
   Raises:
     StyleConfigError: if an unknown style option was encountered.
   """
-    # Initialize the base style.
-    section = 'yapf' if config.has_section('yapf') else 'style'
-    if config.has_option('style', 'based_on_style'):
-        based_on = config.get('style', 'based_on_style').lower()
-        base_style = _STYLE_NAME_TO_FACTORY[based_on]()
-    elif config.has_option('yapf', 'based_on_style'):
-        based_on = config.get('yapf', 'based_on_style').lower()
-        base_style = _STYLE_NAME_TO_FACTORY[based_on]()
-    else:
-        base_style = _GLOBAL_STYLE_FACTORY()
+  # Initialize the base style.
+  section = 'yapf' if config.has_section('yapf') else 'style'
+  if config.has_option('style', 'based_on_style'):
+    based_on = config.get('style', 'based_on_style').lower()
+    base_style = _STYLE_NAME_TO_FACTORY[based_on]()
+  elif config.has_option('yapf', 'based_on_style'):
+    based_on = config.get('yapf', 'based_on_style').lower()
+    base_style = _STYLE_NAME_TO_FACTORY[based_on]()
+  else:
+    base_style = _GLOBAL_STYLE_FACTORY()
 
-    # Read all options specified in the file and update the style.
-    for option, value in config.items(section):
-        if option.lower() == 'based_on_style':
-            # Now skip this one - we've already handled it and it's not one of the
-            # recognized style options.
-            continue
-        option = option.upper()
-        if option not in _STYLE_OPTION_VALUE_CONVERTER:
-            raise StyleConfigError('Unknown style option "{0}"'.format(option))
-        try:
-            base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
-        except ValueError:
-            raise StyleConfigError(
-                "'{}' is not a valid setting for {}.".format(value, option))
-    return base_style
+  # Read all options specified in the file and update the style.
+  for option, value in config.items(section):
+    if option.lower() == 'based_on_style':
+      # Now skip this one - we've already handled it and it's not one of the
+      # recognized style options.
+      continue
+    option = option.upper()
+    if option not in _STYLE_OPTION_VALUE_CONVERTER:
+      raise StyleConfigError('Unknown style option "{0}"'.format(option))
+    try:
+      base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
+    except ValueError:
+      raise StyleConfigError(
+          "'{}' is not a valid setting for {}.".format(value, option))
+  return base_style
 
 
 # The default style - used if yapf is not invoked without specifically

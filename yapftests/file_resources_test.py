@@ -167,12 +167,12 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
     open(style_file, 'w').close()
 
     test_filename = os.path.join(self.test_tmpdir, 'file.py')
-    self.assertEqual(style_file,
-                     file_resources.GetDefaultStyleForDir(test_filename))
+    self.assertEqual(
+        style_file, file_resources.GetDefaultStyleForDir(test_filename))
 
     test_filename = os.path.join(self.test_tmpdir, 'dir1', 'file.py')
-    self.assertEqual(style_file,
-                     file_resources.GetDefaultStyleForDir(test_filename))
+    self.assertEqual(
+        style_file, file_resources.GetDefaultStyleForDir(test_filename))
 
   def test_setup_config(self):
     # An empty setup.cfg file should not be used
@@ -186,8 +186,8 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
     # One with a '[yapf]' section should be used
     with open(setup_config, 'w') as f:
       f.write('[yapf]\n')
-    self.assertEqual(setup_config,
-                     file_resources.GetDefaultStyleForDir(test_dir))
+    self.assertEqual(
+        setup_config, file_resources.GetDefaultStyleForDir(test_dir))
 
   def test_pyproject_toml(self):
     # An empty pyproject.toml file should not be used
@@ -206,8 +206,8 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
     # One with a '[tool.yapf]' section should be used
     with open(pyproject_toml, 'w') as f:
       f.write('[tool.yapf]\n')
-    self.assertEqual(pyproject_toml,
-                     file_resources.GetDefaultStyleForDir(test_dir))
+    self.assertEqual(
+        pyproject_toml, file_resources.GetDefaultStyleForDir(test_dir))
 
   def test_local_style_at_root(self):
     # Test behavior of files located on the root, and under root.
@@ -260,13 +260,11 @@ class GetCommandLineFilesTest(unittest.TestCase):
     _touch_files([file1, file2])
 
     self.assertEqual(
-        file_resources.GetCommandLineFiles([file1, file2],
-                                           recursive=False,
-                                           exclude=None), [file1, file2])
+        file_resources.GetCommandLineFiles(
+            [file1, file2], recursive=False, exclude=None), [file1, file2])
     self.assertEqual(
-        file_resources.GetCommandLineFiles([file1, file2],
-                                           recursive=True,
-                                           exclude=None), [file1, file2])
+        file_resources.GetCommandLineFiles(
+            [file1, file2], recursive=True, exclude=None), [file1, file2])
 
   def test_nonrecursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
@@ -278,9 +276,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
     self.assertRaises(
         errors.YapfError,
         file_resources.GetCommandLineFiles,
-        command_line_file_list=[tdir1],
-        recursive=False,
-        exclude=None)
+        command_line_file_list =[tdir1],
+        recursive              =False,
+        exclude                =None)
 
   def test_recursive_find_in_dir(self):
     tdir1 = self._make_test_dir('test1')
@@ -295,9 +293,9 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
     self.assertEqual(
         sorted(
-            file_resources.GetCommandLineFiles([self.test_tmpdir],
-                                               recursive=True,
-                                               exclude=None)), sorted(files))
+            file_resources.GetCommandLineFiles(
+                [self.test_tmpdir], recursive=True, exclude=None)),
+        sorted(files))
 
   def test_recursive_find_in_dir_with_exclude(self):
     tdir1 = self._make_test_dir('test1')
@@ -312,13 +310,13 @@ class GetCommandLineFilesTest(unittest.TestCase):
 
     self.assertEqual(
         sorted(
-            file_resources.GetCommandLineFiles([self.test_tmpdir],
-                                               recursive=True,
-                                               exclude=['*test*3.py'])),
-        sorted([
-            os.path.join(tdir1, 'testfile1.py'),
-            os.path.join(tdir2, 'testfile2.py'),
-        ]))
+            file_resources.GetCommandLineFiles(
+                [self.test_tmpdir], recursive=True, exclude=['*test*3.py'])),
+        sorted(
+            [
+                os.path.join(tdir1, 'testfile1.py'),
+                os.path.join(tdir2, 'testfile2.py'),
+            ]))
 
   def test_find_with_excluded_hidden_dirs(self):
     tdir1 = self._make_test_dir('.test1')
@@ -331,16 +329,16 @@ class GetCommandLineFilesTest(unittest.TestCase):
     ]
     _touch_files(files)
 
-    actual = file_resources.GetCommandLineFiles([self.test_tmpdir],
-                                                recursive=True,
-                                                exclude=['*.test1*'])
+    actual = file_resources.GetCommandLineFiles(
+        [self.test_tmpdir], recursive=True, exclude=['*.test1*'])
 
     self.assertEqual(
         sorted(actual),
-        sorted([
-            os.path.join(tdir2, 'testfile2.py'),
-            os.path.join(tdir3, 'testfile3.py'),
-        ]))
+        sorted(
+            [
+                os.path.join(tdir2, 'testfile2.py'),
+                os.path.join(tdir3, 'testfile3.py'),
+            ]))
 
   def test_find_with_excluded_hidden_dirs_relative(self):
     """Test find with excluded hidden dirs.
@@ -370,19 +368,20 @@ class GetCommandLineFilesTest(unittest.TestCase):
       os.chdir(self.test_tmpdir)
       actual = file_resources.GetCommandLineFiles(
           [os.path.relpath(self.test_tmpdir)],
-          recursive=True,
-          exclude=['*.test1*'])
+          recursive =True,
+          exclude   =['*.test1*'])
 
       self.assertEqual(
           sorted(actual),
-          sorted([
-              os.path.join(
-                  os.path.relpath(self.test_tmpdir), os.path.basename(tdir2),
-                  'testfile2.py'),
-              os.path.join(
-                  os.path.relpath(self.test_tmpdir), os.path.basename(tdir3),
-                  'testfile3.py'),
-          ]))
+          sorted(
+              [
+                  os.path.join(
+                      os.path.relpath(self.test_tmpdir),
+                      os.path.basename(tdir2), 'testfile2.py'),
+                  os.path.join(
+                      os.path.relpath(self.test_tmpdir),
+                      os.path.basename(tdir3), 'testfile3.py'),
+              ]))
 
   def test_find_with_excluded_dirs(self):
     tdir1 = self._make_test_dir('test1')
@@ -398,23 +397,23 @@ class GetCommandLineFilesTest(unittest.TestCase):
     os.chdir(self.test_tmpdir)
 
     found = sorted(
-        file_resources.GetCommandLineFiles(['test1', 'test2', 'test3'],
-                                           recursive=True,
-                                           exclude=[
-                                               'test1',
-                                               'test2/testinner/',
-                                           ]))
+        file_resources.GetCommandLineFiles(
+            ['test1', 'test2', 'test3'],
+            recursive =True,
+            exclude   =[
+                'test1',
+                'test2/testinner/',
+            ]))
 
     self.assertEqual(
         found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace("/", os.path.sep)])
 
     found = sorted(
-        file_resources.GetCommandLineFiles(['.'],
-                                           recursive=True,
-                                           exclude=[
-                                               'test1',
-                                               'test3',
-                                           ]))
+        file_resources.GetCommandLineFiles(
+            ['.'], recursive=True, exclude=[
+                'test1',
+                'test3',
+            ]))
 
     self.assertEqual(
         found, ['./test2/testinner/testfile2.py'.replace("/", os.path.sep)])

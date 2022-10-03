@@ -38,9 +38,8 @@ class CommentSplicerTest(unittest.TestCase):
       self.assertIn(text_in_comment, node_value)
 
   def _FindNthChildNamed(self, node, name, n=1):
-    for i, child in enumerate(
-        py3compat.ifilter(lambda c: pytree_utils.NodeName(c) == name,
-                          node.pre_order())):
+    for i, child in enumerate(py3compat.ifilter(
+        lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
       if i == n - 1:
         return child
     raise RuntimeError('No Nth child for n={0}'.format(n))
@@ -59,7 +58,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(comment_node, '# and a comment')
 
   def testSimpleSeparateLine(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       foo = 1
       # first comment
       bar = 2
@@ -74,7 +74,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(comment_node)
 
   def testTwoLineComment(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       foo = 1
       # first comment
       # second comment
@@ -88,7 +89,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(tree.children[1])
 
   def testCommentIsFirstChildInCompound(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       if x:
         # a comment
         foo = 1
@@ -104,7 +106,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(if_suite.children[1])
 
   def testCommentIsLastChildInCompound(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       if x:
         foo = 1
         # a comment
@@ -120,7 +123,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(if_suite.children[-2])
 
   def testInlineAfterSeparateLine(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       bar = 1
       # line comment
       foo = 1 # inline comment
@@ -138,7 +142,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(inline_comment_node, '# inline comment')
 
   def testSeparateLineAfterInline(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       bar = 1
       foo = 1 # inline comment
       # line comment
@@ -156,7 +161,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(inline_comment_node, '# inline comment')
 
   def testCommentBeforeDedent(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       if bar:
         z = 1
       # a comment
@@ -171,7 +177,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite.children[-1])
 
   def testCommentBeforeDedentTwoLevel(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       if foo:
         if bar:
           z = 1
@@ -188,7 +195,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite.children[-1])
 
   def testCommentBeforeDedentTwoLevelImproperlyIndented(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       if foo:
         if bar:
           z = 1
@@ -208,7 +216,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite.children[-1])
 
   def testCommentBeforeDedentThreeLevel(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       if foo:
         if bar:
           z = 1
@@ -235,7 +244,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite_2.children[-1])
 
   def testCommentsInClass(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       class Foo:
         """docstring abc..."""
         # top-level comment
@@ -257,7 +267,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(toplevel_comment, '# top-level')
 
   def testMultipleBlockComments(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
         # Block comment number 1
 
         # Block comment number 2
@@ -276,7 +287,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(block_comment_2, '# Block comment number 2')
 
   def testCommentsOnDedents(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
         class Foo(object):
           # A comment for qux.
           def qux(self):
@@ -300,7 +312,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(interim_comment, '# Interim comment.')
 
   def testExprComments(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       foo( # Request fractions of an hour.
         948.0/3600, 20)
     ''')
@@ -312,7 +325,8 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(comment, '# Request fractions of an hour.')
 
   def testMultipleCommentsInOneExpr(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent(
+        r'''
       foo( # com 1
         948.0/3600, # com 2
         20 + 12 # com 3

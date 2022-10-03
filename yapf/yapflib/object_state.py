@@ -70,10 +70,11 @@ class ComprehensionState(object):
     return clone
 
   def __repr__(self):
-    return ('[opening_bracket::%s, for_token::%s, has_split_at_for::%s,'
-            ' has_interior_split::%s, has_trivial_expr::%s]' %
-            (self.opening_bracket, self.for_token, self.has_split_at_for,
-             self.has_interior_split, self.HasTrivialExpr()))
+    return (
+        '[opening_bracket::%s, for_token::%s, has_split_at_for::%s,'
+        ' has_interior_split::%s, has_trivial_expr::%s]' % (
+            self.opening_bracket, self.for_token, self.has_split_at_for,
+            self.has_interior_split, self.HasTrivialExpr()))
 
   def __eq__(self, other):
     return hash(self) == hash(other)
@@ -82,8 +83,10 @@ class ComprehensionState(object):
     return not self == other
 
   def __hash__(self, *args, **kwargs):
-    return hash((self.expr_token, self.for_token, self.has_split_at_for,
-                 self.has_interior_split))
+    return hash(
+        (
+            self.expr_token, self.for_token, self.has_split_at_for,
+            self.has_interior_split))
 
 
 class ParameterListState(object):
@@ -166,18 +169,19 @@ class ParameterListState(object):
     return total_length + indent > style.Get('COLUMN_LIMIT')
 
   def Clone(self):
-    clone = ParameterListState(self.opening_bracket,
-                               self.has_split_before_first_param,
-                               self.opening_column)
+    clone = ParameterListState(
+        self.opening_bracket, self.has_split_before_first_param,
+        self.opening_column)
     clone.split_before_closing_bracket = self.split_before_closing_bracket
     clone.parameters = [param.Clone() for param in self.parameters]
     return clone
 
   def __repr__(self):
-    return ('[opening_bracket::%s, has_split_before_first_param::%s, '
-            'opening_column::%d]' %
-            (self.opening_bracket, self.has_split_before_first_param,
-             self.opening_column))
+    return (
+        '[opening_bracket::%s, has_split_before_first_param::%s, '
+        'opening_column::%d]' % (
+            self.opening_bracket, self.has_split_before_first_param,
+            self.opening_column))
 
   def __eq__(self, other):
     return hash(self) == hash(other)
@@ -187,8 +191,9 @@ class ParameterListState(object):
 
   def __hash__(self, *args, **kwargs):
     return hash(
-        (self.opening_bracket, self.has_split_before_first_param,
-         self.opening_column, (hash(param) for param in self.parameters)))
+        (
+            self.opening_bracket, self.has_split_before_first_param,
+            self.opening_column, (hash(param) for param in self.parameters)))
 
 
 class Parameter(object):
@@ -219,8 +224,8 @@ class Parameter(object):
     return Parameter(self.first_token, self.last_token)
 
   def __repr__(self):
-    return '[first_token::%s, last_token:%s]' % (self.first_token,
-                                                 self.last_token)
+    return '[first_token::%s, last_token:%s]' % (
+        self.first_token, self.last_token)
 
   def __eq__(self, other):
     return hash(self) == hash(other)

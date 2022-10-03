@@ -135,5 +135,6 @@ class MainTest(yapf_test_helper.YAPFTest):
       self.assertEqual(ret, 0)
       help_message = out.getvalue()
       self.assertIn('indent_width=4', help_message)
-      self.assertIn('The number of spaces required before a trailing comment.',
-                    help_message)
+      self.assertIn(
+          'The number of spaces required before a trailing comment.',
+          help_message)

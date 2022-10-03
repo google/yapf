@@ -110,11 +110,11 @@ def _CreateLogicalLines(tokens):
           prev_tok.start[0] < tok.start[0]):
         # Insert a token for a line continuation.
         ctok = py3compat.TokenInfo(
-            type=CONTINUATION,
-            string='\\',
-            start=(prev_tok.start[0], prev_tok.start[1] + 1),
-            end=(prev_tok.end[0], prev_tok.end[0] + 2),
-            line=prev_tok.line)
+            type   =CONTINUATION,
+            string ='\\',
+            start  =(prev_tok.start[0], prev_tok.start[1] + 1),
+            end    =(prev_tok.end[0], prev_tok.end[0] + 2),
+            line   =prev_tok.line)
         ctok.lineno = ctok.start[0]
         ctok.column = ctok.start[1]
         ctok.value = '\\'

@@ -33,11 +33,13 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testTypedNames(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def x(aaaaaaaaaaaaaaa:int,bbbbbbbbbbbbbbbb:str,ccccccccccccccc:dict,eeeeeeeeeeeeee:set={1, 2, 3})->bool:
           pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def x(aaaaaaaaaaaaaaa: int,
               bbbbbbbbbbbbbbbb: str,
               ccccccccccccccc: dict,
@@ -48,11 +50,13 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testTypedNameWithLongNamedArg(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def func(arg=long_function_call_that_pushes_the_line_over_eighty_characters()) -> ReturnType:
           pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def func(arg=long_function_call_that_pushes_the_line_over_eighty_characters()
                  ) -> ReturnType:
             pass
@@ -61,11 +65,13 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testKeywordOnlyArgSpecifier(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def foo(a, *, kw):
           return a+kw
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def foo(a, *, kw):
             return a + kw
         """)
@@ -74,13 +80,15 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def testPEP448ParameterExpansion(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
     { ** x }
     {   **{}   }
     { **{   **x },  **x }
     {'a': 1,   **kw , 'b':3,  **kw2   }
     """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
     {**x}
     {**{}}
     {**{**x}, **x}
@@ -90,11 +98,13 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testAnnotations(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def foo(a: list, b: "bar") -> dict:
           return a+b
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def foo(a: list, b: "bar") -> dict:
             return a + b
         """)
@@ -110,7 +120,8 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
   def testAsyncFunctions(self):
     if sys.version_info[1] < 5:
       return
-    code = textwrap.dedent("""\
+    code = textwrap.dedent(
+        """\
         import asyncio
         import time
 
@@ -143,8 +154,8 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
               '{based_on_style: pep8, SPACES_AROUND_POWER_OPERATOR: True}'))
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(llines))
+      self.assertCodeEqual(
+          expected_formatted_code, reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
@@ -163,13 +174,14 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
               'SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN: True}'))
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(llines))
+      self.assertCodeEqual(
+          expected_formatted_code, reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testTypeHint(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def foo(x: int=42):
             pass
 
@@ -177,7 +189,8 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
         def foo2(x: 'int' =42):
             pass
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def foo(x: int = 42):
             pass
 
@@ -192,7 +205,8 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         a=b@c
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         a = b @ c
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
@@ -208,7 +222,8 @@ None.__ne__()
   def testAsyncWithPrecedingComment(self):
     if sys.version_info[1] < 5:
       return
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         import asyncio
 
         # Comment
@@ -218,7 +233,8 @@ None.__ne__()
         async def foo():
             pass
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         import asyncio
 
 
@@ -236,7 +252,8 @@ None.__ne__()
   def testAsyncFunctionsNested(self):
     if sys.version_info[1] < 5:
       return
-    code = textwrap.dedent("""\
+    code = textwrap.dedent(
+        """\
         async def outer():
 
             async def inner():
@@ -248,13 +265,15 @@ None.__ne__()
   def testKeepTypesIntact(self):
     if sys.version_info[1] < 5:
       return
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def _ReduceAbstractContainers(
             self, *args: Optional[automation_converter.PyiCollectionAbc]) -> List[
                 automation_converter.PyiCollectionAbc]:
             pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def _ReduceAbstractContainers(
             self, *args: Optional[automation_converter.PyiCollectionAbc]
         ) -> List[automation_converter.PyiCollectionAbc]:
@@ -266,13 +285,15 @@ None.__ne__()
   def testContinuationIndentWithAsync(self):
     if sys.version_info[1] < 5:
       return
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         async def start_websocket():
             async with session.ws_connect(
                 r"ws://a_really_long_long_long_long_long_long_url") as ws:
                 pass
         """)
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         async def start_websocket():
             async with session.ws_connect(
                     r"ws://a_really_long_long_long_long_long_long_url") as ws:
@@ -346,8 +367,8 @@ def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
               'split_before_first_argument: true}'))
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(expected_formatted_code,
-                           reformatter.Reformat(llines))
+      self.assertCodeEqual(
+          expected_formatted_code, reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
@@ -423,7 +444,8 @@ def rrrrrrrrrrrrrrrrrrrrrr(
   def testAsyncForElseNotIndentedInsideBody(self):
     if sys.version_info[1] < 5:
       return
-    code = textwrap.dedent("""\
+    code = textwrap.dedent(
+        """\
     async def fn():
         async for message in websocket:
             for i in range(10):
@@ -439,7 +461,8 @@ def rrrrrrrrrrrrrrrrrrrrrr(
   def testForElseInAsyncNotMixedWithAsyncFor(self):
     if sys.version_info[1] < 5:
       return
-    code = textwrap.dedent("""\
+    code = textwrap.dedent(
+        """\
     async def fn():
         for i in range(10):
             pass
@@ -450,12 +473,14 @@ def rrrrrrrrrrrrrrrrrrrrrr(
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testParameterListIndentationConflicts(self):
-    unformatted_code = textwrap.dedent("""\
+    unformatted_code = textwrap.dedent(
+        """\
         def raw_message(  # pylint: disable=too-many-arguments
                     self, text, user_id=1000, chat_type='private', forward_date=None, forward_from=None):
                 pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent("""\
+    expected_formatted_code = textwrap.dedent(
+        """\
         def raw_message(  # pylint: disable=too-many-arguments
                 self,
                 text,

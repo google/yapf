@@ -33,13 +33,14 @@ _NO_BLANK_LINES = 1
 _ONE_BLANK_LINE = 2
 _TWO_BLANK_LINES = 3
 
-_PYTHON_STATEMENTS = frozenset({
-    'small_stmt', 'expr_stmt', 'print_stmt', 'del_stmt', 'pass_stmt',
-    'break_stmt', 'continue_stmt', 'return_stmt', 'raise_stmt', 'yield_stmt',
-    'import_stmt', 'global_stmt', 'exec_stmt', 'assert_stmt', 'if_stmt',
-    'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt', 'nonlocal_stmt',
-    'async_stmt', 'simple_stmt'
-})
+_PYTHON_STATEMENTS = frozenset(
+    {
+        'small_stmt', 'expr_stmt', 'print_stmt', 'del_stmt', 'pass_stmt',
+        'break_stmt', 'continue_stmt', 'return_stmt', 'raise_stmt',
+        'yield_stmt', 'import_stmt', 'global_stmt', 'exec_stmt', 'assert_stmt',
+        'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
+        'nonlocal_stmt', 'async_stmt', 'simple_stmt'
+    })
 
 
 def CalculateBlankLines(tree):
@@ -160,20 +161,23 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     return _ONE_BLANK_LINE
 
   def _IsTopLevel(self, node):
-    return (not (self.class_level or self.function_level) and
-            _StartsInZerothColumn(node))
+    return (
+        not (self.class_level or self.function_level) and
+        _StartsInZerothColumn(node))
 
 
 def _SetNumNewlines(node, num_newlines):
-  pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.NEWLINES,
-                                 num_newlines)
+  pytree_utils.SetNodeAnnotation(
+      node, pytree_utils.Annotation.NEWLINES, num_newlines)
 
 
 def _StartsInZerothColumn(node):
-  return (pytree_utils.FirstLeafNode(node).column == 0 or
-          (_AsyncFunction(node) and node.prev_sibling.column == 0))
+  return (
+      pytree_utils.FirstLeafNode(node).column == 0 or
+      (_AsyncFunction(node) and node.prev_sibling.column == 0))
 
 
 def _AsyncFunction(node):
-  return (py3compat.PY3 and node.prev_sibling and
-          node.prev_sibling.type == grammar_token.ASYNC)
+  return (
+      py3compat.PY3 and node.prev_sibling and
+      node.prev_sibling.type == grammar_token.ASYNC)

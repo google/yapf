@@ -98,27 +98,30 @@ class FormatDecisionState(object):
     # Note: 'first_indent' is implicit in the stack. Also, we ignore 'previous',
     # because it shouldn't have a bearing on this comparison. (I.e., it will
     # report equal if 'next_token' does.)
-    return (self.next_token == other.next_token and
-            self.column == other.column and
-            self.paren_level == other.paren_level and
-            self.line.depth == other.line.depth and
-            self.lowest_level_on_line == other.lowest_level_on_line and
-            (self.ignore_stack_for_comparison or
-             other.ignore_stack_for_comparison or self.stack == other.stack and
-             self.comp_stack == other.comp_stack and
-             self.param_list_stack == other.param_list_stack))
+    return (
+        self.next_token == other.next_token and self.column == other.column and
+        self.paren_level == other.paren_level and
+        self.line.depth == other.line.depth and
+        self.lowest_level_on_line == other.lowest_level_on_line and (
+            self.ignore_stack_for_comparison or
+            other.ignore_stack_for_comparison or self.stack == other.stack and
+            self.comp_stack == other.comp_stack and
+            self.param_list_stack == other.param_list_stack))
 
   def __ne__(self, other):
     return not self == other
 
   def __hash__(self):
-    return hash((self.next_token, self.column, self.paren_level,
-                 self.line.depth, self.lowest_level_on_line))
+    return hash(
+        (
+            self.next_token, self.column, self.paren_level, self.line.depth,
+            self.lowest_level_on_line))
 
   def __repr__(self):
-    return ('column::%d, next_token::%s, paren_level::%d, stack::[\n\t%s' %
-            (self.column, repr(self.next_token), self.paren_level,
-             '\n\t'.join(repr(s) for s in self.stack) + ']'))
+    return (
+        'column::%d, next_token::%s, paren_level::%d, stack::[\n\t%s' % (
+            self.column, repr(self.next_token), self.paren_level,
+            '\n\t'.join(repr(s) for s in self.stack) + ']'))
 
   def CanSplit(self, must_split):
     """Determine if we can split before the next token.
@@ -704,8 +707,8 @@ class FormatDecisionState(object):
     """
     current = self.next_token
     if not current.OpensScope() and not current.ClosesScope():
-      self.lowest_level_on_line = min(self.lowest_level_on_line,
-                                      self.paren_level)
+      self.lowest_level_on_line = min(
+          self.lowest_level_on_line, self.paren_level)
 
     # If we encounter an opening bracket, we add a level to our stack to prepare
     # for the subsequent tokens.
@@ -829,8 +832,8 @@ class FormatDecisionState(object):
     if _IsFunctionDefinition(previous):
       first_param_column = previous.total_length + self.stack[-2].indent
       self.param_list_stack.append(
-          object_state.ParameterListState(previous, newline,
-                                          first_param_column))
+          object_state.ParameterListState(
+              previous, newline, first_param_column))
 
   def _CalculateParameterListState(self, newline):
     """Makes required changes to parameter list state.
@@ -921,8 +924,9 @@ class FormatDecisionState(object):
       return column
     align_style = style.Get('CONTINUATION_ALIGN_STYLE')
     if align_style == 'FIXED':
-      return ((self.line.depth * style.Get('INDENT_WIDTH')) +
-              style.Get('CONTINUATION_INDENT_WIDTH'))
+      return (
+          (self.line.depth * style.Get('INDENT_WIDTH')) +
+          style.Get('CONTINUATION_INDENT_WIDTH'))
     if align_style == 'VALIGN-RIGHT':
       indent_width = style.Get('INDENT_WIDTH')
       return indent_width * int((column + indent_width - 1) / indent_width)
@@ -951,8 +955,8 @@ class FormatDecisionState(object):
       if (previous.OpensScope() or
           (previous.is_comment and previous.previous_token is not None and
            previous.previous_token.OpensScope())):
-        return max(0,
-                   top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
+        return max(
+            0, top_of_stack.indent - style.Get('CONTINUATION_INDENT_WIDTH'))
       return top_of_stack.closing_scope_indent
 
     if (previous and previous.is_string and current.is_string and
@@ -1089,8 +1093,9 @@ class FormatDecisionState(object):
 
   def _ContainerFitsOnStartLine(self, opening):
     """Check if the container can fit on its starting line."""
-    return (opening.matching_bracket.total_length - opening.total_length +
-            self.stack[-1].indent) <= self.column_limit
+    return (
+        opening.matching_bracket.total_length - opening.total_length +
+        self.stack[-1].indent) <= self.column_limit
 
 
 _COMPOUND_STMTS = frozenset(
@@ -1232,5 +1237,7 @@ class _ParenState(object):
     return not self == other
 
   def __hash__(self, *args, **kwargs):
-    return hash((self.indent, self.last_space, self.closing_scope_indent,
-                 self.split_before_closing_bracket, self.num_line_splits))
+    return hash(
+        (
+            self.indent, self.last_space, self.closing_scope_indent,
+            self.split_before_closing_bracket, self.num_line_splits))
