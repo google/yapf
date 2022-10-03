@@ -30,7 +30,7 @@ _CLOSING_BRACKETS = frozenset({')', ']', '}'})
 
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
-  """Build padding string for continuation alignment in tabbed indentation.
+    """Build padding string for continuation alignment in tabbed indentation.
 
   Arguments:
     spaces: (int) The number of spaces to place before the token for alignment.
@@ -40,15 +40,15 @@ def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
   Returns:
     A padding string for alignment with style specified by align_style option.
   """
-  if align_style in ('FIXED', 'VALIGN-RIGHT'):
-    if spaces > 0:
-      return '\t' * int((spaces + tab_width - 1) / tab_width)
-    return ''
-  return ' ' * spaces
+    if align_style in ('FIXED', 'VALIGN-RIGHT'):
+        if spaces > 0:
+            return '\t' * int((spaces + tab_width - 1) / tab_width)
+        return ''
+    return ' ' * spaces
 
 
 class FormatToken(object):
-  """Enhanced token information for formatting.
+    """Enhanced token information for formatting.
 
   This represents the token plus additional information useful for reformatting
   the code.
@@ -83,58 +83,57 @@ class FormatToken(object):
     newlines: The number of newlines needed before this token.
   """
 
-  def __init__(self, node, name):
-    """Constructor.
+    def __init__(self, node, name):
+        """Constructor.
 
     Arguments:
       node: (pytree.Leaf) The node that's being wrapped.
       name: (string) The name of the node.
     """
-    self.node = node
-    self.name = name
-    self.type = node.type
-    self.column = node.column
-    self.lineno = node.lineno
-    self.value = node.value
+        self.node = node
+        self.name = name
+        self.type = node.type
+        self.column = node.column
+        self.lineno = node.lineno
+        self.value = node.value
 
-    if self.is_continuation:
-      self.value = node.value.rstrip()
+        if self.is_continuation:
+            self.value = node.value.rstrip()
 
-    self.next_token = None
-    self.previous_token = None
-    self.matching_bracket = None
-    self.parameters = []
-    self.container_opening = None
-    self.container_elements = []
-    self.whitespace_prefix = ''
-    self.total_length = 0
-    self.split_penalty = 0
-    self.can_break_before = False
-    self.must_break_before = pytree_utils.GetNodeAnnotation(
-        node, pytree_utils.Annotation.MUST_SPLIT, default=False)
-    self.newlines = pytree_utils.GetNodeAnnotation(
-        node, pytree_utils.Annotation.NEWLINES)
-    self.spaces_required_before = 0
+        self.next_token = None
+        self.previous_token = None
+        self.matching_bracket = None
+        self.parameters = []
+        self.container_opening = None
+        self.container_elements = []
+        self.whitespace_prefix = ''
+        self.total_length = 0
+        self.split_penalty = 0
+        self.can_break_before = False
+        self.must_break_before = pytree_utils.GetNodeAnnotation(
+            node, pytree_utils.Annotation.MUST_SPLIT, default=False)
+        self.newlines = pytree_utils.GetNodeAnnotation(
+            node, pytree_utils.Annotation.NEWLINES)
+        self.spaces_required_before = 0
 
-    if self.is_comment:
-      self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
+        if self.is_comment:
+            self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
 
-    stypes = pytree_utils.GetNodeAnnotation(node,
-                                            pytree_utils.Annotation.SUBTYPE)
-    self.subtypes = {subtypes.NONE} if not stypes else stypes
-    self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
+        stypes = pytree_utils.GetNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE)
+        self.subtypes = {subtypes.NONE} if not stypes else stypes
+        self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
-  @property
-  def formatted_whitespace_prefix(self):
-    if style.Get('INDENT_BLANK_LINES'):
-      without_newlines = self.whitespace_prefix.lstrip('\n')
-      height = len(self.whitespace_prefix) - len(without_newlines)
-      if height:
-        return ('\n' + without_newlines) * height
-    return self.whitespace_prefix
+    @property
+    def formatted_whitespace_prefix(self):
+        if style.Get('INDENT_BLANK_LINES'):
+            without_newlines = self.whitespace_prefix.lstrip('\n')
+            height = len(self.whitespace_prefix) - len(without_newlines)
+            if height:
+                return ('\n' + without_newlines) * height
+        return self.whitespace_prefix
 
-  def AddWhitespacePrefix(self, newlines_before, spaces=0, indent_level=0):
-    """Register a token's whitespace prefix.
+    def AddWhitespacePrefix(self, newlines_before, spaces=0, indent_level=0):
+        """Register a token's whitespace prefix.
 
     This is the whitespace that will be output before a token's string.
 
@@ -143,261 +142,233 @@ class FormatToken(object):
       spaces: (int) The number of spaces to place before the token.
       indent_level: (int) The indentation level.
     """
-    if style.Get('USE_TABS'):
-      if newlines_before > 0:
-        indent_before = '\t' * indent_level + _TabbedContinuationAlignPadding(
-            spaces, style.Get('CONTINUATION_ALIGN_STYLE'),
-            style.Get('INDENT_WIDTH'))
-      else:
-        indent_before = '\t' * indent_level + ' ' * spaces
-    else:
-      indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
-                       ' ' * spaces)
+        if style.Get('USE_TABS'):
+            if newlines_before > 0:
+                indent_before = '\t' * indent_level + _TabbedContinuationAlignPadding(
+                    spaces, style.Get('CONTINUATION_ALIGN_STYLE'),
+                    style.Get('INDENT_WIDTH'))
+            else:
+                indent_before = '\t' * indent_level + ' ' * spaces
+        else:
+            indent_before = (
+                ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
 
-    if self.is_comment:
-      comment_lines = [s.lstrip() for s in self.value.splitlines()]
-      self.value = ('\n' + indent_before).join(comment_lines)
+        if self.is_comment:
+            comment_lines = [s.lstrip() for s in self.value.splitlines()]
+            self.value = ('\n' + indent_before).join(comment_lines)
 
-      # Update our own value since we are changing node value
-      self.value = self.value
+            # Update our own value since we are changing node value
+            self.value = self.value
 
-    if not self.whitespace_prefix:
-      self.whitespace_prefix = ('\n' * (self.newlines or newlines_before) +
-                                indent_before)
-    else:
-      self.whitespace_prefix += indent_before
+        if not self.whitespace_prefix:
+            self.whitespace_prefix = (
+                '\n' * (self.newlines or newlines_before) + indent_before)
+        else:
+            self.whitespace_prefix += indent_before
 
-  def AdjustNewlinesBefore(self, newlines_before):
-    """Change the number of newlines before this token."""
-    self.whitespace_prefix = ('\n' * newlines_before +
-                              self.whitespace_prefix.lstrip('\n'))
+    def AdjustNewlinesBefore(self, newlines_before):
+        """Change the number of newlines before this token."""
+        self.whitespace_prefix = (
+            '\n' * newlines_before + self.whitespace_prefix.lstrip('\n'))
 
-  def RetainHorizontalSpacing(self, first_column, depth):
-    """Retains a token's horizontal spacing."""
-    previous = self.previous_token
-    if not previous:
-      return
+    def RetainHorizontalSpacing(self, first_column, depth):
+        """Retains a token's horizontal spacing."""
+        previous = self.previous_token
+        if not previous:
+            return
 
-    if previous.is_pseudo:
-      previous = previous.previous_token
-      if not previous:
-        return
+        if previous.is_pseudo:
+            previous = previous.previous_token
+            if not previous:
+                return
 
-    cur_lineno = self.lineno
-    prev_lineno = previous.lineno
-    if previous.is_multiline_string:
-      prev_lineno += previous.value.count('\n')
+        cur_lineno = self.lineno
+        prev_lineno = previous.lineno
+        if previous.is_multiline_string:
+            prev_lineno += previous.value.count('\n')
 
-    if (cur_lineno != prev_lineno or
-        (previous.is_pseudo and previous.value != ')' and
-         cur_lineno != previous.previous_token.lineno)):
-      self.spaces_required_before = (
-          self.column - first_column + depth * style.Get('INDENT_WIDTH'))
-      return
+        if (cur_lineno != prev_lineno or
+            (previous.is_pseudo and previous.value != ')' and
+             cur_lineno != previous.previous_token.lineno)):
+            self.spaces_required_before = (
+                self.column - first_column + depth * style.Get('INDENT_WIDTH'))
+            return
 
-    cur_column = self.column
-    prev_column = previous.column
-    prev_len = len(previous.value)
+        cur_column = self.column
+        prev_column = previous.column
+        prev_len = len(previous.value)
 
-    if previous.is_pseudo and previous.value == ')':
-      prev_column -= 1
-      prev_len = 0
+        if previous.is_pseudo and previous.value == ')':
+            prev_column -= 1
+            prev_len = 0
 
-    if previous.is_multiline_string:
-      prev_len = len(previous.value.split('\n')[-1])
-      if '\n' in previous.value:
-        prev_column = 0  # Last line starts in column 0.
+        if previous.is_multiline_string:
+            prev_len = len(previous.value.split('\n')[-1])
+            if '\n' in previous.value:
+                prev_column = 0 # Last line starts in column 0.
 
-    self.spaces_required_before = cur_column - (prev_column + prev_len)
+        self.spaces_required_before = cur_column - (prev_column + prev_len)
 
-  def OpensScope(self):
-    return self.value in _OPENING_BRACKETS
+    def OpensScope(self):
+        return self.value in _OPENING_BRACKETS
 
-  def ClosesScope(self):
-    return self.value in _CLOSING_BRACKETS
+    def ClosesScope(self):
+        return self.value in _CLOSING_BRACKETS
 
-  def AddSubtype(self, subtype):
-    self.subtypes.add(subtype)
+    def AddSubtype(self, subtype):
+        self.subtypes.add(subtype)
 
-  def __repr__(self):
-    msg = ('FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
-           'splitpenalty={4}'.format(
-               'DOCSTRING' if self.is_docstring else self.name, self.value,
-               self.column, self.lineno, self.split_penalty))
-    msg += ', pseudo)' if self.is_pseudo else ')'
-    return msg
+    def __repr__(self):
+        msg = (
+            'FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
+            'splitpenalty={4}'.format(
+                'DOCSTRING' if self.is_docstring else self.name, self.value,
+                self.column, self.lineno, self.split_penalty))
+        msg += ', pseudo)' if self.is_pseudo else ')'
+        return msg
 
-  @property
-  def node_split_penalty(self):
-    """Split penalty attached to the pytree node of this token."""
-    return pytree_utils.GetNodeAnnotation(
-        self.node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
+    @property
+    def node_split_penalty(self):
+        """Split penalty attached to the pytree node of this token."""
+        return pytree_utils.GetNodeAnnotation(
+            self.node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
 
-  @property
-  def is_binary_op(self):
-    """Token is a binary operator."""
-    return subtypes.BINARY_OPERATOR in self.subtypes
+    @property
+    def is_binary_op(self):
+        """Token is a binary operator."""
+        return subtypes.BINARY_OPERATOR in self.subtypes
 
-  @property
-  @py3compat.lru_cache()
-  def is_arithmetic_op(self):
-    """Token is an arithmetic operator."""
-    return self.value in frozenset({
-        '+',  # Add
-        '-',  # Subtract
-        '*',  # Multiply
-        '@',  # Matrix Multiply
-        '/',  # Divide
-        '//',  # Floor Divide
-        '%',  # Modulo
-        '<<',  # Left Shift
-        '>>',  # Right Shift
-        '|',  # Bitwise Or
-        '&',  # Bitwise Add
-        '^',  # Bitwise Xor
-        '**',  # Power
-    })
+    @property
+    @py3compat.lru_cache()
+    def is_arithmetic_op(self):
+        """Token is an arithmetic operator."""
+        return self.value in frozenset(
+            {
+                '+',                    # Add
+                '-',                    # Subtract
+                '*',                    # Multiply
+                '@',                    # Matrix Multiply
+                '/',                    # Divide
+                '//',                   # Floor Divide
+                '%',                    # Modulo
+                '<<',                   # Left Shift
+                '>>',                   # Right Shift
+                '|',                    # Bitwise Or
+                '&',                    # Bitwise Add
+                '^',                    # Bitwise Xor
+                '**',                   # Power
+            })
 
-  @property
-  def is_simple_expr(self):
-    """Token is an operator in a simple expression."""
-    return subtypes.SIMPLE_EXPRESSION in self.subtypes
+    @property
+    def is_simple_expr(self):
+        """Token is an operator in a simple expression."""
+        return subtypes.SIMPLE_EXPRESSION in self.subtypes
 
-  @property
-  def is_subscript_colon(self):
-    """Token is a subscript colon."""
-    return subtypes.SUBSCRIPT_COLON in self.subtypes
+    @property
+    def is_subscript_colon(self):
+        """Token is a subscript colon."""
+        return subtypes.SUBSCRIPT_COLON in self.subtypes
 
-  @property
-  def is_comment(self):
-    return self.type == token.COMMENT
+    @property
+    def is_comment(self):
+        return self.type == token.COMMENT
 
-  @property
-  def is_continuation(self):
-    return self.type == CONTINUATION
+    @property
+    def is_continuation(self):
+        return self.type == CONTINUATION
 
-  @property
-  @py3compat.lru_cache()
-  def is_keyword(self):
-    return keyword.iskeyword(self.value)
+    @property
+    @py3compat.lru_cache()
+    def is_keyword(self):
+        return keyword.iskeyword(self.value)
 
-  @property
-  def is_name(self):
-    return self.type == token.NAME and not self.is_keyword
+    @property
+    def is_name(self):
+        return self.type == token.NAME and not self.is_keyword
 
-  @property
-  def is_number(self):
-    return self.type == token.NUMBER
+    @property
+    def is_number(self):
+        return self.type == token.NUMBER
 
-  @property
-  def is_string(self):
-    return self.type == token.STRING
+    @property
+    def is_string(self):
+        return self.type == token.STRING
 
-  @property
-  def is_multiline_string(self):
-    """Test if this string is a multiline string.
+    @property
+    def is_multiline_string(self):
+        """Test if this string is a multiline string.
 
     Returns:
       A multiline string always ends with triple quotes, so if it is a string
       token, inspect the last 3 characters and return True if it is a triple
       double or triple single quote mark.
     """
-    return self.is_string and self.value.endswith(('"""', "'''"))
+        return self.is_string and self.value.endswith(('"""', "'''"))
 
-  @property
-  def is_docstring(self):
-    return self.is_string and self.previous_token is None
+    @property
+    def is_docstring(self):
+        return self.is_string and self.previous_token is None
 
-  @property
-  def is_pylint_comment(self):
-    return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=',
-                                        self.value)
+    @property
+    def is_pylint_comment(self):
+        return self.is_comment and re.match(
+            r'#.*\bpylint:\s*(disable|enable)=', self.value)
 
-  @property
-  def is_pytype_comment(self):
-    return self.is_comment and re.match(r'#.*\bpytype:\s*(disable|enable)=',
-                                        self.value)
+    @property
+    def is_pytype_comment(self):
+        return self.is_comment and re.match(
+            r'#.*\bpytype:\s*(disable|enable)=', self.value)
 
-  @property
-  def is_copybara_comment(self):
-    return self.is_comment and re.match(
-        r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
+    @property
+    def is_copybara_comment(self):
+        return self.is_comment and re.match(
+            r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
 
-  @property
-  def is_assign(self):
-    return subtypes.ASSIGN_OPERATOR in self.subtypes
+    @property
+    def is_argassign(self):
+        return (
+            subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes or
+            subtypes.VARARGS_LIST in self.subtypes)
 
-  @property
-  def is_dict_colon(self):
-    # if the token is dictionary colon and
-    # the dictionary has no comp_for
-    return self.value == ':' and self.previous_token.is_dict_key
+    @property
+    def is_argname(self):
+        # it's the argument part before argument assignment operator,
+        # including tnames and data type
+        # not the assign operator,
+        # not the value after the assign operator
 
-  @property
-  def is_dict_key(self):
-    # if the token is dictionary key which is not preceded by doubel stars and
-    # the dictionary has no comp_for
-    return subtypes.DICTIONARY_KEY_PART in self.subtypes
+        # argument without assignment is also included
+        # the token is arg part before '=' but not after '='
+        if self.is_argname_start:
+            return True
 
-  @property
-  def is_dict_key_start(self):
-    # if the token is dictionary key start
-    return subtypes.DICTIONARY_KEY in self.subtypes
+        # exclude comment inside argument list
+        if not self.is_comment:
+            # the token is any element in typed arglist
+            if subtypes.TYPED_NAME_ARG_LIST in self.subtypes:
+                return True
 
-  @property
-  def is_dict_value(self):
-    return subtypes.DICTIONARY_VALUE in self.subtypes
+        return False
 
-  @property
-  def is_augassign(self):
-    augassigns = {'+=', '-=' , '*=' , '@=' , '/=' , '%=' , '&=' , '|=' , '^=' ,
-            '<<=' , '>>=' , '**=' , '//='}
-    return self.value in augassigns
+    @property
+    def is_argname_start(self):
+        # return true if it's the start of every argument entry
+        previous_subtypes = {0}
+        if self.previous_token:
+            previous_subtypes = self.previous_token.subtypes
 
-  @property
-  def is_argassign(self):
-     return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes
-            or subtypes.VARARGS_LIST in self.subtypes)
-
-  @property
-  def is_argname(self):
-    # it's the argument part before argument assignment operator,
-    # including tnames and data type
-    # not the assign operator,
-    # not the value after the assign operator
-
-    # argument without assignment is also included
-    # the token is arg part before '=' but not after '='
-    if self.is_argname_start:
-        return True
-
-    # exclude comment inside argument list
-    if not self.is_comment:
-      # the token is any element in typed arglist
-      if subtypes.TYPED_NAME_ARG_LIST in self.subtypes:
-        return True
-
-    return False
-
-  @property
-  def is_argname_start(self):
-    # return true if it's the start of every argument entry
-    previous_subtypes = {0}
-    if self.previous_token:
-      previous_subtypes = self.previous_token.subtypes
-
-    return (
-        (not self.is_comment
-        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes
-        and subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes
-        and subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes
-        and (not subtypes.PARAMETER_STOP in self.subtypes
-        or subtypes.PARAMETER_START in self.subtypes)
-        )
-        or # if there is comment, the arg after it is the argname start
-        (not self.is_comment and self.previous_token and self.previous_token.is_comment
-        and
-        (subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in previous_subtypes
-        or subtypes.TYPED_NAME_ARG_LIST in self.subtypes
-        or subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes))
-        )
+        return (
+            (
+                not self.is_comment and
+                subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes and
+                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes and
+                subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes and (
+                    not subtypes.PARAMETER_STOP in self.subtypes or
+                    subtypes.PARAMETER_START in self.subtypes))
+            or                                                                        # if there is comment, the arg after it is the argname start
+            (
+                not self.is_comment and self.previous_token and
+                self.previous_token.is_comment and (
+                    subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in previous_subtypes or
+                    subtypes.TYPED_NAME_ARG_LIST in self.subtypes or
+                    subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes)))
