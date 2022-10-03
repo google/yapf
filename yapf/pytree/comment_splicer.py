@@ -28,8 +28,8 @@ from lib2to3.pgen2 import token
 from yapf.pytree import pytree_utils
 
 
-def SpliceComments( tree ):
-    """Given a pytree, splice comments into nodes of their own right.
+def SpliceComments(tree):
+  """Given a pytree, splice comments into nodes of their own right.
 
   Extract comments from the prefixes where they are housed after parsing.
   The prefixes that previously housed the comments become empty.
@@ -38,189 +38,175 @@ def SpliceComments( tree ):
     tree: a pytree.Node - the tree to work on. The tree is modified by this
         function.
   """
-    # The previous leaf node encountered in the traversal.
-    # This is a list because Python 2.x doesn't have 'nonlocal' :)
-    prev_leaf = [ None ]
-    _AnnotateIndents( tree )
+  # The previous leaf node encountered in the traversal.
+  # This is a list because Python 2.x doesn't have 'nonlocal' :)
+  prev_leaf = [None]
+  _AnnotateIndents(tree)
 
-    def _VisitNodeRec( node ):
-        """Recursively visit each node to splice comments into the AST."""
-        # This loop may insert into node.children, so we'll iterate over a copy.
-        for child in node.children[ : ]:
-            if isinstance( child, pytree.Node ):
-                # Nodes don't have prefixes.
-                _VisitNodeRec( child )
-            else:
-                if child.prefix.lstrip().startswith( '#' ):
-                    # We have a comment prefix in this child, so splicing is needed.
-                    comment_prefix = child.prefix
-                    comment_lineno = child.lineno - comment_prefix.count( '\n' )
-                    comment_column = child.column
+  def _VisitNodeRec(node):
+    """Recursively visit each node to splice comments into the AST."""
+    # This loop may insert into node.children, so we'll iterate over a copy.
+    for child in node.children[:]:
+      if isinstance(child, pytree.Node):
+        # Nodes don't have prefixes.
+        _VisitNodeRec(child)
+      else:
+        if child.prefix.lstrip().startswith('#'):
+          # We have a comment prefix in this child, so splicing is needed.
+          comment_prefix = child.prefix
+          comment_lineno = child.lineno - comment_prefix.count('\n')
+          comment_column = child.column
 
-                    # Remember the leading indentation of this prefix and clear it.
-                    # Mopping up the prefix is important because we may go over this same
-                    # child in the next iteration...
-                    child_prefix  = child.prefix.lstrip( '\n' )
-                    prefix_indent = child_prefix[ : child_prefix.find( '#' ) ]
-                    if '\n' in prefix_indent:
-                        prefix_indent = prefix_indent[ prefix_indent.rfind( '\n' ) +
-                                                       1 : ]
-                    child.prefix = ''
+          # Remember the leading indentation of this prefix and clear it.
+          # Mopping up the prefix is important because we may go over this same
+          # child in the next iteration...
+          child_prefix  = child.prefix.lstrip('\n')
+          prefix_indent = child_prefix[:child_prefix.find('#')]
+          if '\n' in prefix_indent:
+            prefix_indent = prefix_indent[prefix_indent.rfind('\n') + 1:]
+          child.prefix = ''
 
-                    if child.type == token.NEWLINE:
-                        # If the prefix was on a NEWLINE leaf, it's part of the line so it
-                        # will be inserted after the previously encountered leaf.
-                        # We can't just insert it before the NEWLINE node, because as a
-                        # result of the way pytrees are organized, this node can be under
-                        # an inappropriate parent.
-                        comment_column -= len( comment_prefix.lstrip() )
-                        pytree_utils.InsertNodesAfter(
-                            _CreateCommentsFromPrefix(
-                                comment_prefix,
-                                comment_lineno,
-                                comment_column,
-                                standalone = False ), prev_leaf[ 0 ] )
-                    elif child.type == token.DEDENT:
-                        # Comment prefixes on DEDENT nodes also deserve special treatment,
-                        # because their final placement depends on their prefix.
-                        # We'll look for an ancestor of this child with a matching
-                        # indentation, and insert the comment before it if the ancestor is
-                        # on a DEDENT node and after it otherwise.
-                        #
-                        # lib2to3 places comments that should be separated into the same
-                        # DEDENT node. For example, "comment 1" and "comment 2" will be
-                        # combined.
-                        #
-                        #   def _():
-                        #     for x in y:
-                        #       pass
-                        #       # comment 1
-                        #
-                        #     # comment 2
-                        #     pass
-                        #
-                        # In this case, we need to split them up ourselves.
+          if child.type == token.NEWLINE:
+            # If the prefix was on a NEWLINE leaf, it's part of the line so it
+            # will be inserted after the previously encountered leaf.
+            # We can't just insert it before the NEWLINE node, because as a
+            # result of the way pytrees are organized, this node can be under
+            # an inappropriate parent.
+            comment_column -= len(comment_prefix.lstrip())
+            pytree_utils.InsertNodesAfter(
+                _CreateCommentsFromPrefix(
+                    comment_prefix,
+                    comment_lineno,
+                    comment_column,
+                    standalone=False), prev_leaf[0])
+          elif child.type == token.DEDENT:
+            # Comment prefixes on DEDENT nodes also deserve special treatment,
+            # because their final placement depends on their prefix.
+            # We'll look for an ancestor of this child with a matching
+            # indentation, and insert the comment before it if the ancestor is
+            # on a DEDENT node and after it otherwise.
+            #
+            # lib2to3 places comments that should be separated into the same
+            # DEDENT node. For example, "comment 1" and "comment 2" will be
+            # combined.
+            #
+            #   def _():
+            #     for x in y:
+            #       pass
+            #       # comment 1
+            #
+            #     # comment 2
+            #     pass
+            #
+            # In this case, we need to split them up ourselves.
 
-                        # Split into groups of comments at decreasing levels of indentation
-                        comment_groups = []
-                        comment_column = None
-                        for cmt in comment_prefix.split( '\n' ):
-                            col = cmt.find( '#' )
-                            if col < 0:
-                                if comment_column is None:
-                                    # Skip empty lines at the top of the first comment group
-                                    comment_lineno += 1
-                                    continue
-                            elif comment_column is None or col < comment_column:
-                                comment_column = col
-                                comment_indent = cmt[ : comment_column ]
-                                comment_groups.append(
-                                    ( comment_column, comment_indent, [] ) )
-                            comment_groups[ -1 ][ -1 ].append( cmt )
+            # Split into groups of comments at decreasing levels of indentation
+            comment_groups = []
+            comment_column = None
+            for cmt in comment_prefix.split('\n'):
+              col = cmt.find('#')
+              if col < 0:
+                if comment_column is None:
+                  # Skip empty lines at the top of the first comment group
+                  comment_lineno += 1
+                  continue
+              elif comment_column is None or col < comment_column:
+                comment_column = col
+                comment_indent = cmt[:comment_column]
+                comment_groups.append((comment_column, comment_indent, []))
+              comment_groups[-1][-1].append(cmt)
 
-                        # Insert a node for each group
-                        for comment_column, comment_indent, comment_group in comment_groups:
-                            ancestor_at_indent = _FindAncestorAtIndent(
-                                child, comment_indent )
-                            if ancestor_at_indent.type == token.DEDENT:
-                                InsertNodes = pytree_utils.InsertNodesBefore # pylint: disable=invalid-name # noqa
-                            else:
-                                InsertNodes = pytree_utils.InsertNodesAfter  # pylint: disable=invalid-name # noqa
-                            InsertNodes(
-                                _CreateCommentsFromPrefix(
-                                    '\n'.join( comment_group ) + '\n',
-                                    comment_lineno,
-                                    comment_column,
-                                    standalone = True ), ancestor_at_indent )
-                            comment_lineno += len( comment_group )
-                    else:
-                                                                             # Otherwise there are two cases.
-                                                                             #
-                                                                             # 1. The comment is on its own line
-                                                                             # 2. The comment is part of an expression.
-                                                                             #
-                                                                             # Unfortunately, it's fairly difficult to distinguish between the
-                                                                             # two in lib2to3 trees. The algorithm here is to determine whether
-                                                                             # child is the first leaf in the statement it belongs to. If it is,
-                                                                             # then the comment (which is a prefix) belongs on a separate line.
-                                                                             # If it is not, it means the comment is buried deep in the statement
-                                                                             # and is part of some expression.
-                        stmt_parent = _FindStmtParent( child )
+            # Insert a node for each group
+            for comment_column, comment_indent, comment_group in comment_groups:
+              ancestor_at_indent = _FindAncestorAtIndent(child, comment_indent)
+              if ancestor_at_indent.type == token.DEDENT:
+                InsertNodes = pytree_utils.InsertNodesBefore  # pylint: disable=invalid-name # noqa
+              else:
+                InsertNodes = pytree_utils.InsertNodesAfter  # pylint: disable=invalid-name # noqa
+              InsertNodes(
+                  _CreateCommentsFromPrefix(
+                      '\n'.join(comment_group) + '\n',
+                      comment_lineno,
+                      comment_column,
+                      standalone=True), ancestor_at_indent)
+              comment_lineno += len(comment_group)
+          else:
+            # Otherwise there are two cases.
+            #
+            # 1. The comment is on its own line
+            # 2. The comment is part of an expression.
+            #
+            # Unfortunately, it's fairly difficult to distinguish between the
+            # two in lib2to3 trees. The algorithm here is to determine whether
+            # child is the first leaf in the statement it belongs to. If it is,
+            # then the comment (which is a prefix) belongs on a separate line.
+            # If it is not, it means the comment is buried deep in the statement
+            # and is part of some expression.
+            stmt_parent = _FindStmtParent(child)
 
-                        for leaf_in_parent in stmt_parent.leaves():
-                            if leaf_in_parent.type == token.NEWLINE:
-                                continue
-                            elif id( leaf_in_parent ) == id( child ):
-                                # This comment stands on its own line, and it has to be inserted
-                                # into the appropriate parent. We'll have to find a suitable
-                                # parent to insert into. See comments above
-                                # _STANDALONE_LINE_NODES for more details.
-                                node_with_line_parent = _FindNodeWithStandaloneLineParent(
-                                    child )
+            for leaf_in_parent in stmt_parent.leaves():
+              if leaf_in_parent.type == token.NEWLINE:
+                continue
+              elif id(leaf_in_parent) == id(child):
+                # This comment stands on its own line, and it has to be inserted
+                # into the appropriate parent. We'll have to find a suitable
+                # parent to insert into. See comments above
+                # _STANDALONE_LINE_NODES for more details.
+                node_with_line_parent = _FindNodeWithStandaloneLineParent(child)
 
-                                if pytree_utils.NodeName(
-                                        node_with_line_parent.parent ) in { 'funcdef',
-                                                                            'classdef'
-                                                                          }:
-                                    # Keep a comment that's not attached to a function or class
-                                    # next to the object it is attached to.
-                                    comment_end = (
-                                        comment_lineno +
-                                        comment_prefix.rstrip( '\n' ).count( '\n' ) )
-                                    if comment_end < node_with_line_parent.lineno - 1:
-                                        node_with_line_parent = node_with_line_parent.parent
+                if pytree_utils.NodeName(
+                    node_with_line_parent.parent) in {'funcdef', 'classdef'}:
+                  # Keep a comment that's not attached to a function or class
+                  # next to the object it is attached to.
+                  comment_end = (
+                      comment_lineno + comment_prefix.rstrip('\n').count('\n'))
+                  if comment_end < node_with_line_parent.lineno - 1:
+                    node_with_line_parent = node_with_line_parent.parent
 
-                                pytree_utils.InsertNodesBefore(
-                                    _CreateCommentsFromPrefix(
-                                        comment_prefix,
-                                        comment_lineno,
-                                        0,
-                                        standalone = True ), node_with_line_parent )
-                                break
-                            else:
-                                if comment_lineno == prev_leaf[ 0 ].lineno:
-                                    comment_lines = comment_prefix.splitlines()
-                                    value         = comment_lines[ 0 ].lstrip()
-                                    if value.rstrip( '\n' ):
-                                        comment_column  = prev_leaf[ 0 ].column
-                                        comment_column += len( prev_leaf[ 0 ].value )
-                                        comment_column  += (
-                                            len( comment_lines[ 0 ] ) -
-                                            len( comment_lines[ 0 ].lstrip() ) )
-                                        comment_leaf = pytree.Leaf(
-                                            type = token.COMMENT,
-                                            value = value.rstrip( '\n' ),
-                                            context = (
-                                                '', ( comment_lineno,
-                                                      comment_column ) ) )
-                                        pytree_utils.InsertNodesAfter(
-                                            [ comment_leaf ], prev_leaf[ 0 ] )
-                                        comment_prefix = '\n'.join(
-                                            comment_lines[ 1 : ] )
-                                        comment_lineno += 1
+                pytree_utils.InsertNodesBefore(
+                    _CreateCommentsFromPrefix(
+                        comment_prefix, comment_lineno, 0, standalone=True),
+                    node_with_line_parent)
+                break
+              else:
+                if comment_lineno == prev_leaf[0].lineno:
+                  comment_lines = comment_prefix.splitlines()
+                  value         = comment_lines[0].lstrip()
+                  if value.rstrip('\n'):
+                    comment_column  = prev_leaf[0].column
+                    comment_column += len(prev_leaf[0].value)
+                    comment_column  += (
+                        len(comment_lines[0]) - len(comment_lines[0].lstrip()))
+                    comment_leaf = pytree.Leaf(
+                        type=token.COMMENT,
+                        value=value.rstrip('\n'),
+                        context=('', (comment_lineno, comment_column)))
+                    pytree_utils.InsertNodesAfter([comment_leaf], prev_leaf[0])
+                    comment_prefix  = '\n'.join(comment_lines[1:])
+                    comment_lineno += 1
 
-                                rindex = (
-                                    0 if '\n' not in comment_prefix.rstrip() else
-                                    comment_prefix.rstrip().rindex( '\n' ) + 1 )
-                                comment_column = (
-                                    len( comment_prefix[ rindex : ] ) -
-                                    len( comment_prefix[ rindex : ].lstrip() ) )
-                                comments = _CreateCommentsFromPrefix(
-                                    comment_prefix,
-                                    comment_lineno,
-                                    comment_column,
-                                    standalone = False )
-                                pytree_utils.InsertNodesBefore( comments, child )
-                                break
+                rindex = (
+                    0 if '\n' not in comment_prefix.rstrip() else
+                    comment_prefix.rstrip().rindex('\n') + 1)
+                comment_column = (
+                    len(comment_prefix[rindex:]) -
+                    len(comment_prefix[rindex:].lstrip()))
+                comments = _CreateCommentsFromPrefix(
+                    comment_prefix,
+                    comment_lineno,
+                    comment_column,
+                    standalone=False)
+                pytree_utils.InsertNodesBefore(comments, child)
+                break
 
-                prev_leaf[ 0 ] = child
+        prev_leaf[0] = child
 
-    _VisitNodeRec( tree )
+  _VisitNodeRec(tree)
 
 
 def _CreateCommentsFromPrefix(
-        comment_prefix, comment_lineno, comment_column, standalone = False ):
-    """Create pytree nodes to represent the given comment prefix.
+    comment_prefix, comment_lineno, comment_column, standalone=False):
+  """Create pytree nodes to represent the given comment prefix.
 
   Args:
     comment_prefix: (unicode) the text of the comment from the node's prefix.
@@ -233,35 +219,35 @@ def _CreateCommentsFromPrefix(
     new COMMENT leafs. The prefix may consist of multiple comment blocks,
     separated by blank lines. Each block gets its own leaf.
   """
-    # The comment is stored in the prefix attribute, with no lineno of its
-    # own. So we only know at which line it ends. To find out at which line it
-    # starts, look at how many newlines the comment itself contains.
-    comments = []
+  # The comment is stored in the prefix attribute, with no lineno of its
+  # own. So we only know at which line it ends. To find out at which line it
+  # starts, look at how many newlines the comment itself contains.
+  comments = []
 
-    lines = comment_prefix.split( '\n' )
-    index = 0
-    while index < len( lines ):
-        comment_block = []
-        while index < len( lines ) and lines[ index ].lstrip().startswith( '#' ):
-            comment_block.append( lines[ index ].strip() )
-            index += 1
+  lines = comment_prefix.split('\n')
+  index = 0
+  while index < len(lines):
+    comment_block = []
+    while index < len(lines) and lines[index].lstrip().startswith('#'):
+      comment_block.append(lines[index].strip())
+      index += 1
 
-        if comment_block:
-            new_lineno          = comment_lineno + index - 1
-            comment_block[ 0 ]  = comment_block[ 0 ].strip()
-            comment_block[ -1 ] = comment_block[ -1 ].strip()
-            comment_leaf        = pytree.Leaf(
-                type = token.COMMENT,
-                value = '\n'.join( comment_block ),
-                context = ( '', ( new_lineno, comment_column ) ) )
-            comment_node = comment_leaf if not standalone else pytree.Node(
-                pygram.python_symbols.simple_stmt, [ comment_leaf ] )
-            comments.append( comment_node )
+    if comment_block:
+      new_lineno        = comment_lineno + index - 1
+      comment_block[0]  = comment_block[0].strip()
+      comment_block[-1] = comment_block[-1].strip()
+      comment_leaf      = pytree.Leaf(
+          type=token.COMMENT,
+          value='\n'.join(comment_block),
+          context=('', (new_lineno, comment_column)))
+      comment_node = comment_leaf if not standalone else pytree.Node(
+          pygram.python_symbols.simple_stmt, [comment_leaf])
+      comments.append(comment_node)
 
-        while index < len( lines ) and not lines[ index ].lstrip():
-            index += 1
+    while index < len(lines) and not lines[index].lstrip():
+      index += 1
 
-    return comments
+  return comments
 
 
 # "Standalone line nodes" are tree nodes that have to start a new line in Python
@@ -279,11 +265,11 @@ _STANDALONE_LINE_NODES = frozenset(
     [
         'suite', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
         'funcdef', 'classdef', 'decorated', 'file_input'
-    ] )
+    ])
 
 
-def _FindNodeWithStandaloneLineParent( node ):
-    """Find a node whose parent is a 'standalone line' node.
+def _FindNodeWithStandaloneLineParent(node):
+  """Find a node whose parent is a 'standalone line' node.
 
   See the comment above _STANDALONE_LINE_NODES for more details.
 
@@ -293,21 +279,21 @@ def _FindNodeWithStandaloneLineParent( node ):
   Returns:
     Suitable node that's either the node itself or one of its ancestors.
   """
-    if pytree_utils.NodeName( node.parent ) in _STANDALONE_LINE_NODES:
-        return node
-    else:
-        # This is guaranteed to terminate because 'file_input' is the root node of
-        # any pytree.
-        return _FindNodeWithStandaloneLineParent( node.parent )
+  if pytree_utils.NodeName(node.parent) in _STANDALONE_LINE_NODES:
+    return node
+  else:
+    # This is guaranteed to terminate because 'file_input' is the root node of
+    # any pytree.
+    return _FindNodeWithStandaloneLineParent(node.parent)
 
 
 # "Statement nodes" are standalone statements. The don't have to start a new
 # line.
-_STATEMENT_NODES = frozenset( [ 'simple_stmt' ] ) | _STANDALONE_LINE_NODES
+_STATEMENT_NODES = frozenset(['simple_stmt']) | _STANDALONE_LINE_NODES
 
 
-def _FindStmtParent( node ):
-    """Find the nearest parent of node that is a statement node.
+def _FindStmtParent(node):
+  """Find the nearest parent of node that is a statement node.
 
   Arguments:
     node: node to start from
@@ -315,14 +301,14 @@ def _FindStmtParent( node ):
   Returns:
     Nearest parent (or node itself, if suitable).
   """
-    if pytree_utils.NodeName( node ) in _STATEMENT_NODES:
-        return node
-    else:
-        return _FindStmtParent( node.parent )
+  if pytree_utils.NodeName(node) in _STATEMENT_NODES:
+    return node
+  else:
+    return _FindStmtParent(node.parent)
 
 
-def _FindAncestorAtIndent( node, indent ):
-    """Find an ancestor of node with the given indentation.
+def _FindAncestorAtIndent(node, indent):
+  """Find an ancestor of node with the given indentation.
 
   Arguments:
     node: node to start from. This must not be the tree root.
@@ -333,27 +319,27 @@ def _FindAncestorAtIndent( node, indent ):
     An ancestor node with suitable indentation. If no suitable ancestor is
     found, the closest ancestor to the tree root is returned.
   """
-    if node.parent.parent is None:
-        # Our parent is the tree root, so there's nowhere else to go.
-        return node
+  if node.parent.parent is None:
+    # Our parent is the tree root, so there's nowhere else to go.
+    return node
 
-    # If the parent has an indent annotation, and it's shorter than node's
-    # indent, this is a suitable ancestor.
-    # The reason for "shorter" rather than "equal" is that comments may be
-    # improperly indented (i.e. by three spaces, where surrounding statements
-    # have either zero or two or four), and we don't want to propagate them all
-    # the way to the root.
-    parent_indent = pytree_utils.GetNodeAnnotation(
-        node.parent, pytree_utils.Annotation.CHILD_INDENT )
-    if parent_indent is not None and indent.startswith( parent_indent ):
-        return node
-    else:
-        # Keep looking up the tree.
-        return _FindAncestorAtIndent( node.parent, indent )
+  # If the parent has an indent annotation, and it's shorter than node's
+  # indent, this is a suitable ancestor.
+  # The reason for "shorter" rather than "equal" is that comments may be
+  # improperly indented (i.e. by three spaces, where surrounding statements
+  # have either zero or two or four), and we don't want to propagate them all
+  # the way to the root.
+  parent_indent = pytree_utils.GetNodeAnnotation(
+      node.parent, pytree_utils.Annotation.CHILD_INDENT)
+  if parent_indent is not None and indent.startswith(parent_indent):
+    return node
+  else:
+    # Keep looking up the tree.
+    return _FindAncestorAtIndent(node.parent, indent)
 
 
-def _AnnotateIndents( tree ):
-    """Annotate the tree with child_indent annotations.
+def _AnnotateIndents(tree):
+  """Annotate the tree with child_indent annotations.
 
   A child_indent annotation on a node specifies the indentation (as a string,
   like "  ") of its children. It is inferred from the INDENT child of a node.
@@ -364,16 +350,16 @@ def _AnnotateIndents( tree ):
   Raises:
     RuntimeError: if the tree is malformed.
   """
-    # Annotate the root of the tree with zero indent.
-    if tree.parent is None:
-        pytree_utils.SetNodeAnnotation( tree, pytree_utils.Annotation.CHILD_INDENT, '' )
-    for child in tree.children:
-        if child.type == token.INDENT:
-            child_indent = pytree_utils.GetNodeAnnotation(
-                tree, pytree_utils.Annotation.CHILD_INDENT )
-            if child_indent is not None and child_indent != child.value:
-                raise RuntimeError(
-                    'inconsistent indentation for child', ( tree, child ) )
-            pytree_utils.SetNodeAnnotation(
-                tree, pytree_utils.Annotation.CHILD_INDENT, child.value )
-        _AnnotateIndents( child )
+  # Annotate the root of the tree with zero indent.
+  if tree.parent is None:
+    pytree_utils.SetNodeAnnotation(
+        tree, pytree_utils.Annotation.CHILD_INDENT, '')
+  for child in tree.children:
+    if child.type == token.INDENT:
+      child_indent = pytree_utils.GetNodeAnnotation(
+          tree, pytree_utils.Annotation.CHILD_INDENT)
+      if child_indent is not None and child_indent != child.value:
+        raise RuntimeError('inconsistent indentation for child', (tree, child))
+      pytree_utils.SetNodeAnnotation(
+          tree, pytree_utils.Annotation.CHILD_INDENT, child.value)
+    _AnnotateIndents(child)
