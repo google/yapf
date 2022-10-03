@@ -25,45 +25,45 @@ from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
 
 
-def IdentifyContainers( tree ):
-    """Run the identify containers visitor over the tree, modifying it in place.
+def IdentifyContainers(tree):
+  """Run the identify containers visitor over the tree, modifying it in place.
 
   Arguments:
     tree: the top-level pytree node to annotate with subtypes.
   """
-    identify_containers = _IdentifyContainers()
-    identify_containers.Visit( tree )
+  identify_containers = _IdentifyContainers()
+  identify_containers.Visit(tree)
 
 
-class _IdentifyContainers( pytree_visitor.PyTreeVisitor ):
-    """_IdentifyContainers - see file-level docstring for detailed description."""
+class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
+  """_IdentifyContainers - see file-level docstring for detailed description."""
 
-    def Visit_trailer( self, node ): # pylint: disable=invalid-name
-        for child in node.children:
-            self.Visit( child )
+  def Visit_trailer(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
 
-        if len( node.children ) != 3:
-            return
-        if node.children[ 0 ].type != grammar_token.LPAR:
-            return
+    if len(node.children) != 3:
+      return
+    if node.children[0].type != grammar_token.LPAR:
+      return
 
-        if pytree_utils.NodeName( node.children[ 1 ] ) == 'arglist':
-            for child in node.children[ 1 ].children:
-                pytree_utils.SetOpeningBracket(
-                    pytree_utils.FirstLeafNode( child ), node.children[ 0 ] )
-        else:
-            pytree_utils.SetOpeningBracket(
-                pytree_utils.FirstLeafNode( node.children[ 1 ] ), node.children[ 0 ] )
+    if pytree_utils.NodeName(node.children[1]) == 'arglist':
+      for child in node.children[1].children:
+        pytree_utils.SetOpeningBracket(
+            pytree_utils.FirstLeafNode(child), node.children[0])
+    else:
+      pytree_utils.SetOpeningBracket(
+          pytree_utils.FirstLeafNode(node.children[1]), node.children[0])
 
-    def Visit_atom( self, node ): # pylint: disable=invalid-name
-        for child in node.children:
-            self.Visit( child )
+  def Visit_atom(self, node):  # pylint: disable=invalid-name
+    for child in node.children:
+      self.Visit(child)
 
-        if len( node.children ) != 3:
-            return
-        if node.children[ 0 ].type != grammar_token.LPAR:
-            return
+    if len(node.children) != 3:
+      return
+    if node.children[0].type != grammar_token.LPAR:
+      return
 
-        for child in node.children[ 1 ].children:
-            pytree_utils.SetOpeningBracket(
-                pytree_utils.FirstLeafNode( child ), node.children[ 0 ] )
+    for child in node.children[1].children:
+      pytree_utils.SetOpeningBracket(
+          pytree_utils.FirstLeafNode(child), node.children[0])

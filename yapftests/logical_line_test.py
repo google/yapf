@@ -29,25 +29,29 @@ from yapftests import yapf_test_helper
 class LogicalLineBasicTest(unittest.TestCase):
 
   def testConstruction(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.', 'DOT'),
-                                 (token.VBAR, '|', 'VBAR')])
+    toks = _MakeFormatTokenList(
+        [(token.DOT, '.', 'DOT'), (token.VBAR, '|', 'VBAR')])
     lline = logical_line.LogicalLine(20, toks)
     self.assertEqual(20, lline.depth)
     self.assertEqual(['DOT', 'VBAR'], [tok.name for tok in lline.tokens])
 
   def testFirstLast(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.', 'DOT'),
-                                 (token.LPAR, '(', 'LPAR'),
-                                 (token.VBAR, '|', 'VBAR')])
+    toks = _MakeFormatTokenList(
+        [
+            (token.DOT, '.', 'DOT'), (token.LPAR, '(', 'LPAR'),
+            (token.VBAR, '|', 'VBAR')
+        ])
     lline = logical_line.LogicalLine(20, toks)
     self.assertEqual(20, lline.depth)
     self.assertEqual('DOT', lline.first.name)
     self.assertEqual('VBAR', lline.last.name)
 
   def testAsCode(self):
-    toks = _MakeFormatTokenList([(token.DOT, '.', 'DOT'),
-                                 (token.LPAR, '(', 'LPAR'),
-                                 (token.VBAR, '|', 'VBAR')])
+    toks = _MakeFormatTokenList(
+        [
+            (token.DOT, '.', 'DOT'), (token.LPAR, '(', 'LPAR'),
+            (token.VBAR, '|', 'VBAR')
+        ])
     lline = logical_line.LogicalLine(2, toks)
     self.assertEqual('    . ( |', lline.AsCode())
 
@@ -61,7 +65,7 @@ class LogicalLineBasicTest(unittest.TestCase):
 class LogicalLineFormattingInformationTest(yapf_test_helper.YAPFTest):
 
   def testFuncDef(self):
-    code = textwrap.dedent(r"""
+    code   = textwrap.dedent(r"""
         def f(a, b):
           pass
         """)
