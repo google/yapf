@@ -117,7 +117,7 @@ class PyTreeDumper(PyTreeVisitor):
       target_stream: the stream to dump the tree to. A file-like object. By
         default will dump into stdout.
     """
-    self._target_stream = target_stream
+    self._target_stream  = target_stream
     self._current_indent = 0
 
   def _DumpString(self, s):

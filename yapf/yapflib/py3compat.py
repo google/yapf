@@ -18,14 +18,14 @@ import io
 import os
 import sys
 
-PY3 = sys.version_info[0] >= 3
+PY3  = sys.version_info[0] >= 3
 PY36 = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
 PY37 = sys.version_info[0] >= 3 and sys.version_info[1] >= 7
 PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8
 
 if PY3:
   StringIO = io.StringIO
-  BytesIO = io.BytesIO
+  BytesIO  = io.BytesIO
 
   import codecs  # noqa: F811
 
@@ -35,7 +35,7 @@ if PY3:
   import functools
   lru_cache = functools.lru_cache
 
-  range = range
+  range   = range
   ifilter = filter
 
   def raw_input():
@@ -50,7 +50,7 @@ if PY3:
 
   import tokenize
   detect_encoding = tokenize.detect_encoding
-  TokenInfo = tokenize.TokenInfo
+  TokenInfo       = tokenize.TokenInfo
 else:
   import __builtin__
   import cStringIO
@@ -80,8 +80,8 @@ else:
 
   import collections
 
-  class TokenInfo(
-      collections.namedtuple('TokenInfo', 'type string start end line')):
+  class TokenInfo(collections.namedtuple('TokenInfo',
+                                         'type string start end line')):
     pass
 
 
@@ -116,7 +116,7 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
 
 if PY3:
   basestring = str
-  unicode = str  # pylint: disable=redefined-builtin,invalid-name
+  unicode    = str  # pylint: disable=redefined-builtin,invalid-name
 else:
   basestring = basestring
 

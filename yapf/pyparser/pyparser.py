@@ -68,7 +68,7 @@ def ParseCode(unformatted_source, filename='<unknown>'):
     ast_tree = ast.parse(unformatted_source, filename)
     ast.fix_missing_locations(ast_tree)
     readline = py3compat.StringIO(unformatted_source).readline
-    tokens = tokenize.generate_tokens(readline)
+    tokens   = tokenize.generate_tokens(readline)
   except Exception:
     raise
 
@@ -89,10 +89,10 @@ def _CreateLogicalLines(tokens):
   Returns:
     A list of LogicalLines.
   """
-  logical_lines = []
+  logical_lines    = []
   cur_logical_line = []
-  prev_tok = None
-  depth = 0
+  prev_tok         = None
+  depth            = 0
 
   for tok in tokens:
     tok = py3compat.TokenInfo(*tok)
@@ -100,7 +100,7 @@ def _CreateLogicalLines(tokens):
       # End of a logical line.
       logical_lines.append(logical_line.LogicalLine(depth, cur_logical_line))
       cur_logical_line = []
-      prev_tok = None
+      prev_tok         = None
     elif tok.type == tokenize.INDENT:
       depth += 1
     elif tok.type == tokenize.DEDENT:
@@ -110,36 +110,36 @@ def _CreateLogicalLines(tokens):
           prev_tok.start[0] < tok.start[0]):
         # Insert a token for a line continuation.
         ctok = py3compat.TokenInfo(
-            type=CONTINUATION,
-            string='\\',
-            start=(prev_tok.start[0], prev_tok.start[1] + 1),
-            end=(prev_tok.end[0], prev_tok.end[0] + 2),
-            line=prev_tok.line)
+            type   =CONTINUATION,
+            string ='\\',
+            start  =(prev_tok.start[0], prev_tok.start[1] + 1),
+            end    =(prev_tok.end[0], prev_tok.end[0] + 2),
+            line   =prev_tok.line)
         ctok.lineno = ctok.start[0]
         ctok.column = ctok.start[1]
-        ctok.value = '\\'
+        ctok.value  = '\\'
         cur_logical_line.append(format_token.FormatToken(ctok, 'CONTINUATION'))
       tok.lineno = tok.start[0]
       tok.column = tok.start[1]
-      tok.value = tok.string
+      tok.value  = tok.string
       cur_logical_line.append(
           format_token.FormatToken(tok, token.tok_name[tok.type]))
     prev_tok = tok
 
   # Link the FormatTokens in each line together to for a doubly linked list.
   for line in logical_lines:
-    previous = line.first
+    previous      = line.first
     bracket_stack = [previous] if previous.OpensScope() else []
     for tok in line.tokens[1:]:
-      tok.previous_token = previous
+      tok.previous_token  = previous
       previous.next_token = tok
-      previous = tok
+      previous            = tok
 
       # Set up the "matching_bracket" attribute.
       if tok.OpensScope():
         bracket_stack.append(tok)
       elif tok.ClosesScope():
         bracket_stack[-1].matching_bracket = tok
-        tok.matching_bracket = bracket_stack.pop()
+        tok.matching_bracket               = bracket_stack.pop()
 
   return logical_lines
