@@ -16,8 +16,8 @@
 from lib2to3.pgen2 import tokenize
 
 
-def FormatErrorMsg(e):
-  """Convert an exception into a standard format.
+def FormatErrorMsg( e ):
+    """Convert an exception into a standard format.
 
   The standard error message format is:
 
@@ -29,18 +29,19 @@ def FormatErrorMsg(e):
   Returns:
     A properly formatted error message string.
   """
-  if isinstance(e, SyntaxError):
-    return '{}:{}:{}: {}'.format(e.filename, e.lineno, e.offset, e.msg)
-  if isinstance(e, tokenize.TokenError):
-    return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
-                                 e.args[0])
-  return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
+    if isinstance( e, SyntaxError ):
+        return '{}:{}:{}: {}'.format( e.filename, e.lineno, e.offset, e.msg )
+    if isinstance( e, tokenize.TokenError ):
+        return '{}:{}:{}: {}'.format(
+            e.filename, e.args[ 1 ][ 0 ], e.args[ 1 ][ 1 ], e.args[ 0 ] )
+    return '{}:{}:{}: {}'.format(
+        e.args[ 1 ][ 0 ], e.args[ 1 ][ 1 ], e.args[ 1 ][ 2 ], e.msg )
 
 
-class YapfError(Exception):
-  """Parent class for user errors or input errors.
+class YapfError( Exception ):
+    """Parent class for user errors or input errors.
 
   Exceptions of this type are handled by the command line tool
   and result in clear error messages, as opposed to backtraces.
   """
-  pass
+    pass
