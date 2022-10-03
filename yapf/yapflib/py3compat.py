@@ -18,75 +18,75 @@ import io
 import os
 import sys
 
-PY3 = sys.version_info[0] >= 3
-PY36 = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
-PY37 = sys.version_info[0] >= 3 and sys.version_info[1] >= 7
-PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8
+PY3  = sys.version_info[ 0 ] >= 3
+PY36 = sys.version_info[ 0 ] >= 3 and sys.version_info[ 1 ] >= 6
+PY37 = sys.version_info[ 0 ] >= 3 and sys.version_info[ 1 ] >= 7
+PY38 = sys.version_info[ 0 ] >= 3 and sys.version_info[ 1 ] >= 8
 
 if PY3:
-  StringIO = io.StringIO
-  BytesIO = io.BytesIO
+    StringIO = io.StringIO
+    BytesIO  = io.BytesIO
 
-  import codecs  # noqa: F811
+    import codecs  # noqa: F811
 
-  def open_with_encoding(filename, mode, encoding, newline=''):  # pylint: disable=unused-argument # noqa
-    return codecs.open(filename, mode=mode, encoding=encoding)
+    def open_with_encoding( filename, mode, encoding, newline = '' ): # pylint: disable=unused-argument # noqa
+        return codecs.open( filename, mode = mode, encoding = encoding )
 
-  import functools
-  lru_cache = functools.lru_cache
+    import functools
+    lru_cache = functools.lru_cache
 
-  range = range
-  ifilter = filter
+    range   = range
+    ifilter = filter
 
-  def raw_input():
-    wrapper = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    return wrapper.buffer.raw.readall().decode('utf-8')
+    def raw_input():
+        wrapper = io.TextIOWrapper( sys.stdin.buffer, encoding = 'utf-8' )
+        return wrapper.buffer.raw.readall().decode( 'utf-8' )
 
-  import configparser
+    import configparser
 
-  # Mappings from strings to booleans (such as '1' to True, 'false' to False,
-  # etc.)
-  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser.BOOLEAN_STATES
+    # Mappings from strings to booleans (such as '1' to True, 'false' to False,
+    # etc.)
+    CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser.BOOLEAN_STATES
 
-  import tokenize
-  detect_encoding = tokenize.detect_encoding
-  TokenInfo = tokenize.TokenInfo
+    import tokenize
+    detect_encoding = tokenize.detect_encoding
+    TokenInfo       = tokenize.TokenInfo
 else:
-  import __builtin__
-  import cStringIO
-  from itertools import ifilter
+    import __builtin__
+    import cStringIO
+    from itertools import ifilter
 
-  StringIO = BytesIO = cStringIO.StringIO
+    StringIO = BytesIO = cStringIO.StringIO
 
-  open_with_encoding = io.open
+    open_with_encoding = io.open
 
-  # Python 2.7 doesn't have a native LRU cache, so do nothing.
-  def lru_cache(maxsize=128, typed=False):
+    # Python 2.7 doesn't have a native LRU cache, so do nothing.
+    def lru_cache( maxsize = 128, typed = False ):
 
-    def fake_wrapper(user_function):
-      return user_function
+        def fake_wrapper( user_function ):
+            return user_function
 
-    return fake_wrapper
+        return fake_wrapper
 
-  range = xrange  # noqa: F821
+    range = xrange           # noqa: F821
 
-  raw_input = raw_input
+    raw_input = raw_input
 
-  import ConfigParser as configparser
-  CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access # noqa
+    import ConfigParser as configparser
+    CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states # pylint: disable=protected-access # noqa
 
-  from lib2to3.pgen2 import tokenize
-  detect_encoding = tokenize.detect_encoding
+    from lib2to3.pgen2 import tokenize
+    detect_encoding = tokenize.detect_encoding
 
-  import collections
+    import collections
 
-  class TokenInfo(
-      collections.namedtuple('TokenInfo', 'type string start end line')):
-    pass
+    class TokenInfo( collections.namedtuple( 'TokenInfo',
+                                             'type string start end line' ) ):
+        pass
 
 
-def EncodeAndWriteToStdout(s, encoding='utf-8'):
-  """Encode the given string and emit to stdout.
+def EncodeAndWriteToStdout( s, encoding = 'utf-8' ):
+    """Encode the given string and emit to stdout.
 
   The string may contain non-ascii characters. This is a problem when stdout is
   redirected, because then Python doesn't know the encoding and we may get a
@@ -96,50 +96,50 @@ def EncodeAndWriteToStdout(s, encoding='utf-8'):
     s: (string) The string to encode.
     encoding: (string) The encoding of the string.
   """
-  if PY3:
-    sys.stdout.buffer.write(s.encode(encoding))
-  elif sys.platform == 'win32':
-    # On python 2 and Windows universal newline transformation will be in
-    # effect on stdout. Python 2 will not let us avoid the easily because
-    # it happens based on whether the file handle is opened in O_BINARY or
-    # O_TEXT state. However we can tell Windows itself to change the current
-    # mode, and python 2 will follow suit. However we must take care to change
-    # the mode on the actual external stdout not just the current sys.stdout
-    # which may have been monkey-patched inside the python environment.
-    import msvcrt  # pylint: disable=g-import-not-at-top
-    if sys.__stdout__ is sys.stdout:
-      msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-    sys.stdout.write(s.encode(encoding))
-  else:
-    sys.stdout.write(s.encode(encoding))
+    if PY3:
+        sys.stdout.buffer.write( s.encode( encoding ) )
+    elif sys.platform == 'win32':
+        # On python 2 and Windows universal newline transformation will be in
+        # effect on stdout. Python 2 will not let us avoid the easily because
+        # it happens based on whether the file handle is opened in O_BINARY or
+        # O_TEXT state. However we can tell Windows itself to change the current
+        # mode, and python 2 will follow suit. However we must take care to change
+        # the mode on the actual external stdout not just the current sys.stdout
+        # which may have been monkey-patched inside the python environment.
+        import msvcrt        # pylint: disable=g-import-not-at-top
+        if sys.__stdout__ is sys.stdout:
+            msvcrt.setmode( sys.stdout.fileno(), os.O_BINARY )
+        sys.stdout.write( s.encode( encoding ) )
+    else:
+        sys.stdout.write( s.encode( encoding ) )
 
 
 if PY3:
-  basestring = str
-  unicode = str  # pylint: disable=redefined-builtin,invalid-name
+    basestring = str
+    unicode    = str         # pylint: disable=redefined-builtin,invalid-name
 else:
-  basestring = basestring
+    basestring = basestring
 
-  def unicode(s):  # pylint: disable=invalid-name
-    """Force conversion of s to unicode."""
-    return __builtin__.unicode(s, 'utf-8')
+    def unicode( s ):        # pylint: disable=invalid-name
+        """Force conversion of s to unicode."""
+        return __builtin__.unicode( s, 'utf-8' )
 
 
 # In Python 3.2+, readfp is deprecated in favor of read_file, which doesn't
 # exist in Python 2 yet. To avoid deprecation warnings, subclass ConfigParser to
 # fix this - now read_file works across all Python versions we care about.
-class ConfigParser(configparser.ConfigParser):
-  if not PY3:
+class ConfigParser( configparser.ConfigParser ):
+    if not PY3:
 
-    def read_file(self, fp, source=None):
-      self.readfp(fp, filename=source)
+        def read_file( self, fp, source = None ):
+            self.readfp( fp, filename = source )
 
 
-def removeBOM(source):
-  """Remove any Byte-order-Mark bytes from the beginning of a file."""
-  bom = codecs.BOM_UTF8
-  if PY3:
-    bom = bom.decode('utf-8')
-  if source.startswith(bom):
-    return source[len(bom):]
-  return source
+def removeBOM( source ):
+    """Remove any Byte-order-Mark bytes from the beginning of a file."""
+    bom = codecs.BOM_UTF8
+    if PY3:
+        bom = bom.decode( 'utf-8' )
+    if source.startswith( bom ):
+        return source[ len( bom ): ]
+    return source
