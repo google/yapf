@@ -230,7 +230,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
 
   def testPyprojectTomlNoYapfSection(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
 
@@ -242,7 +242,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
 
   def testPyprojectTomlParseYapfSection(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
 
