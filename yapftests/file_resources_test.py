@@ -75,7 +75,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
   def test_get_exclude_file_patterns_from_pyproject(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -93,7 +93,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -109,7 +109,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -122,7 +122,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
   def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -192,7 +192,7 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
   def test_pyproject_toml(self):
     # An empty pyproject.toml file should not be used
     try:
-      import toml
+      import tomli
     except ImportError:
       return
 
