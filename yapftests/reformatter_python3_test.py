@@ -285,7 +285,7 @@ None.__ne__()
     if sys.version_info[1] < 5:
       return
 
-    unformatted_code        = """\
+    unformatted_code = """\
 async def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
     pass
 

@@ -849,7 +849,7 @@ foo((
     # If the queue isn't properly constructed, then a token in the middle of the
     # line may be selected as the one with least penalty. The tokens after that
     # one are then splatted at the end of the line with no formatting.
-    unformatted_code        = """\
+    unformatted_code = """\
 find_symbol(node.type) + "< " + " ".join(find_pattern(n) for n in node.child) + " >"
 """  # noqa
     expected_formatted_code = """\
