@@ -50,8 +50,8 @@ class UtilsTest(yapf_test_helper.YAPFTest):
           'VALIGN-RIGHT')
     with self.assertRaises(ValueError) as ctx:
       style._ContinuationAlignStyleStringConverter('blahblah')
-    self.assertIn(
-        "unknown continuation align style: 'blahblah'", str(ctx.exception))
+    self.assertIn("unknown continuation align style: 'blahblah'",
+                  str(ctx.exception))
 
   def testStringListConverter(self):
     self.assertEqual(style._StringListConverter('foo, bar'), ['foo', 'bar'])
@@ -136,8 +136,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
     shutil.rmtree(cls.test_tmpdir)
 
   def testDefaultBasedOnStyle(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         continuation_indent_width = 20
         ''')
@@ -147,8 +146,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnPEP8Style(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = pep8
         continuation_indent_width = 40
@@ -159,8 +157,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
   def testDefaultBasedOnGoogleStyle(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = google
         continuation_indent_width = 20
@@ -171,8 +168,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnFacebookStyle(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = facebook
         continuation_indent_width = 20
@@ -183,8 +179,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = pep8
         SPLIT_BEFORE_NAMED_ASSIGNS=False
@@ -197,8 +192,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
   def testStringListOptionValue(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         based_on_style = pep8
         I18N_FUNCTION_CALL = N_, V_, T_
@@ -224,8 +218,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
         style.CreateStyleFromConfig(filepath)
 
   def testErrorUnknownStyleOption(self):
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [style]
         indent_width=2
         hummus=2
@@ -253,8 +246,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
     except ImportError:
       return
 
-    cfg = textwrap.dedent(
-        u'''\
+    cfg = textwrap.dedent(u'''\
         [tool.yapf]
         based_on_style = "pep8"
         continuation_indent_width = 40
@@ -284,12 +276,12 @@ class StyleFromDict(yapf_test_helper.YAPFTest):
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnStyleBadDict(self):
-    self.assertRaisesRegex(
-        style.StyleConfigError, 'Unknown style option',
-        style.CreateStyleFromConfig, {'based_on_styl': 'pep8'})
-    self.assertRaisesRegex(
-        style.StyleConfigError, 'not a valid', style.CreateStyleFromConfig,
-        {'INDENT_WIDTH': 'FOUR'})
+    self.assertRaisesRegex(style.StyleConfigError, 'Unknown style option',
+                           style.CreateStyleFromConfig,
+                           {'based_on_styl': 'pep8'})
+    self.assertRaisesRegex(style.StyleConfigError, 'not a valid',
+                           style.CreateStyleFromConfig,
+                           {'INDENT_WIDTH': 'FOUR'})
 
 
 class StyleFromCommandLine(yapf_test_helper.YAPFTest):
@@ -323,15 +315,12 @@ class StyleFromCommandLine(yapf_test_helper.YAPFTest):
     self.assertIsInstance(cfg, dict)
 
   def testDefaultBasedOnStyleBadString(self):
-    self.assertRaisesRegex(
-        style.StyleConfigError, 'Unknown style option',
-        style.CreateStyleFromConfig, '{based_on_styl: pep8}')
-    self.assertRaisesRegex(
-        style.StyleConfigError, 'not a valid', style.CreateStyleFromConfig,
-        '{INDENT_WIDTH: FOUR}')
-    self.assertRaisesRegex(
-        style.StyleConfigError, 'Invalid style dict',
-        style.CreateStyleFromConfig, '{based_on_style: pep8')
+    self.assertRaisesRegex(style.StyleConfigError, 'Unknown style option',
+                           style.CreateStyleFromConfig, '{based_on_styl: pep8}')
+    self.assertRaisesRegex(style.StyleConfigError, 'not a valid',
+                           style.CreateStyleFromConfig, '{INDENT_WIDTH: FOUR}')
+    self.assertRaisesRegex(style.StyleConfigError, 'Invalid style dict',
+                           style.CreateStyleFromConfig, '{based_on_style: pep8')
 
 
 class StyleHelp(yapf_test_helper.YAPFTest):

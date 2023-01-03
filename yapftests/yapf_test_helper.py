@@ -57,9 +57,9 @@ class YAPFTest(unittest.TestCase):
           difflib.unified_diff(
               code.splitlines(),
               expected_code.splitlines(),
-              fromfile ='actual',
-              tofile   ='expected',
-              lineterm =''))
+              fromfile='actual',
+              tofile='expected',
+              lineterm=''))
       self.fail('\n'.join(msg))
 
 

@@ -42,16 +42,15 @@ def stdout_redirector(stream):  # pylint: disable=invalid-name
 # Note: `buffering` is set to -1 despite documentation of NamedTemporaryFile
 # says None. This is probably a problem with the python documentation.
 @contextlib.contextmanager
-def NamedTempFile(
-    mode      ='w+b',
-    buffering =-1,
-    encoding  =None,
-    errors    =None,
-    newline   =None,
-    suffix    =None,
-    prefix    =None,
-    dirname   =None,
-    text      =False):
+def NamedTempFile(mode='w+b',
+                  buffering=-1,
+                  encoding=None,
+                  errors=None,
+                  newline=None,
+                  suffix=None,
+                  prefix=None,
+                  dirname=None,
+                  text=False):
   """Context manager creating a new temporary file in text mode."""
   if sys.version_info < (3, 5):  # covers also python 2
     if suffix is None:
@@ -62,22 +61,29 @@ def NamedTempFile(
       suffix=suffix, prefix=prefix, dir=dirname, text=text)
   f = io.open(
       fd,
-      mode      =mode,
-      buffering =buffering,
-      encoding  =encoding,
-      errors    =errors,
-      newline   =newline)
+      mode=mode,
+      buffering=buffering,
+      encoding=encoding,
+      errors=errors,
+      newline=newline)
   yield f, fname
   f.close()
   os.remove(fname)
 
 
 @contextlib.contextmanager
-def TempFileContents(
-    dirname, contents, encoding='utf-8', newline='', suffix=None):
+def TempFileContents(dirname,
+                     contents,
+                     encoding='utf-8',
+                     newline='',
+                     suffix=None):
   # Note: NamedTempFile properly handles unicode encoding when using mode='w'
-  with NamedTempFile(dirname=dirname, mode='w', encoding=encoding,
-                     newline=newline, suffix=suffix) as (f, fname):
+  with NamedTempFile(
+      dirname=dirname,
+      mode='w',
+      encoding=encoding,
+      newline=newline,
+      suffix=suffix) as (f, fname):
     f.write(contents)
     f.flush()
     yield fname

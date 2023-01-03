@@ -30,30 +30,26 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
   def testSetGlobalStyle(self):
     try:
       style.SetGlobalStyle(style.CreateYapfStyle())
-      unformatted_code = textwrap.dedent(
-          u"""\
+      unformatted_code = textwrap.dedent(u"""\
           for i in range(5):
            print('bar')
           """)
-      expected_formatted_code = textwrap.dedent(
-          u"""\
+      expected_formatted_code = textwrap.dedent(u"""\
           for i in range(5):
             print('bar')
           """)
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(
-          expected_formatted_code, reformatter.Reformat(llines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
 
-    unformatted_code = textwrap.dedent(
-        u"""\
+    unformatted_code = textwrap.dedent(u"""\
         for i in range(5):
          print('bar')
         """)
-    expected_formatted_code = textwrap.dedent(
-        u"""\
+    expected_formatted_code = textwrap.dedent(u"""\
         for i in range(5):
             print('bar')
         """)
@@ -66,20 +62,18 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       sympy_style['NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS'] = \
         style._StringSetConverter('*,/')
       style.SetGlobalStyle(sympy_style)
-      unformatted_code = textwrap.dedent(
-          """\
+      unformatted_code = textwrap.dedent("""\
           a = 1+2 * 3 - 4 / 5
           b = '0' * 1
           """)
-      expected_formatted_code = textwrap.dedent(
-          """\
+      expected_formatted_code = textwrap.dedent("""\
           a = 1 + 2*3 - 4/5
           b = '0'*1
           """)
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(
-          expected_formatted_code, reformatter.Reformat(llines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
@@ -89,8 +83,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       pep8_with_precedence = style.CreatePEP8Style()
       pep8_with_precedence['ARITHMETIC_PRECEDENCE_INDICATION'] = True
       style.SetGlobalStyle(pep8_with_precedence)
-      unformatted_code = textwrap.dedent(
-          """\
+      unformatted_code = textwrap.dedent("""\
           1+2
           (1 + 2) * (3 - (4 / 5))
           a = 1 * 2 + 3 / 4
@@ -105,8 +98,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           j = (1 * 2 - 3) + 4
           k = (1 * 2 * 3) + (4 * 5 * 6 * 7 * 8)
           """)
-      expected_formatted_code = textwrap.dedent(
-          """\
+      expected_formatted_code = textwrap.dedent("""\
           1 + 2
           (1+2) * (3 - (4/5))
           a = 1*2 + 3/4
@@ -123,8 +115,8 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           """)
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(
-          expected_formatted_code, reformatter.Reformat(llines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
@@ -135,8 +127,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       pep8_no_split_before_first['SPLIT_BEFORE_FIRST_ARGUMENT'] = False
       pep8_no_split_before_first['SPLIT_BEFORE_NAMED_ASSIGNS'] = False
       style.SetGlobalStyle(pep8_no_split_before_first)
-      formatted_code = textwrap.dedent(
-          """\
+      formatted_code = textwrap.dedent("""\
           # Example from in-code MustSplit comments
           foo = outer_function_call(fitting_inner_function_call(inner_arg1, inner_arg2),
                                     outer_arg1, outer_arg2)
@@ -177,8 +168,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       pep8_no_split_before_first['SPLIT_BEFORE_FIRST_ARGUMENT'] = False
       pep8_no_split_before_first['SPLIT_BEFORE_NAMED_ASSIGNS'] = True
       style.SetGlobalStyle(pep8_no_split_before_first)
-      formatted_code = textwrap.dedent(
-          """\
+      formatted_code = textwrap.dedent("""\
           # Examples Issue#556
           i_take_a_lot_of_params(arg1,
                                  param1=very_long_expression1(),

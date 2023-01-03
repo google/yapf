@@ -854,8 +854,7 @@ checkpoint_files = gfile.Glob(
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB37460004(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         assert all(s not in (_SENTINEL, None) for s in nested_schemas
                   ), 'Nested schemas should never contain None/_SENTINEL'
         """)
@@ -882,8 +881,7 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB36215507(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class X():
 
           def _():
@@ -897,8 +895,7 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB35212469(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def _():
           X = {
             'retain': {
@@ -907,8 +904,7 @@ def _():
               }
           }
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def _():
           X = {
               'retain': {
@@ -921,14 +917,12 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB31063453(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def _():
           while ((not mpede_proc) or ((time_time() - last_modified) < FLAGS_boot_idle_timeout)):
             pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def _():
           while ((not mpede_proc) or
                  ((time_time() - last_modified) < FLAGS_boot_idle_timeout)):
@@ -938,8 +932,7 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB35021894(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def _():
           labelacl = Env(qa={
               'read': 'name/some-type-of-very-long-name-for-reading-perms',
@@ -950,8 +943,7 @@ def _():
                             'modify': 'name/some-other-type-of-very-long-name-for-modifying'
                          })
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def _():
           labelacl = Env(
               qa={
@@ -967,12 +959,10 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB34682902(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         logging.info("Mean angular velocity norm: %.3f", np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         logging.info("Mean angular velocity norm: %.3f",
                      np.linalg.norm(np.mean(ang_vel_arr, axis=0)))
         """)
@@ -980,15 +970,13 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB33842726(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class _():
           def _():
             hints.append(('hg tag -f -l -r %s %s # %s' % (short(ctx.node(
             )), candidatetag, firstline))[:78])
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class _():
           def _():
             hints.append(('hg tag -f -l -r %s %s # %s' %
@@ -998,8 +986,7 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB32931780(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         environments = {
             'prod': {
                 # this is a comment before the first entry.
@@ -1030,8 +1017,7 @@ def _():
             }
         }
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         environments = {
             'prod': {
                 # this is a comment before the first entry.
@@ -1062,8 +1048,7 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB33047408(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def _():
           for sort in (sorts or []):
             request['sorts'].append({
@@ -1077,8 +1062,7 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB32714745(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class _():
 
           def _BlankDefinition():
@@ -1108,16 +1092,14 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB32737279(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         here_is_a_dict = {
             'key':
             # Comment.
             'value'
         }
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         here_is_a_dict = {
             'key':  # Comment.
                 'value'
@@ -1127,8 +1109,7 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB32570937(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
       def _():
         if (job_message.ball not in ('*', ball) or
             job_message.call not in ('*', call) or
@@ -1139,8 +1120,7 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB31937033(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class _():
 
           def __init__(self, metric, fields_cb=None):
@@ -1166,8 +1146,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB31847238(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class _():
 
           def aaaaa(self, bbbbb, cccccccccccccc=None):  # TODO(who): pylint: disable=unused-argument
@@ -1176,8 +1155,7 @@ class _():
           def xxxxx(self, yyyyy, zzzzzzzzzzzzzz=None):  # A normal comment that runs over the column limit.
             return 1
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class _():
 
           def aaaaa(self, bbbbb, cccccccccccccc=None):  # TODO(who): pylint: disable=unused-argument
@@ -1193,13 +1171,11 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB30760569(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         {'1234567890123456789012345678901234567890123456789012345678901234567890':
              '1234567890123456789012345678901234567890'}
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         {
             '1234567890123456789012345678901234567890123456789012345678901234567890':
                 '1234567890123456789012345678901234567890'
@@ -1209,15 +1185,13 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB26034238(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class Thing:
 
           def Function(self):
             thing.Scrape('/aaaaaaaaa/bbbbbbbbbb/ccccc/dddd/eeeeeeeeeeeeee/ffffffffffffff').AndReturn(42)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class Thing:
 
           def Function(self):
@@ -1229,8 +1203,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB30536435(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def main(unused_argv):
           if True:
             if True:
@@ -1239,8 +1212,7 @@ class _():
                   ccccccccc.within,
                   imports.ddddddddddddddddddd(name_item.ffffffffffffffff)))
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def main(unused_argv):
           if True:
             if True:
@@ -1252,14 +1224,12 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB30442148(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def lulz():
           return (some_long_module_name.SomeLongClassName.
                   some_long_attribute_name.some_long_method_name())
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def lulz():
           return (some_long_module_name.SomeLongClassName.some_long_attribute_name
                   .some_long_method_name())
@@ -1268,8 +1238,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB26868213(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
       def _():
         xxxxxxxxxxxxxxxxxxx = {
             'ssssss': {'ddddd': 'qqqqq',
@@ -1284,8 +1253,7 @@ class _():
             }
         }
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
       def _():
         xxxxxxxxxxxxxxxxxxx = {
             'ssssss': {
@@ -1306,8 +1274,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB30173198(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class _():
 
           def _():
@@ -1318,8 +1285,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB29908765(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class _():
 
           def __repr__(self):
@@ -1330,8 +1296,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB30087362(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def _():
           for s in sorted(env['foo']):
             bar()
@@ -1344,8 +1309,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB30087363(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         if False:
           bar()
           # This is a comment
@@ -1357,14 +1321,12 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB29093579(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def _():
           _xxxxxxxxxxxxxxx(aaaaaaaa, bbbbbbbbbbbbbb.cccccccccc[
               dddddddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffff])
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def _():
           _xxxxxxxxxxxxxxx(
               aaaaaaaa,
@@ -1375,8 +1337,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB26382315(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         @hello_world
         # This is a first comment
 
@@ -1388,8 +1349,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB27616132(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         if True:
           query.fetch_page.assert_has_calls([
               mock.call(100,
@@ -1400,8 +1360,7 @@ class _():
                         start_cursor=cursor_2),
           ])
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         if True:
           query.fetch_page.assert_has_calls([
               mock.call(100, start_cursor=None),
@@ -1413,8 +1372,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB27590179(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         if True:
           if True:
             self.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
@@ -1424,8 +1382,7 @@ class _():
                      self.bbb.cccccccccc(ddddddddddddddddddddddd.eeeeeeeeeeeeeeeeeeeeee)
                 })
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         if True:
           if True:
             self.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = ({
@@ -1439,13 +1396,11 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB27266946(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def _():
           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccccccccc)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def _():
           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = (
               self.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
@@ -1455,8 +1410,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB25505359(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         _EXAMPLE = {
             'aaaaaaaaaaaaaa': [{
                 'bbbb': 'cccccccccccccccccccccc',
@@ -1471,8 +1425,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB25324261(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         aaaaaaaaa = set(bbbb.cccc
                         for ddd in eeeeee.fffffffffff.gggggggggggggggg
                         for cccc in ddd.specification)
@@ -1481,8 +1434,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB25136704(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class f:
 
           def test(self):
@@ -1494,8 +1446,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB25165602(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def f():
           ids = {u: i for u, i in zip(self.aaaaa, xrange(42, 42 + len(self.aaaaaa)))}
         """)  # noqa
@@ -1503,8 +1454,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB25157123(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def ListArgs():
           FairlyLongMethodName([relatively_long_identifier_for_a_list],
                                another_argument_with_a_long_identifier)
@@ -1513,8 +1463,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB25136820(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def foo():
           return collections.OrderedDict({
               # Preceding comment.
@@ -1522,8 +1471,7 @@ class _():
               '$bbbbbbbbbbbbbbbbbbbbbbbb',
           })
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def foo():
           return collections.OrderedDict({
               # Preceding comment.
@@ -1535,15 +1483,13 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB25131481(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         APPARENT_ACTIONS = ('command_type', {
             'materialize': lambda x: some_type_of_function('materialize ' + x.command_def),
             '#': lambda x: x  # do nothing
         })
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         APPARENT_ACTIONS = (
             'command_type',
             {
@@ -1557,8 +1503,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB23445244(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def foo():
           if True:
             return xxxxxxxxxxxxxxxx(
@@ -1569,8 +1514,7 @@ class _():
                         FLAGS.aaaaaaaaaaaaaa + FLAGS.bbbbbbbbbbbbbbbbbbb,
                 })
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def foo():
           if True:
             return xxxxxxxxxxxxxxxx(
@@ -1586,8 +1530,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB20559654(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
       class A(object):
 
         def foo(self):
@@ -1595,8 +1538,7 @@ class _():
               ['AA BBBB CCC DDD EEEEEEEE X YY ZZZZ FFF EEE AAAAAAAA'],
               aaaaaaaaaaa=True, bbbbbbbb=None)
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
       class A(object):
 
         def foo(self):
@@ -1609,8 +1551,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB23943842(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class F():
           def f():
             self.assertDictEqual(
@@ -1624,8 +1565,7 @@ class _():
                             'lines': 'l8'}
                 })
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class F():
 
           def f():
@@ -1649,14 +1589,12 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB20551180(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def foo():
           if True:
             return (struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) + eeeeeee)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def foo():
           if True:
             return (struct.pack('aaaa', bbbbbbbbbb, ccccccccccccccc, dddddddd) +
@@ -1666,14 +1604,12 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB23944849(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class A(object):
           def xxxxxxxxx(self, aaaaaaa, bbbbbbb=ccccccccccc, dddddd=300, eeeeeeeeeeeeee=None, fffffffffffffff=0):
             pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class A(object):
 
           def xxxxxxxxx(self,
@@ -1688,14 +1624,12 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB23935890(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class F():
           def functioni(self, aaaaaaa, bbbbbbb, cccccc, dddddddddddddd, eeeeeeeeeeeeeee):
             pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class F():
 
           def functioni(self, aaaaaaa, bbbbbbb, cccccc, dddddddddddddd,
@@ -1706,8 +1640,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB28414371(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def _():
           return ((m.fffff(
               m.rrr('mmmmmmmmmmmmmmmm', 'ssssssssssssssssssssssssss'), ffffffffffffffff)
@@ -1732,8 +1665,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB20127686(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def f():
           if True:
             return ((m.fffff(
@@ -1751,13 +1683,11 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB20016122(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         from a_very_long_or_indented_module_name_yada_yada import (long_argument_1,
                                                                    long_argument_2)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         from a_very_long_or_indented_module_name_yada_yada import (
             long_argument_1, long_argument_2)
         """)
@@ -1768,13 +1698,12 @@ class _():
               '{based_on_style: pep8, split_penalty_import_names: 350}'))
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-      self.assertCodeEqual(
-          expected_formatted_code, reformatter.Reformat(llines))
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreatePEP8Style())
 
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class foo():
 
           def __eq__(self, other):
@@ -1794,9 +1723,8 @@ class _():
 
     try:
       style.SetGlobalStyle(
-          style.CreateStyleFromConfig(
-              '{based_on_style: yapf, '
-              'split_before_logical_operator: True}'))
+          style.CreateStyleFromConfig('{based_on_style: yapf, '
+                                      'split_before_logical_operator: True}'))
 
       llines = yapf_test_helper.ParseAndUnwrap(code)
       self.assertCodeEqual(code, reformatter.Reformat(llines))
@@ -1804,14 +1732,12 @@ class _():
       style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB22527411(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def f():
           if True:
             aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(ffffffffffffff)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def f():
           if True:
             aaaaaa.bbbbbbbbbbbbbbbbbbbb[-1].cccccccccccccc.ddd().eeeeeeee(
@@ -1821,8 +1747,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB20849933(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def main(unused_argv):
           if True:
             aaaaaaaa = {
@@ -1830,8 +1755,7 @@ class _():
                        (eeeeee.FFFFFFFFFFFFFFFFFF),
             }
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def main(unused_argv):
           if True:
             aaaaaaaa = {
@@ -1843,8 +1767,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB20813997(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def myfunc_1():
           myarray = numpy.zeros((2, 2, 2))
           print(myarray[:, 1, :])
@@ -1853,8 +1776,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB20605036(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         foo = {
             'aaaa': {
                 # A comment for no particular reason.
@@ -1868,8 +1790,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB20562732(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         foo = [
             # Comment about first list item
             'First item',
@@ -1881,8 +1802,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB20128830(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         a = {
             'xxxxxxxxxxxxxxxxxxxx': {
                 'aaaa':
@@ -1902,8 +1822,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB20073838(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class DummyModel(object):
 
           def do_nothing(self, class_1_count):
@@ -1920,8 +1839,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB19626808(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         if True:
           aaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbb(
               'ccccccccccc', ddddddddd='eeeee').fffffffff([ggggggggggggggggggggg])
@@ -1930,8 +1848,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB19547210(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         while True:
           if True:
             if True:
@@ -1945,8 +1862,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB19377034(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def f():
           if (aaaaaaaaaaaaaaa.start >= aaaaaaaaaaaaaaa.end or
               bbbbbbbbbbbbbbb.start >= bbbbbbbbbbbbbbb.end):
@@ -1956,8 +1872,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB19372573(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         def f():
             if a: return 42
             while True:
@@ -1975,8 +1890,7 @@ class _():
       style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testB19353268(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         a = {1, 2, 3}[x]
         b = {'foo': 42, 'bar': 37}['foo']
         """)
@@ -1984,8 +1898,7 @@ class _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB19287512(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class Foo(object):
 
           def bar(self):
@@ -1995,8 +1908,7 @@ class _():
                              .Mmmmmmmmmmmmmmmmmm(-1, 'permission error'))):
               self.assertRaises(nnnnnnnnnnnnnnnn.ooooo, ppppp.qqqqqqqqqqqqqqqqq)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class Foo(object):
 
           def bar(self):
@@ -2011,8 +1923,7 @@ class _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB19194420(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         method.Set(
             'long argument goes here that causes the line to break',
             lambda arg2=0.5: arg2)
@@ -2033,8 +1944,7 @@ instance = (
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB18257115(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         if True:
           if True:
             self._Test(aaaa, bbbbbbb.cccccccccc, dddddddd, eeeeeeeeeee,
@@ -2044,8 +1954,7 @@ instance = (
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB18256666(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class Foo(object):
 
           def Bar(self):
@@ -2063,8 +1972,7 @@ instance = (
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB18256826(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         if True:
           pass
         # A multiline comment.
@@ -2083,8 +1991,7 @@ instance = (
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB18255697(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         AAAAAAAAAAAAAAA = {
             'XXXXXXXXXXXXXX': 4242,  # Inline comment
             # Next comment
@@ -2095,14 +2002,12 @@ instance = (
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB17534869(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         if True:
           self.assertLess(abs(time.time()-aaaa.bbbbbbbbbbb(
                               datetime.datetime.now())), 1)
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         if True:
           self.assertLess(
               abs(time.time() - aaaa.bbbbbbbbbbb(datetime.datetime.now())), 1)
@@ -2111,16 +2016,14 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB17489866(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def f():
           if True:
             if True:
               return aaaa.bbbbbbbbb(ccccccc=dddddddddddddd({('eeee', \
 'ffffffff'): str(j)}))
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def f():
           if True:
             if True:
@@ -2131,8 +2034,7 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB17133019(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         class aaaaaaaaaaaaaa(object):
 
           def bbbbbbbbbb(self):
@@ -2143,8 +2045,7 @@ instance = (
                                        ), "rb") as gggggggggggggggggggg:
                 print(gggggggggggggggggggg)
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         class aaaaaaaaaaaaaa(object):
 
           def bbbbbbbbbb(self):
@@ -2158,8 +2059,7 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB17011869(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         '''blah......'''
 
         class SomeClass(object):
@@ -2170,8 +2070,7 @@ instance = (
                 'DDDDDDDD': 0.4811
                                       }
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         '''blah......'''
 
 
@@ -2187,16 +2086,14 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB16783631(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         if True:
           with aaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccc(ddddddddddddd,
                                                       eeeeeeeee=self.fffffffffffff
                                                       )as gggg:
             pass
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         if True:
           with aaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccc(
               ddddddddddddd, eeeeeeeee=self.fffffffffffff) as gggg:
@@ -2206,14 +2103,12 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB16572361(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def foo(self):
          def bar(my_dict_name):
           self.my_dict_name['foo-bar-baz-biz-boo-baa-baa'].IncrementBy.assert_called_once_with('foo_bar_baz_boo')
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def foo(self):
 
           def bar(my_dict_name):
@@ -2225,15 +2120,13 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB15884241(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         if 1:
           if 1:
             for row in AAAA:
               self.create(aaaaaaaa="/aaa/bbbb/cccc/dddddd/eeeeeeeeeeeeeeeeeeeeeeeeee/%s" % row [0].replace(".foo", ".bar"), aaaaa=bbb[1], ccccc=bbb[2], dddd=bbb[3], eeeeeeeeeee=[s.strip() for s in bbb[4].split(",")], ffffffff=[s.strip() for s in bbb[5].split(",")], gggggg=bbb[6])
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         if 1:
           if 1:
             for row in AAAA:
@@ -2251,8 +2144,7 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB15697268(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def main(unused_argv):
           ARBITRARY_CONSTANT_A = 10
           an_array_with_an_exceedingly_long_name = range(ARBITRARY_CONSTANT_A + 1)
@@ -2261,8 +2153,7 @@ instance = (
           a_long_name_slicing = an_array_with_an_exceedingly_long_name[:ARBITRARY_CONSTANT_A]
           bad_slice = ("I am a crazy, no good, string what's too long, etc." + " no really ")[:ARBITRARY_CONSTANT_A]
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def main(unused_argv):
           ARBITRARY_CONSTANT_A = 10
           an_array_with_an_exceedingly_long_name = range(ARBITRARY_CONSTANT_A + 1)
@@ -2296,12 +2187,10 @@ if True:
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB15542157(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaa = bbbb.ccccccccccccccc(dddddd.eeeeeeeeeeeeee, ffffffffffffffffff, gggggg.hhhhhhhhhhhhhhhhh)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaa = bbbb.ccccccccccccccc(dddddd.eeeeeeeeeeeeee, ffffffffffffffffff,
                                             gggggg.hhhhhhhhhhhhhhhhh)
         """)  # noqa
@@ -2309,8 +2198,7 @@ if True:
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB15438132(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         if aaaaaaa.bbbbbbbbbb:
            cccccc.dddddddddd(eeeeeeeeeee=fffffffffffff.gggggggggggggggggg)
            if hhhhhh.iiiii.jjjjjjjjjjjjj:
@@ -2326,8 +2214,7 @@ if True:
                      lllll.mm),
                  nnnnnnnnnn=ooooooo.pppppppppp)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         if aaaaaaa.bbbbbbbbbb:
           cccccc.dddddddddd(eeeeeeeeeee=fffffffffffff.gggggggggggggggggg)
           if hhhhhh.iiiii.jjjjjjjjjjjjj:
@@ -2361,13 +2248,11 @@ call(
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB14406499(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def foo1(parameter_1, parameter_2, parameter_3, parameter_4, \
 parameter_5, parameter_6): pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def foo1(parameter_1, parameter_2, parameter_3, parameter_4, parameter_5,
                  parameter_6):
           pass
@@ -2376,21 +2261,18 @@ parameter_5, parameter_6): pass
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB13900309(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         self.aaaaaaaaaaa(  # A comment in the middle of it all.
                948.0/3600, self.bbb.ccccccccccccccccccccc(dddddddddddddddd.eeee, True))
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         self.aaaaaaaaaaa(  # A comment in the middle of it all.
             948.0 / 3600, self.bbb.ccccccccccccccccccccc(dddddddddddddddd.eeee, True))
         """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         aaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccccc(
             DC_1, (CL - 50, CL), AAAAAAAA, BBBBBBBBBBBBBBBB, 98.0,
             CCCCCCC).ddddddddd(  # Look! A comment is here.
@@ -2399,49 +2281,41 @@ parameter_5, parameter_6): pass
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc().dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(
         ).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(x).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbb.ccccccccccccccccccccccccc(
             x).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa(xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)  # noqa
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa(
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx).dddddddddddddddddddddddddd(1, 2, 3, 4)
         """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa().bbbbbbbbbbbbbbbbbbbbbbbb().ccccccccccccccccccc().\
 dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().gggggggggggggggggg()
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         aaaaaaaaaaaaaaaaaaaaaaaa().bbbbbbbbbbbbbbbbbbbbbbbb().ccccccccccccccccccc(
         ).dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff(
         ).gggggggggggggggggg()
@@ -2450,8 +2324,7 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB67935687(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         Fetch(
             Raw('monarch.BorgTask', '/union/row_operator_action_delay'),
             {'borg_user': self.borg_user})
@@ -2459,15 +2332,13 @@ dddddddddddddddddd().eeeeeeeeeeeeeeeeeeeee().fffffffffffffffff().ggggggggggggggg
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         shelf_renderer.expand_text = text.translate_to_unicode(
             expand_text % {
                 'creator': creator
             })
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         shelf_renderer.expand_text = text.translate_to_unicode(expand_text %
                                                                {'creator': creator})
         """)  # noqa
