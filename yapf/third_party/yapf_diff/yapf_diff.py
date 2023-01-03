@@ -83,7 +83,7 @@ def main():
   args = parser.parse_args()
 
   # Extract changed lines for each file.
-  filename      = None
+  filename = None
   lines_by_file = {}
   for line in sys.stdin:
     match = re.search(r'^\+\+\+\ (.*?/){%s}(\S*)' % args.prefix, line)
@@ -134,9 +134,8 @@ def main():
       with open(filename) as f:
         code = f.readlines()
       formatted_code = StringIO(stdout).readlines()
-      diff           = difflib.unified_diff(
-          code, formatted_code, filename, filename, '(before formatting)',
-          '(after formatting)')
+      diff = difflib.unified_diff(code, formatted_code, filename, filename,
+                                  '(before formatting)', '(after formatting)')
       diff_string = ''.join(diff)
       if len(diff_string) > 0:
         sys.stdout.write(diff_string)

@@ -55,8 +55,8 @@ def main(argv):
   Raises:
     YapfError: if none of the supplied files were Python files.
   """
-  parser       = _BuildParser()
-  args         = parser.parse_args(argv[1:])
+  parser = _BuildParser()
+  args = parser.parse_args(argv[1:])
   style_config = args.style
 
   if args.style_help:
@@ -70,9 +70,8 @@ def main(argv):
   if not args.files:
     # No arguments specified. Read code from stdin.
     if args.in_place or args.diff:
-      parser.error(
-          'cannot use --in-place or --diff flags when reading '
-          'from stdin')
+      parser.error('cannot use --in-place or --diff flags when reading '
+                   'from stdin')
 
     original_source = []
     while True:
@@ -94,7 +93,7 @@ def main(argv):
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
-    source    = [line.rstrip() for line in original_source]
+    source = [line.rstrip() for line in original_source]
     source[0] = py3compat.removeBOM(source[0])
 
     try:
@@ -116,9 +115,9 @@ def main(argv):
   exclude_patterns_from_ignore_file = file_resources.GetExcludePatternsForDir(
       os.getcwd())
 
-  files = file_resources.GetCommandLineFiles(
-      args.files, args.recursive,
-      (args.exclude or []) + exclude_patterns_from_ignore_file)
+  files = file_resources.GetCommandLineFiles(args.files, args.recursive,
+                                             (args.exclude or []) +
+                                             exclude_patterns_from_ignore_file)
   if not files:
     raise errors.YapfError('input filenames did not match any python files')
 
@@ -153,17 +152,16 @@ def _PrintHelp(args):
     print()
 
 
-def FormatFiles(
-    filenames,
-    lines,
-    style_config=None,
-    no_local_style=False,
-    in_place=False,
-    print_diff=False,
-    verify=False,
-    parallel=False,
-    quiet=False,
-    verbose=False):
+def FormatFiles(filenames,
+                lines,
+                style_config=None,
+                no_local_style=False,
+                in_place=False,
+                print_diff=False,
+                verify=False,
+                parallel=False,
+                quiet=False,
+                verbose=False):
   """Format a list of files.
 
   Arguments:
@@ -193,31 +191,28 @@ def FormatFiles(
     workers = min(multiprocessing.cpu_count(), len(filenames))
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
-          executor.submit(
-              _FormatFile, filename, lines, style_config, no_local_style,
-              in_place, print_diff, verify, quiet, verbose)
-          for filename in filenames
+          executor.submit(_FormatFile, filename, lines, style_config,
+                          no_local_style, in_place, print_diff, verify, quiet,
+                          verbose) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
   else:
     for filename in filenames:
-      changed |= _FormatFile(
-          filename, lines, style_config, no_local_style, in_place, print_diff,
-          verify, quiet, verbose)
+      changed |= _FormatFile(filename, lines, style_config, no_local_style,
+                             in_place, print_diff, verify, quiet, verbose)
   return changed
 
 
-def _FormatFile(
-    filename,
-    lines,
-    style_config=None,
-    no_local_style=False,
-    in_place=False,
-    print_diff=False,
-    verify=False,
-    quiet=False,
-    verbose=False):
+def _FormatFile(filename,
+                lines,
+                style_config=None,
+                no_local_style=False,
+                in_place=False,
+                print_diff=False,
+                verify=False,
+                quiet=False,
+                verbose=False):
   """Format an individual file."""
   if verbose and not quiet:
     print('Reformatting %s' % filename)
@@ -241,8 +236,8 @@ def _FormatFile(
     raise errors.YapfError(errors.FormatErrorMsg(e))
 
   if not in_place and not quiet and reformatted_code:
-    file_resources.WriteReformattedCode(
-        filename, reformatted_code, encoding, in_place)
+    file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
+                                        in_place)
   return has_change
 
 
@@ -326,20 +321,18 @@ def _BuildParser():
   parser.add_argument(
       '--style',
       action='store',
-      help=(
-          'specify formatting style: either a style name (for example "pep8" '
-          'or "google"), or the name of a file with style settings. The '
-          'default is pep8 unless a %s or %s or %s file located in the same '
-          'directory as the source or one of its parent directories '
-          '(for stdin, the current directory is used).' %
-          (style.LOCAL_STYLE, style.SETUP_CONFIG, style.PYPROJECT_TOML)))
+      help=('specify formatting style: either a style name (for example "pep8" '
+            'or "google"), or the name of a file with style settings. The '
+            'default is pep8 unless a %s or %s or %s file located in the same '
+            'directory as the source or one of its parent directories '
+            '(for stdin, the current directory is used).' %
+            (style.LOCAL_STYLE, style.SETUP_CONFIG, style.PYPROJECT_TOML)))
   parser.add_argument(
       '--style-help',
       action='store_true',
-      help=(
-          'show style settings and exit; this output can be '
-          'saved to .style.yapf to make your settings '
-          'permanent'))
+      help=('show style settings and exit; this output can be '
+            'saved to .style.yapf to make your settings '
+            'permanent'))
   parser.add_argument(
       '--no-local-style',
       action='store_true',
@@ -349,9 +342,8 @@ def _BuildParser():
       '-p',
       '--parallel',
       action='store_true',
-      help=(
-          'run YAPF in parallel when formatting multiple files. Requires '
-          'concurrent.futures in Python 2.X'))
+      help=('run YAPF in parallel when formatting multiple files. Requires '
+            'concurrent.futures in Python 2.X'))
   parser.add_argument(
       '-vv',
       '--verbose',

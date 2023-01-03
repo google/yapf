@@ -39,7 +39,7 @@ class YAPFTest(unittest.TestCase):
 
   def assertCodeEqual(self, expected_code, code):
     if code != expected_code:
-      msg     = ['Code format mismatch:', 'Expected:']
+      msg = ['Code format mismatch:', 'Expected:']
       linelen = style.Get('COLUMN_LIMIT')
       for line in expected_code.splitlines():
         if len(line) > linelen:
