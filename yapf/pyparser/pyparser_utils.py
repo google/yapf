@@ -31,8 +31,8 @@ the pyparser.
 
 def GetTokens(logical_lines, node):
   """Get a list of tokens within the node's range from the logical lines."""
-  start  = TokenStart(node)
-  end    = TokenEnd(node)
+  start = TokenStart(node)
+  end = TokenEnd(node)
   tokens = []
 
   for line in logical_lines:
@@ -46,8 +46,8 @@ def GetTokens(logical_lines, node):
 
 def GetTokensInSubRange(tokens, node):
   """Get a subset of tokens representing the node."""
-  start           = TokenStart(node)
-  end             = TokenEnd(node)
+  start = TokenStart(node)
+  end = TokenEnd(node)
   tokens_in_range = []
 
   for tok in tokens:
