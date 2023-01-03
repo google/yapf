@@ -15,9 +15,9 @@
 from yapf.yapflib import style
 
 # Generic split penalties
-UNBREAKABLE             = 1000**5
+UNBREAKABLE = 1000**5
 VERY_STRONGLY_CONNECTED = 5000
-STRONGLY_CONNECTED      = 2500
+STRONGLY_CONNECTED = 2500
 
 #############################################################################
 # Grammar-specific penalties - should be <= 1000                            #
@@ -25,15 +25,15 @@ STRONGLY_CONNECTED      = 2500
 
 # Lambdas shouldn't be split unless absolutely necessary or if
 # ALLOW_MULTILINE_LAMBDAS is True.
-LAMBDA           = 1000
+LAMBDA = 1000
 MULTILINE_LAMBDA = 500
 
 ANNOTATION = 100
-ARGUMENT   = 25
+ARGUMENT = 25
 
 # TODO: Assign real values.
-RETURN_TYPE     = 1
-DOTTED_NAME     = 40
-EXPR            = 10
-DICT_KEY_EXPR   = 20
+RETURN_TYPE = 1
+DOTTED_NAME = 40
+EXPR = 10
+DICT_KEY_EXPR = 20
 DICT_VALUE_EXPR = 11

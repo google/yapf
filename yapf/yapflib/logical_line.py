@@ -49,7 +49,7 @@ class LogicalLine(object):
       depth: indentation depth of this line
       tokens: initial list of tokens
     """
-    self.depth   = depth
+    self.depth = depth
     self._tokens = tokens or []
     self.disable = False
 
@@ -57,7 +57,7 @@ class LogicalLine(object):
       # Set up a doubly linked list.
       for index, tok in enumerate(self._tokens[1:]):
         # Note, 'index' is the index to the previous token.
-        tok.previous_token             = self._tokens[index]
+        tok.previous_token = self._tokens[index]
         self._tokens[index].next_token = tok
 
   def CalculateFormattingInformation(self):
@@ -66,9 +66,9 @@ class LogicalLine(object):
     # means only that if this logical line is joined with a predecessor line,
     # then there will be a space between them.
     self.first.spaces_required_before = 1
-    self.first.total_length           = len(self.first.value)
+    self.first.total_length = len(self.first.value)
 
-    prev_token  = self.first
+    prev_token = self.first
     prev_length = self.first.total_length
     for token in self._tokens[1:]:
       if (token.spaces_required_before == 0 and
@@ -93,13 +93,13 @@ class LogicalLine(object):
 
       # The split penalty has to be computed before {must|can}_break_before,
       # because these may use it for their decision.
-      token.split_penalty    += _SplitPenalty(prev_token, token)
+      token.split_penalty += _SplitPenalty(prev_token, token)
       token.must_break_before = _MustBreakBefore(prev_token, token)
-      token.can_break_before  = (
+      token.can_break_before = (
           token.must_break_before or _CanBreakBefore(prev_token, token))
 
       prev_length = token.total_length
-      prev_token  = token
+      prev_token = token
 
   def Split(self):
     """Split the line at semicolons."""
@@ -107,7 +107,7 @@ class LogicalLine(object):
       return [self]
 
     llines = []
-    lline  = LogicalLine(self.depth)
+    lline = LogicalLine(self.depth)
     for tok in self._tokens:
       if tok.value == ';':
         llines.append(lline)
@@ -120,7 +120,7 @@ class LogicalLine(object):
 
     for lline in llines:
       lline.first.previous_token = None
-      lline.last.next_token      = None
+      lline.last.next_token = None
 
     return llines
 
@@ -164,7 +164,7 @@ class LogicalLine(object):
     Returns:
       A string representing the line as code.
     """
-    indent     = ' ' * indent_per_depth * self.depth
+    indent = ' ' * indent_per_depth * self.depth
     tokens_str = ' '.join(tok.value for tok in self._tokens)
     return indent + tokens_str
 
@@ -544,10 +544,10 @@ def _CanBreakBefore(prev_token, cur_token):
 
 def IsSurroundedByBrackets(tok):
   """Return True if the token is surrounded by brackets."""
-  paren_count      = 0
-  brace_count      = 0
+  paren_count = 0
+  brace_count = 0
   sq_bracket_count = 0
-  previous_token   = tok.previous_token
+  previous_token = tok.previous_token
   while previous_token:
     if previous_token.value == ')':
       paren_count -= 1
@@ -580,10 +580,10 @@ def _IsDictListTupleDelimiterTok(tok, is_opening):
     return False
 
   if is_opening:
-    open_tok  = tok
+    open_tok = tok
     close_tok = tok.matching_bracket
   else:
-    open_tok  = tok.matching_bracket
+    open_tok = tok.matching_bracket
     close_tok = tok
 
   # There must be something in between the tokens
@@ -600,8 +600,8 @@ def _IsDictListTupleDelimiterTok(tok, is_opening):
   ]
 
 
-_LOGICAL_OPERATORS    = frozenset({'and', 'or'})
-_BITWISE_OPERATORS    = frozenset({'&', '|', '^'})
+_LOGICAL_OPERATORS = frozenset({'and', 'or'})
+_BITWISE_OPERATORS = frozenset({'&', '|', '^'})
 _ARITHMETIC_OPERATORS = frozenset({'+', '-', '*', '/', '%', '//', '@'})
 
 

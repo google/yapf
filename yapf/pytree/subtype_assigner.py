@@ -66,7 +66,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
 
-    comp_for   = False
+    comp_for = False
     dict_maker = False
 
     for child in node.children:
@@ -78,7 +78,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
     if not comp_for and dict_maker:
       last_was_colon = False
-      unpacking      = False
+      unpacking = False
       for child in node.children:
         if child.type == grammar_token.DOUBLESTAR:
           _AppendFirstLeafTokenSubtype(child, subtypes.KWARGS_STAR_STAR)
@@ -248,15 +248,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #                     | '*' test (',' argument)* [',' '**' test]
     #                     | '**' test)
     self._ProcessArgLists(node)
-    _SetArgListSubtype(
-        node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
-        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_tname(self, node):  # pylint: disable=invalid-name
     self._ProcessArgLists(node)
-    _SetArgListSubtype(
-        node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
-        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
     # decorator ::=
@@ -290,9 +288,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' tname)
     #     | tfpdef ['=' test] (',' tfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
-    _SetArgListSubtype(
-        node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
-        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
     tname = False
     if not node.children:
       return
@@ -303,7 +300,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     tname = pytree_utils.NodeName(node.children[0]) == 'tname'
     for i in range(1, len(node.children)):
       prev_child = node.children[i - 1]
-      child      = node.children[i]
+      child = node.children[i]
       if prev_child.type == grammar_token.COMMA:
         _AppendFirstLeafTokenSubtype(child, subtypes.PARAMETER_START)
       elif child.type == grammar_token.COMMA:
@@ -311,8 +308,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
       if pytree_utils.NodeName(child) == 'tname':
         tname = True
-        _SetArgListSubtype(
-            child, subtypes.TYPED_NAME, subtypes.TYPED_NAME_ARG_LIST)
+        _SetArgListSubtype(child, subtypes.TYPED_NAME,
+                           subtypes.TYPED_NAME_ARG_LIST)
       elif child.type == grammar_token.COMMA:
         tname = False
       elif child.type == grammar_token.EQUAL and tname:
@@ -336,8 +333,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     _AppendSubtypeRec(node, subtypes.COMP_FOR)
     # Mark the previous node as COMP_EXPR unless this is a nested comprehension
     # as these will have the outer comprehension as their previous node.
-    attr = pytree_utils.GetNodeAnnotation(
-        node.parent, pytree_utils.Annotation.SUBTYPE)
+    attr = pytree_utils.GetNodeAnnotation(node.parent,
+                                          pytree_utils.Annotation.SUBTYPE)
     if not attr or subtypes.COMP_FOR not in attr:
       _AppendSubtypeRec(node.parent.children[0], subtypes.COMP_EXPR)
     self.DefaultNodeVisit(node)
@@ -393,8 +390,8 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
 
 def _AppendTokenSubtype(node, subtype):
   """Append the token's subtype only if it's not already set."""
-  pytree_utils.AppendNodeAnnotation(
-      node, pytree_utils.Annotation.SUBTYPE, subtype)
+  pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
+                                    subtype)
 
 
 def _AppendFirstLeafTokenSubtype(node, subtype):
@@ -431,14 +428,14 @@ def _InsertPseudoParentheses(node):
       node.children[-1].remove()
 
   first = pytree_utils.FirstLeafNode(node)
-  last  = pytree_utils.LastLeafNode(node)
+  last = pytree_utils.LastLeafNode(node)
 
   if first == last and first.type == grammar_token.COMMENT:
     # A comment was inserted before the value, which is a pytree.Leaf.
     # Encompass the dictionary's value into an ATOM node.
-    last       = first.next_sibling
+    last = first.next_sibling
     last_clone = last.clone()
-    new_node   = pytree.Node(syms.atom, [first.clone(), last_clone])
+    new_node = pytree.Node(syms.atom, [first.clone(), last_clone])
     for orig_leaf, clone_leaf in zip(last.leaves(), last_clone.leaves()):
       pytree_utils.CopyYapfAnnotations(orig_leaf, clone_leaf)
       if hasattr(orig_leaf, 'is_pseudo'):
@@ -449,7 +446,7 @@ def _InsertPseudoParentheses(node):
     last.remove()
 
     first = pytree_utils.FirstLeafNode(node)
-    last  = pytree_utils.LastLeafNode(node)
+    last = pytree_utils.LastLeafNode(node)
 
   lparen = pytree.Leaf(
       grammar_token.LPAR,

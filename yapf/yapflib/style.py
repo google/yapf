@@ -52,23 +52,18 @@ def SetGlobalStyle(style):
 
 
 _STYLE_HELP = dict(
-    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent(
-        """\
+    ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
       Align closing bracket with visual indentation."""),
-    ALIGN_ASSIGNMENT=textwrap.dedent(
-        """\
+    ALIGN_ASSIGNMENT=textwrap.dedent("""\
       Align assignment or augmented assignment operators.
       If there is a blank line or newline comment or objects with newline entries in between,
       it will start new block alignment."""),
-    NEW_ALIGNMENT_AFTER_COMMENTLINE=textwrap.dedent(
-        """\
+    NEW_ALIGNMENT_AFTER_COMMENTLINE=textwrap.dedent("""\
       Start new assignment or colon alignment when there is a newline comment in between."""
-    ),
-    ALLOW_MULTILINE_LAMBDAS=textwrap.dedent(
-        """\
+                                                   ),
+    ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
-    ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent(
-        """\
+    ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
       Allow dictionary keys to exist on multiple lines. For example:
 
         x = {
@@ -76,15 +71,12 @@ _STYLE_HELP = dict(
              'this is the second element of a tuple'):
                  value,
         }"""),
-    ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=textwrap.dedent(
-        """\
+    ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=textwrap.dedent("""\
       Allow splitting before a default / named assignment in an argument list.
       """),
-    ALLOW_SPLIT_BEFORE_DICT_VALUE=textwrap.dedent(
-        """\
+    ALLOW_SPLIT_BEFORE_DICT_VALUE=textwrap.dedent("""\
       Allow splits before the dictionary value."""),
-    ARITHMETIC_PRECEDENCE_INDICATION=textwrap.dedent(
-        """\
+    ARITHMETIC_PRECEDENCE_INDICATION=textwrap.dedent("""\
       Let spacing indicate operator precedence. For example:
 
         a = 1 * 2 + 3 / 4
@@ -104,8 +96,7 @@ _STYLE_HELP = dict(
         f = 1 + 2 + 3 + 4
 
       """),
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent(
-        """\
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
       Insert a blank line before a 'def' or 'class' immediately nested
       within another 'def' or 'class'. For example:
 
@@ -113,22 +104,17 @@ _STYLE_HELP = dict(
                            # <------ this blank line
           def method():
             ..."""),
-    BLANK_LINE_BEFORE_CLASS_DOCSTRING=textwrap.dedent(
-        """\
+    BLANK_LINE_BEFORE_CLASS_DOCSTRING=textwrap.dedent("""\
       Insert a blank line before a class-level docstring."""),
-    BLANK_LINE_BEFORE_MODULE_DOCSTRING=textwrap.dedent(
-        """\
+    BLANK_LINE_BEFORE_MODULE_DOCSTRING=textwrap.dedent("""\
       Insert a blank line before a module docstring."""),
-    BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=textwrap.dedent(
-        """\
+    BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=textwrap.dedent("""\
       Number of blank lines surrounding top-level function and class
       definitions."""),
-    BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=textwrap.dedent(
-        """\
+    BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=textwrap.dedent("""\
       Number of blank lines between top-level imports and variable
       definitions."""),
-    COALESCE_BRACKETS=textwrap.dedent(
-        """\
+    COALESCE_BRACKETS=textwrap.dedent("""\
       Do not split consecutive brackets. Only relevant when
       dedent_closing_brackets is set. For example:
 
@@ -147,8 +133,7 @@ _STYLE_HELP = dict(
          })"""),
     COLUMN_LIMIT=textwrap.dedent("""\
       The column limit."""),
-    CONTINUATION_ALIGN_STYLE=textwrap.dedent(
-        """\
+    CONTINUATION_ALIGN_STYLE=textwrap.dedent("""\
       The style for continuation alignment. Possible values are:
 
       - SPACE: Use spaces for continuation alignment. This is default behavior.
@@ -158,11 +143,9 @@ _STYLE_HELP = dict(
       - VALIGN-RIGHT: Vertically align continuation lines to multiple of
         INDENT_WIDTH columns. Slightly right (one tab or a few spaces) if
         cannot vertically align continuation lines with indent characters."""),
-    CONTINUATION_INDENT_WIDTH=textwrap.dedent(
-        """\
+    CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
       Indent width used for line continuations."""),
-    DEDENT_CLOSING_BRACKETS=textwrap.dedent(
-        """\
+    DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, dedented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
       including function definitions and calls. For example:
@@ -180,33 +163,27 @@ _STYLE_HELP = dict(
             end_ts=now(),
         )        # <--- this bracket is dedented and on a separate line
       """),
-    DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent(
-        """\
+    DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
       if the list is comma-terminated."""),
-    EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent(
-        """\
+    EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
       Place each dictionary entry onto its own line."""),
-    FORCE_MULTILINE_DICT=textwrap.dedent(
-        """\
+    FORCE_MULTILINE_DICT=textwrap.dedent("""\
       Require multiline dictionary even if it would normally fit on one line.
       For example:
 
         config = {
             'key1': 'value1'
         }"""),
-    I18N_COMMENT=textwrap.dedent(
-        """\
+    I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
       next to the string they translate."""),
-    I18N_FUNCTION_CALL=textwrap.dedent(
-        """\
+    I18N_FUNCTION_CALL=textwrap.dedent("""\
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
       away from the i18n comment."""),
-    INDENT_CLOSING_BRACKETS=textwrap.dedent(
-        """\
+    INDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, indented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
       including function definitions and calls. For example:
@@ -224,8 +201,7 @@ _STYLE_HELP = dict(
             end_ts=now(),
             )        # <--- this bracket is indented and on a separate line
         """),
-    INDENT_DICTIONARY_VALUE=textwrap.dedent(
-        """\
+    INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
       Indent the dictionary value if it cannot fit on the same line as the
       dictionary key. For example:
 
@@ -236,16 +212,13 @@ _STYLE_HELP = dict(
                     value2,
         }
       """),
-    INDENT_WIDTH=textwrap.dedent(
-        """\
+    INDENT_WIDTH=textwrap.dedent("""\
       The number of columns to use for indentation."""),
     INDENT_BLANK_LINES=textwrap.dedent("""\
       Indent blank lines."""),
-    JOIN_MULTIPLE_LINES=textwrap.dedent(
-        """\
+    JOIN_MULTIPLE_LINES=textwrap.dedent("""\
       Join short lines into one line. E.g., single line 'if' statements."""),
-    NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent(
-        """\
+    NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent("""\
       Do not include spaces around selected binary operators. For example:
 
         1 + 2 * 3 - 4 / 5
@@ -254,26 +227,21 @@ _STYLE_HELP = dict(
 
         1 + 2*3 - 4/5
       """),
-    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent(
-        """\
+    SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
       etc."""),
-    SPACE_INSIDE_BRACKETS=textwrap.dedent(
-        """\
+    SPACE_INSIDE_BRACKETS=textwrap.dedent("""\
       Use spaces inside brackets, braces, and parentheses.  For example:
 
         method_call( 1 )
         my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
         my_set = { 1, 2, 3 }
       """),
-    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent(
-        """\
+    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
       Use spaces around the power operator."""),
-    SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent(
-        """\
+    SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
       Use spaces around default or named assigns."""),
-    SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent(
-        """\
+    SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '{' and before the ending '}' dict
       delimiters.
 
@@ -283,8 +251,7 @@ _STYLE_HELP = dict(
 
         { 1: 2 }
       """),
-    SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent(
-        """\
+    SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '[' and before the ending ']' list
       delimiters.
 
@@ -294,14 +261,12 @@ _STYLE_HELP = dict(
 
         [ 1, 2 ]
       """),
-    SPACES_AROUND_SUBSCRIPT_COLON=textwrap.dedent(
-        """\
+    SPACES_AROUND_SUBSCRIPT_COLON=textwrap.dedent("""\
       Use spaces around the subscript / slice operator.  For example:
 
         my_list[1 : 10 : 2]
       """),
-    SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent(
-        """\
+    SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '(' and before the ending ')' tuple
       delimiters.
 
@@ -311,8 +276,7 @@ _STYLE_HELP = dict(
 
         ( 1, 2, 3 )
       """),
-    SPACES_BEFORE_COMMENT=textwrap.dedent(
-        """\
+    SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
       This can be a single value (representing the number of spaces
       before each trailing comment) or list of values (representing
@@ -354,31 +318,24 @@ _STYLE_HELP = dict(
         short                                                       # This is a shorter statement
 
       """),  # noqa
-    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent(
-        """\
+    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
       Split before arguments if the argument list is terminated by a
       comma."""),
-    SPLIT_ALL_COMMA_SEPARATED_VALUES=textwrap.dedent(
-        """\
+    SPLIT_ALL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
       Split before arguments"""),
-    SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=textwrap.dedent(
-        """\
+    SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
       Split before arguments, but do not split all subexpressions recursively
       (unless needed)."""),
-    SPLIT_BEFORE_ARITHMETIC_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_ARITHMETIC_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '+', '-', '*', '/', '//', or '@'
       rather than after."""),
-    SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '&', '|' or '^' rather than
       after."""),
-    SPLIT_BEFORE_CLOSING_BRACKET=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_CLOSING_BRACKET=textwrap.dedent("""\
       Split before the closing bracket if a list or dict literal doesn't fit on
       a single line."""),
-    SPLIT_BEFORE_DICT_SET_GENERATOR=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_DICT_SET_GENERATOR=textwrap.dedent("""\
       Split before a dictionary or set generator (comp_for). For example, note
       the split before the 'for':
 
@@ -386,8 +343,7 @@ _STYLE_HELP = dict(
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
         }"""),
-    SPLIT_BEFORE_DOT=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_DOT=textwrap.dedent("""\
       Split before the '.' if we need to split a longer expression:
 
         foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
@@ -397,24 +353,19 @@ _STYLE_HELP = dict(
         foo = ('This is a really long string: {}, {}, {}, {}'
                .format(a, b, c, d))
       """),  # noqa
-    SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
       Split after the opening paren which surrounds an expression if it doesn't
       fit on a single line.
       """),
-    SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
       If an argument / parameter list is going to be split, then split before
       the first argument."""),
-    SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before 'and' or 'or' rather than
       after."""),
-    SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent(
-        """\
+    SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
       Split named assignments onto individual lines."""),
-    SPLIT_COMPLEX_COMPREHENSION=textwrap.dedent(
-        """\
+    SPLIT_COMPLEX_COMPREHENSION=textwrap.dedent("""\
       Set to True to split list comprehensions and generators that have
       non-trivial expressions and multiple clauses before each of these
       clauses. For example:
@@ -430,36 +381,27 @@ _STYLE_HELP = dict(
             for a_long_var in xrange(1000)
             if a_long_var % 10]
       """),
-    SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
       The penalty for splitting right after the opening bracket."""),
-    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
       The penalty for splitting the line after a unary operator."""),
-    SPLIT_PENALTY_ARITHMETIC_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_ARITHMETIC_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the '+', '-', '*', '/', '//',
       ``%``, and '@' operators."""),
-    SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent("""\
       The penalty for splitting right before an if expression."""),
-    SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the '&', '|', and '^'
       operators."""),
-    SPLIT_PENALTY_COMPREHENSION=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_COMPREHENSION=textwrap.dedent("""\
       The penalty for splitting a list comprehension or generator
       expression."""),
-    SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
       The penalty for characters over the column limit."""),
-    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the logical line. The
       more line splits added the higher the penalty."""),
-    SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
       The penalty of splitting a list of "import as" names. For example:
 
         from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
@@ -471,12 +413,10 @@ _STYLE_HELP = dict(
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
       """),  # noqa
-    SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent(
-        """\
+    SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the 'and' and 'or'
       operators."""),
-    USE_TABS=textwrap.dedent(
-        """\
+    USE_TABS=textwrap.dedent("""\
       Use the Tab character for indentation."""),
     # BASED_ON_STYLE='Which predefined style this style is based on',
 )
@@ -552,51 +492,51 @@ def CreatePEP8Style():
 
 def CreateGoogleStyle():
   """Create the Google formatting style."""
-  style                                                   = CreatePEP8Style()
-  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT']       = False
-  style['COLUMN_LIMIT']                                   = 80
-  style['INDENT_DICTIONARY_VALUE']                        = True
-  style['INDENT_WIDTH']                                   = 4
-  style['I18N_COMMENT']                                   = r'#\..*'
-  style['I18N_FUNCTION_CALL']                             = ['N_', '_']
-  style['JOIN_MULTIPLE_LINES']                            = False
+  style = CreatePEP8Style()
+  style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
+  style['COLUMN_LIMIT'] = 80
+  style['INDENT_DICTIONARY_VALUE'] = True
+  style['INDENT_WIDTH'] = 4
+  style['I18N_COMMENT'] = r'#\..*'
+  style['I18N_FUNCTION_CALL'] = ['N_', '_']
+  style['JOIN_MULTIPLE_LINES'] = False
   style['SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET'] = False
-  style['SPLIT_BEFORE_BITWISE_OPERATOR']                  = False
-  style['SPLIT_BEFORE_DICT_SET_GENERATOR']                = False
-  style['SPLIT_BEFORE_LOGICAL_OPERATOR']                  = False
-  style['SPLIT_COMPLEX_COMPREHENSION']                    = True
-  style['SPLIT_PENALTY_COMPREHENSION']                    = 2100
+  style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
+  style['SPLIT_BEFORE_DICT_SET_GENERATOR'] = False
+  style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
+  style['SPLIT_COMPLEX_COMPREHENSION'] = True
+  style['SPLIT_PENALTY_COMPREHENSION'] = 2100
   return style
 
 
 def CreateYapfStyle():
   """Create the YAPF formatting style."""
-  style                                                = CreateGoogleStyle()
-  style['ALLOW_MULTILINE_DICTIONARY_KEYS']             = True
+  style = CreateGoogleStyle()
+  style['ALLOW_MULTILINE_DICTIONARY_KEYS'] = True
   style['ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS'] = False
-  style['INDENT_WIDTH']                                = 2
-  style['SPLIT_BEFORE_BITWISE_OPERATOR']               = True
-  style['SPLIT_BEFORE_DOT']                            = True
+  style['INDENT_WIDTH'] = 2
+  style['SPLIT_BEFORE_BITWISE_OPERATOR'] = True
+  style['SPLIT_BEFORE_DOT'] = True
   style['SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN'] = True
   return style
 
 
 def CreateFacebookStyle():
   """Create the Facebook formatting style."""
-  style                                             = CreatePEP8Style()
+  style = CreatePEP8Style()
   style['ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT'] = False
-  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF']    = False
-  style['COLUMN_LIMIT']                             = 80
-  style['DEDENT_CLOSING_BRACKETS']                  = True
-  style['INDENT_CLOSING_BRACKETS']                  = False
-  style['INDENT_DICTIONARY_VALUE']                  = True
-  style['JOIN_MULTIPLE_LINES']                      = False
-  style['SPACES_BEFORE_COMMENT']                    = 2
-  style['SPLIT_PENALTY_AFTER_OPENING_BRACKET']      = 0
-  style['SPLIT_PENALTY_BEFORE_IF_EXPR']             = 30
-  style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT']       = 30
-  style['SPLIT_BEFORE_LOGICAL_OPERATOR']            = False
-  style['SPLIT_BEFORE_BITWISE_OPERATOR']            = False
+  style['BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF'] = False
+  style['COLUMN_LIMIT'] = 80
+  style['DEDENT_CLOSING_BRACKETS'] = True
+  style['INDENT_CLOSING_BRACKETS'] = False
+  style['INDENT_DICTIONARY_VALUE'] = True
+  style['JOIN_MULTIPLE_LINES'] = False
+  style['SPACES_BEFORE_COMMENT'] = 2
+  style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
+  style['SPLIT_PENALTY_BEFORE_IF_EXPR'] = 30
+  style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 30
+  style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
+  style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
   return style
 
 
@@ -828,7 +768,7 @@ def _CreateConfigParserFromConfigFile(config_filename):
             "configuration file")
 
       pyproject_toml = toml.load(style_file)
-      style_dict     = pyproject_toml.get("tool", {}).get("yapf", None)
+      style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
       if style_dict is None:
         raise StyleConfigError(
             'Unable to find section [tool.yapf] in {0}'.format(config_filename))
@@ -871,10 +811,10 @@ def _CreateStyleFromConfigParser(config):
   # Initialize the base style.
   section = 'yapf' if config.has_section('yapf') else 'style'
   if config.has_option('style', 'based_on_style'):
-    based_on   = config.get('style', 'based_on_style').lower()
+    based_on = config.get('style', 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
   elif config.has_option('yapf', 'based_on_style'):
-    based_on   = config.get('yapf', 'based_on_style').lower()
+    based_on = config.get('yapf', 'based_on_style').lower()
     base_style = _STYLE_NAME_TO_FACTORY[based_on]()
   else:
     base_style = _GLOBAL_STYLE_FACTORY()
@@ -891,14 +831,14 @@ def _CreateStyleFromConfigParser(config):
     try:
       base_style[option] = _STYLE_OPTION_VALUE_CONVERTER[option](value)
     except ValueError:
-      raise StyleConfigError(
-          "'{}' is not a valid setting for {}.".format(value, option))
+      raise StyleConfigError("'{}' is not a valid setting for {}.".format(
+          value, option))
   return base_style
 
 
 # The default style - used if yapf is not invoked without specifically
 # requesting a formatting style.
-DEFAULT_STYLE         = 'pep8'
+DEFAULT_STYLE = 'pep8'
 DEFAULT_STYLE_FACTORY = CreatePEP8Style
 _GLOBAL_STYLE_FACTORY = CreatePEP8Style
 

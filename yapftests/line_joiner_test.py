@@ -39,23 +39,20 @@ class LineJoinerTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(line_joiner.CanMergeMultipleLines(llines), join_lines)
 
   def testSimpleSingleLineStatement(self):
-    code = textwrap.dedent(
-        u"""\
+    code = textwrap.dedent(u"""\
         if isinstance(a, int): continue
         """)
     self._CheckLineJoining(code, join_lines=True)
 
   def testSimpleMultipleLineStatement(self):
-    code = textwrap.dedent(
-        u"""\
+    code = textwrap.dedent(u"""\
         if isinstance(b, int):
             continue
         """)
     self._CheckLineJoining(code, join_lines=False)
 
   def testSimpleMultipleLineComplexStatement(self):
-    code = textwrap.dedent(
-        u"""\
+    code = textwrap.dedent(u"""\
         if isinstance(c, int):
             while True:
                 continue
@@ -63,22 +60,19 @@ class LineJoinerTest(yapf_test_helper.YAPFTest):
     self._CheckLineJoining(code, join_lines=False)
 
   def testSimpleMultipleLineStatementWithComment(self):
-    code = textwrap.dedent(
-        u"""\
+    code = textwrap.dedent(u"""\
         if isinstance(d, int): continue  # We're pleased that d's an int.
         """)
     self._CheckLineJoining(code, join_lines=True)
 
   def testSimpleMultipleLineStatementWithLargeIndent(self):
-    code = textwrap.dedent(
-        u"""\
+    code = textwrap.dedent(u"""\
         if isinstance(e, int):    continue
         """)
     self._CheckLineJoining(code, join_lines=True)
 
   def testOverColumnLimit(self):
-    code = textwrap.dedent(
-        u"""\
+    code = textwrap.dedent(u"""\
         if instance(bbbbbbbbbbbbbbbbbbbbbbbbb, int): cccccccccccccccccccccccccc = ddddddddddddddddddddd
         """)  # noqa
     self._CheckLineJoining(code, join_lines=False)

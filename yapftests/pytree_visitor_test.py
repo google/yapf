@@ -31,7 +31,7 @@ class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
   """
 
   def __init__(self):
-    self.all_node_names   = []
+    self.all_node_names = []
     self.name_node_values = []
 
   def DefaultNodeVisit(self, node):
@@ -61,7 +61,7 @@ if x:
 class PytreeVisitorTest(unittest.TestCase):
 
   def testCollectAllNodeNamesSimpleCode(self):
-    tree      = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
+    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
     collector = _NodeNameCollector()
     collector.Visit(tree)
     expected_names = [
@@ -76,7 +76,7 @@ class PytreeVisitorTest(unittest.TestCase):
     self.assertEqual(expected_name_node_values, collector.name_node_values)
 
   def testCollectAllNodeNamesNestedCode(self):
-    tree      = pytree_utils.ParseCodeToTree(_VISITOR_TEST_NESTED_CODE)
+    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_NESTED_CODE)
     collector = _NodeNameCollector()
     collector.Visit(tree)
     expected_names = [
@@ -95,7 +95,7 @@ class PytreeVisitorTest(unittest.TestCase):
   def testDumper(self):
     # PyTreeDumper is mainly a debugging utility, so only do basic sanity
     # checking.
-    tree   = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
+    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
     stream = py3compat.StringIO()
     pytree_visitor.PyTreeDumper(target_stream=stream).Visit(tree)
 
@@ -106,7 +106,7 @@ class PytreeVisitorTest(unittest.TestCase):
 
   def testDumpPyTree(self):
     # Similar sanity checking for the convenience wrapper DumpPyTree
-    tree   = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
+    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
     stream = py3compat.StringIO()
     pytree_visitor.DumpPyTree(tree, target_stream=stream)
 

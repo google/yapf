@@ -30,15 +30,13 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testDecorators(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         @bork()
 
         def foo():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         @bork()
         def foo():
           pass
@@ -47,8 +45,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testComplexDecorators(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         import sys
         @bork()
 
@@ -63,8 +60,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
           def method(self):
             pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         import sys
 
 
@@ -85,8 +81,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testCodeAfterFunctionsAndClasses(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         def foo():
           pass
         top_level_code = True
@@ -102,8 +97,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         except Error as error:
           pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         def foo():
           pass
 
@@ -132,8 +126,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testCommentSpacing(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
         # This is the first comment
         # And it's multiline
 
@@ -162,8 +155,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
             # comment
             pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
         # This is the first comment
         # And it's multiline
 
@@ -200,8 +192,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testCommentBeforeMethod(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class foo(object):
 
           # pylint: disable=invalid-name
@@ -212,8 +203,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testCommentsBeforeClassDefs(self):
-    code = textwrap.dedent(
-        '''\
+    code = textwrap.dedent('''\
         """Test."""
 
         # Comment
@@ -226,8 +216,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testCommentsBeforeDecorator(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         # The @foo operator adds bork to a().
         @foo()
         def a():
@@ -236,8 +225,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         # Hello world
 
 
@@ -249,8 +237,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testCommentsAfterDecorator(self):
-    code = textwrap.dedent(
-        """\
+    code = textwrap.dedent("""\
         class _():
 
           def _():
@@ -267,8 +254,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testInnerClasses(self):
-    unformatted_code = textwrap.dedent(
-        """\
+    unformatted_code = textwrap.dedent("""\
       class DeployAPIClient(object):
           class Error(Exception): pass
 
@@ -276,8 +262,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
 
           class DeployAPIHTTPError(Error): pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        """\
+    expected_formatted_code = textwrap.dedent("""\
       class DeployAPIClient(object):
 
         class Error(Exception):
@@ -293,8 +278,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testLinesOnRangeBoundary(self):
-    unformatted_code = textwrap.dedent(
-        u"""\
+    unformatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -308,8 +292,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def E():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        u"""\
+    expected_formatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -332,8 +315,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertTrue(changed)
 
   def testLinesRangeBoundaryNotOutside(self):
-    unformatted_code = textwrap.dedent(
-        u"""\
+    unformatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -347,8 +329,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def C():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        u"""\
+    expected_formatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -367,8 +348,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertFalse(changed)
 
   def testLinesRangeRemove(self):
-    unformatted_code = textwrap.dedent(
-        u"""\
+    unformatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -383,8 +363,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def C():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        u"""\
+    expected_formatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -403,8 +382,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertTrue(changed)
 
   def testLinesRangeRemoveSome(self):
-    unformatted_code = textwrap.dedent(
-        u"""\
+    unformatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
@@ -420,8 +398,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def C():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(
-        u"""\
+    expected_formatted_code = textwrap.dedent(u"""\
         def A():
           pass
 
