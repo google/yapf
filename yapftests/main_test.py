@@ -78,7 +78,7 @@ def patched_input(code):
     return next(lines)
 
   try:
-    orig_raw_import          = yapf.py3compat.raw_input
+    orig_raw_import = yapf.py3compat.raw_input
     yapf.py3compat.raw_input = patch_raw_input
     yield
   finally:
@@ -90,7 +90,7 @@ class RunMainTest(yapf_test_helper.YAPFTest):
   def testShouldHandleYapfError(self):
     """run_main should handle YapfError and sys.exit(1)."""
     expected_message = 'yapf: input filenames did not match any python files\n'
-    sys.argv         = ['yapf', 'foo.c']
+    sys.argv = ['yapf', 'foo.c']
     with captured_output() as (out, err):
       with self.assertRaises(SystemExit):
         yapf.run_main()
@@ -114,7 +114,7 @@ class MainTest(yapf_test_helper.YAPFTest):
         self.assertEqual(out.getvalue(), code)
 
   def testEchoInputWithStyle(self):
-    code      = 'def f(a = 1\n\n):\n    return 2*a\n'
+    code = 'def f(a = 1\n\n):\n    return 2*a\n'
     yapf_code = 'def f(a=1):\n  return 2 * a\n'
     with patched_input(code):
       with captured_output() as (out, _):
@@ -135,6 +135,5 @@ class MainTest(yapf_test_helper.YAPFTest):
       self.assertEqual(ret, 0)
       help_message = out.getvalue()
       self.assertIn('indent_width=4', help_message)
-      self.assertIn(
-          'The number of spaces required before a trailing comment.',
-          help_message)
+      self.assertIn('The number of spaces required before a trailing comment.',
+                    help_message)

@@ -89,5 +89,6 @@ class FormatTokenTest(unittest.TestCase):
         pytree.Leaf(token.STRING, 'r"""hello"""'), 'STRING')
     self.assertTrue(tok.is_multiline_string)
 
+
 if __name__ == '__main__':
   unittest.main()

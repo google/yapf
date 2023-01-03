@@ -90,27 +90,27 @@ class FormatToken(object):
       node: (pytree.Leaf) The node that's being wrapped.
       name: (string) The name of the node.
     """
-    self.node   = node
-    self.name   = name
-    self.type   = node.type
+    self.node = node
+    self.name = name
+    self.type = node.type
     self.column = node.column
     self.lineno = node.lineno
-    self.value  = node.value
+    self.value = node.value
 
     if self.is_continuation:
       self.value = node.value.rstrip()
 
-    self.next_token         = None
-    self.previous_token     = None
-    self.matching_bracket   = None
-    self.parameters         = []
-    self.container_opening  = None
+    self.next_token = None
+    self.previous_token = None
+    self.matching_bracket = None
+    self.parameters = []
+    self.container_opening = None
     self.container_elements = []
-    self.whitespace_prefix  = ''
-    self.total_length       = 0
-    self.split_penalty      = 0
-    self.can_break_before   = False
-    self.must_break_before  = pytree_utils.GetNodeAnnotation(
+    self.whitespace_prefix = ''
+    self.total_length = 0
+    self.split_penalty = 0
+    self.can_break_before = False
+    self.must_break_before = pytree_utils.GetNodeAnnotation(
         node, pytree_utils.Annotation.MUST_SPLIT, default=False)
     self.newlines = pytree_utils.GetNodeAnnotation(
         node, pytree_utils.Annotation.NEWLINES)
@@ -119,16 +119,16 @@ class FormatToken(object):
     if self.is_comment:
       self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
 
-    stypes = pytree_utils.GetNodeAnnotation(
-        node, pytree_utils.Annotation.SUBTYPE)
-    self.subtypes  = {subtypes.NONE} if not stypes else stypes
+    stypes = pytree_utils.GetNodeAnnotation(node,
+                                            pytree_utils.Annotation.SUBTYPE)
+    self.subtypes = {subtypes.NONE} if not stypes else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
   @property
   def formatted_whitespace_prefix(self):
     if style.Get('INDENT_BLANK_LINES'):
       without_newlines = self.whitespace_prefix.lstrip('\n')
-      height           = len(self.whitespace_prefix) - len(without_newlines)
+      height = len(self.whitespace_prefix) - len(without_newlines)
       if height:
         return ('\n' + without_newlines) * height
     return self.whitespace_prefix
@@ -151,26 +151,26 @@ class FormatToken(object):
       else:
         indent_before = '\t' * indent_level + ' ' * spaces
     else:
-      indent_before = (
-          ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
+      indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
+                       ' ' * spaces)
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
-      self.value    = ('\n' + indent_before).join(comment_lines)
+      self.value = ('\n' + indent_before).join(comment_lines)
 
       # Update our own value since we are changing node value
       self.value = self.value
 
     if not self.whitespace_prefix:
-      self.whitespace_prefix = (
-          '\n' * (self.newlines or newlines_before) + indent_before)
+      self.whitespace_prefix = ('\n' * (self.newlines or newlines_before) +
+                                indent_before)
     else:
       self.whitespace_prefix += indent_before
 
   def AdjustNewlinesBefore(self, newlines_before):
     """Change the number of newlines before this token."""
-    self.whitespace_prefix = (
-        '\n' * newlines_before + self.whitespace_prefix.lstrip('\n'))
+    self.whitespace_prefix = ('\n' * newlines_before +
+                              self.whitespace_prefix.lstrip('\n'))
 
   def RetainHorizontalSpacing(self, first_column, depth):
     """Retains a token's horizontal spacing."""
@@ -183,7 +183,7 @@ class FormatToken(object):
       if not previous:
         return
 
-    cur_lineno  = self.lineno
+    cur_lineno = self.lineno
     prev_lineno = previous.lineno
     if previous.is_multiline_string:
       prev_lineno += previous.value.count('\n')
@@ -195,13 +195,13 @@ class FormatToken(object):
           self.column - first_column + depth * style.Get('INDENT_WIDTH'))
       return
 
-    cur_column  = self.column
+    cur_column = self.column
     prev_column = previous.column
-    prev_len    = len(previous.value)
+    prev_len = len(previous.value)
 
     if previous.is_pseudo and previous.value == ')':
       prev_column -= 1
-      prev_len     = 0
+      prev_len = 0
 
     if previous.is_multiline_string:
       prev_len = len(previous.value.split('\n')[-1])
@@ -220,11 +220,10 @@ class FormatToken(object):
     self.subtypes.add(subtype)
 
   def __repr__(self):
-    msg = (
-        'FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
-        'splitpenalty={4}'.format(
-            'DOCSTRING' if self.is_docstring else self.name, self.value,
-            self.column, self.lineno, self.split_penalty))
+    msg = ('FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
+           'splitpenalty={4}'.format(
+               'DOCSTRING' if self.is_docstring else self.name, self.value,
+               self.column, self.lineno, self.split_penalty))
     msg += ', pseudo)' if self.is_pseudo else ')'
     return msg
 
@@ -243,22 +242,21 @@ class FormatToken(object):
   @py3compat.lru_cache()
   def is_arithmetic_op(self):
     """Token is an arithmetic operator."""
-    return self.value in frozenset(
-        {
-            '+',  # Add
-            '-',  # Subtract
-            '*',  # Multiply
-            '@',  # Matrix Multiply
-            '/',  # Divide
-            '//',  # Floor Divide
-            '%',  # Modulo
-            '<<',  # Left Shift
-            '>>',  # Right Shift
-            '|',  # Bitwise Or
-            '&',  # Bitwise Add
-            '^',  # Bitwise Xor
-            '**',  # Power
-        })
+    return self.value in frozenset({
+        '+',  # Add
+        '-',  # Subtract
+        '*',  # Multiply
+        '@',  # Matrix Multiply
+        '/',  # Divide
+        '//',  # Floor Divide
+        '%',  # Modulo
+        '<<',  # Left Shift
+        '>>',  # Right Shift
+        '|',  # Bitwise Or
+        '&',  # Bitwise Add
+        '^',  # Bitwise Xor
+        '**',  # Power
+    })
 
   @property
   def is_simple_expr(self):
@@ -312,13 +310,13 @@ class FormatToken(object):
 
   @property
   def is_pylint_comment(self):
-    return self.is_comment and re.match(
-        r'#.*\bpylint:\s*(disable|enable)=', self.value)
+    return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=',
+                                        self.value)
 
   @property
   def is_pytype_comment(self):
-    return self.is_comment and re.match(
-        r'#.*\bpytype:\s*(disable|enable)=', self.value)
+    return self.is_comment and re.match(r'#.*\bpytype:\s*(disable|enable)=',
+                                        self.value)
 
   @property
   def is_copybara_comment(self):

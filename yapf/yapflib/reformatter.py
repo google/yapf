@@ -49,8 +49,8 @@ def Reformat(llines, verify=False, lines=None):
   Returns:
     A string representing the reformatted code.
   """
-  final_lines  = []
-  prev_line    = None  # The previous line.
+  final_lines = []
+  prev_line = None  # The previous line.
   indent_width = style.Get('INDENT_WIDTH')
 
   for lline in _SingleOrMergedLines(llines):
@@ -58,7 +58,7 @@ def Reformat(llines, verify=False, lines=None):
     _FormatFirstToken(first_token, lline.depth, prev_line, final_lines)
 
     indent_amt = indent_width * lline.depth
-    state      = format_decision_state.FormatDecisionState(lline, indent_amt)
+    state = format_decision_state.FormatDecisionState(lline, indent_amt)
     state.MoveStateToNextToken()
 
     if not lline.disable:
@@ -69,8 +69,8 @@ def Reformat(llines, verify=False, lines=None):
       if prev_line and prev_line.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainRequiredVerticalSpacingBetweenTokens(
-            lline.first, prev_line.last, lines)
+        _RetainRequiredVerticalSpacingBetweenTokens(lline.first, prev_line.last,
+                                                    lines)
       if any(tok.is_comment for tok in lline.tokens):
         _RetainVerticalSpacingBeforeComments(lline)
 
@@ -161,11 +161,11 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
     # Don't adjust between a comment and non-comment.
     pass
   elif lines and lines.intersection(range(prev_lineno, cur_lineno + 1)):
-    desired_newlines  = cur_tok.whitespace_prefix.count('\n')
-    whitespace_lines  = range(prev_lineno + 1, cur_lineno)
-    deletable_lines   = len(lines.intersection(whitespace_lines))
-    required_newlines = max(
-        required_newlines - deletable_lines, desired_newlines)
+    desired_newlines = cur_tok.whitespace_prefix.count('\n')
+    whitespace_lines = range(prev_lineno + 1, cur_lineno)
+    deletable_lines = len(lines.intersection(whitespace_lines))
+    required_newlines = max(required_newlines - deletable_lines,
+                            desired_newlines)
 
   cur_tok.AdjustNewlinesBefore(required_newlines)
 
@@ -194,7 +194,7 @@ def _EmitLineUnformatted(state):
       state.
   """
   while state.next_token:
-    previous_token  = state.next_token.previous_token
+    previous_token = state.next_token.previous_token
     previous_lineno = previous_token.lineno
 
     if previous_token.is_multiline_string or previous_token.is_string:
@@ -258,17 +258,16 @@ def _CanPlaceOnSingleLine(line):
   if (style.Get('FORCE_MULTILINE_DICT') and 'LBRACE' in token_names):
     return False
   indent_amt = style.Get('INDENT_WIDTH') * line.depth
-  last       = line.last
+  last = line.last
   last_index = -1
   if (last.is_pylint_comment or last.is_pytype_comment or
       last.is_copybara_comment):
-    last       = last.previous_token
+    last = last.previous_token
     last_index = -2
   if last is None:
     return True
-  return (
-      last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
-      not any(tok.is_comment for tok in line.tokens[:last_index]))
+  return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
+          not any(tok.is_comment for tok in line.tokens[:last_index]))
 
 
 def _AlignTrailingComments(final_lines):
@@ -290,7 +289,7 @@ def _AlignTrailingComments(final_lines):
         # first col value greater than that value and create the necessary for
         # each line accordingly.
         all_pc_line_lengths = []  # All pre-comment line lengths
-        max_line_length     = 0
+        max_line_length = 0
 
         while True:
           # EOF
@@ -312,7 +311,7 @@ def _AlignTrailingComments(final_lines):
             continue
 
           # Calculate the length of each line in this logical line.
-          line_content    = ''
+          line_content = ''
           pc_line_lengths = []
 
           for line_tok in this_line.tokens:
@@ -321,7 +320,7 @@ def _AlignTrailingComments(final_lines):
             newline_index = whitespace_prefix.rfind('\n')
             if newline_index != -1:
               max_line_length = max(max_line_length, len(line_content))
-              line_content    = ''
+              line_content = ''
 
               whitespace_prefix = whitespace_prefix[newline_index + 1:]
 
@@ -371,8 +370,8 @@ def _AlignTrailingComments(final_lines):
 
               for comment_line_index, comment_line in enumerate(
                   line_tok.value.split('\n')):
-                line_content.append(
-                    '{}{}'.format(whitespace, comment_line.strip()))
+                line_content.append('{}{}'.format(whitespace,
+                                                  comment_line.strip()))
 
                 if comment_line_index == 0:
                   whitespace = ' ' * (aligned_col - 1)
@@ -431,18 +430,18 @@ def _AlignDictColon(final_lines):
               '\n'):
             index = open_index
             # skip the comments in the beginning
-            index   += 1
+            index += 1
             line_tok = line_tokens[index]
             while not line_tok.is_dict_key and index < len(line_tokens) - 1:
-              index   += 1
+              index += 1
               line_tok = line_tokens[index]
             # in case empty dict, check if dict key again
             if line_tok.is_dict_key and line_tok.formatted_whitespace_prefix.startswith(
                 '\n'):
-              closing               = False  # the closing bracket in dict '}'.
-              keys_content          = ''
+              closing = False  # the closing bracket in dict '}'.
+              keys_content = ''
               all_dict_keys_lengths = []
-              dict_keys_lengths     = []
+              dict_keys_lengths = []
 
               # record the column number of the first key
               first_key_column = len(
@@ -451,7 +450,7 @@ def _AlignDictColon(final_lines):
 
               # while not closing:
               while not closing:
-                prefix  = line_tok.formatted_whitespace_prefix
+                prefix = line_tok.formatted_whitespace_prefix
                 newline = prefix.startswith('\n')
                 if newline:
                   # if comments inbetween, save, reset and continue to caluclate new alignment
@@ -459,18 +458,18 @@ def _AlignDictColon(final_lines):
                       dict_keys_lengths and line_tok.is_comment):
                     all_dict_keys_lengths.append(dict_keys_lengths)
                     dict_keys_lengths = []
-                    index            += 1
-                    line_tok          = line_tokens[index]
+                    index += 1
+                    line_tok = line_tokens[index]
                     continue
                   if line_tok.is_dict_key_start:
                     keys_content = ''
-                    prefix       = prefix.lstrip('\n')
-                    key_column   = len(prefix)
+                    prefix = prefix.lstrip('\n')
+                    key_column = len(prefix)
                   # if the dict key is so long that it has multi-lines
                   # only caculate the last line that has the colon
                   elif line_tok.is_dict_key:
                     keys_content = ''
-                    prefix       = prefix.lstrip('\n')
+                    prefix = prefix.lstrip('\n')
                 elif line_tok.is_dict_key_start:
                   key_column = line_tok.column
 
@@ -499,8 +498,8 @@ def _AlignDictColon(final_lines):
                   if dict_keys_lengths:
                     all_dict_keys_lengths.append(dict_keys_lengths)
                   dict_keys_lengths = []
-                  index            += 1
-                  line_tok          = line_tokens[index]
+                  index += 1
+                  line_tok = line_tokens[index]
                   continue
                 # the matching closing bracket is either same indented or dedented
                 # accordingly to previous level's indentation
@@ -518,11 +517,11 @@ def _AlignDictColon(final_lines):
 
               # update the alignment once one dict is processed
               if all_dict_keys_lengths:
-                max_keys_length             = 0
+                max_keys_length = 0
                 all_dict_keys_lengths_index = 0
-                dict_keys_lengths           = all_dict_keys_lengths[
+                dict_keys_lengths = all_dict_keys_lengths[
                     all_dict_keys_lengths_index]
-                max_keys_length    = max(dict_keys_lengths or [0]) + 2
+                max_keys_length = max(dict_keys_lengths or [0]) + 2
                 keys_lengths_index = 0
                 for token in line_tokens[open_index + 1:index]:
                   if token.is_dict_colon:
@@ -538,9 +537,9 @@ def _AlignDictColon(final_lines):
 
                       if keys_lengths_index == len(dict_keys_lengths):
                         all_dict_keys_lengths_index += 1
-                        dict_keys_lengths            = all_dict_keys_lengths[
+                        dict_keys_lengths = all_dict_keys_lengths[
                             all_dict_keys_lengths_index]
-                        max_keys_length    = max(dict_keys_lengths or [0]) + 2
+                        max_keys_length = max(dict_keys_lengths or [0]) + 2
                         keys_lengths_index = 0
 
                       if keys_lengths_index < len(dict_keys_lengths):
@@ -554,8 +553,8 @@ def _AlignDictColon(final_lines):
                         #NOTE if the existing whitespaces are larger than padded spaces
                         existing_whitespace_prefix = \
                               token.formatted_whitespace_prefix.lstrip('\n')
-                        colon_content              = '{}{}'.format(
-                            padded_spaces, token.value.strip())
+                        colon_content = '{}{}'.format(padded_spaces,
+                                                      token.value.strip())
 
                         # in case the existing spaces are larger than the paddes spaces
                         if (len(padded_spaces) == 1 or
@@ -616,8 +615,8 @@ class _StateNode(object):
   # TODO(morbo): Add a '__cmp__' method.
 
   def __init__(self, state, newline, previous):
-    self.state    = state.Clone()
-    self.newline  = newline
+    self.state = state.Clone()
+    self.newline = newline
     self.previous = previous
 
   def __repr__(self):  # pragma: no cover
@@ -633,8 +632,8 @@ _OrderedPenalty = collections.namedtuple('OrderedPenalty', ['penalty', 'count'])
 
 # An item in the prioritized BFS search queue. The 'StateNode's 'state' has
 # the given '_OrderedPenalty'.
-_QueueItem = collections.namedtuple(
-    'QueueItem', ['ordered_penalty', 'state_node'])
+_QueueItem = collections.namedtuple('QueueItem',
+                                    ['ordered_penalty', 'state_node'])
 
 
 def _AnalyzeSolutionSpace(initial_state):
@@ -652,8 +651,8 @@ def _AnalyzeSolutionSpace(initial_state):
   Returns:
     True if a formatting solution was found. False otherwise.
   """
-  count   = 0
-  seen    = set()
+  count = 0
+  seen = set()
   p_queue = []
 
   # Insert start element.
@@ -662,9 +661,9 @@ def _AnalyzeSolutionSpace(initial_state):
 
   count += 1
   while p_queue:
-    item    = p_queue[0]
+    item = p_queue[0]
     penalty = item.ordered_penalty.penalty
-    node    = item.state_node
+    node = item.state_node
     if not node.state.next_token:
       break
     heapq.heappop(p_queue)
@@ -718,7 +717,7 @@ def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
     # Don't add a token we must split but where we aren't splitting.
     return count
 
-  node    = _StateNode(previous_node.state, newline, previous_node)
+  node = _StateNode(previous_node.state, newline, previous_node)
   penalty += node.state.AddTokenToState(
       newline=newline, dry_run=True, must_split=must_split)
   heapq.heappush(p_queue, _QueueItem(_OrderedPenalty(penalty, count), node))
@@ -774,25 +773,25 @@ def _FormatFirstToken(first_token, indent_depth, prev_line, final_lines):
       NESTED_DEPTH.append(indent_depth)
 
   first_token.AddWhitespacePrefix(
-      _CalculateNumberOfNewlines(
-          first_token, indent_depth, prev_line, final_lines, first_nested),
+      _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
+                                 final_lines, first_nested),
       indent_level=indent_depth)
 
 
-NO_BLANK_LINES  = 1
-ONE_BLANK_LINE  = 2
+NO_BLANK_LINES = 1
+ONE_BLANK_LINE = 2
 TWO_BLANK_LINES = 3
 
 
 def _IsClassOrDef(tok):
   if tok.value in {'class', 'def', '@'}:
     return True
-  return (
-      tok.next_token and tok.value == 'async' and tok.next_token.value == 'def')
+  return (tok.next_token and tok.value == 'async' and
+          tok.next_token.value == 'def')
 
 
-def _CalculateNumberOfNewlines(
-    first_token, indent_depth, prev_line, final_lines, first_nested):
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
+                               final_lines, first_nested):
   """Calculate the number of newlines we need to add.
 
   Arguments:
@@ -912,11 +911,11 @@ def _SingleOrMergedLines(lines):
     Either a single line, if the current line cannot be merged with the
     succeeding line, or the next two lines merged into one line.
   """
-  index           = 0
+  index = 0
   last_was_merged = False
   while index < len(lines):
     if lines[index].disable:
-      line   = lines[index]
+      line = lines[index]
       index += 1
       while index < len(lines):
         column = line.last.column + 2
@@ -942,11 +941,11 @@ def _SingleOrMergedLines(lines):
         # formatting. Otherwise, it could mess up the shell script's syntax.
         lines[index].disable = True
       yield lines[index]
-      index          += 2
+      index += 2
       last_was_merged = True
     else:
       yield lines[index]
-      index          += 1
+      index += 1
       last_was_merged = False
 
 

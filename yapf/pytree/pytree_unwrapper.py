@@ -61,11 +61,10 @@ def UnwrapPyTree(tree):
 
 
 # Grammar tokens considered as whitespace for the purpose of unwrapping.
-_WHITESPACE_TOKENS = frozenset(
-    [
-        grammar_token.NEWLINE, grammar_token.DEDENT, grammar_token.INDENT,
-        grammar_token.ENDMARKER
-    ])
+_WHITESPACE_TOKENS = frozenset([
+    grammar_token.NEWLINE, grammar_token.DEDENT, grammar_token.INDENT,
+    grammar_token.ENDMARKER
+])
 
 
 class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
@@ -119,17 +118,16 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       _AdjustSplitPenalty(self._cur_logical_line)
     self._cur_logical_line = logical_line.LogicalLine(self._cur_depth)
 
-  _STMT_TYPES = frozenset(
-      {
-          'if_stmt',
-          'while_stmt',
-          'for_stmt',
-          'try_stmt',
-          'expect_clause',
-          'with_stmt',
-          'funcdef',
-          'classdef',
-      })
+  _STMT_TYPES = frozenset({
+      'if_stmt',
+      'while_stmt',
+      'for_stmt',
+      'try_stmt',
+      'expect_clause',
+      'with_stmt',
+      'funcdef',
+      'classdef',
+  })
 
   # pylint: disable=invalid-name,missing-docstring
   def Visit_simple_stmt(self, node):
@@ -322,7 +320,7 @@ def _MatchBrackets(line):
       bracket_stack.append(token)
     elif token.value in _CLOSING_BRACKETS:
       bracket_stack[-1].matching_bracket = token
-      token.matching_bracket             = bracket_stack[-1]
+      token.matching_bracket = bracket_stack[-1]
       bracket_stack.pop()
 
     for bracket in bracket_stack:
@@ -340,7 +338,7 @@ def _IdentifyParameterLists(line):
   Arguments:
     line: (LogicalLine) A logical line.
   """
-  func_stack  = []
+  func_stack = []
   param_stack = []
   for tok in line.tokens:
     # Identify parameter list objects.
@@ -376,9 +374,9 @@ def _AdjustSplitPenalty(line):
   bracket_level = 0
   for index, token in enumerate(line.tokens):
     if index and not bracket_level:
-      pytree_utils.SetNodeAnnotation(
-          token.node, pytree_utils.Annotation.SPLIT_PENALTY,
-          split_penalty.UNBREAKABLE)
+      pytree_utils.SetNodeAnnotation(token.node,
+                                     pytree_utils.Annotation.SPLIT_PENALTY,
+                                     split_penalty.UNBREAKABLE)
     if token.value in _OPENING_BRACKETS:
       bracket_level += 1
     elif token.value in _CLOSING_BRACKETS:
@@ -398,7 +396,7 @@ def _DetermineMustSplitAnnotation(node):
         node.children[-1].value != ','):
       return
   num_children = len(node.children)
-  index        = 0
+  index = 0
   _SetMustSplitOnFirstLeaf(node.children[0])
   while index < num_children - 1:
     child = node.children[index]
