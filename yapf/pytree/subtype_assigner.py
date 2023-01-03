@@ -248,15 +248,13 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #                     | '*' test (',' argument)* [',' '**' test]
     #                     | '**' test)
     self._ProcessArgLists(node)
-    _SetArgListSubtype(
-        node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
-        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_tname(self, node):  # pylint: disable=invalid-name
     self._ProcessArgLists(node)
-    _SetArgListSubtype(
-        node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
-        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
     # decorator ::=
@@ -290,9 +288,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     #           | '**' tname)
     #     | tfpdef ['=' test] (',' tfpdef ['=' test])* [','])
     self._ProcessArgLists(node)
-    _SetArgListSubtype(
-        node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
-        subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
     tname = False
     if not node.children:
       return
@@ -311,8 +308,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
 
       if pytree_utils.NodeName(child) == 'tname':
         tname = True
-        _SetArgListSubtype(
-            child, subtypes.TYPED_NAME, subtypes.TYPED_NAME_ARG_LIST)
+        _SetArgListSubtype(child, subtypes.TYPED_NAME,
+                           subtypes.TYPED_NAME_ARG_LIST)
         # NOTE Every element of the tynamme argument
         # should have this list type
         _AppendSubtypeRec(child, subtypes.TYPED_NAME_ARG_LIST)
@@ -340,8 +337,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     _AppendSubtypeRec(node, subtypes.COMP_FOR)
     # Mark the previous node as COMP_EXPR unless this is a nested comprehension
     # as these will have the outer comprehension as their previous node.
-    attr = pytree_utils.GetNodeAnnotation(
-        node.parent, pytree_utils.Annotation.SUBTYPE)
+    attr = pytree_utils.GetNodeAnnotation(node.parent,
+                                          pytree_utils.Annotation.SUBTYPE)
     if not attr or subtypes.COMP_FOR not in attr:
       _AppendSubtypeRec(node.parent.children[0], subtypes.COMP_EXPR)
     self.DefaultNodeVisit(node)
@@ -397,8 +394,8 @@ def _SetArgListSubtype(node, node_subtype, list_subtype):
 
 def _AppendTokenSubtype(node, subtype):
   """Append the token's subtype only if it's not already set."""
-  pytree_utils.AppendNodeAnnotation(
-      node, pytree_utils.Annotation.SUBTYPE, subtype)
+  pytree_utils.AppendNodeAnnotation(node, pytree_utils.Annotation.SUBTYPE,
+                                    subtype)
 
 
 def _AppendFirstLeafTokenSubtype(node, subtype):

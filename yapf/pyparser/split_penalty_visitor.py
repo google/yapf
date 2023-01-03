@@ -67,14 +67,13 @@ class SplitPenalty(ast.NodeVisitor):
       _SetPenalty(token, split_penalty.UNBREAKABLE)
 
     if node.returns:
-      start_index = pyutils.GetTokenIndex(
-          tokens, pyutils.TokenStart(node.returns))
-      _IncreasePenalty(
-          tokens[start_index - 1:start_index + 1],
-          split_penalty.VERY_STRONGLY_CONNECTED)
+      start_index = pyutils.GetTokenIndex(tokens,
+                                          pyutils.TokenStart(node.returns))
+      _IncreasePenalty(tokens[start_index - 1:start_index + 1],
+                       split_penalty.VERY_STRONGLY_CONNECTED)
       end_index = pyutils.GetTokenIndex(tokens, pyutils.TokenEnd(node.returns))
-      _IncreasePenalty(
-          tokens[start_index + 1:end_index], split_penalty.STRONGLY_CONNECTED)
+      _IncreasePenalty(tokens[start_index + 1:end_index],
+                       split_penalty.STRONGLY_CONNECTED)
 
     return self.generic_visit(node)
 
@@ -293,8 +292,8 @@ class SplitPenalty(ast.NodeVisitor):
 
     # Lower the split penalty to allow splitting before or after the arithmetic
     # operator.
-    operator_index = pyutils.GetNextTokenIndex(
-        tokens, pyutils.TokenEnd(node.left))
+    operator_index = pyutils.GetNextTokenIndex(tokens,
+                                               pyutils.TokenEnd(node.left))
     if not style.Get('SPLIT_BEFORE_ARITHMETIC_OPERATOR'):
       operator_index += 1
 
@@ -544,8 +543,8 @@ class SplitPenalty(ast.NodeVisitor):
     #           attr=Identifier)
     tokens = self._GetTokens(node)
     split_before = style.Get('SPLIT_BEFORE_DOT')
-    dot_indices = pyutils.GetNextTokenIndex(
-        tokens, pyutils.TokenEnd(node.value))
+    dot_indices = pyutils.GetNextTokenIndex(tokens,
+                                            pyutils.TokenEnd(node.value))
 
     if not split_before:
       dot_indices += 1
@@ -559,8 +558,8 @@ class SplitPenalty(ast.NodeVisitor):
     tokens = self._GetTokens(node)
 
     # Don't split before the opening bracket of a subscript.
-    bracket_index = pyutils.GetNextTokenIndex(
-        tokens, pyutils.TokenEnd(node.value))
+    bracket_index = pyutils.GetNextTokenIndex(tokens,
+                                              pyutils.TokenEnd(node.value))
     _IncreasePenalty(tokens[bracket_index], split_penalty.UNBREAKABLE)
 
     return self.generic_visit(node)
@@ -610,16 +609,16 @@ class SplitPenalty(ast.NodeVisitor):
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
     if hasattr(node, 'upper') and node.upper:
-      colon_index = pyutils.GetPrevTokenIndex(
-          tokens, pyutils.TokenStart(node.upper))
+      colon_index = pyutils.GetPrevTokenIndex(tokens,
+                                              pyutils.TokenStart(node.upper))
       _IncreasePenalty(tokens[colon_index], split_penalty.UNBREAKABLE)
       subrange = pyutils.GetTokensInSubRange(tokens, node.upper)
       _IncreasePenalty(subrange, split_penalty.EXPR)
       _DecreasePenalty(subrange[0], split_penalty.EXPR // 2)
 
     if hasattr(node, 'step') and node.step:
-      colon_index = pyutils.GetPrevTokenIndex(
-          tokens, pyutils.TokenStart(node.step))
+      colon_index = pyutils.GetPrevTokenIndex(tokens,
+                                              pyutils.TokenStart(node.step))
       _IncreasePenalty(tokens[colon_index], split_penalty.UNBREAKABLE)
       subrange = pyutils.GetTokensInSubRange(tokens, node.step)
       _IncreasePenalty(subrange, split_penalty.EXPR)

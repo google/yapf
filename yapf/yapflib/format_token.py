@@ -119,8 +119,8 @@ class FormatToken(object):
     if self.is_comment:
       self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
 
-    stypes = pytree_utils.GetNodeAnnotation(
-        node, pytree_utils.Annotation.SUBTYPE)
+    stypes = pytree_utils.GetNodeAnnotation(node,
+                                            pytree_utils.Annotation.SUBTYPE)
     self.subtypes = {subtypes.NONE} if not stypes else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
@@ -151,8 +151,8 @@ class FormatToken(object):
       else:
         indent_before = '\t' * indent_level + ' ' * spaces
     else:
-      indent_before = (
-          ' ' * indent_level * style.Get('INDENT_WIDTH') + ' ' * spaces)
+      indent_before = (' ' * indent_level * style.Get('INDENT_WIDTH') +
+                       ' ' * spaces)
 
     if self.is_comment:
       comment_lines = [s.lstrip() for s in self.value.splitlines()]
@@ -162,15 +162,15 @@ class FormatToken(object):
       self.value = self.value
 
     if not self.whitespace_prefix:
-      self.whitespace_prefix = (
-          '\n' * (self.newlines or newlines_before) + indent_before)
+      self.whitespace_prefix = ('\n' * (self.newlines or newlines_before) +
+                                indent_before)
     else:
       self.whitespace_prefix += indent_before
 
   def AdjustNewlinesBefore(self, newlines_before):
     """Change the number of newlines before this token."""
-    self.whitespace_prefix = (
-        '\n' * newlines_before + self.whitespace_prefix.lstrip('\n'))
+    self.whitespace_prefix = ('\n' * newlines_before +
+                              self.whitespace_prefix.lstrip('\n'))
 
   def RetainHorizontalSpacing(self, first_column, depth):
     """Retains a token's horizontal spacing."""
@@ -220,11 +220,10 @@ class FormatToken(object):
     self.subtypes.add(subtype)
 
   def __repr__(self):
-    msg = (
-        'FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
-        'splitpenalty={4}'.format(
-            'DOCSTRING' if self.is_docstring else self.name, self.value,
-            self.column, self.lineno, self.split_penalty))
+    msg = ('FormatToken(name={0}, value={1}, column={2}, lineno={3}, '
+           'splitpenalty={4}'.format(
+               'DOCSTRING' if self.is_docstring else self.name, self.value,
+               self.column, self.lineno, self.split_penalty))
     msg += ', pseudo)' if self.is_pseudo else ')'
     return msg
 
@@ -243,22 +242,21 @@ class FormatToken(object):
   @py3compat.lru_cache()
   def is_arithmetic_op(self):
     """Token is an arithmetic operator."""
-    return self.value in frozenset(
-        {
-            '+',  # Add
-            '-',  # Subtract
-            '*',  # Multiply
-            '@',  # Matrix Multiply
-            '/',  # Divide
-            '//',  # Floor Divide
-            '%',  # Modulo
-            '<<',  # Left Shift
-            '>>',  # Right Shift
-            '|',  # Bitwise Or
-            '&',  # Bitwise Add
-            '^',  # Bitwise Xor
-            '**',  # Power
-        })
+    return self.value in frozenset({
+        '+',  # Add
+        '-',  # Subtract
+        '*',  # Multiply
+        '@',  # Matrix Multiply
+        '/',  # Divide
+        '//',  # Floor Divide
+        '%',  # Modulo
+        '<<',  # Left Shift
+        '>>',  # Right Shift
+        '|',  # Bitwise Or
+        '&',  # Bitwise Add
+        '^',  # Bitwise Xor
+        '**',  # Power
+    })
 
   @property
   def is_simple_expr(self):
@@ -312,13 +310,13 @@ class FormatToken(object):
 
   @property
   def is_pylint_comment(self):
-    return self.is_comment and re.match(
-        r'#.*\bpylint:\s*(disable|enable)=', self.value)
+    return self.is_comment and re.match(r'#.*\bpylint:\s*(disable|enable)=',
+                                        self.value)
 
   @property
   def is_pytype_comment(self):
-    return self.is_comment and re.match(
-        r'#.*\bpytype:\s*(disable|enable)=', self.value)
+    return self.is_comment and re.match(r'#.*\bpytype:\s*(disable|enable)=',
+                                        self.value)
 
   @property
   def is_copybara_comment(self):
@@ -327,9 +325,8 @@ class FormatToken(object):
 
   @property
   def is_argassign(self):
-    return (
-        subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes or
-        subtypes.VARARGS_LIST in self.subtypes)
+    return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes or
+            subtypes.VARARGS_LIST in self.subtypes)
 
   @property
   def is_argname(self):
@@ -358,18 +355,15 @@ class FormatToken(object):
     if self.previous_token:
       previous_subtypes = self.previous_token.subtypes
 
-    return (
-        (
-            not self.is_comment and
-            subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes and
-            subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes and
-            subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes and (
-                not subtypes.PARAMETER_STOP in self.subtypes or
-                subtypes.PARAMETER_START in self.subtypes))
-        or  # if there is comment, the arg after it is the argname start
-        (
-            not self.is_comment and self.previous_token and
-            self.previous_token.is_comment and (
-                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in previous_subtypes
-                or subtypes.TYPED_NAME_ARG_LIST in self.subtypes or
-                subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes)))
+    return ((not self.is_comment and
+             subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes and
+             subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes and
+             subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes and
+             (not subtypes.PARAMETER_STOP in self.subtypes or
+              subtypes.PARAMETER_START in self.subtypes))
+            or  # if there is comment, the arg after it is the argname start
+            (not self.is_comment and self.previous_token and
+             self.previous_token.is_comment and
+             (subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in previous_subtypes or
+              subtypes.TYPED_NAME_ARG_LIST in self.subtypes or
+              subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes)))

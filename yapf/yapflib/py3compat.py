@@ -80,8 +80,8 @@ else:
 
   import collections
 
-  class TokenInfo(collections.namedtuple('TokenInfo',
-                                         'type string start end line')):
+  class TokenInfo(
+      collections.namedtuple('TokenInfo', 'type string start end line')):
     pass
 
 

@@ -69,8 +69,8 @@ def Reformat(llines, verify=False, lines=None):
       if prev_line and prev_line.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
-        _RetainRequiredVerticalSpacingBetweenTokens(
-            lline.first, prev_line.last, lines)
+        _RetainRequiredVerticalSpacingBetweenTokens(lline.first, prev_line.last,
+                                                    lines)
       if any(tok.is_comment for tok in lline.tokens):
         _RetainVerticalSpacingBeforeComments(lline)
 
@@ -163,8 +163,8 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
     desired_newlines = cur_tok.whitespace_prefix.count('\n')
     whitespace_lines = range(prev_lineno + 1, cur_lineno)
     deletable_lines = len(lines.intersection(whitespace_lines))
-    required_newlines = max(
-        required_newlines - deletable_lines, desired_newlines)
+    required_newlines = max(required_newlines - deletable_lines,
+                            desired_newlines)
 
   cur_tok.AdjustNewlinesBefore(required_newlines)
 
@@ -265,9 +265,8 @@ def _CanPlaceOnSingleLine(line):
     last_index = -2
   if last is None:
     return True
-  return (
-      last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
-      not any(tok.is_comment for tok in line.tokens[:last_index]))
+  return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
+          not any(tok.is_comment for tok in line.tokens[:last_index]))
 
 
 def _AlignTrailingComments(final_lines):
@@ -370,8 +369,8 @@ def _AlignTrailingComments(final_lines):
 
               for comment_line_index, comment_line in enumerate(
                   line_tok.value.split('\n')):
-                line_content.append(
-                    '{}{}'.format(whitespace, comment_line.strip()))
+                line_content.append('{}{}'.format(whitespace,
+                                                  comment_line.strip()))
 
                 if comment_line_index == 0:
                   whitespace = ' ' * (aligned_col - 1)
@@ -653,8 +652,8 @@ _OrderedPenalty = collections.namedtuple('OrderedPenalty', ['penalty', 'count'])
 
 # An item in the prioritized BFS search queue. The 'StateNode's 'state' has
 # the given '_OrderedPenalty'.
-_QueueItem = collections.namedtuple(
-    'QueueItem', ['ordered_penalty', 'state_node'])
+_QueueItem = collections.namedtuple('QueueItem',
+                                    ['ordered_penalty', 'state_node'])
 
 
 def _AnalyzeSolutionSpace(initial_state):
@@ -794,8 +793,8 @@ def _FormatFirstToken(first_token, indent_depth, prev_line, final_lines):
       NESTED_DEPTH.append(indent_depth)
 
   first_token.AddWhitespacePrefix(
-      _CalculateNumberOfNewlines(
-          first_token, indent_depth, prev_line, final_lines, first_nested),
+      _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
+                                 final_lines, first_nested),
       indent_level=indent_depth)
 
 
@@ -807,12 +806,12 @@ TWO_BLANK_LINES = 3
 def _IsClassOrDef(tok):
   if tok.value in {'class', 'def', '@'}:
     return True
-  return (
-      tok.next_token and tok.value == 'async' and tok.next_token.value == 'def')
+  return (tok.next_token and tok.value == 'async' and
+          tok.next_token.value == 'def')
 
 
-def _CalculateNumberOfNewlines(
-    first_token, indent_depth, prev_line, final_lines, first_nested):
+def _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
+                               final_lines, first_nested):
   """Calculate the number of newlines we need to add.
 
   Arguments:
