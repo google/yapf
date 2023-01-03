@@ -413,7 +413,7 @@ v, w, x, y, z
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testIfStmtClosingBracket(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 if (isinstance(value  , (StopIteration  , StopAsyncIteration  )) and exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs):
     return False
 """  # noqa

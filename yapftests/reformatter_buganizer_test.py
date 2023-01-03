@@ -160,7 +160,7 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB35417079(self):
-    code   = """\
+    code = """\
 class _():
 
   def _():
@@ -199,7 +199,7 @@ X = {
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB120245013(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 class Foo(object):
   def testNoAlertForShortPeriod(self, rutabaga):
     self.targets[:][streamz_path,self._fillInOtherFields(streamz_path, {streamz_field_of_interest:True})] = series.Counter('1s', '+ 500x10000')
@@ -234,7 +234,7 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx(
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB111764402(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 x = self.stubs.stub(video_classification_map,              'read_video_classifications',       (lambda external_ids, **unused_kwargs:                     {external_id: self._get_serving_classification('video') for external_id in external_ids}))
 """  # noqa
     expected_formatted_code = """\
@@ -287,7 +287,7 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB112651423(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 def potato(feeditems, browse_use_case=None):
   for item in turnip:
     if kumquat:
@@ -398,7 +398,7 @@ foo.bar(
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB113210278(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 def _():
   aaaaaaaaaaa = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccccccccc(\
 eeeeeeeeeeeeeeeeeeeeeeeeee.fffffffffffffffffffffffffffffffffffffff.\
@@ -414,7 +414,7 @@ def _():
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB77923341(self):
-    code   = """\
+    code = """\
 def f():
   if (aaaaaaaaaaaaaa.bbbbbbbbbbbb.ccccc <= 0 and  # pytype: disable=attribute-error
       ddddddddddd.eeeeeeeee == constants.FFFFFFFFFFFFFF):
@@ -488,7 +488,7 @@ SUPPORTED_PLATFORMS = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB30500455(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 INITIAL_SYMTAB = dict([(name, 'exception#' + name) for name in INITIAL_EXCEPTIONS
 ] * [(name, 'type#' + name) for name in INITIAL_TYPES] + [
     (name, 'function#' + name) for name in INITIAL_FUNCTIONS
@@ -517,7 +517,7 @@ def f():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB37099651(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 _MEMCACHE = lazy.MakeLazy(
     # pylint: disable=g-long-lambda
     lambda: function.call.mem.clients(FLAGS.some_flag_thingy, default_namespace=_LAZY_MEM_NAMESPACE, allow_pickle=True)
@@ -538,7 +538,7 @@ _MEMCACHE = lazy.MakeLazy(
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB33228502(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 def _():
   success_rate_stream_table = module.Precompute(
       query_function=module.DefineQueryFunction(
@@ -682,7 +682,7 @@ X = {
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB67455376(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 sponge_ids.extend(invocation.id() for invocation in self._client.GetInvocationsByLabels(labels))
 """  # noqa
     expected_formatted_code = """\
@@ -759,7 +759,7 @@ xx = zip(*[(a, b) for (a, b, c) in yy])
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB35210166(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 def _():
   query = (
       m.Fetch(n.Raw('monarch.BorgTask', '/proc/container/memory/usage'), { 'borg_user': borguser, 'borg_job': jobname })
@@ -807,7 +807,7 @@ X = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB66912275(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 def _():
   with self.assertRaisesRegexp(errors.HttpError, 'Invalid'):
     patch_op = api_client.forwardingRules().patch(
@@ -841,7 +841,7 @@ def _():
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testB65241516(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 checkpoint_files = gfile.Glob(os.path.join(TrainTraceDir(unit_key, "*", "*"), embedding_model.CHECKPOINT_FILENAME + "-*"))
 """  # noqa
     expected_formatted_code = """\
@@ -2169,7 +2169,7 @@ instance = (
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testB15597568(self):
-    unformatted_code        = """\
+    unformatted_code = """\
 if True:
   if True:
     if True:

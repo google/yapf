@@ -525,7 +525,7 @@ class Demo:
           style.CreateStyleFromConfig(
               '{based_on_style: pep8, split_before_arithmetic_operator: true}'))
 
-      unformatted_code        = """\
+      unformatted_code = """\
 def _():
     raise ValueError('This is a long message that ends with an argument: ' + str(42))
 """  # noqa
