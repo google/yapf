@@ -131,6 +131,36 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
 
   def testSetComprehension(self):
     code = textwrap.dedent("""\
+        def foo(value):
+          return {value.lower()}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('value', {
+                subtypes.NONE,
+                subtypes.PARAMETER_START,
+                subtypes.PARAMETER_STOP,
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE}),
+        ],
+        [
+            ('return', {subtypes.NONE}),
+            ('{', {subtypes.NONE}),
+            ('value', {subtypes.NONE}),
+            ('.', {subtypes.NONE}),
+            ('lower', {subtypes.NONE}),
+            ('(', {subtypes.NONE}),
+            (')', {subtypes.NONE}),
+            ('}', {subtypes.NONE}),
+        ],
+    ])
+
+    code = textwrap.dedent("""\
         def foo(strs):
           return {s.lower() for s in strs}
         """)
@@ -163,6 +193,209 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
             ('s', {subtypes.COMP_FOR}),
             ('in', {subtypes.COMP_FOR}),
             ('strs', {subtypes.COMP_FOR}),
+            ('}', {subtypes.NONE}),
+        ],
+    ])
+
+    code = textwrap.dedent("""\
+        def foo(strs):
+          return {s + s.lower() for s in strs}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('strs', {
+                subtypes.NONE,
+                subtypes.PARAMETER_START,
+                subtypes.PARAMETER_STOP,
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE}),
+        ],
+        [
+            ('return', {subtypes.NONE}),
+            ('{', {subtypes.NONE}),
+            ('s', {subtypes.COMP_EXPR}),
+            ('+', {subtypes.BINARY_OPERATOR, subtypes.COMP_EXPR}),
+            ('s', {subtypes.COMP_EXPR}),
+            ('.', {subtypes.COMP_EXPR}),
+            ('lower', {subtypes.COMP_EXPR}),
+            ('(', {subtypes.COMP_EXPR}),
+            (')', {subtypes.COMP_EXPR}),
+            ('for', {
+                subtypes.DICT_SET_GENERATOR,
+                subtypes.COMP_FOR,
+            }),
+            ('s', {subtypes.COMP_FOR}),
+            ('in', {subtypes.COMP_FOR}),
+            ('strs', {subtypes.COMP_FOR}),
+            ('}', {subtypes.NONE}),
+        ],
+    ])
+
+    code = textwrap.dedent("""\
+        def foo(strs):
+          return {c.lower() for s in strs for c in s}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('strs', {
+                subtypes.NONE,
+                subtypes.PARAMETER_START,
+                subtypes.PARAMETER_STOP,
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE}),
+        ],
+        [
+            ('return', {subtypes.NONE}),
+            ('{', {subtypes.NONE}),
+            ('c', {subtypes.COMP_EXPR}),
+            ('.', {subtypes.COMP_EXPR}),
+            ('lower', {subtypes.COMP_EXPR}),
+            ('(', {subtypes.COMP_EXPR}),
+            (')', {subtypes.COMP_EXPR}),
+            ('for', {
+                subtypes.DICT_SET_GENERATOR,
+                subtypes.COMP_FOR,
+                subtypes.COMP_EXPR,
+            }),
+            ('s', {subtypes.COMP_FOR, subtypes.COMP_EXPR}),
+            ('in', {subtypes.COMP_FOR, subtypes.COMP_EXPR}),
+            ('strs', {subtypes.COMP_FOR, subtypes.COMP_EXPR}),
+            ('for', {
+                subtypes.DICT_SET_GENERATOR,
+                subtypes.COMP_FOR,
+            }),
+            ('c', {subtypes.COMP_FOR}),
+            ('in', {subtypes.COMP_FOR}),
+            ('s', {subtypes.COMP_FOR}),
+            ('}', {subtypes.NONE}),
+        ],
+    ])
+
+  def testDictComprehension(self):
+    code = textwrap.dedent("""\
+        def foo(value):
+          return {value: value.lower()}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('value', {
+                subtypes.NONE,
+                subtypes.PARAMETER_START,
+                subtypes.PARAMETER_STOP,
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE}),
+        ],
+        [
+            ('return', {subtypes.NONE}),
+            ('{', {subtypes.NONE}),
+            ('value', {subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART}),
+            (':', {subtypes.NONE}),
+            ('value', {subtypes.DICTIONARY_VALUE}),
+            ('.', {subtypes.NONE}),
+            ('lower', {subtypes.NONE}),
+            ('(', {subtypes.NONE}),
+            (')', {subtypes.NONE}),
+            ('}', {subtypes.NONE}),
+        ],
+    ])
+
+    code = textwrap.dedent("""\
+        def foo(strs):
+          return {s: s.lower() for s in strs}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('strs', {
+                subtypes.NONE,
+                subtypes.PARAMETER_START,
+                subtypes.PARAMETER_STOP,
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE}),
+        ],
+        [
+            ('return', {subtypes.NONE}),
+            ('{', {subtypes.NONE}),
+            ('s', {subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART, subtypes.COMP_EXPR}),
+            (':', {subtypes.COMP_EXPR}),
+            ('s', {subtypes.DICTIONARY_VALUE, subtypes.COMP_EXPR}),
+            ('.', {subtypes.COMP_EXPR}),
+            ('lower', {subtypes.COMP_EXPR}),
+            ('(', {subtypes.COMP_EXPR}),
+            (')', {subtypes.COMP_EXPR}),
+            ('for', {
+                subtypes.DICT_SET_GENERATOR,
+                subtypes.COMP_FOR,
+            }),
+            ('s', {subtypes.COMP_FOR}),
+            ('in', {subtypes.COMP_FOR}),
+            ('strs', {subtypes.COMP_FOR}),
+            ('}', {subtypes.NONE}),
+        ],
+    ])
+
+    code = textwrap.dedent("""\
+        def foo(strs):
+          return {c: c.lower() for s in strs for c in s}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(code)
+    self._CheckFormatTokenSubtypes(llines, [
+        [
+            ('def', {subtypes.NONE}),
+            ('foo', {subtypes.FUNC_DEF}),
+            ('(', {subtypes.NONE}),
+            ('strs', {
+                subtypes.NONE,
+                subtypes.PARAMETER_START,
+                subtypes.PARAMETER_STOP,
+            }),
+            (')', {subtypes.NONE}),
+            (':', {subtypes.NONE}),
+        ],
+        [
+            ('return', {subtypes.NONE}),
+            ('{', {subtypes.NONE}),
+            ('c', {subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART, subtypes.COMP_EXPR}),
+            (':', {subtypes.COMP_EXPR}),
+            ('c', {subtypes.DICTIONARY_VALUE, subtypes.COMP_EXPR}),
+            ('.', {subtypes.COMP_EXPR}),
+            ('lower', {subtypes.COMP_EXPR}),
+            ('(', {subtypes.COMP_EXPR}),
+            (')', {subtypes.COMP_EXPR}),
+            ('for', {
+                subtypes.DICT_SET_GENERATOR,
+                subtypes.COMP_FOR,
+                subtypes.COMP_EXPR,
+            }),
+            ('s', {subtypes.COMP_FOR, subtypes.COMP_EXPR}),
+            ('in', {subtypes.COMP_FOR, subtypes.COMP_EXPR}),
+            ('strs', {subtypes.COMP_FOR, subtypes.COMP_EXPR}),
+            ('for', {
+                subtypes.DICT_SET_GENERATOR,
+                subtypes.COMP_FOR,
+            }),
+            ('c', {subtypes.COMP_FOR}),
+            ('in', {subtypes.COMP_FOR}),
+            ('s', {subtypes.COMP_FOR}),
             ('}', {subtypes.NONE}),
         ],
     ])
