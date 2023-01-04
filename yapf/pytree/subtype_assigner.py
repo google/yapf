@@ -66,20 +66,26 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
 
-    comp_for = False
     dict_maker = False
+
+    def markAsDictSetGenerator(node):
+      _AppendFirstLeafTokenSubtype(node, subtypes.DICT_SET_GENERATOR)
+      for child in node.children:
+        if pytree_utils.NodeName(child) == 'comp_for':
+          markAsDictSetGenerator(child)
 
     for child in node.children:
       if pytree_utils.NodeName(child) == 'comp_for':
-        comp_for = True
-        _AppendFirstLeafTokenSubtype(child, subtypes.DICT_SET_GENERATOR)
+        markAsDictSetGenerator(child)
       elif child.type in (grammar_token.COLON, grammar_token.DOUBLESTAR):
         dict_maker = True
 
-    if not comp_for and dict_maker:
+    if dict_maker:
       last_was_colon = False
       unpacking = False
       for child in node.children:
+        if pytree_utils.NodeName(child) == 'comp_for':
+          break
         if child.type == grammar_token.DOUBLESTAR:
           _AppendFirstLeafTokenSubtype(child, subtypes.KWARGS_STAR_STAR)
         if last_was_colon:
@@ -335,7 +341,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     attr = pytree_utils.GetNodeAnnotation(node.parent,
                                           pytree_utils.Annotation.SUBTYPE)
     if not attr or subtypes.COMP_FOR not in attr:
-      _AppendSubtypeRec(node.parent.children[0], subtypes.COMP_EXPR)
+      sibling = node.prev_sibling
+      while sibling:
+        _AppendSubtypeRec(sibling, subtypes.COMP_EXPR)
+        sibling = sibling.prev_sibling
     self.DefaultNodeVisit(node)
 
   def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name

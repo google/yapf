@@ -1624,6 +1624,18 @@ s = 'foo \\
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
+    unformatted_code = textwrap.dedent("""\
+        foo = {
+            x: x
+            for x in fnord
+        }
+        """)  # noqa
+    expected_code = textwrap.dedent("""\
+        foo = {x: x for x in fnord}
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_code, reformatter.Reformat(llines))
+
   def testUnaryOpInDictionaryValue(self):
     code = textwrap.dedent("""\
         beta = "123"
@@ -3123,8 +3135,10 @@ my_dict = {
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig('{force_multiline_dict: true}'))
-      unformatted_code = textwrap.dedent(
-          "responseDict = {'childDict': {'spam': 'eggs'}}\n")
+      unformatted_code = textwrap.dedent("""\
+        responseDict = {'childDict': {'spam': 'eggs'}}
+        generatedDict = {x: x for x in 'value'}
+      """)
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       actual = reformatter.Reformat(llines)
       expected = textwrap.dedent("""\
@@ -3132,6 +3146,9 @@ my_dict = {
             'childDict': {
                 'spam': 'eggs'
             }
+        }
+        generatedDict = {
+            x: x for x in 'value'
         }
       """)
       self.assertCodeEqual(expected, actual)
@@ -3144,6 +3161,7 @@ my_dict = {
           style.CreateStyleFromConfig('{force_multiline_dict: false}'))
       unformatted_code = textwrap.dedent("""\
         responseDict = {'childDict': {'spam': 'eggs'}}
+        generatedDict = {x: x for x in 'value'}
       """)
       expected_formatted_code = unformatted_code
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)

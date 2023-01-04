@@ -1031,6 +1031,8 @@ class FormatDecisionState(object):
     current = opening.next_token.next_token
 
     while current and current != closing:
+      if subtypes.DICT_SET_GENERATOR in current.subtypes:
+        break
       if subtypes.DICTIONARY_KEY in current.subtypes:
         prev = PreviousNonCommentToken(current)
         if prev.value == ',':
