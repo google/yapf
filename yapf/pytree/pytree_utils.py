@@ -63,8 +63,7 @@ def NodeName(node):
   # Nodes with values < 256 are tokens. Values >= 256 are grammar symbols.
   if node.type < 256:
     return token.tok_name[node.type]
-  else:
-    return pygram.python_grammar.number2symbol[node.type]
+  return pygram.python_grammar.number2symbol[node.type]
 
 
 def FirstLeafNode(node):
@@ -343,5 +342,5 @@ def _PytreeNodeRepr(node):
 
 
 def IsCommentStatement(node):
-  return (NodeName(node) == 'simple_stmt' and
-          node.children[0].type == token.COMMENT)
+  return NodeName(node) == 'simple_stmt' and
+          node.children[0].type == token.COMMENT
