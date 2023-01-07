@@ -390,6 +390,8 @@ Options::
 Knobs
 =====
 
+There are 60 knobs in total.
+
 ``ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT``
     Align closing bracket with visual indentation.
 
