@@ -44,6 +44,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       name='yapf',
       version=yapf.__version__,
       description='A formatter for Python code.',
+      url='https://github.com/google/yapf',
       long_description=fd.read(),
       license='Apache License, Version 2.0',
       author='Google Inc.',
