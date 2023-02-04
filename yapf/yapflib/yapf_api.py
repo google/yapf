@@ -36,6 +36,8 @@ import difflib
 import re
 import sys
 
+from yapf.pyparser import pyparser
+
 from yapf.pytree import pytree_unwrapper
 from yapf.pytree import pytree_utils
 from yapf.pytree import blank_line_calculator
@@ -140,6 +142,37 @@ def FormatTree(tree, style_config=None, lines=None, verify=False):
   blank_line_calculator.CalculateBlankLines(tree)
 
   llines = pytree_unwrapper.UnwrapPyTree(tree)
+  for lline in llines:
+    lline.CalculateFormattingInformation()
+
+  lines = _LineRangesToSet(lines)
+  _MarkLinesToFormat(llines, lines)
+  return reformatter.Reformat(_SplitSemicolons(llines), verify, lines)
+
+
+def FormatAST(ast, style_config=None, lines=None, verify=False):
+  """Format a parsed lib2to3 pytree.
+
+  This provides an alternative entry point to YAPF.
+
+  Arguments:
+    unformatted_source: (unicode) The code to format.
+    style_config: (string) Either a style name or a path to a file that contains
+      formatting style settings. If None is specified, use the default style
+      as set in style.DEFAULT_STYLE_FACTORY
+    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
+      that we want to format. The lines are 1-based indexed. It can be used by
+      third-party code (e.g., IDEs) when reformatting a snippet of code rather
+      than a whole file.
+    verify: (bool) True if reformatted code should be verified for syntax.
+
+  Returns:
+    The source formatted according to the given formatting style.
+  """
+  _CheckPythonVersion()
+  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
+
+  llines = pyparser.ParseCode(ast)
   for lline in llines:
     lline.CalculateFormattingInformation()
 
