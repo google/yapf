@@ -24,7 +24,8 @@ subtypes, calculate split penalties, etc.
 
 A "logical line" produced by Python's "tokenizer" module ends with a
 tokenize.NEWLINE, rather than a tokenize.NL, making it easy to separate them
-out.
+out. Comments all end with a tokentizer.NL, so we need to make sure we don't
+errantly pick up non-comment tokens when parsing comment blocks.
 
   ParseCode(): parse the code producing a list of logical lines.
 """
@@ -40,8 +41,6 @@ from yapf.pyparser import split_penalty_visitor
 from yapf.yapflib import format_token
 from yapf.yapflib import logical_line
 from yapf.yapflib import py3compat
-from yapf.yapflib import style
-from yapf.yapflib import subtypes
 
 CONTINUATION = token.N_TOKENS
 
@@ -89,44 +88,61 @@ def _CreateLogicalLines(tokens):
   Returns:
     A list of LogicalLines.
   """
-  logical_lines = []
-  cur_logical_line = []
-  prev_tok = None
-  depth = 0
+  formatted_tokens = []
 
+  # Convert tokens into "TokenInfo" and add tokens for continuation markers.
+  prev_tok = None
   for tok in tokens:
     tok = py3compat.TokenInfo(*tok)
+
+    if (prev_tok and prev_tok.line.rstrip().endswith('\\') and
+        prev_tok.start[0] < tok.start[0]):
+      ctok = py3compat.TokenInfo(
+          type=CONTINUATION,
+          string='\\',
+          start=(prev_tok.start[0], prev_tok.start[1] + 1),
+          end=(prev_tok.end[0], prev_tok.end[0] + 2),
+          line=prev_tok.line)
+      ctok.lineno = ctok.start[0]
+      ctok.column = ctok.start[1]
+      ctok.value = '\\'
+      formatted_tokens.append(format_token.FormatToken(ctok, 'CONTINUATION'))
+
+    tok.lineno = tok.start[0]
+    tok.column = tok.start[1]
+    tok.value = tok.string
+    formatted_tokens.append(
+        format_token.FormatToken(tok, token.tok_name[tok.type]))
+    prev_tok = tok
+
+  # Generate logical lines.
+  logical_lines, cur_logical_line = [], []
+  depth = 0
+  for tok in formatted_tokens:
+    if tok.type == tokenize.ENDMARKER:
+      break
+
     if tok.type == tokenize.NEWLINE:
       # End of a logical line.
       logical_lines.append(logical_line.LogicalLine(depth, cur_logical_line))
       cur_logical_line = []
-      prev_tok = None
     elif tok.type == tokenize.INDENT:
       depth += 1
     elif tok.type == tokenize.DEDENT:
       depth -= 1
-    elif tok.type not in {tokenize.NL, tokenize.ENDMARKER}:
-      if (prev_tok and prev_tok.line.rstrip().endswith('\\') and
-          prev_tok.start[0] < tok.start[0]):
-        # Insert a token for a line continuation.
-        ctok = py3compat.TokenInfo(
-            type=CONTINUATION,
-            string='\\',
-            start=(prev_tok.start[0], prev_tok.start[1] + 1),
-            end=(prev_tok.end[0], prev_tok.end[0] + 2),
-            line=prev_tok.line)
-        ctok.lineno = ctok.start[0]
-        ctok.column = ctok.start[1]
-        ctok.value = '\\'
-        cur_logical_line.append(format_token.FormatToken(ctok, 'CONTINUATION'))
-      tok.lineno = tok.start[0]
-      tok.column = tok.start[1]
-      tok.value = tok.string
-      cur_logical_line.append(
-          format_token.FormatToken(tok, token.tok_name[tok.type]))
-    prev_tok = tok
+    elif tok.type == tokenize.NL:
+      pass
+    else:
+      if (cur_logical_line and not tok.type == tokenize.COMMENT and
+          cur_logical_line[0].type == tokenize.COMMENT):
+        # We were parsing a comment block, but now we have real code to worry
+        # about. Store the comment and carry on.
+        logical_lines.append(logical_line.LogicalLine(depth, cur_logical_line))
+        cur_logical_line = []
 
-  # Link the FormatTokens in each line together to for a doubly linked list.
+      cur_logical_line.append(tok)
+
+  # Link the FormatTokens in each line together to form a doubly linked list.
   for line in logical_lines:
     previous = line.first
     bracket_stack = [previous] if previous.OpensScope() else []

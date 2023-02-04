@@ -335,7 +335,10 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         [
             ('return', {subtypes.NONE}),
             ('{', {subtypes.NONE}),
-            ('s', {subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART, subtypes.COMP_EXPR}),
+            ('s', {
+                subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART,
+                subtypes.COMP_EXPR
+            }),
             (':', {subtypes.COMP_EXPR}),
             ('s', {subtypes.DICTIONARY_VALUE, subtypes.COMP_EXPR}),
             ('.', {subtypes.COMP_EXPR}),
@@ -374,7 +377,10 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
         [
             ('return', {subtypes.NONE}),
             ('{', {subtypes.NONE}),
-            ('c', {subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART, subtypes.COMP_EXPR}),
+            ('c', {
+                subtypes.DICTIONARY_KEY, subtypes.DICTIONARY_KEY_PART,
+                subtypes.COMP_EXPR
+            }),
             (':', {subtypes.COMP_EXPR}),
             ('c', {subtypes.DICTIONARY_VALUE, subtypes.COMP_EXPR}),
             ('.', {subtypes.COMP_EXPR}),
