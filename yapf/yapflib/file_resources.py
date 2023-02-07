@@ -195,7 +195,7 @@ def LineEnding(lines):
       endings[CR] += 1
     elif line.endswith(LF):
       endings[LF] += 1
-  return (sorted(endings, key=endings.get, reverse=True) or [LF])[0]
+  return sorted((LF, CRLF, CR), key=endings.get, reverse=True)[0]
 
 
 def _FindPythonFiles(filenames, recursive, exclude):

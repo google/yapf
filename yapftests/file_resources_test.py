@@ -560,6 +560,26 @@ class LineEndingTest(unittest.TestCase):
     actual = file_resources.LineEnding(lines)
     self.assertEqual(actual, '\n')
 
+  def test_line_ending_empty(self):
+    lines = []
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_no_newline(self):
+    lines = ['spam']
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_tie(self):
+    lines = [
+        'spam\n',
+        'spam\n',
+        'spam\r\n',
+        'spam\r\n',
+    ]
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
 
 if __name__ == '__main__':
   unittest.main()
