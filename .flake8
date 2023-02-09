@@ -13,6 +13,5 @@ ignore =
     # line break after binary operator
     W504
 
-disable-noqa 
 indent-size = 2
 max-line-length = 80
