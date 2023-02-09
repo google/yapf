@@ -119,6 +119,11 @@ class PredefinedStylesByNameTest(unittest.TestCase):
       cfg = style.CreateStyleFromConfig(chromium_name)
       self.assertTrue(_LooksLikeChromiumStyle(cfg))
 
+  def testYapfByName(self):
+    for yapf_name in ('yapf', 'Yapf', 'YAPF'):
+      cfg = style.CreateStyleFromConfig(yapf_name)
+      self.assertTrue(_LooksLikeChromiumStyle(cfg))
+
   def testFacebookByName(self):
     for fb_name in ('facebook', 'FACEBOOK', 'Facebook'):
       cfg = style.CreateStyleFromConfig(fb_name)
