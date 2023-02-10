@@ -350,7 +350,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
     child of the current directory which has been specified in a relative
     manner.
 
-    At its core, the bug has to do with overzelous stripping of "./foo" so that
+    At its core, the bug has to do with overzealous stripping of "./foo" so that
     it removes too much from "./.foo" .
     """
     tdir1 = self._make_test_dir('.test1')
