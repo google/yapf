@@ -493,6 +493,31 @@ class CommandLineTest(unittest.TestCase):
         reformatted_code = fd.read()
     self.assertEqual(reformatted_code, expected_formatted_code)
 
+  def testInPlaceReformattingWindowsNewLine(self):
+    unformatted_code = u'\r\n\r\n'
+    expected_formatted_code = u'\r\n'
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
+      p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
+      p.wait()
+      with io.open(filepath, mode='r', encoding='utf-8', newline='') as fd:
+        reformatted_code = fd.read()
+    self.assertEqual(reformatted_code, expected_formatted_code)
+
+  def testInPlaceReformattingNoNewLine(self):
+    unformatted_code = textwrap.dedent(u"def foo(): x = 37")
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+            x = 37
+        """)
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
+      p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
+      p.wait()
+      with io.open(filepath, mode='r', newline='') as fd:
+        reformatted_code = fd.read()
+    self.assertEqual(reformatted_code, expected_formatted_code)
+
   def testInPlaceReformattingEmpty(self):
     unformatted_code = u''
     expected_formatted_code = u''
