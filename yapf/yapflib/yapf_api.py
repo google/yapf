@@ -99,11 +99,10 @@ def FormatFile(filename,
       lines=lines,
       print_diff=print_diff,
       verify=verify)
-  if reformatted_source.rstrip('\n'):
-    lines = reformatted_source.rstrip('\n').split('\n')
-    reformatted_source = newline.join(iter(lines)) + newline
+  if newline != '\n':
+    reformatted_source = reformatted_source.replace('\n', newline)
   if in_place:
-    if original_source and original_source != reformatted_source:
+    if changed:
       file_resources.WriteReformattedCode(filename, reformatted_source,
                                           encoding, in_place)
     return None, encoding, changed
@@ -221,10 +220,9 @@ def FormatCode(unformatted_source,
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
 
-  code_diff = _GetUnifiedDiff(
-      unformatted_source, reformatted_source, filename=filename)
-
   if print_diff:
+    code_diff = _GetUnifiedDiff(
+        unformatted_source, reformatted_source, filename=filename)
     return code_diff, code_diff.strip() != ''  # pylint: disable=g-explicit-bool-comparison # noqa
 
   return reformatted_source, True
