@@ -664,10 +664,15 @@ Knobs
 ``SPACES_BEFORE_COMMENT``
     The number of spaces required before a trailing comment.
     This can be a single value (representing the number of spaces
-    before each trailing comment) or list of of values (representing
+    before each trailing comment) or list of values (representing
     alignment column values; trailing comments within a block will
     be aligned to the first column value that is greater than the maximum
-    line length within the block). For example:
+    line length within the block). 
+    
+    **Note:** Lists of values may need to be quoted in some contexts 
+    (eg. shells or editor config files).
+    
+    For example:
 
     With ``spaces_before_comment=5``:
 
@@ -681,7 +686,7 @@ Knobs
 
         1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
 
-    With ``spaces_before_comment=15, 20``:
+    With ``spaces_before_comment="15, 20"``:
 
     .. code-block:: python
 
