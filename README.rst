@@ -154,7 +154,7 @@ working directory from which YAPF is invoked.
 
 Note that no entry should begin with `./`.
 
-If you use ``pyproject.toml``, exclude patterns are specified by ``ignore_pattens`` key
+If you use ``pyproject.toml``, exclude patterns are specified by ``ignore_patterns`` key
 in ``[tool.yapfignore]`` section. For example:
 
 .. code-block:: ini
