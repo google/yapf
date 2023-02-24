@@ -3,21 +3,22 @@
 
 name: YAPF
 
-on: [push]
+on:
+  pull_request:
+  push:
+    branches: 'main'
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: ["2.7", "3.7", "3.8", "3.9", "3.10"]
         os: [ubuntu-latest, macos-latest]
-
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
