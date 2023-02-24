@@ -152,6 +152,29 @@ class FormatFileTest(unittest.TestCase):
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
 
+  def testFmtOnOff(self):
+    unformatted_code = textwrap.dedent(u"""\
+        if a:    b
+
+        # fmt: off
+        if f:    g
+        # fmt: on
+
+        if h:    i
+        """)
+    expected_formatted_code = textwrap.dedent(u"""\
+        if a: b
+
+        # fmt: off
+        if f:    g
+        # fmt: on
+
+        if h: i
+        """)
+    with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
+      formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
+      self.assertCodeEqual(expected_formatted_code, formatted_code)
+
   def testDisablePartOfMultilineComment(self):
     unformatted_code = textwrap.dedent(u"""\
         if a:    b
@@ -467,6 +490,31 @@ class CommandLineTest(unittest.TestCase):
       p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
       p.wait()
       with io.open(filepath, mode='r', encoding='utf-8', newline='') as fd:
+        reformatted_code = fd.read()
+    self.assertEqual(reformatted_code, expected_formatted_code)
+
+  def testInPlaceReformattingWindowsNewLine(self):
+    unformatted_code = u'\r\n\r\n'
+    expected_formatted_code = u'\r\n'
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
+      p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
+      p.wait()
+      with io.open(filepath, mode='r', encoding='utf-8', newline='') as fd:
+        reformatted_code = fd.read()
+    self.assertEqual(reformatted_code, expected_formatted_code)
+
+  def testInPlaceReformattingNoNewLine(self):
+    unformatted_code = textwrap.dedent(u"def foo(): x = 37")
+    expected_formatted_code = textwrap.dedent("""\
+        def foo():
+            x = 37
+        """)
+    with utils.TempFileContents(
+        self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
+      p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
+      p.wait()
+      with io.open(filepath, mode='r', newline='') as fd:
         reformatted_code = fd.read()
     self.assertEqual(reformatted_code, expected_formatted_code)
 

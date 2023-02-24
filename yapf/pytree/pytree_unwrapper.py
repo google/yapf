@@ -301,7 +301,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       self._StartNewLine()
     elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
       # Add non-whitespace tokens and comments that aren't empty.
-      self._cur_logical_line.AppendToken(format_token.FormatToken(leaf))
+      self._cur_logical_line.AppendToken(
+          format_token.FormatToken(leaf, pytree_utils.NodeName(leaf)))
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}

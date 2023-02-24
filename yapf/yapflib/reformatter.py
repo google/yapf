@@ -28,6 +28,7 @@ import re
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
+from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
@@ -61,9 +62,9 @@ def Reformat(llines, verify=False, lines=None):
 
     if not lline.disable:
       if lline.first.is_comment:
-        lline.first.node.value = lline.first.node.value.rstrip()
+        lline.first.value = lline.first.value.rstrip()
       elif lline.last.is_comment:
-        lline.last.node.value = lline.last.node.value.rstrip()
+        lline.last.value = lline.last.value.rstrip()
       if prev_line and prev_line.disable:
         # Keep the vertical spacing between a disabled and enabled formatting
         # region.
@@ -738,7 +739,8 @@ def _SingleOrMergedLines(lines):
         if line.last.value != ':':
           leaf = pytree.Leaf(
               type=token.SEMI, value=';', context=('', (line.lineno, column)))
-          line.AppendToken(format_token.FormatToken(leaf))
+          line.AppendToken(
+              format_token.FormatToken(leaf, pytree_utils.NodeName(leaf)))
         for tok in lines[index].tokens:
           line.AppendToken(tok)
         index += 1

@@ -36,6 +36,8 @@ import difflib
 import re
 import sys
 
+from yapf.pyparser import pyparser
+
 from yapf.pytree import pytree_unwrapper
 from yapf.pytree import pytree_utils
 from yapf.pytree import blank_line_calculator
@@ -97,11 +99,10 @@ def FormatFile(filename,
       lines=lines,
       print_diff=print_diff,
       verify=verify)
-  if reformatted_source.rstrip('\n'):
-    lines = reformatted_source.rstrip('\n').split('\n')
-    reformatted_source = newline.join(iter(lines)) + newline
+  if newline != '\n':
+    reformatted_source = reformatted_source.replace('\n', newline)
   if in_place:
-    if original_source and original_source != reformatted_source:
+    if changed:
       file_resources.WriteReformattedCode(filename, reformatted_source,
                                           encoding, in_place)
     return None, encoding, changed
@@ -140,6 +141,37 @@ def FormatTree(tree, style_config=None, lines=None, verify=False):
   blank_line_calculator.CalculateBlankLines(tree)
 
   llines = pytree_unwrapper.UnwrapPyTree(tree)
+  for lline in llines:
+    lline.CalculateFormattingInformation()
+
+  lines = _LineRangesToSet(lines)
+  _MarkLinesToFormat(llines, lines)
+  return reformatter.Reformat(_SplitSemicolons(llines), verify, lines)
+
+
+def FormatAST(ast, style_config=None, lines=None, verify=False):
+  """Format a parsed lib2to3 pytree.
+
+  This provides an alternative entry point to YAPF.
+
+  Arguments:
+    unformatted_source: (unicode) The code to format.
+    style_config: (string) Either a style name or a path to a file that contains
+      formatting style settings. If None is specified, use the default style
+      as set in style.DEFAULT_STYLE_FACTORY
+    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
+      that we want to format. The lines are 1-based indexed. It can be used by
+      third-party code (e.g., IDEs) when reformatting a snippet of code rather
+      than a whole file.
+    verify: (bool) True if reformatted code should be verified for syntax.
+
+  Returns:
+    The source formatted according to the given formatting style.
+  """
+  _CheckPythonVersion()
+  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
+
+  llines = pyparser.ParseCode(ast)
   for lline in llines:
     lline.CalculateFormattingInformation()
 
@@ -188,10 +220,9 @@ def FormatCode(unformatted_source,
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
 
-  code_diff = _GetUnifiedDiff(
-      unformatted_source, reformatted_source, filename=filename)
-
   if print_diff:
+    code_diff = _GetUnifiedDiff(
+        unformatted_source, reformatted_source, filename=filename)
     return code_diff, code_diff.strip() != ''  # pylint: disable=g-explicit-bool-comparison # noqa
 
   return reformatted_source, True
@@ -256,8 +287,8 @@ def _SplitSemicolons(lines):
   return res
 
 
-DISABLE_PATTERN = r'^#.*\byapf:\s*disable\b'
-ENABLE_PATTERN = r'^#.*\byapf:\s*enable\b'
+DISABLE_PATTERN = r'^#.*\b(?:yapf:\s*disable|fmt: ?off)\b'
+ENABLE_PATTERN = r'^#.*\b(?:yapf:\s*enable|fmt: ?on)\b'
 
 
 def _LineRangesToSet(line_ranges):

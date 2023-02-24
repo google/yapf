@@ -44,12 +44,16 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       name='yapf',
       version=yapf.__version__,
       description='A formatter for Python code.',
+      url='https://github.com/google/yapf',
       long_description=fd.read(),
       license='Apache License, Version 2.0',
       author='Google Inc.',
       maintainer='Bill Wendling',
       maintainer_email='morbo@google.com',
       packages=find_packages('.'),
+      project_urls={
+          'Source': 'https://github.com/google/yapf',
+      },
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',
@@ -78,6 +82,6 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
           'test': RunTests,
       },
       extras_require={
-          'pyproject': ['toml'],
+          'pyproject': ['tomli'],
       },
   )

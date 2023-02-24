@@ -14,7 +14,7 @@
 """Implements a format decision state object that manages whitespace decisions.
 
 Each token is processed one at a time, at which point its whitespace formatting
-decisions are made. A graph of potential whitespace formattings is created,
+decisions are made. A graph of potential whitespace formatting is created,
 where each node in the graph is a format decision state object. The heuristic
 tries formatting the token with and without a newline before it to determine
 which one has the least penalty. Therefore, the format decision state object for
@@ -1033,6 +1033,8 @@ class FormatDecisionState(object):
     current = opening.next_token.next_token
 
     while current and current != closing:
+      if subtypes.DICT_SET_GENERATOR in current.subtypes:
+        break
       if subtypes.DICTIONARY_KEY in current.subtypes:
         prev = PreviousNonCommentToken(current)
         if prev.value == ',':

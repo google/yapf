@@ -90,21 +90,22 @@ Usage
 
 Options::
 
-    usage: yapf [-h] [-v] [-d | -i] [-r | -l START-END] [-e PATTERN]
+    usage: yapf [-h] [-v] [-d | -i | -q] [-r | -l START-END] [-e PATTERN]
                 [--style STYLE] [--style-help] [--no-local-style] [-p]
                 [-vv]
-                [files [files ...]]
+                [files ...]
 
     Formatter for Python code.
 
     positional arguments:
-      files
+      files                 reads from stdin when no files are specified.
 
     optional arguments:
       -h, --help            show this help message and exit
-      -v, --version         show version number and exit
+      -v, --version         show program's version number and exit
       -d, --diff            print the diff for the fixed source
       -i, --in-place        make changes to files in place
+      -q, --quiet           output nothing and set return value
       -r, --recursive       run recursively over directories
       -l START-END, --lines START-END
                             range of lines to reformat, one-based
@@ -112,17 +113,18 @@ Options::
                             patterns for files to exclude from formatting
       --style STYLE         specify formatting style: either a style name (for
                             example "pep8" or "google"), or the name of a file
-                            with style settings. The default is pep8 unless a
+                            with style settings.  The default is pep8 unless a
                             .style.yapf or setup.cfg or pyproject.toml file
-                            located in the same directory as the source or one of
-                            its parent directories (for stdin, the current
+                            located in the same directory as the source or one
+                            of its parent directories (for stdin, the current
                             directory is used).
-      --style-help          show style settings and exit; this output can be saved
-                            to .style.yapf to make your settings permanent
+      --style-help          show style settings and exit; this output can be
+                            saved to .style.yapf to make your settings
+                            permanent
       --no-local-style      don't search for local style definition
-      -p, --parallel        Run yapf in parallel when formatting multiple files.
-                            Requires concurrent.futures in Python 2.X
-      -vv, --verbose        Print out file names while processing
+      -p, --parallel        run YAPF in parallel when formatting multiple
+                            files. Requires concurrent.futures in Python 2.X
+      -vv, --verbose        print out file names while processing
 
 
 ------------
@@ -152,7 +154,7 @@ working directory from which YAPF is invoked.
 
 Note that no entry should begin with `./`.
 
-If you use ``pyproject.toml``, exclude patterns are specified by ``ignore_pattens`` key
+If you use ``pyproject.toml``, exclude patterns are specified by ``ignore_patterns`` key
 in ``[tool.yapfignore]`` section. For example:
 
 .. code-block:: ini
@@ -273,7 +275,7 @@ and reformat it into:
 Example as a module
 ===================
 
-The two main APIs for calling yapf are ``FormatCode`` and ``FormatFile``, these
+The two main APIs for calling YAPF are ``FormatCode`` and ``FormatFile``, these
 share several arguments which are described below:
 
 .. code-block:: python
@@ -383,7 +385,7 @@ Options::
                             located in the same directory as the source or one of
                             its parent directories (for stdin, the current
                             directory is used).
-      --binary BINARY       location of binary to use for yapf
+      --binary BINARY       location of binary to use for YAPF
 
 Knobs
 =====

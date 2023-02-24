@@ -75,7 +75,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
   def test_get_exclude_file_patterns_from_pyproject(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -93,7 +93,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
   @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
   def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -109,7 +109,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -122,7 +122,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
 
   def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
     try:
-      import toml
+      import tomli
     except ImportError:
       return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
@@ -192,7 +192,7 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
   def test_pyproject_toml(self):
     # An empty pyproject.toml file should not be used
     try:
-      import toml
+      import tomli
     except ImportError:
       return
 
@@ -350,7 +350,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
     child of the current directory which has been specified in a relative
     manner.
 
-    At its core, the bug has to do with overzelous stripping of "./foo" so that
+    At its core, the bug has to do with overzealous stripping of "./foo" so that
     it removes too much from "./.foo" .
     """
     tdir1 = self._make_test_dir('.test1')
@@ -555,6 +555,26 @@ class LineEndingTest(unittest.TestCase):
         'spam\n',
         'spam\n',
         'spam\r',
+        'spam\r\n',
+    ]
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_empty(self):
+    lines = []
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_no_newline(self):
+    lines = ['spam']
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_tie(self):
+    lines = [
+        'spam\n',
+        'spam\n',
+        'spam\r\n',
         'spam\r\n',
     ]
     actual = file_resources.LineEnding(lines)
