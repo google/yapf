@@ -285,6 +285,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
+  def Visit_subscriptlist(self, node):  # pylint: disable=invalid-name
+    _DetermineMustSplitAnnotation(node)
+    self.DefaultNodeVisit(node)
+
   def DefaultLeafVisit(self, leaf):
     """Default visitor for tree leaves.
 
