@@ -17,7 +17,7 @@ import codecs
 import sys
 import unittest
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command, find_packages, setup
 
 import yapf
 
