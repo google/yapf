@@ -28,8 +28,8 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 
 # The word "token" is overloaded within this module, so for clarity rename
 # the imported pgen2.token module.
-from ..ylib2to3 import pytree
-from ..ylib2to3.pgen2 import token as grammar_token
+from yapf.ylib2to3 import pytree
+from yapf.ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor

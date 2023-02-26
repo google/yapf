@@ -75,7 +75,7 @@ else:
   import ConfigParser as configparser
   CONFIGPARSER_BOOLEAN_STATES = configparser.ConfigParser._boolean_states  # pylint: disable=protected-access # noqa
 
-  from lib2to3.pgen2 import tokenize
+  from yapf.ylib2to3.pgen2 import tokenize
   detect_encoding = tokenize.detect_encoding
 
   import collections

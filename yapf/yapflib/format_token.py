@@ -16,8 +16,8 @@
 import keyword
 import re
 
-from ..ylib2to3.pgen2 import token
-from ..ylib2to3.pytree import type_repr
+from yapf.ylib2to3.pgen2 import token
+from yapf.ylib2to3.pytree import type_repr
 
 from yapf.pytree import pytree_utils
 from yapf.yapflib import py3compat

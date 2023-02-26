@@ -15,8 +15,8 @@
 
 import re
 
-from lib2to3 import pytree
-from lib2to3.pgen2 import token as grammar_token
+from yapf.ylib2to3 import pytree
+from yapf.ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor

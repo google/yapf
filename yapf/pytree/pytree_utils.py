@@ -27,11 +27,8 @@ the lib2to3 library.
 import ast
 import os
 
-from ..ylib2to3 import pygram
-from ..ylib2to3 import pytree
-from ..ylib2to3.pgen2 import driver
-from ..ylib2to3.pgen2 import parse
-from ..ylib2to3.pgen2 import token
+from yapf.ylib2to3 import pygram, pytree
+from yapf.ylib2to3.pgen2 import driver, parse, token
 
 # TODO(eliben): We may want to get rid of this filtering at some point once we
 # have a better understanding of what information we need from the tree. Then,

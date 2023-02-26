@@ -19,7 +19,7 @@ Pull them out and make it into nodes of their own.
   SpliceContinuations(): the main function exported by this module.
 """
 
-from ..ylib2to3 import pytree
+from yapf.ylib2to3 import pytree
 
 from yapf.yapflib import format_token
 
