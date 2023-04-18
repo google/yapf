@@ -15,6 +15,7 @@
 """Tests for yapf.__init__.main."""
 
 from contextlib import contextmanager
+from io import StringIO
 import sys
 import unittest
 import yapf
@@ -34,10 +35,10 @@ class IO(object):
   class Buffer(object):
 
     def __init__(self):
-      self.string_io = py3compat.StringIO()
+      self.string_io = StringIO()
 
     def write(self, s):
-      if py3compat.PY3 and isinstance(s, bytes):
+      if isinstance(s, bytes):
         s = str(s, 'utf-8')
       self.string_io.write(s)
 

@@ -32,6 +32,7 @@ These APIs have some common arguments:
   verify: (bool) True if reformatted code should be verified for syntax.
 """
 
+import codecs
 import difflib
 import re
 import sys
@@ -48,7 +49,6 @@ from yapf.pytree import subtype_assigner
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import identify_container
-from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
@@ -86,8 +86,6 @@ def FormatFile(filename,
     IOError: raised if there was an error reading the file.
     ValueError: raised if in_place and print_diff are both specified.
   """
-  _CheckPythonVersion()
-
   if in_place and print_diff:
     raise ValueError('Cannot pass both in_place and print_diff.')
 
@@ -129,7 +127,6 @@ def FormatTree(tree, style_config=None, lines=None, verify=False):
   Returns:
     The source formatted according to the given formatting style.
   """
-  _CheckPythonVersion()
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
 
   # Run passes on the tree, modifying it in place.
@@ -168,7 +165,6 @@ def FormatAST(ast, style_config=None, lines=None, verify=False):
   Returns:
     The source formatted according to the given formatting style.
   """
-  _CheckPythonVersion()
   style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
 
   llines = pyparser.ParseCode(ast)
@@ -228,16 +224,6 @@ def FormatCode(unformatted_source,
   return reformatted_source, True
 
 
-def _CheckPythonVersion():  # pragma: no cover
-  errmsg = 'yapf is only supported for Python 2.7 or 3.6+'
-  if sys.version_info[0] == 2:
-    if sys.version_info[1] < 7:
-      raise RuntimeError(errmsg)
-  elif sys.version_info[0] == 3:
-    if sys.version_info[1] < 6:
-      raise RuntimeError(errmsg)
-
-
 def ReadFile(filename, logger=None):
   """Read the contents of the file.
 
@@ -259,8 +245,7 @@ def ReadFile(filename, logger=None):
     encoding = file_resources.FileEncoding(filename)
 
     # Preserves line endings.
-    with py3compat.open_with_encoding(
-        filename, mode='r', encoding=encoding, newline='') as fd:
+    with codecs.open(filename, mode='r', encoding=encoding) as fd:
       lines = fd.readlines()
 
     line_ending = file_resources.LineEnding(lines)
