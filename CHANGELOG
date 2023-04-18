@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.40.0] UNRELEASED
+## [0.33.0] 2023-04-18
 ### Added
 - Add a new Python parser to generate logical lines.
 - Added support for `# fmt: on` and `# fmt: off` pragmas.
@@ -11,6 +11,7 @@
 - Add support for Python 3.10.
 - Format generated dicts with respect to same rules as regular dicts
 - Generalized the ending comma heuristic to subscripts.
+- Supports "pyproject.toml" by default.
 ### Fixed
 - Split line before all comparison operators.
 
