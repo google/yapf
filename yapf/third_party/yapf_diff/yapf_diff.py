@@ -32,10 +32,7 @@ import re
 import subprocess
 import sys
 
-if sys.version_info.major >= 3:
-  from io import StringIO
-else:
-  from io import BytesIO as StringIO
+from io import StringIO
 
 
 def main():

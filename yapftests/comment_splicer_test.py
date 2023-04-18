@@ -19,8 +19,6 @@ import unittest
 from yapf.pytree import pytree_utils
 from yapf.pytree import comment_splicer
 
-from yapf.yapflib import py3compat
-
 
 class CommentSplicerTest(unittest.TestCase):
 
@@ -39,8 +37,8 @@ class CommentSplicerTest(unittest.TestCase):
 
   def _FindNthChildNamed(self, node, name, n=1):
     for i, child in enumerate(
-        py3compat.ifilter(lambda c: pytree_utils.NodeName(c) == name,
-                          node.pre_order())):
+        filter(lambda c: pytree_utils.NodeName(c) == name,
+               node.pre_order())):
       if i == n - 1:
         return child
     raise RuntimeError('No Nth child for n={0}'.format(n))
