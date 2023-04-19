@@ -63,6 +63,7 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
+
 class FormatFileTest(unittest.TestCase):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
