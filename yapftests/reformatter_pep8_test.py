@@ -705,6 +705,7 @@ class _():
     reformatted_code = reformatter.Reformat(llines)
     self.assertCodeEqual(expected_formatted_code, reformatted_code)
 
+
 class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
   """Test the SPACE_INSIDE_BRACKETS style option."""
   unformatted_code = textwrap.dedent("""\
@@ -812,6 +813,7 @@ class TestsForSpacesInsideBrackets(yapf_test_helper.YAPFTest):
 
     llines = yapf_test_helper.ParseAndUnwrap(self.unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+
 
 class TestsForSpacesAroundSubscriptColon(yapf_test_helper.YAPFTest):
   """Test the SPACES_AROUND_SUBSCRIPT_COLON style option."""
