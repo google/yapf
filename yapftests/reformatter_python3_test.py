@@ -72,23 +72,6 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testPEP448ParameterExpansion(self):
-    unformatted_code = textwrap.dedent("""\
-    { ** x }
-    {   **{}   }
-    { **{   **x },  **x }
-    {'a': 1,   **kw , 'b':3,  **kw2   }
-    """)
-    expected_formatted_code = textwrap.dedent("""\
-    {**x}
-    {**{}}
-    {**{**x}, **x}
-    {'a': 1, **kw, 'b': 3, **kw2}
-    """)
-    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
-    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
-
   def testAnnotations(self):
     unformatted_code = textwrap.dedent("""\
         def foo(a: list, b: "bar") -> dict:

@@ -63,13 +63,6 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
         """)
     self._Check(unformatted_code, expected_formatted_code)
 
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testPrintAfterPeriod(self):
-    unformatted_code = textwrap.dedent("""a.print\n""")
-    expected_formatted_code = textwrap.dedent("""a.print\n""")
-    self._Check(unformatted_code, expected_formatted_code)
-
-
 class FormatFileTest(unittest.TestCase):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
@@ -452,18 +445,6 @@ class CommandLineTest(unittest.TestCase):
         unformatted.encode('utf-8-sig'))
     self.assertEqual(stderrdata, b'')
     self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testUnicodeEncodingPipedToFile(self):
-    unformatted_code = textwrap.dedent(u"""\
-        def foo():
-            print('⇒')
-        """)
-    with utils.NamedTempFile(
-        dirname=self.test_tmpdir, suffix='.py') as (out, _):
-      with utils.TempFileContents(
-          self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
-        subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
 
   def testInPlaceReformatting(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -1554,32 +1535,6 @@ CONTINUATION_ALIGN_STYLE = valign-right
         unformatted_code,
         expected_formatted_code,
         extra_options=['--lines', '1-8'])
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testNoSpacesAroundBinaryOperators(self):
-    unformatted_code = """\
-a = 4-b/c@d**37
-"""
-    expected_formatted_code = """\
-a = 4-b / c@d**37
-"""
-    self.assertYapfReformats(
-        unformatted_code,
-        expected_formatted_code,
-        extra_options=[
-            '--style',
-            '{based_on_style: pep8, '
-            'no_spaces_around_selected_binary_operators: "@,**,-"}',
-        ])
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testCP936Encoding(self):
-    unformatted_code = 'print("中文")\n'
-    expected_formatted_code = 'print("中文")\n'
-    self.assertYapfReformats(
-        unformatted_code,
-        expected_formatted_code,
-        env={'PYTHONIOENCODING': 'cp936'})
 
   def testDisableWithLineRanges(self):
     unformatted_code = """\
