@@ -753,12 +753,12 @@ def _CreateConfigParserFromConfigFile(config_filename):
       import tomli as tomllib
     except ImportError:
       raise errors.YapfError(
-          "tomli package is needed for using pyproject.toml as a "
-          "configuration file")
+          'tomli package is needed for using pyproject.toml as a '
+          'configuration file')
 
     with open(config_filename, 'rb') as style_file:
       pyproject_toml = tomllib.load(style_file)
-      style_dict = pyproject_toml.get("tool", {}).get("yapf", None)
+      style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
       if style_dict is None:
         raise StyleConfigError(
             'Unable to find section [tool.yapf] in {0}'.format(config_filename))
