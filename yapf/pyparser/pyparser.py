@@ -33,14 +33,16 @@ errantly pick up non-comment tokens when parsing comment blocks.
 # TODO: Call from yapf_api.FormatCode.
 
 import ast
+import codecs
 import os
 import token
 import tokenize
+from io import StringIO
+from tokenize import TokenInfo
 
 from yapf.pyparser import split_penalty_visitor
 from yapf.yapflib import format_token
 from yapf.yapflib import logical_line
-from yapf.yapflib import py3compat
 
 CONTINUATION = token.N_TOKENS
 
@@ -66,7 +68,7 @@ def ParseCode(unformatted_source, filename='<unknown>'):
   try:
     ast_tree = ast.parse(unformatted_source, filename)
     ast.fix_missing_locations(ast_tree)
-    readline = py3compat.StringIO(unformatted_source).readline
+    readline = StringIO(unformatted_source).readline
     tokens = tokenize.generate_tokens(readline)
   except Exception:
     raise
@@ -93,11 +95,11 @@ def _CreateLogicalLines(tokens):
   # Convert tokens into "TokenInfo" and add tokens for continuation markers.
   prev_tok = None
   for tok in tokens:
-    tok = py3compat.TokenInfo(*tok)
+    tok = TokenInfo(*tok)
 
     if (prev_tok and prev_tok.line.rstrip().endswith('\\') and
         prev_tok.start[0] < tok.start[0]):
-      ctok = py3compat.TokenInfo(
+      ctok = TokenInfo(
           type=CONTINUATION,
           string='\\',
           start=(prev_tok.start[0], prev_tok.start[1] + 1),

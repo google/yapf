@@ -98,7 +98,7 @@ def main(argv):
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
-          py3compat.unicode('\n'.join(source) + '\n'),
+          str('\n'.join(source) + '\n'),
           filename='<stdin>',
           style_config=style_config,
           lines=lines,
