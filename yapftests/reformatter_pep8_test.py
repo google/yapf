@@ -16,7 +16,6 @@
 import textwrap
 import unittest
 
-from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
@@ -663,24 +662,6 @@ class _():
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
-
-  @unittest.skipUnless(not py3compat.PY3, 'Requires Python 2.7')
-  def testAsyncAsNonKeyword(self):
-    # In Python 2, async may be used as a non-keyword identifier.
-    code = textwrap.dedent("""\
-        from util import async
-
-
-        class A(object):
-
-            def foo(self):
-                async.run()
-
-            def bar(self):
-                pass
-        """)
-    llines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(llines, verify=False))
 
   def testStableInlinedDictionaryFormatting(self):
     unformatted_code = textwrap.dedent("""\

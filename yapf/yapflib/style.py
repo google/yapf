@@ -16,9 +16,9 @@
 import os
 import re
 import textwrap
+from configparser import ConfigParser
 
 from yapf.yapflib import errors
-from yapf.yapflib import py3compat
 
 
 class StyleConfigError(errors.YapfError):
@@ -579,7 +579,7 @@ def _StringSetConverter(s):
 
 def _BoolConverter(s):
   """Option value converter for a boolean."""
-  return py3compat.CONFIGPARSER_BOOLEAN_STATES[s.lower()]
+  return ConfigParser.BOOLEAN_STATES[s.lower()]
 
 
 def _IntListConverter(s):
@@ -702,7 +702,7 @@ def CreateStyleFromConfig(style_config):
 
   if isinstance(style_config, dict):
     config = _CreateConfigParserFromConfigDict(style_config)
-  elif isinstance(style_config, py3compat.basestring):
+  elif isinstance(style_config, str):
     style_factory = _STYLE_NAME_TO_FACTORY.get(style_config.lower())
     if style_factory is not None:
       return style_factory()
@@ -716,7 +716,7 @@ def CreateStyleFromConfig(style_config):
 
 
 def _CreateConfigParserFromConfigDict(config_dict):
-  config = py3compat.ConfigParser()
+  config = ConfigParser()
   config.add_section('style')
   for key, value in config_dict.items():
     config.set('style', key, str(value))
@@ -728,7 +728,7 @@ def _CreateConfigParserFromConfigString(config_string):
   if config_string[0] != '{' or config_string[-1] != '}':
     raise StyleConfigError(
         "Invalid style dict syntax: '{}'.".format(config_string))
-  config = py3compat.ConfigParser()
+  config = ConfigParser()
   config.add_section('style')
   for key, value, _ in re.findall(
       r'([a-zA-Z0-9_]+)\s*[:=]\s*'
@@ -746,7 +746,7 @@ def _CreateConfigParserFromConfigFile(config_filename):
     # Provide a more meaningful error here.
     raise StyleConfigError(
         '"{0}" is not a valid style or file path'.format(config_filename))
-  config = py3compat.ConfigParser()
+  config = ConfigParser()
 
   if config_filename.endswith(PYPROJECT_TOML):
     try:

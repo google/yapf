@@ -24,10 +24,10 @@ import tempfile
 import textwrap
 import unittest
 
+from io import StringIO
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
@@ -272,10 +272,7 @@ class FormatFileTest(unittest.TestCase):
       result, _, _ = yapf_api.FormatFile(filepath, in_place=True)
       self.assertEqual(result, None)
       with open(filepath) as fd:
-        if sys.version_info[0] <= 2:
-          self.assertCodeEqual(formatted_code, fd.read().decode('ascii'))
-        else:
-          self.assertCodeEqual(formatted_code, fd.read())
+        self.assertCodeEqual(formatted_code, fd.read())
 
       self.assertRaises(
           ValueError,
@@ -285,7 +282,7 @@ class FormatFileTest(unittest.TestCase):
           print_diff=True)
 
   def testNoFile(self):
-    stream = py3compat.StringIO()
+    stream = StringIO()
     handler = logging.StreamHandler(stream)
     logger = logging.getLogger('mylogger')
     logger.addHandler(handler)

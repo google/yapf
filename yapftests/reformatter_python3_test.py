@@ -17,14 +17,12 @@ import sys
 import textwrap
 import unittest
 
-from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
 from yapftests import yapf_test_helper
 
 
-@unittest.skipUnless(py3compat.PY3, 'Requires Python 3')
 class TestsForPython3Code(yapf_test_helper.YAPFTest):
   """Test a few constructs that are new Python 3 syntax."""
 
@@ -91,8 +89,6 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testAsyncFunctions(self):
-    if sys.version_info[1] < 5:
-      return
     code = textwrap.dedent("""\
         import asyncio
         import time
@@ -189,8 +185,6 @@ None.__ne__()
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testAsyncWithPrecedingComment(self):
-    if sys.version_info[1] < 5:
-      return
     unformatted_code = textwrap.dedent("""\
         import asyncio
 
@@ -217,8 +211,6 @@ None.__ne__()
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testAsyncFunctionsNested(self):
-    if sys.version_info[1] < 5:
-      return
     code = textwrap.dedent("""\
         async def outer():
 
@@ -229,8 +221,6 @@ None.__ne__()
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testKeepTypesIntact(self):
-    if sys.version_info[1] < 5:
-      return
     unformatted_code = textwrap.dedent("""\
         def _ReduceAbstractContainers(
             self, *args: Optional[automation_converter.PyiCollectionAbc]) -> List[
@@ -247,8 +237,6 @@ None.__ne__()
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testContinuationIndentWithAsync(self):
-    if sys.version_info[1] < 5:
-      return
     unformatted_code = textwrap.dedent("""\
         async def start_websocket():
             async with session.ws_connect(
@@ -265,9 +253,6 @@ None.__ne__()
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testSplittingArguments(self):
-    if sys.version_info[1] < 5:
-      return
-
     unformatted_code = """\
 async def open_file(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
     pass
@@ -335,8 +320,6 @@ def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
       style.SetGlobalStyle(style.CreatePEP8Style())
 
   def testDictUnpacking(self):
-    if sys.version_info[1] < 5:
-      return
     unformatted_code = """\
 class Foo:
     def foo(self):
@@ -360,8 +343,6 @@ class Foo:
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testMultilineFormatString(self):
-    if sys.version_info[1] < 6:
-      return
     code = """\
 # yapf: disable
 (f'''
@@ -373,8 +354,6 @@ class Foo:
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testEllipses(self):
-    if sys.version_info[1] < 6:
-      return
     code = """\
 def dirichlet(x12345678901234567890123456789012345678901234567890=...) -> None:
     return
@@ -404,8 +383,6 @@ def rrrrrrrrrrrrrrrrrrrrrr(
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testAsyncForElseNotIndentedInsideBody(self):
-    if sys.version_info[1] < 5:
-      return
     code = textwrap.dedent("""\
     async def fn():
         async for message in websocket:
@@ -420,8 +397,6 @@ def rrrrrrrrrrrrrrrrrrrrrr(
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testForElseInAsyncNotMixedWithAsyncFor(self):
-    if sys.version_info[1] < 5:
-      return
     code = textwrap.dedent("""\
     async def fn():
         for i in range(10):

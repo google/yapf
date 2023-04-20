@@ -80,5 +80,6 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       cmdclass={
           'test': RunTests,
       },
+      python_requires='>=3.7',
       install_requires=['tomli>=2.0.1'],
   )
