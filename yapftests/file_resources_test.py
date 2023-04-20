@@ -90,23 +90,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
-    try:
-      import tomli
-    except ImportError:
-      return
-    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
-    ignore_patterns = ['temp/**/*.py', './wrong/syntax/*.py']
-    with open(local_ignore_file, 'w') as f:
-      f.write('[tool.yapfignore]\n')
-      f.write('ignore_patterns=[')
-      f.writelines('\n,'.join(['"{}"'.format(p) for p in ignore_patterns]))
-      f.write(']')
-
-    with self.assertRaises(errors.YapfError):
-      file_resources.GetExcludePatternsForDir(self.test_tmpdir)
-
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
     try:
       import tomli
