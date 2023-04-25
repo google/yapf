@@ -15,8 +15,8 @@
 
 Parse Python code into a list of logical lines, represented by LogicalLine
 objects. This uses Python's tokenizer to generate the tokens. As such, YAPF must
-be run with the appropriate Python version---Python 2.7 for Python2 code, Python
-3.x for Python3 code, etc.
+be run with the appropriate Python version---Python >=3.7 for Python 3.7 code,
+Python >=3.8 for Python 3.8 code, etc.
 
 This parser uses Python's native "tokenizer" module to generate a list of tokens
 for the source code. It then uses Python's native "ast" module to assign
