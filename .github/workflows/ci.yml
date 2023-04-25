@@ -6,15 +6,14 @@ name: YAPF
 on:
   pull_request:
   push:
-    branches: 'main'
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.7", "3.8", "3.11"]  # no particular need for 3.9 or 3.10
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}

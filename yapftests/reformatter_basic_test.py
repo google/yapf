@@ -2843,27 +2843,6 @@ my_dict = {
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
-  @unittest.skipUnless(not py3compat.PY3, 'Requires Python 2.7')
-  def testAsyncAsNonKeyword(self):
-    try:
-      style.SetGlobalStyle(style.CreatePEP8Style())
-
-      # In Python 2, async may be used as a non-keyword identifier.
-      code = textwrap.dedent("""\
-          from util import async
-
-
-          class A(object):
-
-              def foo(self):
-                  async.run()
-          """)
-
-      llines = yapf_test_helper.ParseAndUnwrap(code)
-      self.assertCodeEqual(code, reformatter.Reformat(llines))
-    finally:
-      style.SetGlobalStyle(style.CreateYapfStyle())
-
   def testDisableEndingCommaHeuristic(self):
     code = textwrap.dedent("""\
         x = [1, 2, 3, 4, 5, 6, 7,]

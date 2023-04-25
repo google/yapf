@@ -14,10 +14,10 @@
 """Tests for yapf.pytree_visitor."""
 
 import unittest
+from io import StringIO
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
-from yapf.yapflib import py3compat
 
 
 class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
@@ -96,7 +96,7 @@ class PytreeVisitorTest(unittest.TestCase):
     # PyTreeDumper is mainly a debugging utility, so only do basic sanity
     # checking.
     tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
-    stream = py3compat.StringIO()
+    stream = StringIO()
     pytree_visitor.PyTreeDumper(target_stream=stream).Visit(tree)
 
     dump_output = stream.getvalue()
@@ -107,7 +107,7 @@ class PytreeVisitorTest(unittest.TestCase):
   def testDumpPyTree(self):
     # Similar sanity checking for the convenience wrapper DumpPyTree
     tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
-    stream = py3compat.StringIO()
+    stream = StringIO()
     pytree_visitor.DumpPyTree(tree, target_stream=stream)
 
     dump_output = stream.getvalue()

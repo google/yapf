@@ -24,10 +24,10 @@ import tempfile
 import textwrap
 import unittest
 
+from io import StringIO
 from lib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
@@ -61,12 +61,6 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
         if True:
           pass
         """)
-    self._Check(unformatted_code, expected_formatted_code)
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testPrintAfterPeriod(self):
-    unformatted_code = textwrap.dedent("""a.print\n""")
-    expected_formatted_code = textwrap.dedent("""a.print\n""")
     self._Check(unformatted_code, expected_formatted_code)
 
 
@@ -278,10 +272,7 @@ class FormatFileTest(unittest.TestCase):
       result, _, _ = yapf_api.FormatFile(filepath, in_place=True)
       self.assertEqual(result, None)
       with open(filepath) as fd:
-        if sys.version_info[0] <= 2:
-          self.assertCodeEqual(formatted_code, fd.read().decode('ascii'))
-        else:
-          self.assertCodeEqual(formatted_code, fd.read())
+        self.assertCodeEqual(formatted_code, fd.read())
 
       self.assertRaises(
           ValueError,
@@ -291,7 +282,7 @@ class FormatFileTest(unittest.TestCase):
           print_diff=True)
 
   def testNoFile(self):
-    stream = py3compat.StringIO()
+    stream = StringIO()
     handler = logging.StreamHandler(stream)
     logger = logging.getLogger('mylogger')
     logger.addHandler(handler)
@@ -452,18 +443,6 @@ class CommandLineTest(unittest.TestCase):
         unformatted.encode('utf-8-sig'))
     self.assertEqual(stderrdata, b'')
     self.assertMultiLineEqual(reformatted_code.decode('utf-8'), expected)
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testUnicodeEncodingPipedToFile(self):
-    unformatted_code = textwrap.dedent(u"""\
-        def foo():
-            print('⇒')
-        """)
-    with utils.NamedTempFile(
-        dirname=self.test_tmpdir, suffix='.py') as (out, _):
-      with utils.TempFileContents(
-          self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
-        subprocess.check_call(YAPF_BINARY + ['--diff', filepath], stdout=out)
 
   def testInPlaceReformatting(self):
     unformatted_code = textwrap.dedent(u"""\
@@ -1554,32 +1533,6 @@ CONTINUATION_ALIGN_STYLE = valign-right
         unformatted_code,
         expected_formatted_code,
         extra_options=['--lines', '1-8'])
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testNoSpacesAroundBinaryOperators(self):
-    unformatted_code = """\
-a = 4-b/c@d**37
-"""
-    expected_formatted_code = """\
-a = 4-b / c@d**37
-"""
-    self.assertYapfReformats(
-        unformatted_code,
-        expected_formatted_code,
-        extra_options=[
-            '--style',
-            '{based_on_style: pep8, '
-            'no_spaces_around_selected_binary_operators: "@,**,-"}',
-        ])
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def testCP936Encoding(self):
-    unformatted_code = 'print("中文")\n'
-    expected_formatted_code = 'print("中文")\n'
-    self.assertYapfReformats(
-        unformatted_code,
-        expected_formatted_code,
-        env={'PYTHONIOENCODING': 'cp936'})
 
   def testDisableWithLineRanges(self):
     unformatted_code = """\

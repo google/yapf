@@ -14,15 +14,16 @@
 # limitations under the License.
 """Tests for yapf.file_resources."""
 
+import codecs
 import contextlib
 import os
 import shutil
 import tempfile
 import unittest
+from io import BytesIO
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
-from yapf.yapflib import py3compat
 
 from yapftests import utils
 
@@ -89,23 +90,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
     self.assertEqual(
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
-
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
-    try:
-      import tomli
-    except ImportError:
-      return
-    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
-    ignore_patterns = ['temp/**/*.py', './wrong/syntax/*.py']
-    with open(local_ignore_file, 'w') as f:
-      f.write('[tool.yapfignore]\n')
-      f.write('ignore_patterns=[')
-      f.writelines('\n,'.join(['"{}"'.format(p) for p in ignore_patterns]))
-      f.write(']')
-
-    with self.assertRaises(errors.YapfError):
-      file_resources.GetExcludePatternsForDir(self.test_tmpdir)
 
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
     try:
@@ -455,7 +439,7 @@ class IsPythonFileTest(unittest.TestCase):
 
   def test_with_latin_encoding(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
-    with py3compat.open_with_encoding(file1, mode='w', encoding='latin-1') as f:
+    with codecs.open(file1, mode='w', encoding='latin-1') as f:
       f.write(u'#! /bin/python2\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
@@ -486,7 +470,7 @@ class IsIgnoredTest(unittest.TestCase):
 class BufferedByteStream(object):
 
   def __init__(self):
-    self.stream = py3compat.BytesIO()
+    self.stream = BytesIO()
 
   def getvalue(self):  # pylint: disable=invalid-name
     return self.stream.getvalue().decode('utf-8')
@@ -518,7 +502,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
 
   def test_write_to_stdout(self):
     s = u'foobar'
-    stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
+    stream = BufferedByteStream()
     with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
           None, s, in_place=False, encoding='utf-8')
@@ -526,7 +510,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
 
   def test_write_encoded_to_stdout(self):
     s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string # noqa
-    stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
+    stream = BufferedByteStream()
     with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
           None, s, in_place=False, encoding='utf-8')

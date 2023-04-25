@@ -24,7 +24,6 @@ from yapf.ylib2to3.fixer_util import syms as python_symbols
 from yapf.pytree import pytree_utils
 from yapf.pytree import split_penalty
 from yapf.yapflib import format_token
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
@@ -505,13 +504,12 @@ def _CanBreakBefore(prev_token, cur_token):
   """Return True if a line break may occur before the current token."""
   pval = prev_token.value
   cval = cur_token.value
-  if py3compat.PY3:
-    if pval == 'yield' and cval == 'from':
-      # Don't break before a yield argument.
-      return False
-    if pval in {'async', 'await'} and cval in {'def', 'with', 'for'}:
-      # Don't break after sync keywords.
-      return False
+  if pval == 'yield' and cval == 'from':
+    # Don't break before a yield argument.
+    return False
+  if pval in {'async', 'await'} and cval in {'def', 'with', 'for'}:
+    # Don't break after sync keywords.
+    return False
   if cur_token.split_penalty >= split_penalty.UNBREAKABLE:
     return False
   if pval == '@':

@@ -16,12 +16,13 @@
 This is a template for a pyparser visitor. Example use:
 
     import ast
+    from io import StringIO
 
     from yapf.pyparser import pyparser_visitor
 
     def parse_code(source, filename):
         ast_tree = ast.parse(source, filename)
-        readline = py3compat.StringIO(source).readline
+        readline = StringIO(source).readline
         tokens = tokenize.generate_tokens(readline)
         logical_lines = _CreateLogicalLines(tokens)
 
