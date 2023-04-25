@@ -103,20 +103,19 @@ class Recorder:
       return None
 
 
-from lib2to3.pgen2.parse import ParseError
-# class ParseError(Exception):
-#     """Exception to signal the parser is stuck."""
-#
-#     def __init__(self, msg, type, value, context):
-#         Exception.__init__(self, "%s: type=%r, value=%r, context=%r" %
-#                            (msg, type, value, context))
-#         self.msg = msg
-#         self.type = type
-#         self.value = value
-#         self.context = context
-#
-#     def __reduce__(self):
-#         return type(self), (self.msg, self.type, self.value, self.context)
+class ParseError(Exception):
+    """Exception to signal the parser is stuck."""
+
+    def __init__(self, msg, type, value, context):
+        Exception.__init__(self, "%s: type=%r, value=%r, context=%r" %
+                           (msg, type, value, context))
+        self.msg = msg
+        self.type = type
+        self.value = value
+        self.context = context
+
+    def __reduce__(self):
+        return type(self), (self.msg, self.type, self.value, self.context)
 
 
 class Parser(object):
