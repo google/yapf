@@ -25,7 +25,6 @@ formatting decisions based on what's the best format for each line.
 
 If no filenames are specified, YAPF reads the code from stdin.
 """
-from __future__ import print_function
 
 import argparse
 import logging

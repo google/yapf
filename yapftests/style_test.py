@@ -136,7 +136,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
     shutil.rmtree(cls.test_tmpdir)
 
   def testDefaultBasedOnStyle(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         continuation_indent_width = 20
         ''')
@@ -146,7 +146,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnPEP8Style(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         based_on_style = pep8
         continuation_indent_width = 40
@@ -157,7 +157,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
   def testDefaultBasedOnGoogleStyle(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         based_on_style = google
         continuation_indent_width = 20
@@ -168,7 +168,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnFacebookStyle(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         based_on_style = facebook
         continuation_indent_width = 20
@@ -179,7 +179,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         based_on_style = pep8
         SPLIT_BEFORE_NAMED_ASSIGNS=False
@@ -192,7 +192,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
   def testStringListOptionValue(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         based_on_style = pep8
         I18N_FUNCTION_CALL = N_, V_, T_
@@ -208,7 +208,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       style.CreateStyleFromConfig('/8822/xyznosuchfile')
 
   def testErrorNoStyleSection(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [s]
         indent_width=2
         ''')
@@ -218,7 +218,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
         style.CreateStyleFromConfig(filepath)
 
   def testErrorUnknownStyleOption(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [style]
         indent_width=2
         hummus=2
@@ -246,7 +246,7 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
     except ImportError:
       return
 
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent('''\
         [tool.yapf]
         based_on_style = "pep8"
         continuation_indent_width = 40
@@ -307,7 +307,7 @@ class StyleFromCommandLine(yapf_test_helper.YAPFTest):
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnExplicitlyUnicodeTypeString(self):
-    cfg = style.CreateStyleFromConfig(u'{}')
+    cfg = style.CreateStyleFromConfig('{}')
     self.assertIsInstance(cfg, dict)
 
   def testDefaultBasedOnDetaultTypeString(self):

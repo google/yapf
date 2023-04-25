@@ -458,7 +458,7 @@ def _InsertPseudoParentheses(node):
 
   lparen = pytree.Leaf(
       grammar_token.LPAR,
-      u'(',
+      '(',
       context=('', (first.get_lineno(), first.column - 1)))
   last_lineno = last.get_lineno()
   if last.type == grammar_token.STRING and '\n' in last.value:
@@ -469,7 +469,7 @@ def _InsertPseudoParentheses(node):
   else:
     last_column = last.column + len(last.value) + 1
   rparen = pytree.Leaf(
-      grammar_token.RPAR, u')', context=('', (last_lineno, last_column)))
+      grammar_token.RPAR, ')', context=('', (last_lineno, last_column)))
 
   lparen.is_pseudo = True
   rparen.is_pseudo = True

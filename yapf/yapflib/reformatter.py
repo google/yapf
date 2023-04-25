@@ -19,8 +19,6 @@ can be merged together are. The best formatting is returned as a string.
   Reformat(): the main function exported by this module.
 """
 
-from __future__ import unicode_literals
-
 import collections
 import heapq
 import re
