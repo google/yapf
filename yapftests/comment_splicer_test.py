@@ -37,8 +37,7 @@ class CommentSplicerTest(unittest.TestCase):
 
   def _FindNthChildNamed(self, node, name, n=1):
     for i, child in enumerate(
-        filter(lambda c: pytree_utils.NodeName(c) == name,
-               node.pre_order())):
+        filter(lambda c: pytree_utils.NodeName(c) == name, node.pre_order())):
       if i == n - 1:
         return child
     raise RuntimeError('No Nth child for n={0}'.format(n))

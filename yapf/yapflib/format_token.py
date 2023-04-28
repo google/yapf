@@ -16,7 +16,6 @@
 import keyword
 import re
 
-
 from functools import lru_cache
 from yapf.ylib2to3.pgen2 import token
 

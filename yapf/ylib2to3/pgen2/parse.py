@@ -32,7 +32,7 @@ def stack_copy(
 
 class Recorder:
 
-  def __init__(self, parser: "Parser", ilabels: List[int],
+  def __init__(self, parser: 'Parser', ilabels: List[int],
                context: Context) -> None:
     self.parser = parser
     self._ilabels = ilabels
@@ -94,7 +94,7 @@ class Recorder:
     alive_ilabels = self.ilabels
     if len(alive_ilabels) == 0:
       *_, most_successful_ilabel = self._dead_ilabels
-      raise ParseError("bad input", most_successful_ilabel, value, self.context)
+      raise ParseError('bad input', most_successful_ilabel, value, self.context)
 
     ilabel, *rest = alive_ilabels
     if force or not rest:
@@ -104,18 +104,18 @@ class Recorder:
 
 
 class ParseError(Exception):
-    """Exception to signal the parser is stuck."""
+  """Exception to signal the parser is stuck."""
 
-    def __init__(self, msg, type, value, context):
-        Exception.__init__(self, "%s: type=%r, value=%r, context=%r" %
-                           (msg, type, value, context))
-        self.msg = msg
-        self.type = type
-        self.value = value
-        self.context = context
+  def __init__(self, msg, type, value, context):
+    Exception.__init__(
+        self, '%s: type=%r, value=%r, context=%r' % (msg, type, value, context))
+    self.msg = msg
+    self.type = type
+    self.value = value
+    self.context = context
 
-    def __reduce__(self):
-        return type(self), (self.msg, self.type, self.value, self.context)
+  def __reduce__(self):
+    return type(self), (self.msg, self.type, self.value, self.context)
 
 
 class Parser(object):
@@ -296,10 +296,10 @@ class Parser(object):
           self.pop()
           if not self.stack:
             # Done parsing, but another token is input
-            raise ParseError("too much input", type, value, context)
+            raise ParseError('too much input', type, value, context)
         else:
           # No success finding a transition
-          raise ParseError("bad input", type, value, context)
+          raise ParseError('bad input', type, value, context)
 
   def classify(self, type, value, context):
     """Turn a token into a label.  (Internal)
@@ -321,7 +321,7 @@ class Parser(object):
 
     ilabel = self.grammar.tokens.get(type)
     if ilabel is None:
-      raise ParseError("bad token", type, value, context)
+      raise ParseError('bad token', type, value, context)
     return [ilabel]
 
   def shift(self, type: int, value: Text, newstate: int,

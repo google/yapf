@@ -146,7 +146,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     single_stmt_suite = (
         node.parent and pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
     is_comment_stmt = pytree_utils.IsCommentStatement(node)
-    is_inside_match = node.parent and pytree_utils.NodeName(node.parent) == 'match_stmt'
+    is_inside_match = node.parent and pytree_utils.NodeName(
+        node.parent) == 'match_stmt'
     if (single_stmt_suite and not is_comment_stmt) or is_inside_match:
       self._cur_depth += 1
     self._StartNewLine()
@@ -259,16 +260,16 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
   _MATCH_STMT_ELEMS = frozenset({'match', 'case'})
 
   def Visit_match_stmt(self, node):  # pylint: disable=invalid-name
-      self._VisitCompoundStatement(node, self._MATCH_STMT_ELEMS)
+    self._VisitCompoundStatement(node, self._MATCH_STMT_ELEMS)
 
   # case_block refers to the grammar element name in Grammar.txt
   _CASE_BLOCK_ELEMS = frozenset({'case'})
 
   def Visit_case_block(self, node):
-      self._cur_depth += 1
-      self._StartNewLine()
-      self._VisitCompoundStatement(node, self._CASE_BLOCK_ELEMS)
-      self._cur_depth -= 1
+    self._cur_depth += 1
+    self._StartNewLine()
+    self._VisitCompoundStatement(node, self._CASE_BLOCK_ELEMS)
+    self._cur_depth -= 1
 
   def Visit_suite(self, node):  # pylint: disable=invalid-name
     # A 'suite' starts a new indentation level in Python.
