@@ -228,7 +228,7 @@ def load_packaged_grammar(package, grammar_source):
     is called instead. This facilitates using a packaged grammar file when needed
     but preserves load_grammar's automatic regeneration behavior when possible.
 
-    """
+    """  # noqa: E501
   if os.path.isfile(grammar_source):
     return load_grammar(grammar_source)
   pickled_name = _generate_pickle_name(os.path.basename(grammar_source))

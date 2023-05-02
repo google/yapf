@@ -66,7 +66,7 @@ class Recorder:
         This saves us a ton of time when we are backtracking, since we
         want to restore to the initial state as quick as possible, which
         can only be done by having as little mutatations as possible.
-        """
+        """  # noqa: E501
     is_backtracking = self.parser.is_backtracking
     try:
       self.parser.is_backtracking = True

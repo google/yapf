@@ -14,6 +14,7 @@
 """Enhanced token information for formatting."""
 
 import keyword
+from lib2to3.pytree import type_repr
 import re
 
 from functools import lru_cache
@@ -279,9 +280,11 @@ class FormatToken(object):
   @property
   @lru_cache()
   def is_keyword(self):
-    return keyword.iskeyword(self.value) or \
-        (self.value == 'match' and type_repr(self.node.parent.type) == 'match_stmt') or \
-        (self.value == 'case' and type_repr(self.node.parent.type) == 'case_block')
+    return keyword.iskeyword(
+        self.value) or (self.value == 'match' and
+                        type_repr(self.node.parent.type) == 'match_stmt') or (
+                            self.value == 'case' and
+                            type_repr(self.node.parent.type) == 'case_block')
 
   @property
   def is_name(self):
