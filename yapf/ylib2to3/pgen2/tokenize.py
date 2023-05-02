@@ -31,7 +31,8 @@ __credits__ = \
 import string
 import re
 from codecs import BOM_UTF8, lookup
-from .token import *
+from .token import (ENDMARKER, ERRORTOKEN, OP, tok_name, NEWLINE, NL, NAME,
+                    NUMBER, ASYNC, AWAIT, INDENT, DEDENT, COMMENT, STRING)
 
 from . import token
 
@@ -159,7 +160,8 @@ def printtoken(type, token, xxx_todo_changeme, xxx_todo_changeme1,
                line):  # for testing
   (srow, scol) = xxx_todo_changeme
   (erow, ecol) = xxx_todo_changeme1
-  print("%d,%d-%d,%d:\t%s\t%s" % (srow, scol, erow, ecol, tok_name[type], repr(token)))
+  print("%d,%d-%d,%d:\t%s\t%s" %
+        (srow, scol, erow, ecol, tok_name[type], repr(token)))
 
 
 def tokenize(readline, tokeneater=printtoken):
@@ -373,6 +375,8 @@ def generate_tokens(readline):
     and the line on which the token was found. The line passed is the
     physical line.
     """
+  strstart = ''
+  endprog = ''
   lnum = parenlev = continued = 0
   contstr, needcont = '', 0
   contline = None
