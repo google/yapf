@@ -278,7 +278,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testLinesOnRangeBoundary(self):
-    unformatted_code = textwrap.dedent(u"""\
+    unformatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -292,7 +292,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def E():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(u"""\
+    expected_formatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -315,7 +315,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertTrue(changed)
 
   def testLinesRangeBoundaryNotOutside(self):
-    unformatted_code = textwrap.dedent(u"""\
+    unformatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -329,7 +329,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def C():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(u"""\
+    expected_formatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -348,7 +348,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertFalse(changed)
 
   def testLinesRangeRemove(self):
-    unformatted_code = textwrap.dedent(u"""\
+    unformatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -363,7 +363,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def C():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(u"""\
+    expected_formatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -382,7 +382,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
     self.assertTrue(changed)
 
   def testLinesRangeRemoveSome(self):
-    unformatted_code = textwrap.dedent(u"""\
+    unformatted_code = textwrap.dedent("""\
         def A():
           pass
 
@@ -398,7 +398,7 @@ class BasicBlankLineCalculatorTest(yapf_test_helper.YAPFTest):
         def C():
           pass
         """)
-    expected_formatted_code = textwrap.dedent(u"""\
+    expected_formatted_code = textwrap.dedent("""\
         def A():
           pass
 
