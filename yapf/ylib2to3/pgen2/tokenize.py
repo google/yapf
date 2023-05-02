@@ -28,7 +28,8 @@ __author__ = 'Ka-Ping Yee <ping@lfw.org>'
 __credits__ = \
     'GvR, ESR, Tim Peters, Thomas Wouters, Fred Drake, Skip Montanaro'
 
-import string, re
+import string
+import re
 from codecs import BOM_UTF8, lookup
 from .token import *
 
@@ -158,8 +159,7 @@ def printtoken(type, token, xxx_todo_changeme, xxx_todo_changeme1,
                line):  # for testing
   (srow, scol) = xxx_todo_changeme
   (erow, ecol) = xxx_todo_changeme1
-  print("%d,%d-%d,%d:\t%s\t%s" % \
-      (srow, scol, erow, ecol, tok_name[type], repr(token)))
+  print("%d,%d-%d,%d:\t%s\t%s" % (srow, scol, erow, ecol, tok_name[type], repr(token)))
 
 
 def tokenize(readline, tokeneater=printtoken):
