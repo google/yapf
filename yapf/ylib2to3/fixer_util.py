@@ -8,7 +8,7 @@ from .pygram import python_symbols as syms
 from . import patcomp
 
 ###########################################################
-### Common node-construction "macros"
+# Common node-construction "macros"
 ###########################################################
 
 
@@ -168,7 +168,7 @@ def ImportAndCall(node, results, names):
 
 
 ###########################################################
-### Determine whether a node represents a given literal
+# Determine whether a node represents a given literal
 ###########################################################
 
 
@@ -192,7 +192,7 @@ def is_list(node):
 
 
 ###########################################################
-### Misc
+# Misc
 ###########################################################
 
 
@@ -303,7 +303,7 @@ def find_indentation(node):
 
 
 ###########################################################
-### The following functions are to find bindings in a suite
+# The following functions are to find bindings in a suite
 ###########################################################
 
 
