@@ -63,16 +63,12 @@ class ParseCodeToTreeTest(unittest.TestCase):
     self.assertEqual('simple_stmt', pytree_utils.NodeName(tree.children[0]))
 
   def testPrintStatementToTree(self):
-    tree = pytree_utils.ParseCodeToTree('print "hello world"\n')
-    self.assertEqual('file_input', pytree_utils.NodeName(tree))
-    self.assertEqual(2, len(tree.children))
-    self.assertEqual('simple_stmt', pytree_utils.NodeName(tree.children[0]))
+    with self.assertRaises(SyntaxError):
+      pytree_utils.ParseCodeToTree('print "hello world"\n')
 
   def testClassNotLocal(self):
-    tree = pytree_utils.ParseCodeToTree('class nonlocal: pass\n')
-    self.assertEqual('file_input', pytree_utils.NodeName(tree))
-    self.assertEqual(2, len(tree.children))
-    self.assertEqual('classdef', pytree_utils.NodeName(tree.children[0]))
+    with self.assertRaises(SyntaxError):
+      pytree_utils.ParseCodeToTree('class nonlocal: pass\n')
 
 
 class InsertNodesBeforeAfterTest(unittest.TestCase):

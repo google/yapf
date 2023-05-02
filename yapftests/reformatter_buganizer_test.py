@@ -511,7 +511,7 @@ INITIAL_SYMTAB = dict(
 # This does bar.
 @arg.String('some_path_to_a_file', required=True)
 def f():
-  print 1
+  print(1)
 """
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
