@@ -13,14 +13,16 @@
 # limitations under the License.
 """Basic tests for yapf.reformatter."""
 
+import sys
 import textwrap
 import unittest
 
-from yapf.yapflib import py3compat
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
 
 from yapftests import yapf_test_helper
+
+PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8
 
 
 class BasicReformatterTest(yapf_test_helper.YAPFTest):
@@ -3162,7 +3164,7 @@ my_dict = {
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
-  @unittest.skipUnless(py3compat.PY38, 'Requires Python 3.8')
+  @unittest.skipUnless(PY38, 'Requires Python 3.8')
   def testWalrus(self):
     unformatted_code = textwrap.dedent("""\
       if (x  :=  len([1]*1000)>100):
