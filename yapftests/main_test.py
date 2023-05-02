@@ -20,8 +20,6 @@ import sys
 import unittest
 import yapf
 
-from yapf.yapflib import py3compat
-
 from yapftests import yapf_test_helper
 
 
@@ -79,11 +77,11 @@ def patched_input(code):
     return next(lines)
 
   try:
-    orig_raw_import = yapf.py3compat.raw_input
-    yapf.py3compat.raw_input = patch_raw_input
+    orig_raw_import = yapf._raw_input
+    yapf._raw_input = patch_raw_input
     yield
   finally:
-    yapf.py3compat.raw_input = orig_raw_import
+    yapf._raw_input = orig_raw_import
 
 
 class RunMainTest(yapf_test_helper.YAPFTest):
