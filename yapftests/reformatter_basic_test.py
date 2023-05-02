@@ -3175,6 +3175,25 @@ my_dict = {
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
+  @unittest.skipUnless(py3compat.PY310, 'Requires Python 3.10')
+  def testPatternMatching(self):
+    unformatted_code = textwrap.dedent("""\
+        match command.split():
+          case[action   ]:
+            ...  # interpret single-verb action
+          case[action,    obj]:
+            ...  # interpret action, obj
+        """)
+    expected = textwrap.dedent("""\
+        match command.split():
+          case[action]:
+            ...  # interpret single-verb action
+          case[action, obj]:
+            ...  # interpret action, obj
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+
 
 if __name__ == '__main__':
   unittest.main()

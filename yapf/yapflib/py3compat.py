@@ -17,7 +17,8 @@ import codecs
 import io
 import sys
 
-PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8
+PY38 = sys.version_info >= (3, 8)
+PY310 = sys.version_info >= (3, 10)
 
 
 def raw_input():
