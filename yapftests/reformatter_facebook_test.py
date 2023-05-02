@@ -197,6 +197,24 @@ v, w, x, y, z
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
+  def testMatchStatementRemoveSpacesInCaseBracket(self):
+    unformatted_code = textwrap.dedent("""\
+        match command.split():
+            case[action   ]:
+                ...  # interpret single-verb action
+            case[action,    obj]:
+                ...  # interpret action, obj
+        """)
+    expected_formatted_code = textwrap.dedent("""\
+        match command.split():
+            case[action]:
+                ...  # interpret single-verb action
+            case[action, obj]:
+                ...  # interpret action, obj
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+  
   def testSimpleDedenting(self):
     unformatted_code = textwrap.dedent("""\
         if True:
