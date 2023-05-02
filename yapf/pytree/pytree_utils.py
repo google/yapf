@@ -113,12 +113,8 @@ def ParseCodeToTree(code):
     tree = parser_driver.parse_string(code, debug=False)
   except parse.ParseError:
     # Raise a syntax error if the code is invalid python syntax.
-    try:
-      ast.parse(code)
-    except SyntaxError as e:
-      raise e
-    else:
-      raise
+    ast.parse(code)
+    raise
   return _WrapEndMarker(tree)
 
 
