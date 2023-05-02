@@ -665,11 +665,11 @@ Knobs
     before each trailing comment) or list of values (representing
     alignment column values; trailing comments within a block will
     be aligned to the first column value that is greater than the maximum
-    line length within the block). 
-    
-    **Note:** Lists of values may need to be quoted in some contexts 
+    line length within the block).
+
+    **Note:** Lists of values may need to be quoted in some contexts
     (eg. shells or editor config files).
-    
+
     For example:
 
     With ``spaces_before_comment=5``:
