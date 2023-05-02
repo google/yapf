@@ -54,12 +54,6 @@ To install YAPF from PyPI:
 
     $ pip install yapf
 
-(optional) If you are using Python 2.7 and want to enable multiprocessing:
-
-.. code-block:: shell
-
-    $ pip install futures
-
 YAPF is still considered in "alpha" stage, and the released version may change
 often; therefore, the best way to keep up-to-date with the latest development
 is to clone this repository.
@@ -665,11 +659,11 @@ Knobs
     before each trailing comment) or list of values (representing
     alignment column values; trailing comments within a block will
     be aligned to the first column value that is greater than the maximum
-    line length within the block). 
-    
-    **Note:** Lists of values may need to be quoted in some contexts 
+    line length within the block).
+
+    **Note:** Lists of values may need to be quoted in some contexts
     (eg. shells or editor config files).
-    
+
     For example:
 
     With ``spaces_before_comment=5``:

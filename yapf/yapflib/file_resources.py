@@ -55,8 +55,8 @@ def _GetExcludePatternsFromPyprojectToml(filename):
     import tomli as tomllib
   except ImportError:
     raise errors.YapfError(
-        "tomli package is needed for using pyproject.toml as a "
-        "configuration file")
+        'tomli package is needed for using pyproject.toml as a '
+        'configuration file')
 
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
     with open(filename, 'rb') as fd:
@@ -140,8 +140,8 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
           import tomli as tomllib
         except ImportError:
           raise errors.YapfError(
-              "tomli package is needed for using pyproject.toml as a "
-              "configuration file")
+              'tomli package is needed for using pyproject.toml as a '
+              'configuration file')
 
         pyproject_toml = tomllib.load(fd)
         style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
@@ -204,7 +204,7 @@ def _FindPythonFiles(filenames, recursive, exclude):
   """Find all Python files."""
   if exclude and any(e.startswith('./') for e in exclude):
     raise errors.YapfError("path in '--exclude' should not start with ./")
-  exclude = exclude and [e.rstrip("/" + os.path.sep) for e in exclude]
+  exclude = exclude and [e.rstrip('/' + os.path.sep) for e in exclude]
 
   python_files = []
   for filename in filenames:

@@ -390,7 +390,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                            ]))
 
     self.assertEqual(
-        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace("/", os.path.sep)])
+        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace('/', os.path.sep)])
 
     found = sorted(
         file_resources.GetCommandLineFiles(['.'],
@@ -401,7 +401,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                            ]))
 
     self.assertEqual(
-        found, ['./test2/testinner/testfile2.py'.replace("/", os.path.sep)])
+        found, ['./test2/testinner/testfile2.py'.replace('/', os.path.sep)])
 
   def test_find_with_excluded_current_dir(self):
     with self.assertRaises(errors.YapfError):
@@ -429,25 +429,25 @@ class IsPythonFileTest(unittest.TestCase):
   def test_python_shebang(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
     with open(file1, 'w') as f:
-      f.write(u'#!/usr/bin/python\n')
+      f.write('#!/usr/bin/python\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
     file2 = os.path.join(self.test_tmpdir, 'testfile2.run')
     with open(file2, 'w') as f:
-      f.write(u'#! /bin/python2\n')
+      f.write('#! /bin/python2\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
   def test_with_latin_encoding(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
     with codecs.open(file1, mode='w', encoding='latin-1') as f:
-      f.write(u'#! /bin/python2\n')
+      f.write('#! /bin/python2\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
   def test_with_invalid_encoding(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
     with open(file1, 'w') as f:
-      f.write(u'#! /bin/python2\n')
-      f.write(u'# -*- coding: iso-3-14159 -*-\n')
+      f.write('#! /bin/python2\n')
+      f.write('# -*- coding: iso-3-14159 -*-\n')
     self.assertFalse(file_resources.IsPythonFile(file1))
 
 
@@ -491,7 +491,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
     shutil.rmtree(cls.test_tmpdir)
 
   def test_write_to_file(self):
-    s = u'foobar\n'
+    s = 'foobar\n'
     with utils.NamedTempFile(dirname=self.test_tmpdir) as (f, fname):
       file_resources.WriteReformattedCode(
           fname, s, in_place=True, encoding='utf-8')
@@ -501,7 +501,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
         self.assertEqual(f2.read(), s)
 
   def test_write_to_stdout(self):
-    s = u'foobar'
+    s = 'foobar'
     stream = BufferedByteStream()
     with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(

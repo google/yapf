@@ -30,11 +30,11 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
   def testSetGlobalStyle(self):
     try:
       style.SetGlobalStyle(style.CreateYapfStyle())
-      unformatted_code = textwrap.dedent(u"""\
+      unformatted_code = textwrap.dedent("""\
           for i in range(5):
            print('bar')
           """)
-      expected_formatted_code = textwrap.dedent(u"""\
+      expected_formatted_code = textwrap.dedent("""\
           for i in range(5):
             print('bar')
           """)
@@ -45,11 +45,11 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
 
-    unformatted_code = textwrap.dedent(u"""\
+    unformatted_code = textwrap.dedent("""\
         for i in range(5):
          print('bar')
         """)
-    expected_formatted_code = textwrap.dedent(u"""\
+    expected_formatted_code = textwrap.dedent("""\
         for i in range(5):
             print('bar')
         """)
