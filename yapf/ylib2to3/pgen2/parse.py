@@ -8,7 +8,6 @@ See Parser/parser.c in the Python distribution for additional info on
 how this parsing engine works.
 
 """
-import copy
 from contextlib import contextmanager
 
 # Local imports
