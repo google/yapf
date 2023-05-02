@@ -14,7 +14,7 @@
 """Enhanced token information for formatting."""
 
 import keyword
-from lib2to3.pytree import type_repr
+from yapf.ylib2to3.pytree import type_repr
 import re
 
 from functools import lru_cache
