@@ -58,7 +58,7 @@ def maybe(*choices):
   return group(*choices) + '?'
 
 
-def _combinations(*l):
+def _combinations(*l):  # noqa: E741
   return set(
       x + y for x in l for y in l + ("",) if x.casefold() != y.casefold())
 
