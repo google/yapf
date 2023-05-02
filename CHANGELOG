@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.40.0] UNRELEASED
+### Added
+- Support for Python 3.11
+### Removed
+- Support for Python <3.7
+
 ## [0.33.0] 2023-04-18
 ### Added
 - Add a new Python parser to generate logical lines.
