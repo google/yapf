@@ -3186,9 +3186,9 @@ my_dict = {
         """)
     expected = textwrap.dedent("""\
         match command.split():
-          case[action]:
+          case [action]:
             ...  # interpret single-verb action
-          case[action, obj]:
+          case [action, obj]:
             ...  # interpret action, obj
         """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
