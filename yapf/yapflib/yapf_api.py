@@ -35,13 +35,7 @@ These APIs have some common arguments:
 import codecs
 import difflib
 import re
-import sys
-
-from yapf.pytree import (blank_line_calculator, comment_splicer,
-                         continuation_splicer, pytree_unwrapper, pytree_utils,
-                         split_penalty, subtype_assigner)
-from yapf.yapflib import (errors, file_resources, identify_container, py3compat,
-                          reformatter, style)
+from yapf import pyparser
 
 from yapf.pytree import pytree_unwrapper
 from yapf.pytree import pytree_utils
