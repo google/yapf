@@ -13,7 +13,7 @@ Releasing a new version
 -----------------------
 
 * Run tests: python setup.py test
-  [don't forget to run with Python 2.7 and 3.6]
+  [don't forget to run with at least Python 3.7 and 3.11]
 
 * Bump version in yapf/__init__.py
 
