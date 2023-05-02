@@ -519,7 +519,7 @@ def generate_tokens(readline):
             token[:2] in single_quoted or \
             token[:3] in single_quoted:
           if token[-1] == '\n':  # continued string
-            strstart = (lnum, start)
+            strstart = (lnum, start)  # noqa: F841
             endprog = (
                 endprogs[initial] or endprogs[token[1]] or endprogs[token[2]])
             contstr, needcont = line[start:], 1
