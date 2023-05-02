@@ -390,7 +390,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                            ]))
 
     self.assertEqual(
-        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace("/", os.path.sep)])
+        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace('/', os.path.sep)])
 
     found = sorted(
         file_resources.GetCommandLineFiles(['.'],
@@ -401,7 +401,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                            ]))
 
     self.assertEqual(
-        found, ['./test2/testinner/testfile2.py'.replace("/", os.path.sep)])
+        found, ['./test2/testinner/testfile2.py'.replace('/', os.path.sep)])
 
   def test_find_with_excluded_current_dir(self):
     with self.assertRaises(errors.YapfError):

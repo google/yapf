@@ -484,7 +484,7 @@ class CommandLineTest(unittest.TestCase):
     self.assertEqual(reformatted_code, expected_formatted_code)
 
   def testInPlaceReformattingNoNewLine(self):
-    unformatted_code = textwrap.dedent(u"def foo(): x = 37")
+    unformatted_code = textwrap.dedent(u'def foo(): x = 37')
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             x = 37
