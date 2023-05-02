@@ -4,7 +4,7 @@
 #  Taken from Python (r53757) and modified to include some tokens
 #   originally monkeypatched in by pgen2.tokenize
 
-#--start constants--
+# --start constants--
 ENDMARKER = 0
 NAME = 1
 NUMBER = 2
@@ -67,7 +67,7 @@ ERRORTOKEN = 58
 COLONEQUAL = 59
 N_TOKENS = 60
 NT_OFFSET = 256
-#--end constants--
+# --end constants--
 
 tok_name = {}
 for _name, _value in list(globals().items()):

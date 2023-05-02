@@ -56,7 +56,7 @@ class ParserGenerator(object):
     first = {}
     for label in sorted(rawfirst):
       ilabel = self.make_label(c, label)
-      ##assert ilabel not in first # XXX failed on <> ... !=
+      # assert ilabel not in first # XXX failed on <> ... !=
       first[ilabel] = 1
     return first
 
@@ -117,7 +117,7 @@ class ParserGenerator(object):
     for name in names:
       if name not in self.first:
         self.calcfirst(name)
-      #print name, self.first[name].keys()
+      # print name, self.first[name].keys()
 
   def calcfirst(self, name):
     dfa = self.dfas[name]
@@ -161,14 +161,14 @@ class ParserGenerator(object):
       self.expect(token.OP, ":")
       a, z = self.parse_rhs()
       self.expect(token.NEWLINE)
-      #self.dump_nfa(name, a, z)
+      # self.dump_nfa(name, a, z)
       dfa = self.make_dfa(a, z)
-      #self.dump_dfa(name, dfa)
+      # self.dump_dfa(name, dfa)
       oldlen = len(dfa)
       self.simplify_dfa(dfa)
       newlen = len(dfa)
       dfas[name] = dfa
-      #print name, oldlen, newlen
+      # print name, oldlen, newlen
       if startsymbol is None:
         startsymbol = name
     return dfas, startsymbol
@@ -249,7 +249,7 @@ class ParserGenerator(object):
         for j in range(i + 1, len(dfa)):
           state_j = dfa[j]
           if state_i == state_j:
-            #print "  unify", i, j
+            # print "  unify", i, j
             del dfa[j]
             for state in dfa:
               state.unifystate(state_j, state_i)
@@ -332,7 +332,7 @@ class ParserGenerator(object):
     while tup[0] in (tokenize.COMMENT, tokenize.NL):
       tup = next(self.generator)
     self.type, self.value, self.begin, self.end, self.line = tup
-    #print token.tok_name[self.type], repr(self.value)
+    # print token.tok_name[self.type], repr(self.value)
 
   def raise_error(self, msg, *args):
     if args:

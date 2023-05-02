@@ -125,7 +125,7 @@ def FromImport(package_name, name_leafs):
   """ Return an import statement in the form:
         from package import name_leafs"""
   # XXX: May not handle dotted imports properly (eg, package_name='foo.bar')
-  #assert package_name == '.' or '.' not in package_name, "FromImport has "\
+  # #assert package_name == '.' or '.' not in package_name, "FromImport has "\
   #       "not been tested with dotted package names -- use at your own "\
   #       "peril!"
 
