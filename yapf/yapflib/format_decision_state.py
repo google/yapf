@@ -974,7 +974,7 @@ class FormatDecisionState(object):
           len(self.line.first.whitespace_prefix.split('\n')[-1]) +
           style.Get('INDENT_WIDTH'))
       if token_indent == top_of_stack.indent:
-        return token_indent
+        return token_indent + style.Get('CONTINUATION_INDENT_WIDTH')
 
     if (self.param_list_stack and
         not self.param_list_stack[-1].SplitBeforeClosingBracket(
