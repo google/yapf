@@ -24,7 +24,6 @@ to determine the source file to update. Users calling this script directly
 should be careful to ensure that the path in the diff is correct relative to the
 current working directory.
 """
-from __future__ import absolute_import, division, print_function
 
 import argparse
 import difflib
