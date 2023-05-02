@@ -70,7 +70,7 @@ class FormatTokenTest(unittest.TestCase):
         pytree.Leaf(token.STRING, "'hello world'"), 'STRING')
     self.assertEqual(
         "FormatToken(name=DOCSTRING, value='hello world', column=0, "
-        "lineno=0, splitpenalty=0)", str(tok))
+        'lineno=0, splitpenalty=0)', str(tok))
     self.assertTrue(tok.is_string)
 
     tok = format_token.FormatToken(
