@@ -23,10 +23,9 @@ import os
 import re
 import sys
 from configparser import ConfigParser
-from io import StringIO
 from tokenize import detect_encoding
 
-from yapf.yapflib import errors, py3compat, style
+from yapf.yapflib import errors, style
 
 CR = '\r'
 LF = '\n'

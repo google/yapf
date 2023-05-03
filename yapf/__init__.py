@@ -27,13 +27,32 @@ If no filenames are specified, YAPF reads the code from stdin.
 """
 
 import argparse
+import codecs
+import io
 import logging
 import os
 import sys
 
-from yapf.yapflib import errors, file_resources, py3compat, style, yapf_api
+from yapf.yapflib import errors
+from yapf.yapflib import file_resources
+from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 __version__ = '0.33.0'
+
+
+def _raw_input():
+  wrapper = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+  return wrapper.buffer.raw.readall().decode('utf-8')
+
+
+def _removeBOM(source):
+  """Remove any Byte-order-Mark bytes from the beginning of a file."""
+  bom = codecs.BOM_UTF8
+  bom = bom.decode('utf-8')
+  if source.startswith(bom):
+    return source[len(bom):]
+  return source
 
 
 def main(argv):
@@ -79,7 +98,7 @@ def main(argv):
         # user will need to hit 'Ctrl-D' more than once if they're inputting
         # the program by hand. 'raw_input' throws an EOFError exception if
         # 'Ctrl-D' is pressed, which makes it easy to bail out of this loop.
-        original_source.append(py3compat.raw_input())
+        original_source.append(_raw_input())
       except EOFError:
         break
       except KeyboardInterrupt:
@@ -89,7 +108,7 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     source = [line.rstrip() for line in original_source]
-    source[0] = py3compat.removeBOM(source[0])
+    source[0] = _removeBOM(source[0])
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
