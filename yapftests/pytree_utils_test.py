@@ -15,9 +15,9 @@
 
 import unittest
 
-from yapf.ylib2to3 import pygram
-from yapf.ylib2to3 import pytree
-from yapf.ylib2to3.pgen2 import token
+from third_party.ylib2to3 import pygram
+from third_party.ylib2to3 import pytree
+from third_party.ylib2to3.pgen2 import token
 
 from yapf.pytree import pytree_utils
 

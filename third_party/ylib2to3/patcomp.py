@@ -7,7 +7,7 @@ The grammar is taken from PatternGrammar.txt.
 The compiler compiles a pattern to a pytree.*Pattern instance.
 """
 
-__author__ = "Guido van Rossum <guido@python.org>"
+__author__ = 'Guido van Rossum <guido@python.org>'
 
 # Python imports
 import io
@@ -145,25 +145,25 @@ class PatternCompiler(object):
       value = node.value
       if value.isupper():
         if value not in TOKEN_MAP:
-          raise PatternSyntaxError("Invalid token: %r" % value)
+          raise PatternSyntaxError('Invalid token: %r' % value)
         if nodes[1:]:
           raise PatternSyntaxError("Can't have details for token")
         return pytree.LeafPattern(TOKEN_MAP[value])
       else:
-        if value == "any":
+        if value == 'any':
           type = None
-        elif not value.startswith("_"):
+        elif not value.startswith('_'):
           type = getattr(self.pysyms, value, None)
           if type is None:
-            raise PatternSyntaxError("Invalid symbol: %r" % value)
+            raise PatternSyntaxError('Invalid symbol: %r' % value)
         if nodes[1:]:  # Details present
           content = [self.compile_node(nodes[1].children[1])]
         else:
           content = None
         return pytree.NodePattern(type, content)
-    elif node.value == "(":
+    elif node.value == '(':
       return self.compile_node(nodes[1])
-    elif node.value == "[":
+    elif node.value == '[':
       assert repeat is None
       subpattern = self.compile_node(nodes[1])
       return pytree.WildcardPattern([[subpattern]], min=0, max=1)
@@ -176,10 +176,10 @@ class PatternCompiler(object):
 
 # Map named tokens to the type value for a LeafPattern
 TOKEN_MAP = {
-    "NAME": token.NAME,
-    "STRING": token.STRING,
-    "NUMBER": token.NUMBER,
-    "TOKEN": None
+    'NAME': token.NAME,
+    'STRING': token.STRING,
+    'NUMBER': token.NUMBER,
+    'TOKEN': None
 }
 
 

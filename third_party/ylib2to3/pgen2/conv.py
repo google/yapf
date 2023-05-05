@@ -67,7 +67,7 @@ class Converter(grammar.Grammar):
     lineno = 0
     for line in f:
       lineno += 1
-      mo = re.match(r"^#define\s+(\w+)\s+(\d+)$", line)
+      mo = re.match(r'^#define\s+(\w+)\s+(\d+)$', line)
       if not mo and line.strip():
         print("%s(%s): can't parse %s" % (filename, lineno, line.strip()))
       else:
@@ -125,30 +125,30 @@ class Converter(grammar.Grammar):
     lineno, line = lineno + 1, next(f)
     allarcs = {}
     states = []
-    while line.startswith("static arc "):
-      while line.startswith("static arc "):
-        mo = re.match(r"static arc arcs_(\d+)_(\d+)\[(\d+)\] = {$", line)
+    while line.startswith('static arc '):
+      while line.startswith('static arc '):
+        mo = re.match(r'static arc arcs_(\d+)_(\d+)\[(\d+)\] = {$', line)
         assert mo, (lineno, line)
         n, m, k = list(map(int, mo.groups()))
         arcs = []
         for _ in range(k):
           lineno, line = lineno + 1, next(f)
-          mo = re.match(r"\s+{(\d+), (\d+)},$", line)
+          mo = re.match(r'\s+{(\d+), (\d+)},$', line)
           assert mo, (lineno, line)
           i, j = list(map(int, mo.groups()))
           arcs.append((i, j))
         lineno, line = lineno + 1, next(f)
-        assert line == "};\n", (lineno, line)
+        assert line == '};\n', (lineno, line)
         allarcs[(n, m)] = arcs
         lineno, line = lineno + 1, next(f)
-      mo = re.match(r"static state states_(\d+)\[(\d+)\] = {$", line)
+      mo = re.match(r'static state states_(\d+)\[(\d+)\] = {$', line)
       assert mo, (lineno, line)
       s, t = list(map(int, mo.groups()))
       assert s == len(states), (lineno, line)
       state = []
       for _ in range(t):
         lineno, line = lineno + 1, next(f)
-        mo = re.match(r"\s+{(\d+), arcs_(\d+)_(\d+)},$", line)
+        mo = re.match(r'\s+{(\d+), arcs_(\d+)_(\d+)},$', line)
         assert mo, (lineno, line)
         k, n, m = list(map(int, mo.groups()))
         arcs = allarcs[n, m]
@@ -156,13 +156,13 @@ class Converter(grammar.Grammar):
         state.append(arcs)
       states.append(state)
       lineno, line = lineno + 1, next(f)
-      assert line == "};\n", (lineno, line)
+      assert line == '};\n', (lineno, line)
       lineno, line = lineno + 1, next(f)
     self.states = states
 
     # Parse the dfas
     dfas = {}
-    mo = re.match(r"static dfa dfas\[(\d+)\] = {$", line)
+    mo = re.match(r'static dfa dfas\[(\d+)\] = {$', line)
     assert mo, (lineno, line)
     ndfas = int(mo.group(1))
     for i in range(ndfas):
@@ -188,13 +188,13 @@ class Converter(grammar.Grammar):
             first[i * 8 + j] = 1
       dfas[number] = (state, first)
     lineno, line = lineno + 1, next(f)
-    assert line == "};\n", (lineno, line)
+    assert line == '};\n', (lineno, line)
     self.dfas = dfas
 
     # Parse the labels
     labels = []
     lineno, line = lineno + 1, next(f)
-    mo = re.match(r"static label labels\[(\d+)\] = {$", line)
+    mo = re.match(r'static label labels\[(\d+)\] = {$', line)
     assert mo, (lineno, line)
     nlabels = int(mo.group(1))
     for i in range(nlabels):
@@ -203,38 +203,38 @@ class Converter(grammar.Grammar):
       assert mo, (lineno, line)
       x, y = mo.groups()
       x = int(x)
-      if y == "0":
+      if y == '0':
         y = None
       else:
         y = eval(y)
       labels.append((x, y))
     lineno, line = lineno + 1, next(f)
-    assert line == "};\n", (lineno, line)
+    assert line == '};\n', (lineno, line)
     self.labels = labels
 
     # Parse the grammar struct
     lineno, line = lineno + 1, next(f)
-    assert line == "grammar _PyParser_Grammar = {\n", (lineno, line)
+    assert line == 'grammar _PyParser_Grammar = {\n', (lineno, line)
     lineno, line = lineno + 1, next(f)
-    mo = re.match(r"\s+(\d+),$", line)
+    mo = re.match(r'\s+(\d+),$', line)
     assert mo, (lineno, line)
     ndfas = int(mo.group(1))
     assert ndfas == len(self.dfas)
     lineno, line = lineno + 1, next(f)
-    assert line == "\tdfas,\n", (lineno, line)
+    assert line == '\tdfas,\n', (lineno, line)
     lineno, line = lineno + 1, next(f)
-    mo = re.match(r"\s+{(\d+), labels},$", line)
+    mo = re.match(r'\s+{(\d+), labels},$', line)
     assert mo, (lineno, line)
     nlabels = int(mo.group(1))
     assert nlabels == len(self.labels), (lineno, line)
     lineno, line = lineno + 1, next(f)
-    mo = re.match(r"\s+(\d+)$", line)
+    mo = re.match(r'\s+(\d+)$', line)
     assert mo, (lineno, line)
     start = int(mo.group(1))
     assert start in self.number2symbol, (lineno, line)
     self.start = start
     lineno, line = lineno + 1, next(f)
-    assert line == "};\n", (lineno, line)
+    assert line == '};\n', (lineno, line)
     try:
       lineno, line = lineno + 1, next(f)
     except StopIteration:

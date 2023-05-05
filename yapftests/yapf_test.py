@@ -25,7 +25,7 @@ import textwrap
 import unittest
 
 from io import StringIO
-from yapf.ylib2to3.pgen2 import tokenize
+from third_party.ylib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
 from yapf.yapflib import style
@@ -285,8 +285,9 @@ class FormatFileTest(unittest.TestCase):
     with self.assertRaises(IOError) as context:
       yapf_api.FormatFile('not_a_file.py')
 
-    self.assertEqual(str(context.exception),
-                     "[Errno 2] No such file or directory: 'not_a_file.py'")
+    self.assertEqual(
+        str(context.exception),
+        "[Errno 2] No such file or directory: 'not_a_file.py'")
 
   def testCommentsUnformatted(self):
     code = textwrap.dedent("""\

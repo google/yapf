@@ -10,9 +10,9 @@ This provides a high-level interface to parse a file into a syntax tree.
 
 """
 
-__author__ = "Guido van Rossum <guido@python.org>"
+__author__ = 'Guido van Rossum <guido@python.org>'
 
-__all__ = ["Driver", "load_grammar"]
+__all__ = ['Driver', 'load_grammar']
 
 # Python imports
 import io
@@ -52,7 +52,7 @@ class TokenProxy:
     self._release_ranges: List[ReleaseRange] = []
 
   @contextmanager
-  def release(self) -> Iterator["TokenProxy"]:
+  def release(self) -> Iterator['TokenProxy']:
     release_range = ReleaseRange(self._counter)
     self._release_ranges.append(release_range)
     try:
@@ -72,7 +72,7 @@ class TokenProxy:
         eaten_tokens.append(token)
       return token
 
-  def __iter__(self) -> "TokenProxy":
+  def __iter__(self) -> 'TokenProxy':
     return self
 
   def __next__(self) -> Any:
@@ -120,14 +120,14 @@ class Driver(object):
     lineno = 1
     column = 0
     type = value = start = end = line_text = None
-    prefix = ""
+    prefix = ''
     for quintuple in proxy:
       type, value, start, end, line_text = quintuple
       if start != (lineno, column):
         assert (lineno, column) <= start, ((lineno, column), start)
         s_lineno, s_column = start
         if lineno < s_lineno:
-          prefix += "\n" * (s_lineno - lineno)
+          prefix += '\n' * (s_lineno - lineno)
           lineno = s_lineno
           column = 0
         if column < s_column:
@@ -136,27 +136,27 @@ class Driver(object):
       if type in (tokenize.COMMENT, tokenize.NL):
         prefix += value
         lineno, column = end
-        if value.endswith("\n"):
+        if value.endswith('\n'):
           lineno += 1
           column = 0
         continue
       if type == token.OP:
         type = grammar.opmap[value]
       if debug:
-        self.logger.debug("%s %r (prefix=%r)", token.tok_name[type], value,
+        self.logger.debug('%s %r (prefix=%r)', token.tok_name[type], value,
                           prefix)
       if p.addtoken(type, value, (prefix, start)):
         if debug:
-          self.logger.debug("Stop.")
+          self.logger.debug('Stop.')
         break
-      prefix = ""
+      prefix = ''
       lineno, column = end
-      if value.endswith("\n"):
+      if value.endswith('\n'):
         lineno += 1
         column = 0
     else:
       # We never broke out -- EOF is too soon (how can this happen???)
-      raise parse.ParseError("incomplete input", type, value, (prefix, start))
+      raise parse.ParseError('incomplete input', type, value, (prefix, start))
     return p.rootnode
 
   def parse_stream_raw(self, stream, debug=False):
@@ -170,7 +170,7 @@ class Driver(object):
 
   def parse_file(self, filename, encoding=None, debug=False):
     """Parse a file and return the syntax tree."""
-    with io.open(filename, "r", encoding=encoding) as stream:
+    with io.open(filename, 'r', encoding=encoding) as stream:
       return self.parse_stream(stream, debug)
 
   def parse_string(self, text, debug=False):
@@ -181,12 +181,12 @@ class Driver(object):
 
 def _generate_pickle_name(gt):
   head, tail = os.path.splitext(gt)
-  if tail == ".txt":
-    tail = ""
-  return head + tail + ".".join(map(str, sys.version_info)) + ".pickle"
+  if tail == '.txt':
+    tail = ''
+  return head + tail + '.'.join(map(str, sys.version_info)) + '.pickle'
 
 
-def load_grammar(gt="Grammar.txt",
+def load_grammar(gt='Grammar.txt',
                  gp=None,
                  save=True,
                  force=False,
@@ -252,5 +252,5 @@ def main(*args):
   return True
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   sys.exit(int(not main()))

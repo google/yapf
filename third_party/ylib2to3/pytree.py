@@ -9,7 +9,7 @@ even the comments and whitespace between tokens.
 There's also a pattern matching implementation here.
 """
 
-__author__ = "Guido van Rossum <guido@python.org>"
+__author__ = 'Guido van Rossum <guido@python.org>'
 
 import sys
 from io import StringIO
@@ -38,7 +38,7 @@ def type_repr(type_num):
   return _type_reprs.setdefault(type_num, type_num)
 
 
-NL = Union["Node", "Leaf"]
+NL = Union['Node', 'Leaf']
 Context = Tuple[Text, Tuple[int, int]]
 RawNode = Tuple[int, Optional[Text], Optional[Context], Optional[List[NL]]]
 
@@ -62,7 +62,7 @@ class Base(object):
 
   def __new__(cls, *args, **kwds):
     """Constructor that prevents Base from being instantiated."""
-    assert cls is not Base, "Cannot instantiate Base"
+    assert cls is not Base, 'Cannot instantiate Base'
     return object.__new__(cls)
 
   def __eq__(self, other):
@@ -211,13 +211,13 @@ class Base(object):
         """
     next_sib = self.next_sibling
     if next_sib is None:
-      return ""
+      return ''
     return next_sib.prefix
 
   if sys.version_info < (3, 0):
 
     def __str__(self):
-      return str(self).encode("ascii")
+      return str(self).encode('ascii')
 
 
 class Node(Base):
@@ -252,7 +252,7 @@ class Node(Base):
 
   def __repr__(self):
     """Return a canonical string representation."""
-    return "%s(%s, %r)" % (self.__class__.__name__, type_repr(
+    return '%s(%s, %r)' % (self.__class__.__name__, type_repr(
         self.type), self.children)
 
   def __unicode__(self):
@@ -261,7 +261,7 @@ class Node(Base):
 
         This reproduces the input source exactly.
         """
-    return "".join(map(str, self.children))
+    return ''.join(map(str, self.children))
 
   if sys.version_info > (3, 0):
     __str__ = __unicode__
@@ -294,7 +294,7 @@ class Node(Base):
         The whitespace and comments preceding this node in the input.
         """
     if not self.children:
-      return ""
+      return ''
     return self.children[0].prefix
 
   @prefix.setter
@@ -335,7 +335,7 @@ class Leaf(Base):
   """Concrete implementation for leaf nodes."""
 
   # Default values for instance variables
-  _prefix = ""  # Whitespace and comments preceding this token in the input
+  _prefix = ''  # Whitespace and comments preceding this token in the input
   lineno = 0  # Line where this token starts in the input
   column = 0  # Column where this token tarts in the input
 
@@ -357,7 +357,7 @@ class Leaf(Base):
 
   def __repr__(self):
     """Return a canonical string representation."""
-    return "%s(%r, %r)" % (self.__class__.__name__, self.type, self.value)
+    return '%s(%r, %r)' % (self.__class__.__name__, self.type, self.value)
 
   def __unicode__(self):
     """
@@ -446,14 +446,14 @@ class BasePattern(object):
 
   def __new__(cls, *args, **kwds):
     """Constructor that prevents BasePattern from being instantiated."""
-    assert cls is not BasePattern, "Cannot instantiate BasePattern"
+    assert cls is not BasePattern, 'Cannot instantiate BasePattern'
     return object.__new__(cls)
 
   def __repr__(self):
     args = [type_repr(self.type), self.content, self.name]
     while args and args[-1] is None:
       del args[-1]
-    return "%s(%s)" % (self.__class__.__name__, ", ".join(map(repr, args)))
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(map(repr, args)))
 
   def optimize(self):
     """
@@ -713,14 +713,14 @@ class WildcardPattern(BasePattern):
         if self.name:
           r[self.name] = nodes[:count]
         yield count, r
-    elif self.name == "bare_name":
+    elif self.name == 'bare_name':
       yield self._bare_name_matches(nodes)
     else:
       # The reason for this is that hitting the recursion limit usually
       # results in some ugly messages about how RuntimeErrors are being
       # ignored. We only have to do this on CPython, though, because other
       # implementations don't have this nasty bug in the first place.
-      if hasattr(sys, "getrefcount"):
+      if hasattr(sys, 'getrefcount'):
         save_stderr = sys.stderr
         sys.stderr = StringIO()
       try:
@@ -736,7 +736,7 @@ class WildcardPattern(BasePattern):
             r[self.name] = nodes[:count]
           yield count, r
       finally:
-        if hasattr(sys, "getrefcount"):
+        if hasattr(sys, 'getrefcount'):
           sys.stderr = save_stderr
 
   def _iterative_matches(self, nodes):

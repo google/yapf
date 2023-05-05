@@ -37,7 +37,7 @@ from .token import (ENDMARKER, ERRORTOKEN, OP, tok_name, NEWLINE, NL, NAME,
 from . import token
 
 __all__ = [x for x in dir(token) if x[0] != '_'
-          ] + ["tokenize", "generate_tokens", "untokenize"]
+          ] + ['tokenize', 'generate_tokens', 'untokenize']
 del token
 
 try:
@@ -62,7 +62,7 @@ def maybe(*choices):
 
 def _combinations(*l):  # noqa: E741
   return set(
-      x + y for x in l for y in l + ("",) if x.casefold() != y.casefold())
+      x + y for x in l for y in l + ('',) if x.casefold() != y.casefold())
 
 
 Whitespace = r'[ \f\t]*'
@@ -91,7 +91,7 @@ Double = r'[^"\\]*(?:\\.[^"\\]*)*"'
 Single3 = r"[^'\\]*(?:(?:\\.|'(?!''))[^'\\]*)*'''"
 # Tail end of """ string.
 Double3 = r'[^"\\]*(?:(?:\\.|"(?!""))[^"\\]*)*"""'
-_litprefix = r"(?:[uUrRbBfF]|[rR][fFbB]|[fFbBuU][rR])?"
+_litprefix = r'(?:[uUrRbBfF]|[rR][fFbB]|[fFbBuU][rR])?'
 Triple = group(_litprefix + "'''", _litprefix + '"""')
 # Single-line ' or " string.
 String = group(_litprefix + r"'[^\n'\\]*(?:\\.[^\n'\\]*)*'",
@@ -100,8 +100,8 @@ String = group(_litprefix + r"'[^\n'\\]*(?:\\.[^\n'\\]*)*'",
 # Because of leftmost-then-longest match semantics, be sure to put the
 # longest operators first (e.g., if = came before ==, == would get
 # recognized as two instances of =).
-Operator = group(r"\*\*=?", r">>=?", r"<<=?", r"<>", r"!=", r"//=?", r"->",
-                 r"[+\-*/%&@|^=<>]=?", r"~")
+Operator = group(r'\*\*=?', r'>>=?', r'<<=?', r'<>', r'!=', r'//=?', r'->',
+                 r'[+\-*/%&@|^=<>]=?', r'~')
 
 Bracket = '[][(){}]'
 Special = group(r'\r?\n', r':=', r'[:;.,`@]')
@@ -160,7 +160,7 @@ def printtoken(type, token, xxx_todo_changeme, xxx_todo_changeme1,
                line):  # for testing
   (srow, scol) = xxx_todo_changeme
   (erow, ecol) = xxx_todo_changeme1
-  print("%d,%d-%d,%d:\t%s\t%s" %
+  print('%d,%d-%d,%d:\t%s\t%s' %
         (srow, scol, erow, ecol, tok_name[type], repr(token)))
 
 
@@ -201,7 +201,7 @@ class Untokenizer:
     assert row <= self.prev_row
     col_offset = col - self.prev_col
     if col_offset:
-      self.tokens.append(" " * col_offset)
+      self.tokens.append(' ' * col_offset)
 
   def untokenize(self, iterable):
     for t in iterable:
@@ -215,7 +215,7 @@ class Untokenizer:
       if tok_type in (NEWLINE, NL):
         self.prev_row += 1
         self.prev_col = 0
-    return "".join(self.tokens)
+    return ''.join(self.tokens)
 
   def compat(self, token, iterable):
     startline = False
@@ -253,12 +253,12 @@ blank_re = re.compile(br'^[ \t\f]*(?:[#\r\n]|$)', re.ASCII)
 def _get_normal_name(orig_enc):
   """Imitates get_normal_name in tokenizer.c."""
   # Only care about the first 12 characters.
-  enc = orig_enc[:12].lower().replace("_", "-")
-  if enc == "utf-8" or enc.startswith("utf-8-"):
-    return "utf-8"
-  if enc in ("latin-1", "iso-8859-1", "iso-latin-1") or \
-     enc.startswith(("latin-1-", "iso-8859-1-", "iso-latin-1-")):
-    return "iso-8859-1"
+  enc = orig_enc[:12].lower().replace('_', '-')
+  if enc == 'utf-8' or enc.startswith('utf-8-'):
+    return 'utf-8'
+  if enc in ('latin-1', 'iso-8859-1', 'iso-latin-1') or \
+     enc.startswith(('latin-1-', 'iso-8859-1-', 'iso-latin-1-')):
+    return 'iso-8859-1'
   return orig_enc
 
 
@@ -303,7 +303,7 @@ def detect_encoding(readline):
       codec = lookup(encoding)
     except LookupError:
       # This behaviour mimics the Python interpreter
-      raise SyntaxError("unknown encoding: " + encoding)
+      raise SyntaxError('unknown encoding: ' + encoding)
 
     if bom_found:
       if codec.name != 'utf-8':
@@ -398,7 +398,7 @@ def generate_tokens(readline):
 
     if contstr:  # continued string
       if not line:
-        raise TokenError("EOF in multi-line string", strstart)
+        raise TokenError('EOF in multi-line string', strstart)
       endmatch = endprog.match(line)
       if endmatch:
         pos = end = endmatch.end(0)
@@ -456,8 +456,8 @@ def generate_tokens(readline):
       while column < indents[-1]:
         if column not in indents:
           raise IndentationError(
-              "unindent does not match any outer indentation level",
-              ("<tokenize>", lnum, pos, line))
+              'unindent does not match any outer indentation level',
+              ('<tokenize>', lnum, pos, line))
         indents = indents[:-1]
 
         if async_def and async_def_indent >= indents[-1]:
@@ -474,7 +474,7 @@ def generate_tokens(readline):
 
     else:  # continued statement
       if not line:
-        raise TokenError("EOF in multi-line statement", (lnum, 0))
+        raise TokenError('EOF in multi-line statement', (lnum, 0))
       continued = 0
 
     while pos < max:
@@ -499,7 +499,7 @@ def generate_tokens(readline):
           yield (newline, token, spos, epos, line)
 
         elif initial == '#':
-          assert not token.endswith("\n")
+          assert not token.endswith('\n')
           if stashed:
             yield stashed
             stashed = None

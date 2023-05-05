@@ -26,9 +26,9 @@ Annotations:
 
 from yapf.pytree import pytree_utils, pytree_visitor
 from yapf.yapflib import style, subtypes
-from yapf.ylib2to3 import pytree
-from yapf.ylib2to3.pgen2 import token as grammar_token
-from yapf.ylib2to3.pygram import python_symbols as syms
+from third_party.ylib2to3 import pytree
+from third_party.ylib2to3.pgen2 import token as grammar_token
+from third_party.ylib2to3.pygram import python_symbols as syms
 
 
 def AssignSubtypes(tree):

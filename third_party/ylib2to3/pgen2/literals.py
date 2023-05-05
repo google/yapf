@@ -5,26 +5,26 @@
 import re
 
 simple_escapes = {
-    "a": "\a",
-    "b": "\b",
-    "f": "\f",
-    "n": "\n",
-    "r": "\r",
-    "t": "\t",
-    "v": "\v",
+    'a': '\a',
+    'b': '\b',
+    'f': '\f',
+    'n': '\n',
+    'r': '\r',
+    't': '\t',
+    'v': '\v',
     "'": "'",
     '"': '"',
-    "\\": "\\"
+    '\\': '\\'
 }
 
 
 def escape(m):
   all, tail = m.group(0, 1)
-  assert all.startswith("\\")
+  assert all.startswith('\\')
   esc = simple_escapes.get(tail)
   if esc is not None:
     return esc
-  if tail.startswith("x"):
+  if tail.startswith('x'):
     hexes = tail[1:]
     if len(hexes) < 2:
       raise ValueError("invalid hex string escape ('\\%s')" % tail)
@@ -60,5 +60,5 @@ def test():
       print(i, c, s, e)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   test()

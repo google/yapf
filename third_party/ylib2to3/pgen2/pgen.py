@@ -14,7 +14,7 @@ class ParserGenerator(object):
   def __init__(self, filename, stream=None):
     close_stream = None
     if stream is None:
-      stream = open(filename, encoding="utf-8")
+      stream = open(filename, encoding='utf-8')
       close_stream = stream.close
     self.filename = filename
     self.stream = stream
@@ -130,7 +130,7 @@ class ParserGenerator(object):
         if label in self.first:
           fset = self.first[label]
           if fset is None:
-            raise ValueError("recursion for rule %r" % name)
+            raise ValueError('recursion for rule %r' % name)
         else:
           self.calcfirst(label)
           fset = self.first[label]
@@ -143,8 +143,8 @@ class ParserGenerator(object):
     for label, itsfirst in overlapcheck.items():
       for symbol in itsfirst:
         if symbol in inverse:
-          raise ValueError("rule %s is ambiguous; %s is in the"
-                           " first sets of %s as well as %s" %
+          raise ValueError('rule %s is ambiguous; %s is in the'
+                           ' first sets of %s as well as %s' %
                            (name, symbol, label, inverse[symbol]))
         inverse[symbol] = label
     self.first[name] = totalset
@@ -158,7 +158,7 @@ class ParserGenerator(object):
         self.gettoken()
       # RULE: NAME ':' RHS NEWLINE
       name = self.expect(token.NAME)
-      self.expect(token.OP, ":")
+      self.expect(token.OP, ':')
       a, z = self.parse_rhs()
       self.expect(token.NEWLINE)
       # self.dump_nfa(name, a, z)
@@ -211,10 +211,10 @@ class ParserGenerator(object):
     return states  # List of DFAState instances; first one is start
 
   def dump_nfa(self, name, start, finish):
-    print("Dump of NFA for", name)
+    print('Dump of NFA for', name)
     todo = [start]
     for i, state in enumerate(todo):
-      print("  State", i, state is finish and "(final)" or "")
+      print('  State', i, state is finish and '(final)' or '')
       for label, next in state.arcs:
         if next in todo:
           j = todo.index(next)
@@ -222,16 +222,16 @@ class ParserGenerator(object):
           j = len(todo)
           todo.append(next)
         if label is None:
-          print("    -> %d" % j)
+          print('    -> %d' % j)
         else:
-          print("    %s -> %d" % (label, j))
+          print('    %s -> %d' % (label, j))
 
   def dump_dfa(self, name, dfa):
-    print("Dump of DFA for", name)
+    print('Dump of DFA for', name)
     for i, state in enumerate(dfa):
-      print("  State", i, state.isfinal and "(final)" or "")
+      print('  State', i, state.isfinal and '(final)' or '')
       for label, next in sorted(state.arcs.items()):
-        print("    %s -> %d" % (label, dfa.index(next)))
+        print('    %s -> %d' % (label, dfa.index(next)))
 
   def simplify_dfa(self, dfa):
     # This is not theoretically optimal, but works well enough.
@@ -257,14 +257,14 @@ class ParserGenerator(object):
   def parse_rhs(self):
     # RHS: ALT ('|' ALT)*
     a, z = self.parse_alt()
-    if self.value != "|":
+    if self.value != '|':
       return a, z
     else:
       aa = NFAState()
       zz = NFAState()
       aa.addarc(a)
       z.addarc(zz)
-      while self.value == "|":
+      while self.value == '|':
         self.gettoken()
         a, z = self.parse_alt()
         aa.addarc(a)
@@ -274,7 +274,7 @@ class ParserGenerator(object):
   def parse_alt(self):
     # ALT: ITEM+
     a, b = self.parse_item()
-    while (self.value in ("(", "[") or self.type in (token.NAME, token.STRING)):
+    while (self.value in ('(', '[') or self.type in (token.NAME, token.STRING)):
       c, d = self.parse_item()
       b.addarc(c)
       b = d
@@ -282,30 +282,30 @@ class ParserGenerator(object):
 
   def parse_item(self):
     # ITEM: '[' RHS ']' | ATOM ['+' | '*']
-    if self.value == "[":
+    if self.value == '[':
       self.gettoken()
       a, z = self.parse_rhs()
-      self.expect(token.OP, "]")
+      self.expect(token.OP, ']')
       a.addarc(z)
       return a, z
     else:
       a, z = self.parse_atom()
       value = self.value
-      if value not in ("+", "*"):
+      if value not in ('+', '*'):
         return a, z
       self.gettoken()
       z.addarc(a)
-      if value == "+":
+      if value == '+':
         return a, z
       else:
         return a, a
 
   def parse_atom(self):
     # ATOM: '(' RHS ')' | NAME | STRING
-    if self.value == "(":
+    if self.value == '(':
       self.gettoken()
       a, z = self.parse_rhs()
-      self.expect(token.OP, ")")
+      self.expect(token.OP, ')')
       return a, z
     elif self.type in (token.NAME, token.STRING):
       a = NFAState()
@@ -314,12 +314,12 @@ class ParserGenerator(object):
       self.gettoken()
       return a, z
     else:
-      self.raise_error("expected (...) or NAME or STRING, got %s/%s", self.type,
+      self.raise_error('expected (...) or NAME or STRING, got %s/%s', self.type,
                        self.value)
 
   def expect(self, type, value=None):
     if self.type != type or (value is not None and self.value != value):
-      self.raise_error("expected %s/%s, got %s/%s", type, value, self.type,
+      self.raise_error('expected %s/%s, got %s/%s', type, value, self.type,
                        self.value)
     value = self.value
     self.gettoken()
@@ -337,7 +337,7 @@ class ParserGenerator(object):
       try:
         msg = msg % args
       except Exception:
-        msg = " ".join([msg] + list(map(str, args)))
+        msg = ' '.join([msg] + list(map(str, args)))
     raise SyntaxError(msg, (self.filename, self.end[0], self.end[1], self.line))
 
 
@@ -390,6 +390,6 @@ class DFAState(object):
   __hash__ = None  # For Py3 compatibility.
 
 
-def generate_grammar(filename="Grammar.txt"):
+def generate_grammar(filename='Grammar.txt'):
   p = ParserGenerator(filename)
   return p.make_grammar()
