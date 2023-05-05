@@ -88,7 +88,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     if len(node.children) > 4:
       # opening '('
       _SetUnbreakable(node.children[2])
-    # ':'
+      # ':'
     _SetUnbreakable(node.children[-2])
     self.DefaultNodeVisit(node)
 

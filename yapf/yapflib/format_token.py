@@ -322,3 +322,15 @@ class FormatToken(object):
   def is_copybara_comment(self):
     return self.is_comment and re.match(
         r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
+
+  @property
+  def is_assign(self):
+    return subtypes.ASSIGN_OPERATOR in self.subtypes
+
+  @property
+  def is_augassign(self):
+    augassigns = {
+        '+=', '-=', '*=', '@=', '/=', '%=', '&=', '|=', '^=', '<<=', '>>=',
+        '**=', '//='
+    }
+    return self.value in augassigns

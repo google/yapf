@@ -3177,6 +3177,127 @@ my_dict = {
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
+  #------tests for alignment functions--------
+  def testAlignAssignBlankLineInbetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+        val_first = 1
+        val_second += 2
+
+        val_third = 3
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+        val_first   = 1
+        val_second += 2
+
+        val_third = 3
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignAssignCommentLineInbetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{align_assignment: true,'
+              'new_alignment_after_commentline = true}'))
+      unformatted_code = textwrap.dedent("""\
+        val_first = 1
+        val_second += 2
+        # comment
+        val_third = 3
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+        val_first   = 1
+        val_second += 2
+        # comment
+        val_third = 3
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignAssignDefLineInbetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+        val_first = 1
+        val_second += 2
+        def fun():
+          a = 'example'
+          abc = ''
+        val_third = 3
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+        val_first   = 1
+        val_second += 2
+
+
+        def fun():
+          a   = 'example'
+          abc = ''
+
+
+        val_third = 3
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignAssignObjectWithNewLineInbetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+        val_first = 1
+        val_second += 2
+        object = {
+          entry1:1,
+          entry2:2,
+          entry3:3,
+          }
+        val_third = 3
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+        val_first   = 1
+        val_second += 2
+        object      = {
+            entry1: 1,
+            entry2: 2,
+            entry3: 3,
+        }
+        val_third = 3
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignAssignWithOnlyOneAssignmentLine(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+        val_first = 1
+      """)
+      expected_formatted_code = unformatted_code
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
 
 if __name__ == '__main__':
   unittest.main()

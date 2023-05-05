@@ -20,6 +20,7 @@ can be merged together are. The best formatting is returned as a string.
 """
 
 import collections
+from distutils.errors import LinkError
 import heapq
 import re
 
@@ -99,6 +100,9 @@ def Reformat(llines, verify=False, lines=None):
 
     final_lines.append(lline)
     prev_line = lline
+
+  if style.Get('ALIGN_ASSIGNMENT'):
+    _AlignAssignment(final_lines)
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
@@ -389,6 +393,172 @@ def _AlignTrailingComments(final_lines):
         break
 
     if not processed_content:
+      final_lines_index += 1
+
+
+def _AlignAssignment(final_lines):
+  """Align assignment operators and augmented assignment operators to the same column"""
+
+  final_lines_index = 0
+  while final_lines_index < len(final_lines):
+    line = final_lines[final_lines_index]
+
+    assert line.tokens
+    process_content = False
+
+    for tok in line.tokens:
+      if tok.is_assign or tok.is_augassign:
+        # all pre assignment variable lengths in one block of lines
+        all_pa_variables_lengths = []
+        max_variables_length = 0
+
+        while True:
+          # EOF
+          if final_lines_index + len(all_pa_variables_lengths) == len(
+              final_lines):
+            break
+
+          this_line_index = final_lines_index + len(all_pa_variables_lengths)
+          this_line = final_lines[this_line_index]
+
+          next_line = None
+          if this_line_index < len(final_lines) - 1:
+            next_line = final_lines[final_lines_index +
+                                    len(all_pa_variables_lengths) + 1]
+
+          assert this_line.tokens, next_line.tokens
+
+          # align them differently when there is a blank line in between
+          if (all_pa_variables_lengths and
+              this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
+             ):
+            break
+
+          # if there is a standalone comment or keyword statement line
+          # or other lines without assignment in between, break
+          elif (all_pa_variables_lengths and True not in [
+              tok.is_assign or tok.is_augassign for tok in this_line.tokens
+          ]):
+            if this_line.tokens[0].is_comment:
+              if style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE'):
+                break
+            else:
+              break
+
+          if this_line.disable:
+            all_pa_variables_lengths.append([])
+            continue
+
+          variables_content = ''
+          pa_variables_lengths = []
+          contain_object = False
+          line_tokens = this_line.tokens
+          # only one assignment expression is on each line
+          for index in range(len(line_tokens)):
+            line_tok = line_tokens[index]
+
+            prefix = line_tok.formatted_whitespace_prefix
+            newline_index = prefix.rfind('\n')
+            if newline_index != -1:
+              variables_content = ''
+              prefix = prefix[newline_index + 1:]
+
+            if line_tok.is_assign or line_tok.is_augassign:
+              next_toks = [
+                  line_tokens[i] for i in range(index + 1, len(line_tokens))
+              ]
+              # if there is object(list/tuple/dict) with newline entries, break,
+              # update the alignment so far and start to calulate new alignment
+              for tok in next_toks:
+                if tok.value in ['(', '[', '{'] and tok.next_token:
+                  if (tok.next_token.formatted_whitespace_prefix.startswith(
+                      '\n') or
+                      (tok.next_token.is_comment and tok.next_token.next_token
+                       .formatted_whitespace_prefix.startswith('\n'))):
+                    pa_variables_lengths.append(len(variables_content))
+                    contain_object = True
+                    break
+              if not contain_object:
+                if line_tok.is_assign:
+                  pa_variables_lengths.append(len(variables_content))
+                # if augassign, add the extra augmented part to the max length caculation
+                elif line_tok.is_augassign:
+                  pa_variables_lengths.append(
+                      len(variables_content) + len(line_tok.value) - 1)
+              # don't add the tokens
+              # after the assignment operator
+              break
+            else:
+              variables_content += '{}{}'.format(prefix, line_tok.value)
+
+          if pa_variables_lengths:
+            max_variables_length = max(max_variables_length,
+                                       max(pa_variables_lengths))
+
+          all_pa_variables_lengths.append(pa_variables_lengths)
+
+          # after saving this line's max variable length,
+          # we check if next line has the same depth as this line,
+          # if not, we don't want to calculate their max variable length together
+          # so we break the while loop, update alignment so far, and
+          # then go to next line that has '='
+          if next_line:
+            if this_line.depth != next_line.depth:
+              break
+          # if this line contains objects with newline entries,
+          # start new block alignment
+          if contain_object:
+            break
+
+        # if no update of max_length, just go to the next block
+        if max_variables_length == 0:
+          continue
+
+        max_variables_length += 2
+
+        # Update the assignment token values based on the max variable length
+        for all_pa_variables_lengths_index, pa_variables_lengths in enumerate(
+            all_pa_variables_lengths):
+          if not pa_variables_lengths:
+            continue
+          this_line = final_lines[final_lines_index +
+                                  all_pa_variables_lengths_index]
+
+          # only the first assignment operator on each line
+          pa_variables_lengths_index = 0
+          for line_tok in this_line.tokens:
+            if line_tok.is_assign or line_tok.is_augassign:
+              assert pa_variables_lengths[0] < max_variables_length
+
+              if pa_variables_lengths_index < len(pa_variables_lengths):
+                whitespace = ' ' * (
+                    max_variables_length - pa_variables_lengths[0] - 1)
+
+                assign_content = '{}{}'.format(whitespace,
+                                               line_tok.value.strip())
+
+                existing_whitespace_prefix = \
+                    line_tok.formatted_whitespace_prefix.lstrip('\n')
+
+                # in case the existing spaces are larger than padded spaces
+                if (len(whitespace) == 1 or len(whitespace) > 1 and
+                    len(existing_whitespace_prefix) > len(whitespace)):
+                  line_tok.whitespace_prefix = ''
+                elif assign_content.startswith(existing_whitespace_prefix):
+                  assign_content = assign_content[len(existing_whitespace_prefix
+                                                     ):]
+
+                # update the assignment operator value
+                line_tok.value = assign_content
+
+              pa_variables_lengths_index += 1
+
+        final_lines_index += len(all_pa_variables_lengths)
+
+        process_content = True
+        break
+
+    if not process_content:
       final_lines_index += 1
 
 
