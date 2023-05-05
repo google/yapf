@@ -246,6 +246,7 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # argument ::=
     #     test [comp_for] | test '=' test
     self._ProcessArgLists(node)
+    #TODO add a subtype to each argument?
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
     # arglist ::=
@@ -315,6 +316,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         tname = True
         _SetArgListSubtype(child, subtypes.TYPED_NAME,
                            subtypes.TYPED_NAME_ARG_LIST)
+        # NOTE Every element of the tynamme argument
+        # should have this list type
+        _AppendSubtypeRec(child, subtypes.TYPED_NAME_ARG_LIST)
+
       elif child.type == grammar_token.COMMA:
         tname = False
       elif child.type == grammar_token.EQUAL and tname:

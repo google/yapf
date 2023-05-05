@@ -54,6 +54,22 @@ def SetGlobalStyle(style):
 _STYLE_HELP = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
       Align closing bracket with visual indentation."""),
+    ALIGN_ASSIGNMENT=textwrap.dedent("""\
+      Align assignment or augmented assignment operators.
+      If there is a blank line or newline comment or objects with newline entries in between,
+      it will start new block alignment."""),
+    ALIGN_ARGUMENT_ASSIGNMENT=textwrap.dedent("""\
+      Align assignment operators in the argument list if they are all split on newlines.
+      Arguments without assignment are ignored.
+      Arguments without assignment in between will initiate new block alignment calulation.
+      Newline comments or objects with newline entries will also start new block alignment."""),
+    ALIGN_DICT_COLON=textwrap.dedent("""\
+      Align the colons in the dictionary
+      if all entries in dictionay are split on newlines.
+      or 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' is set True.
+      """),
+    NEW_ALIGNMENT_AFTER_COMMENTLINE=textwrap.dedent("""\
+      Start new assignment or colon alignment when there is a newline comment in between."""),
     ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
       Allow lambdas to be formatted on more than one line."""),
     ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
@@ -419,6 +435,10 @@ def CreatePEP8Style():
   """Create the PEP8 formatting style."""
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
+      ALIGN_ASSIGNMENT=False,
+      ALIGN_ARGUMENT_ASSIGNMENT=False,
+      ALIGN_DICT_COLON=False,
+      NEW_ALIGNMENT_AFTER_COMMENTLINE=False,
       ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
@@ -607,6 +627,10 @@ def _IntOrIntListConverter(s):
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
+    ALIGN_ASSIGNMENT=_BoolConverter,
+    ALIGN_DICT_COLON=_BoolConverter,
+    NEW_ALIGNMENT_AFTER_COMMENTLINE=_BoolConverter,
+    ALIGN_ARGUMENT_ASSIGNMENT=_BoolConverter,
     ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,

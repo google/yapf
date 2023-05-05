@@ -15,10 +15,11 @@
 
 import unittest
 
-from lib2to3 import pytree
+from lib2to3 import pytree, pygram
 from lib2to3.pgen2 import token
 
 from yapf.yapflib import format_token
+from yapf.pytree import subtype_assigner
 
 
 class TabbedContinuationAlignPaddingTest(unittest.TestCase):
@@ -89,6 +90,37 @@ class FormatTokenTest(unittest.TestCase):
         pytree.Leaf(token.STRING, 'r"""hello"""'), 'STRING')
     self.assertTrue(tok.is_multiline_string)
 
+  #------------test argument names------------
+  # fun(
+  #    a='hello world',
+  #    # comment,
+  #    b='')
+  child1 = pytree.Leaf(token.NAME, 'a')
+  child2 = pytree.Leaf(token.EQUAL, '=')
+  child3 = pytree.Leaf(token.STRING, "'hello world'")
+  child4 = pytree.Leaf(token.COMMA, ',')
+  child5 = pytree.Leaf(token.COMMENT,'# comment')
+  child6 = pytree.Leaf(token.COMMA, ',')
+  child7 = pytree.Leaf(token.NAME, 'b')
+  child8 = pytree.Leaf(token.EQUAL, '=')
+  child9 = pytree.Leaf(token.STRING, "''")
+  node_type = pygram.python_grammar.symbol2number['arglist']
+  node = pytree.Node(node_type, [child1, child2, child3, child4, child5,
+                                child6, child7, child8,child9])
+  subtype_assigner.AssignSubtypes(node)
+
+  def testIsArgName(self, node=node):
+    tok = format_token.FormatToken(node.children[0],'NAME')
+    self.assertTrue(tok.is_argname)
+
+  def testIsArgAssign(self, node=node):
+    tok = format_token.FormatToken(node.children[1], 'EQUAL')
+    self.assertTrue(tok.is_argassign)
+
+  # test if comment inside is not argname
+  def testCommentNotIsArgName(self, node=node):
+    tok = format_token.FormatToken(node.children[4], 'COMMENT')
+    self.assertFalse(tok.is_argname)
 
 if __name__ == '__main__':
   unittest.main()
