@@ -186,8 +186,8 @@ def _generate_pickle_name(gt):
   head, tail = os.path.splitext(gt_path.name)
   if tail == '.txt':
     tail = ''
-  pickle_name = head + tail + '.pickle'
-  if gt_path.exists():
+  pickle_name = head + tail + '.pickle'  # pyzipapp install
+  if gt_path.exists():  # regular install
     pickle_name = str((gt_path.parent / pickle_name).resolve())
   return pickle_name
 
