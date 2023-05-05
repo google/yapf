@@ -286,7 +286,7 @@ class FormatFileTest(unittest.TestCase):
       yapf_api.FormatFile('not_a_file.py')
 
     self.assertEqual(str(context.exception),
-		     "[Errno 2] No such file or directory: 'not_a_file.py'")
+                     "[Errno 2] No such file or directory: 'not_a_file.py'")
 
   def testCommentsUnformatted(self):
     code = textwrap.dedent("""\
