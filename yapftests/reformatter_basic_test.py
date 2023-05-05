@@ -3178,5 +3178,141 @@ my_dict = {
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
 
+########## for Align_ArgAssign()###########
+
+  def testAlignArgAssignTypedName(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_argument_assignment: true,'
+                                      'split_before_first_argument: true}'))
+      unformatted_code = textwrap.dedent("""\
+def f1(
+    self,
+    *,
+    app_name:str="",
+    server=None,
+    main_app=None,
+    db: Optional[NemDB]=None,
+    root: Optional[str]="",
+    conf: Optional[dict]={1, 2},
+    ini_section: str=""
+): pass
+""")
+      expected_formatted_code = textwrap.dedent("""\
+def f1(
+    self,
+    *,
+    app_name: str        = "",
+    server               =None,
+    main_app             =None,
+    db: Optional[NemDB]  = None,
+    root: Optional[str]  = "",
+    conf: Optional[dict] = {1, 2},
+    ini_section: str     = ""):
+  pass
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  # test both object/nested argument list with newlines and
+  # argument without assignment in between
+  def testAlignArgAssignNestedArglistInBetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_argument_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+arglist = test(
+    first_argument='',
+    second_argument=fun(
+        self, role=None, client_name='', client_id=1, very_long_long_long_long_long=''
+    ),
+    third_argument=3,
+    fourth_argument=4
+)
+""")
+      expected_formatted_code = textwrap.dedent("""\
+arglist = test(
+    first_argument  ='',
+    second_argument =fun(
+        self,
+        role                          =None,
+        client_name                   ='',
+        client_id                     =1,
+        very_long_long_long_long_long =''),
+    third_argument  =3,
+    fourth_argument =4)
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  # start new alignment after comment line in between
+  def testAlignArgAssignCommentLineInBetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_argument_assignment: true,'
+                                      'new_alignment_after_commentline:true}'))
+      unformatted_code = textwrap.dedent("""\
+arglist = test(
+  client_id=0,
+  username_id=1,
+  # comment
+  user_name='xxxxxxxxxxxxxxxxxxxxx'
+)
+""")
+      expected_formatted_code = textwrap.dedent("""\
+arglist = test(
+    client_id   =0,
+    username_id =1,
+    # comment
+    user_name ='xxxxxxxxxxxxxxxxxxxxx')
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignArgAssignWithOnlyFirstArgOnNewline(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_argument_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+arglist = self.get_data_from_excelsheet(
+    client_id=0, username_id=1, user_name='xxxxxxxxxxxxxxxxxxxx')
+""")
+      expected_formatted_code = unformatted_code
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignArgAssignArgumentsCanFitInOneLine(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_argument_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+def function(
+	first_argument_xxxxxx =(0,),
+	second_argument       =None
+) -> None:
+	pass
+""")
+      expected_formatted_code = textwrap.dedent("""\
+def function(first_argument_xxxxxx=(0,), second_argument=None) -> None:
+  pass
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
 if __name__ == '__main__':
   unittest.main()

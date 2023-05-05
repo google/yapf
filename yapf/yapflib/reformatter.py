@@ -20,6 +20,7 @@ can be merged together are. The best formatting is returned as a string.
 """
 
 import collections
+from distutils.errors import LinkError
 import heapq
 import re
 
@@ -99,6 +100,9 @@ def Reformat(llines, verify=False, lines=None):
 
     final_lines.append(lline)
     prev_line = lline
+
+  if style.Get('ALIGN_ARGUMENT_ASSIGNMENT'):
+    _AlignArgAssign(final_lines)
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
@@ -389,6 +393,207 @@ def _AlignTrailingComments(final_lines):
         break
 
     if not processed_content:
+      final_lines_index += 1
+
+
+def _AlignArgAssign(final_lines):
+  """Align the assign operators in a argument list to the same column"""
+  """NOTE One argument list of one function is on one logical line!
+     But funtion calls/argument lists can be in argument list.
+  """
+  final_lines_index = 0
+  while final_lines_index < len(final_lines):
+    line = final_lines[final_lines_index]
+    if line.disable:
+      final_lines_index += 1
+      continue
+
+    assert line.tokens
+    process_content = False
+
+    for tok in line.tokens:
+      if tok.is_argassign:
+
+        this_line = line
+        line_tokens = this_line.tokens
+
+        for open_index in range(len(line_tokens)):
+          line_tok = line_tokens[open_index]
+
+          if (line_tok.value == '(' and not line_tok.is_pseudo and
+              line_tok.next_token.formatted_whitespace_prefix.startswith('\n')):
+            index = open_index
+            # skip the comments in the beginning
+            index += 1
+            line_tok = line_tokens[index]
+            while not line_tok.is_argname_start and index < len(
+                line_tokens) - 1:
+              index += 1
+              line_tok = line_tokens[index]
+
+            # check if the argstart is on newline
+            if line_tok.is_argname_start and line_tok.formatted_whitespace_prefix.startswith(
+                '\n'):
+              first_arg_index = index
+              first_arg_column = len(
+                  line_tok.formatted_whitespace_prefix.lstrip('\n'))
+
+              closing = False
+              all_arg_name_lengths = []
+              arg_name_lengths = []
+              name_content = ''
+              arg_column = first_arg_column
+
+              # start with the first argument
+              # that has nextline prefix
+              while not closing:
+                # if there is a comment in between, save, reset and continue to calulate new alignment
+                if (style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE') and
+                    arg_name_lengths and line_tok.is_comment and
+                    line_tok.formatted_whitespace_prefix.startswith('\n')):
+                  all_arg_name_lengths.append(arg_name_lengths)
+                  arg_name_lengths = []
+                  index += 1
+                  line_tok = line_tokens[index]
+                  continue
+
+                prefix = line_tok.formatted_whitespace_prefix
+                newline_index = prefix.rfind('\n')
+
+                if newline_index != -1:
+                  if line_tok.is_argname_start:
+                    name_content = ''
+                    prefix = prefix[newline_index + 1:]
+                    arg_column = len(prefix)
+                  # if a typed arg name is so long
+                  # that there are newlines inside
+                  # only calulate the last line arg_name that has the assignment
+                  elif line_tok.is_argname:
+                    name_content = ''
+                    prefix = prefix[newline_index + 1:]
+                # if any argument not on newline
+                elif line_tok.is_argname_start:
+                  name_content = ''
+                  arg_column = line_tok.column
+                  # in case they are formatted into one line in final_line
+                  # but are put in separated lines in original codes
+                  if arg_column == first_arg_column:
+                    arg_column = line_tok.formatted_whitespace_prefix
+                # on the same argument level
+                if (line_tok.is_argname_start and arg_name_lengths and
+                    arg_column == first_arg_column):
+                  argname_end = line_tok
+                  while argname_end.is_argname:
+                    argname_end = argname_end.next_token
+                  # argument without assignment in between
+                  if not argname_end.is_argassign:
+                    all_arg_name_lengths.append(arg_name_lengths)
+                    arg_name_lengths = []
+                    index += 1
+                    line_tok = line_tokens[index]
+                    continue
+
+                if line_tok.is_argassign and arg_column == first_arg_column:
+                  arg_name_lengths.append(len(name_content))
+                elif line_tok.is_argname and arg_column == first_arg_column:
+                  name_content += '{}{}'.format(prefix, line_tok.value)
+                  # add up all token values before the arg assign operator
+
+                index += 1
+                if index < len(line_tokens):
+                  line_tok = line_tokens[index]
+                # when the matching closing bracket is never found
+                # due to edge cases where the closing bracket
+                # is not indented or dedented
+                else:
+                  all_arg_name_lengths.append(arg_name_lengths)
+                  break
+
+                # if there is a new object(list/tuple/dict) with its entries on newlines,
+                # save, reset and continue to calulate new alignment
+                if (line_tok.value in ['(', '[', '{'] and
+                    line_tok.next_token and
+                    line_tok.next_token.formatted_whitespace_prefix.startswith(
+                        '\n')):
+                  if arg_name_lengths:
+                    all_arg_name_lengths.append(arg_name_lengths)
+                  arg_name_lengths = []
+                  index += 1
+                  line_tok = line_tokens[index]
+                  continue
+
+                if line_tok.value == ')' and not line_tok.is_pseudo:
+                  if line_tok.formatted_whitespace_prefix.startswith('\n'):
+                    close_column = len(
+                        line_tok.formatted_whitespace_prefix.lstrip('\n'))
+                  else:
+                    close_column = line_tok.column
+                  if close_column < first_arg_column:
+                    if arg_name_lengths:
+                      all_arg_name_lengths.append(arg_name_lengths)
+                    closing = True
+
+              # update the alignment once one full arg list is processed
+              if all_arg_name_lengths:
+                # if argument list with only the first argument on newline
+                if len(all_arg_name_lengths) == 1 and len(
+                    all_arg_name_lengths[0]) == 1:
+                  continue
+                max_name_length = 0
+                all_arg_name_lengths_index = 0
+                arg_name_lengths = all_arg_name_lengths[
+                    all_arg_name_lengths_index]
+                max_name_length = max(arg_name_lengths or [0]) + 2
+                arg_lengths_index = 0
+                for token in line_tokens[first_arg_index:index]:
+                  if token.is_argassign:
+                    name_token = token.previous_token
+                    while name_token.is_argname and not name_token.is_argname_start:
+                      name_token = name_token.previous_token
+                    name_column = len(
+                        name_token.formatted_whitespace_prefix.lstrip('\n'))
+                    if name_column == first_arg_column:
+                      if all_arg_name_lengths_index < len(all_arg_name_lengths):
+                        if arg_lengths_index == len(arg_name_lengths):
+                          all_arg_name_lengths_index += 1
+                          arg_name_lengths = all_arg_name_lengths[
+                              all_arg_name_lengths_index]
+                          max_name_length = max(arg_name_lengths or [0]) + 2
+                          arg_lengths_index = 0
+
+                        if arg_lengths_index < len(arg_name_lengths):
+
+                          assert arg_name_lengths[
+                              arg_lengths_index] < max_name_length
+
+                          padded_spaces = ' ' * (
+                              max_name_length -
+                              arg_name_lengths[arg_lengths_index] - 1)
+                          arg_lengths_index += 1
+
+                          assign_content = '{}{}'.format(
+                              padded_spaces, token.value.strip())
+                          existing_whitespace_prefix = \
+                                token.formatted_whitespace_prefix.lstrip('\n')
+
+                          # in case the existing spaces are larger than padded spaces
+                          if (len(padded_spaces) == 1 or
+                              len(padded_spaces) > 1 and
+                              len(existing_whitespace_prefix)
+                              > len(padded_spaces)):
+                            token.whitespace_prefix = ''
+                          elif assign_content.startswith(
+                              existing_whitespace_prefix):
+                            assign_content = assign_content[
+                                len(existing_whitespace_prefix):]
+
+                          token.value = assign_content
+
+        final_lines_index += 1
+        process_content = True
+        break
+
+    if not process_content:
       final_lines_index += 1
 
 

@@ -322,3 +322,48 @@ class FormatToken(object):
   def is_copybara_comment(self):
     return self.is_comment and re.match(
         r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
+
+  @property
+  def is_argassign(self):
+    return (subtypes.DEFAULT_OR_NAMED_ASSIGN in self.subtypes or
+            subtypes.VARARGS_LIST in self.subtypes)
+
+  @property
+  def is_argname(self):
+    # it's the argument part before argument assignment operator,
+    # including tnames and data type
+    # not the assign operator,
+    # not the value after the assign operator
+
+    # argument without assignment is also included
+    # the token is arg part before '=' but not after '='
+    if self.is_argname_start:
+      return True
+
+    # exclude comment inside argument list
+    if not self.is_comment:
+      # the token is any element in typed arglist
+      if subtypes.TYPED_NAME_ARG_LIST in self.subtypes:
+        return True
+
+    return False
+
+  @property
+  def is_argname_start(self):
+    # return true if it's the start of every argument entry
+    previous_subtypes = {0}
+    if self.previous_token:
+      previous_subtypes = self.previous_token.subtypes
+
+    return ((not self.is_comment and
+             subtypes.DEFAULT_OR_NAMED_ASSIGN not in self.subtypes and
+             subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes and
+             subtypes.DEFAULT_OR_NAMED_ASSIGN not in previous_subtypes and
+             (not subtypes.PARAMETER_STOP in self.subtypes or
+              subtypes.PARAMETER_START in self.subtypes))
+            or  # if there is comment, the arg after it is the argname start
+            (not self.is_comment and self.previous_token and
+             self.previous_token.is_comment and
+             (subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in previous_subtypes or
+              subtypes.TYPED_NAME_ARG_LIST in self.subtypes or
+              subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in self.subtypes)))
