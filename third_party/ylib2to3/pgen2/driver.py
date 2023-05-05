@@ -182,18 +182,14 @@ class Driver(object):
 
 
 def _generate_pickle_name(gt):
-  if len(gt.split(os.sep)) == 1:
-    return gt
-  tmp_dir = Path(tempfile.gettempdir())
-  gt_name = gt.split(os.sep)[-1]
-  head, tail = os.path.splitext(gt_name)
+  gt_path = Path(gt)
+  head, tail = os.path.splitext(gt_path.name)
   if tail == '.txt':
     tail = ''
-  yapf_tmp_dir = tmp_dir / 'yapf'
-  yapf_tmp_dir.mkdir(exist_ok=True)
-  pickle_name = yapf_tmp_dir / (
-      head + tail + '.'.join(map(str, sys.version_info)) + '.pickle')
-  return str(pickle_name.absolute())
+  pickle_name = head + tail + '.pickle'
+  if gt_path.exists():
+    pickle_name = str((gt_path.parent / pickle_name).resolve())
+  return pickle_name
 
 
 def load_grammar(gt='Grammar.txt',
