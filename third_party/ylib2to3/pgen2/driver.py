@@ -18,7 +18,9 @@ __all__ = ['Driver', 'load_grammar']
 import io
 import os
 import logging
+from pathlib import Path
 import pkgutil
+import tempfile
 import sys
 from typing import (
     Any,
@@ -180,10 +182,16 @@ class Driver(object):
 
 
 def _generate_pickle_name(gt):
-  head, tail = os.path.splitext(gt)
+  tmp_dir = Path(tempfile.gettempdir())
+  gt_name = gt.split(os.sep)[-1]
+  head, tail = os.path.splitext(gt_name)
   if tail == '.txt':
     tail = ''
-  return head + tail + '.'.join(map(str, sys.version_info)) + '.pickle'
+  yapf_tmp_dir = tmp_dir / 'yapf'
+  yapf_tmp_dir.mkdir(exist_ok=True)
+  pickle_name = yapf_tmp_dir / (
+      head + tail + '.'.join(map(str, sys.version_info)) + '.pickle')
+  return pickle_name
 
 
 def load_grammar(gt='Grammar.txt',
