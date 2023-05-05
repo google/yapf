@@ -282,14 +282,11 @@ class FormatFileTest(unittest.TestCase):
           print_diff=True)
 
   def testNoFile(self):
-    stream = StringIO()
-    handler = logging.StreamHandler(stream)
-    logger = logging.getLogger('mylogger')
-    logger.addHandler(handler)
-    self.assertRaises(
-        IOError, yapf_api.FormatFile, 'not_a_file.py', logger=logger.error)
-    self.assertEqual(stream.getvalue(),
-                     "[Errno 2] No such file or directory: 'not_a_file.py'\n")
+    with self.assertRaises(IOError) as context:
+      yapf_api.FormatFile('not_a_file.py')
+
+    self.assertEqual(str(context.exception),
+		     "[Errno 2] No such file or directory: 'not_a_file.py'")
 
   def testCommentsUnformatted(self):
     code = textwrap.dedent("""\
