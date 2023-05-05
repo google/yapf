@@ -81,7 +81,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
           'test': RunTests,
       },
       package_data={
-          'third_party.yapf_diff': ['yapf_diff/LICENSE',],
+          'third_party.yapf_diff': ['yapf_diff/LICENSE'],
           'third_pary.ylib2to3': [
               'Grammar.txt', 'PatternGrammar.txt', 'LICENSE'
           ]
