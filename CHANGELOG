@@ -2,6 +2,13 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.41.2] 2022-08-30
+### Fixed
+- Fixed a problem in _AlignTrailingComments(final_lines).
+  Exclude the pseudo parantheses when calculating the line length before the comment.
+- Fixed another problem when the number of the existing spaces before the
+  comment is larger than the padding spaces needed to align.
+
 ## [0.40.0] UNRELEASED
 ### Added
 - Support for Python 3.11
