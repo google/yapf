@@ -180,6 +180,7 @@ class Driver(object):
 
 
 def _generate_pickle_name(gt):
+  # type:(str) -> str
   head, tail = os.path.splitext(gt)
   if tail == '.txt':
     tail = ''
@@ -191,10 +192,12 @@ def load_grammar(gt='Grammar.txt',
                  save=True,
                  force=False,
                  logger=None):
+  # type:(str, str | None, bool, bool, logging.Logger | None) -> grammar.Grammar
   """Load the grammar (maybe from a pickle)."""
   if logger is None:
     logger = logging.getLogger()
   gp = _generate_pickle_name(gt) if gp is None else gp
+  grammar_text = gt
   try:
     newer = _newer(gp, gt)
   except OSError as err:
@@ -206,9 +209,9 @@ def load_grammar(gt='Grammar.txt',
     pd = pkgutil.get_data('third_party.ylib2to3', gt_basename)
     if pd is None:
       raise RuntimeError('Failed to load grammer %s from package' % gt_basename)
-    gt = io.StringIO(pd.decode(encoding='utf-8'))
+    grammar_text = io.StringIO(pd.decode(encoding='utf-8'))
   if force or not newer:
-    g = pgen.generate_grammar(gt)
+    g = pgen.generate_grammar(grammar_text)
     if save:
       try:
         g.dump(gp)
