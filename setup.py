@@ -109,9 +109,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
           'third_party': [
               'yapf_diff/LICENSE',
               'ylib2to3/Grammar.txt',
-              'ylib2to3/Grammar.pickle',
               'ylib2to3/PatternGrammar.txt',
-              'ylib2to3/PatternGrammar.pickle',
               'ylib2to3/LICENSE',
           ]
       },

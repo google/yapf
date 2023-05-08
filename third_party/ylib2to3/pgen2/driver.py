@@ -201,7 +201,19 @@ def load_grammar(gt='Grammar.txt',
   if logger is None:
     logger = logging.getLogger()
   gp = _generate_pickle_name(gt) if gp is None else gp
-  if force or not _newer(gp, gt):
+  try:
+    newer = _newer(gp, gt)
+  except OSError as err:
+    logger.debug('OSError, could not check if newer: %s', err.args)
+    newer = True
+  if not os.path.exists(gt):
+    # Assume package data
+    gt_basename = os.path.basename(gt)
+    pd = pkgutil.get_data('third_party.ylib2to3', gt_basename)
+    if pd is None:
+      raise RuntimeError('Failed to load grammer %s from package' % gt_basename)
+    gt = io.StringIO(pd.decode(encoding='utf-8'))
+  if force or not newer:
     g = pgen.generate_grammar(gt)
     if save:
       try:
@@ -235,6 +247,7 @@ def load_packaged_grammar(package, grammar_source):
     but preserves load_grammar's automatic regeneration behavior when possible.
 
     """  # noqa: E501
+  return load_grammar(grammar_source)
   if os.path.isfile(grammar_source):
     return load_grammar(grammar_source)
   pickled_name = _generate_pickle_name(os.path.basename(grammar_source))

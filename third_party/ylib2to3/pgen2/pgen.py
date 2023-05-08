@@ -2,6 +2,7 @@
 # Licensed to PSF under a Contributor Agreement.
 
 # Pgen imports
+from io import StringIO
 from . import grammar, token, tokenize
 
 
@@ -11,8 +12,11 @@ class PgenGrammar(grammar.Grammar):
 
 class ParserGenerator(object):
 
-  def __init__(self, filename, stream=None):
+  def __init__(self, filename=None, stream=None):
     close_stream = None
+    if filename is None and stream is None:
+      raise RuntimeError(
+          'Either a filename or a stream is expected, both were none')
     if stream is None:
       stream = open(filename, encoding='utf-8')
       close_stream = stream.close
@@ -390,6 +394,13 @@ class DFAState(object):
   __hash__ = None  # For Py3 compatibility.
 
 
-def generate_grammar(filename='Grammar.txt'):
-  p = ParserGenerator(filename)
+def generate_grammar(filename_or_stream='Grammar.txt'):
+  # type:(str | StringIO) -> PgenGrammar
+  if isinstance(filename_or_stream, str):
+    p = ParserGenerator(filename_or_stream)
+  elif isinstance(filename_or_stream, StringIO):
+    p = ParserGenerator(stream=filename_or_stream)
+  else:
+    raise NotImplementedError('Type %s not implemented' %
+                              type(filename_or_stream))
   return p.make_grammar()
