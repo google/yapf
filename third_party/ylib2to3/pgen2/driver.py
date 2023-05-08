@@ -18,9 +18,7 @@ __all__ = ['Driver', 'load_grammar']
 import io
 import os
 import logging
-from pathlib import Path
 import pkgutil
-import tempfile
 import sys
 from typing import (
     Any,
@@ -182,14 +180,10 @@ class Driver(object):
 
 
 def _generate_pickle_name(gt):
-  gt_path = Path(gt)
-  head, tail = os.path.splitext(gt_path.name)
+  head, tail = os.path.splitext(gt)
   if tail == '.txt':
     tail = ''
-  pickle_name = head + tail + '.pickle'  # pyzipapp install
-  if gt_path.exists():  # regular install
-    pickle_name = str((gt_path.parent / pickle_name).resolve())
-  return pickle_name
+  return head + tail + '.'.join(map(str, sys.version_info)) + '.pickle'
 
 
 def load_grammar(gt='Grammar.txt',

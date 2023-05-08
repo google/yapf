@@ -18,31 +18,8 @@ import sys
 import unittest
 
 from setuptools import Command, find_packages, setup
-from setuptools.command.develop import develop
-from setuptools.command.install import install
 
 import yapf
-from third_party.ylib2to3.pgen2.driver import main as pickle_gen
-
-
-def gen_pickles():
-  pickle_gen('third_party/ylib2to3/Grammar.txt')
-  pickle_gen('third_party/ylib2to3/PatternGrammar.txt')
-
-
-class PostDevelopCommand(develop):
-  """Post-installation for development mode."""
-
-  def run(self):
-    develop.run(self)
-    gen_pickles()
-
-
-class PostInstallCommand(install):
-
-  def run(self):
-    install.run(self)
-    gen_pickles()
 
 
 class RunTests(Command):
@@ -101,8 +78,6 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
           ],
       },
       cmdclass={
-          'develop': PostDevelopCommand,
-          'install': PostInstallCommand,
           'test': RunTests,
       },
       package_data={
