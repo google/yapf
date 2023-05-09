@@ -14,11 +14,11 @@
 """Enhanced token information for formatting."""
 
 import keyword
-from third_party.ylib2to3.pytree import type_repr
+from yapf.third_party.ylib2to3.pytree import type_repr
 import re
 
 from functools import lru_cache
-from third_party.ylib2to3.pgen2 import token
+from yapf.third_party.ylib2to3.pgen2 import token
 
 from yapf.pytree import pytree_utils
 from yapf.yapflib import style

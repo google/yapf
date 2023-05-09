@@ -74,18 +74,18 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       entry_points={
           'console_scripts': [
               'yapf = yapf:run_main',
-              'yapf-diff = third_party.yapf_diff.yapf_diff:main',
+              'yapf-diff = yapf.third_party.yapf_diff.yapf_diff:main',
           ],
       },
       cmdclass={
           'test': RunTests,
       },
       package_data={
-          'third_party': [
-              'yapf_diff/LICENSE',
-              'ylib2to3/Grammar.txt',
-              'ylib2to3/PatternGrammar.txt',
-              'ylib2to3/LICENSE',
+          'yapf': [
+              'third_party/yapf_diff/LICENSE',
+              'third_party/ylib2to3/Grammar.txt',
+              'third_party/ylib2to3/PatternGrammar.txt',
+              'third_party/ylib2to3/LICENSE',
           ]
       },
       include_package_data=True,
