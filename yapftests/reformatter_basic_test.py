@@ -3202,7 +3202,7 @@ my_dict = {
     unformatted_code = textwrap.dedent("""\
         with (cert_authority.cert_pem.tempfile() as ca_temp_path, patch.object(os, 'environ', os.environ | {'REQUESTS_CA_BUNDLE': ca_temp_path}),):
             httpserver_url = httpserver.url_for('/resource.jar')
-        """)
+        """)  # noqa: E501
     expected = textwrap.dedent("""\
         with (
             cert_authority.cert_pem.tempfile() as ca_temp_path,
