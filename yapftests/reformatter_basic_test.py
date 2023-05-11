@@ -3197,6 +3197,23 @@ my_dict = {
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
+  @unittest.skipUnless(PY310, 'Requires Python 3.10')
+  def testParenthesizedContextManagers(self):
+    unformatted_code = textwrap.dedent("""\
+        with (cert_authority.cert_pem.tempfile() as ca_temp_path, patch.object(os, 'environ', os.environ | {'REQUESTS_CA_BUNDLE': ca_temp_path}),):
+            httpserver_url = httpserver.url_for('/resource.jar')
+        """)
+    expected = textwrap.dedent("""\
+        with (
+            cert_authority.cert_pem.tempfile() as ca_temp_path,
+            patch.object(os, 'environ',
+                         os.environ | {'REQUESTS_CA_BUNDLE': ca_temp_path}),
+        ):
+          httpserver_url = httpserver.url_for('/resource.jar')
+        """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+
 
 if __name__ == '__main__':
   unittest.main()
