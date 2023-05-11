@@ -1,6 +1,4 @@
-A fork of blib2to3 taken from black.
-
-Commit hash: dd0e912a6e7ebe432299e317e2e79b592fc2adc3
+A fork of python's lib2to3 with select features backported from blib2to3.
 
 Reasons for forking:
 
