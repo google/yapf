@@ -3179,7 +3179,7 @@ my_dict = {
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
   @unittest.skipUnless(PY310, 'Requires Python 3.10')
-  def testPatternMatching(self):
+  def testStructuredPatternMatching(self):
     unformatted_code = textwrap.dedent("""\
         match command.split():
           case[action   ]:
