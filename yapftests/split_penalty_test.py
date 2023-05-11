@@ -17,7 +17,7 @@ import sys
 import textwrap
 import unittest
 
-from yapf.third_party.ylib2to3 import pytree
+from yapf.third_party._ylib2to3 import pytree
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
