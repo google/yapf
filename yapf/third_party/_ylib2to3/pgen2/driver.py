@@ -16,21 +16,16 @@ __all__ = ['Driver', 'load_grammar']
 
 # Python imports
 import io
-import os
 import logging
+import os
 import pkgutil
 import sys
-from typing import (
-    Any,
-    List,
-    Optional,
-    Iterator,
-)
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from typing import Any, Iterator, List, Optional
 
 # Pgen imports
-from . import grammar, parse, token, tokenize, pgen
+from . import grammar, parse, pgen, token, tokenize
 
 
 @dataclass
@@ -244,7 +239,6 @@ def load_packaged_grammar(package, grammar_source):
     but preserves load_grammar's automatic regeneration behavior when possible.
 
     """  # noqa: E501
-  return load_grammar(grammar_source)
   if os.path.isfile(grammar_source):
     return load_grammar(grammar_source)
   pickled_name = _generate_pickle_name(os.path.basename(grammar_source))
