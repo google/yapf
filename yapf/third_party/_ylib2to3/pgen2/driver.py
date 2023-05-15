@@ -22,10 +22,16 @@ import pkgutil
 import sys
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Iterator, List, Optional
+
+from platformdirs import user_cache_dir
 
 # Pgen imports
 from . import grammar, parse, pgen, token, tokenize
+
+__yapf_version__ = '0.33.0'
+__cache_dir__ = user_cache_dir('YAPF', 'Google', version=__yapf_version__)
 
 
 @dataclass
@@ -178,16 +184,21 @@ def _generate_pickle_name(gt):
   # type:(str) -> str
   """Get the filepath to write a pickle file to given the path of a grammar textfile.
 
+  The returned filepath should be in a user-specific cache directory.
+
   Args:
       gt (str): path to grammar text file
 
   Returns:
       str: path to pickle file
   """
-  head, tail = os.path.splitext(gt)
+
+  grammar_textfile_name = os.path.basename(gt)
+  head, tail = os.path.splitext(grammar_textfile_name)
   if tail == '.txt':
     tail = ''
-  return head + tail + '.'.join(map(str, sys.version_info)) + '.pickle'
+  return __cache_dir__ + os.sep + head + tail + '-py' + '.'.join(
+      map(str, sys.version_info)) + '.pickle'
 
 
 def load_grammar(gt='Grammar.txt',
@@ -217,6 +228,7 @@ def load_grammar(gt='Grammar.txt',
     g = pgen.generate_grammar(grammar_text)
     if save:
       try:
+        Path(gp).parent.mkdir(parents=True, exist_ok=True)
         g.dump(gp)
       except OSError:
         # Ignore error, caching is not vital.

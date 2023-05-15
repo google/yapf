@@ -90,5 +90,5 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       },
       include_package_data=True,
       python_requires='>=3.7',
-      install_requires=['tomli>=2.0.1'],
+      install_requires=['tomli>=2.0.1', 'platformdirs>=3.5.1'],
   )
