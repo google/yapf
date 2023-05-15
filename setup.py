@@ -42,7 +42,10 @@ class RunTests(Command):
 PKG_INFO = ConfigParser()
 PKG_INFO_FILE = Path(
     sys.modules[__name__].__file__).parent / 'yapf/PKG_INFO.ini'  # type: ignore
+print(f'{Path(PKG_INFO_FILE)=}')
+print(f'Path exists?: {Path(PKG_INFO_FILE).exists()}')
 PKG_INFO.read(PKG_INFO_FILE)
+print(PKG_INFO.sections())
 PKG_INFO = PKG_INFO['PKG_INFO']
 
 with codecs.open('README.rst', 'r', 'utf-8') as fd:
