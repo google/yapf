@@ -176,7 +176,7 @@ class Driver(object):
 
 def _generate_pickle_name(gt):
   # type:(str) -> str
-  """_summary_
+  """Get the filepath to write a pickle file to given the path of a grammar textfile.
 
   Args:
       gt (str): path to grammar text file
