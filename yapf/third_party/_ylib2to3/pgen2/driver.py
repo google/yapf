@@ -176,6 +176,14 @@ class Driver(object):
 
 def _generate_pickle_name(gt):
   # type:(str) -> str
+  """_summary_
+
+  Args:
+      gt (str): path to grammar text file
+
+  Returns:
+      str: path to pickle file
+  """
   head, tail = os.path.splitext(gt)
   if tail == '.txt':
     tail = ''
