@@ -16,8 +16,6 @@
 import codecs
 import sys
 import unittest
-from configparser import ConfigParser
-from pathlib import Path
 
 from setuptools import Command, find_packages, setup
 
@@ -39,23 +37,15 @@ class RunTests(Command):
     sys.exit(0 if results.wasSuccessful() else 1)
 
 
-PKG_INFO = ConfigParser()
-PKG_INFO_FILE = Path('yapf/PKG_INFO.ini')
-print(f'{Path(PKG_INFO_FILE)=}')
-print(f'Path exists?: {Path(PKG_INFO_FILE).exists()}')
-PKG_INFO.read(PKG_INFO_FILE)
-print(PKG_INFO.sections())
-PKG_INFO = PKG_INFO['PKG_INFO']
-
 with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(
       name='yapf',
-      version=PKG_INFO['Version'],
+      version='0.33.0',
       description='A formatter for Python code.',
       url='https://github.com/google/yapf',
       long_description=fd.read(),
       license='Apache License, Version 2.0',
-      author=PKG_INFO['Author'],
+      author='Google Inc.',
       maintainer='Bill Wendling',
       maintainer_email='morbo@google.com',
       packages=find_packages('.'),
@@ -99,5 +89,9 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       },
       include_package_data=True,
       python_requires='>=3.7',
-      install_requires=['tomli>=2.0.1', 'platformdirs>=3.5.1'],
+      install_requires=[
+          'importlib-metadata>=6.6.0',
+          'platformdirs>=3.5.1',
+          'tomli>=2.0.1',
+      ],
   )

@@ -27,19 +27,16 @@ from pathlib import Path
 from pkgutil import get_data
 from typing import Any, Iterator, List, Optional
 
+from importlib_metadata import metadata
 from platformdirs import user_cache_dir
 
 # Pgen imports
 from . import grammar, parse, pgen, token, tokenize
 
-PKG_INFO = ConfigParser()
-PKG_INFO.read_string(get_data('yapf', 'PKG_INFO.ini').decode())  # type: ignore
-PKG_INFO = PKG_INFO['PKG_INFO']
-
 __cache_dir__ = user_cache_dir(
-    PKG_INFO['Name'],
-    PKG_INFO['Author'].split(' ')[0],
-    version=PKG_INFO['Version'])
+    metadata('yapf')['Name'].upper(),
+    metadata('yapf')['Author'].split(' ')[0],
+    version=metadata('yapf')['Version'])
 
 
 @dataclass
