@@ -40,7 +40,7 @@ class RunTests(Command):
 
 
 PKG_INFO = ConfigParser()
-PKG_INFO_FILE = Path('yapf/PKG_INFO.ini')  # type: ignore
+PKG_INFO_FILE = Path('yapf/PKG_INFO.ini')
 print(f'{Path(PKG_INFO_FILE)=}')
 print(f'Path exists?: {Path(PKG_INFO_FILE).exists()}')
 PKG_INFO.read(PKG_INFO_FILE)
