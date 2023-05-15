@@ -182,7 +182,8 @@ class Driver(object):
 
 def _generate_pickle_name(gt):
   # type:(str) -> str
-  """Get the filepath to write a pickle file to given the path of a grammar textfile.
+  """Get the filepath to write a pickle file to
+  given the path of a grammar textfile.
 
   The returned filepath should be in a user-specific cache directory.
 
