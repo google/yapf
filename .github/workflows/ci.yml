@@ -22,13 +22,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade . pip
+        python -m pip install --upgrade pip
     - name: Lint with flake8
       run: |
         python -m pip install flake8
         flake8 . --statistics
     - name: Test with pytest
       run: |
+        pip install .
         pip install pytest
         pip install pytest-cov
         pytest
