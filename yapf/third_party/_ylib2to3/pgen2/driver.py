@@ -14,15 +14,17 @@ __author__ = 'Guido van Rossum <guido@python.org>'
 
 __all__ = ['Driver', 'load_grammar']
 
-# Python imports
 import io
 import logging
 import os
 import pkgutil
 import sys
+# Python imports
+from configparser import ConfigParser
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
+from pkgutil import get_data
 from typing import Any, Iterator, List, Optional
 
 from platformdirs import user_cache_dir
@@ -30,8 +32,14 @@ from platformdirs import user_cache_dir
 # Pgen imports
 from . import grammar, parse, pgen, token, tokenize
 
-__yapf_version__ = '0.33.0'
-__cache_dir__ = user_cache_dir('YAPF', 'Google', version=__yapf_version__)
+PKG_INFO = ConfigParser()
+PKG_INFO.read_string(get_data('yapf', 'PKG_INFO.ini').decode())  # type: ignore
+PKG_INFO = PKG_INFO['PKG_INFO']
+
+__cache_dir__ = user_cache_dir(
+    PKG_INFO['Name'],
+    PKG_INFO['Author'].split(' ')[0],
+    version=PKG_INFO['Version'])
 
 
 @dataclass

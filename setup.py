@@ -88,6 +88,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       },
       package_data={
           'yapf': [
+              'PKG_INFO.ini',
               'third_party/yapf_diff/LICENSE',
               'third_party/_ylib2to3/Grammar.txt',
               'third_party/_ylib2to3/PatternGrammar.txt',
