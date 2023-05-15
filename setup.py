@@ -16,10 +16,10 @@
 import codecs
 import sys
 import unittest
+from configparser import ConfigParser
+from pathlib import Path
 
 from setuptools import Command, find_packages, setup
-
-import yapf
 
 
 class RunTests(Command):
@@ -39,15 +39,21 @@ class RunTests(Command):
     sys.exit(0 if results.wasSuccessful() else 1)
 
 
+PKG_INFO = ConfigParser()
+PKG_INFO_FILE = Path(
+    sys.modules[__name__].__file__).parent / 'yapf/PKG_INFO.ini'  # type: ignore
+PKG_INFO.read(PKG_INFO_FILE)
+PKG_INFO = PKG_INFO['PKG_INFO']
+
 with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(
       name='yapf',
-      version=yapf.__version__,
+      version=PKG_INFO['Version'],
       description='A formatter for Python code.',
       url='https://github.com/google/yapf',
       long_description=fd.read(),
       license='Apache License, Version 2.0',
-      author='Google Inc.',
+      author=PKG_INFO['Author'],
       maintainer='Bill Wendling',
       maintainer_email='morbo@google.com',
       packages=find_packages('.'),
