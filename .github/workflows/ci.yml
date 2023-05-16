@@ -39,4 +39,4 @@ jobs:
     - name: Lint with yapf
       run: |
         pip install .
-        yapf --diff --recursive .
+        yapf . -vv --diff --recursive
