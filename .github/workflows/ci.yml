@@ -20,16 +20,18 @@ jobs:
       uses: actions/setup-python@57ded4d7d5e986d7296eab16560982c6dd7c923b  # v4.6.0
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Update pip
       run: |
         python -m pip install --upgrade pip
+    - name: Install YAPF
+      run: |
+        pip install .
     - name: Lint with flake8
       run: |
         python -m pip install flake8
         flake8 . --statistics
     - name: Test with pytest
       run: |
-        pip install .
         pip install pytest
         pip install pytest-cov
         pytest
