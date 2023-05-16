@@ -80,7 +80,6 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       },
       package_data={
           'yapf': [
-              'PKG_INFO.ini',
               'third_party/yapf_diff/LICENSE',
               'third_party/_ylib2to3/Grammar.txt',
               'third_party/_ylib2to3/PatternGrammar.txt',
@@ -90,7 +89,6 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       include_package_data=True,
       python_requires='>=3.7',
       install_requires=[
-          'importlib-metadata>=6.6.0',
           'platformdirs>=3.5.1',
           'tomli>=2.0.1',
       ],
