@@ -33,12 +33,11 @@ import logging
 import os
 import sys
 
-from yapf.yapflib import errors
-from yapf.yapflib import file_resources
-from yapf.yapflib import style
-from yapf.yapflib import yapf_api
+from importlib_metadata import metadata
 
-__version__ = '0.33.0'
+from yapf.yapflib import errors, file_resources, style, yapf_api
+
+__version__ = metadata('yapf')['Version']
 
 
 def _raw_input():
