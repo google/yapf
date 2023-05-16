@@ -21,6 +21,7 @@ from lib2to3.pgen2 import token
 from yapf.pytree import split_penalty
 from yapf.yapflib import format_token
 from yapf.yapflib import logical_line
+
 from yapftests import yapf_test_helper
 
 

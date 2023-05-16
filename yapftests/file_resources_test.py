@@ -24,6 +24,7 @@ from io import BytesIO
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
+
 from yapftests import utils
 
 

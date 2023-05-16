@@ -22,6 +22,7 @@ from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
 from yapf.pytree import split_penalty
 from yapf.yapflib import style
+
 from yapftests import yapf_test_helper
 
 UNBREAKABLE = split_penalty.UNBREAKABLE

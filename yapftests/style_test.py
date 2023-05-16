@@ -21,6 +21,7 @@ import textwrap
 import unittest
 
 from yapf.yapflib import style
+
 from yapftests import utils
 from yapftests import yapf_test_helper
 

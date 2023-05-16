@@ -20,6 +20,7 @@ from contextlib import contextmanager
 from io import StringIO
 
 import yapf
+
 from yapftests import yapf_test_helper
 
 

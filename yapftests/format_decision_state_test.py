@@ -20,6 +20,7 @@ from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import logical_line
 from yapf.yapflib import style
+
 from yapftests import yapf_test_helper
 
 
