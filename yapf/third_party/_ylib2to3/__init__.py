@@ -1,1 +1,1 @@
-"""fork of black's blib2to3 fork of lib2to3"""
+"""fork of python's lib2to3 with some backports from black's blib2to3"""
