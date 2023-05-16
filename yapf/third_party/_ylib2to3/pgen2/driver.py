@@ -33,11 +33,6 @@ from platformdirs import user_cache_dir
 # Pgen imports
 from . import grammar, parse, pgen, token, tokenize
 
-__cache_dir__ = user_cache_dir(
-    metadata('yapf')['Name'].upper(),
-    metadata('yapf')['Author'].split(' ')[0],
-    version=metadata('yapf')['Version'])
-
 
 @dataclass
 class ReleaseRange:
@@ -203,7 +198,12 @@ def _generate_pickle_name(gt):
   head, tail = os.path.splitext(grammar_textfile_name)
   if tail == '.txt':
     tail = ''
-  return __cache_dir__ + os.sep + head + tail + '-py' + '.'.join(
+  cache_dir = user_cache_dir(
+      appname=metadata('yapf')['Name'].upper(),
+      appauthor=metadata('yapf')['Author'].split(' ')[0],
+      version=metadata('yapf')['Version'],
+  )
+  return cache_dir + os.sep + head + tail + '-py' + '.'.join(
       map(str, sys.version_info)) + '.pickle'
 
 
