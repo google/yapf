@@ -89,6 +89,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       include_package_data=True,
       python_requires='>=3.7',
       install_requires=[
+          'importlib-metadata>=6.6.0',
           'platformdirs>=3.5.1',
           'tomli>=2.0.1',
       ],
