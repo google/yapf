@@ -9,12 +9,24 @@ how this parsing engine works.
 
 """
 from contextlib import contextmanager
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Text
+from typing import Tuple
+from typing import cast
 
+from ..pytree import Context
+from ..pytree import RawNode
+from ..pytree import convert
 # Local imports
-from . import token, grammar, tokenize
-from typing import (cast, Any, Optional, Text, List, Iterator, Callable, Set,
-                    Tuple, Dict)
-from ..pytree import Context, RawNode, convert
+from . import grammar
+from . import token
+from . import tokenize
 
 DFA = List[List[Tuple[int, int]]]
 DFAS = Tuple[DFA, Dict[int, int]]

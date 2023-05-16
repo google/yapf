@@ -25,7 +25,8 @@ import sys
 from configparser import ConfigParser
 from tokenize import detect_encoding
 
-from yapf.yapflib import errors, style
+from yapf.yapflib import errors
+from yapf.yapflib import style
 
 CR = '\r'
 LF = '\n'

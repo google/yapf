@@ -20,7 +20,6 @@ Pull them out and make it into nodes of their own.
 """
 
 from yapf.third_party._ylib2to3 import pytree
-
 from yapf.yapflib import format_token
 
 

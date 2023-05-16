@@ -35,13 +35,13 @@ These APIs have some common arguments:
 import codecs
 import difflib
 import re
-from yapf import pyparser
 
-from yapf.pytree import pytree_unwrapper
-from yapf.pytree import pytree_utils
+from yapf import pyparser
 from yapf.pytree import blank_line_calculator
 from yapf.pytree import comment_splicer
 from yapf.pytree import continuation_splicer
+from yapf.pytree import pytree_unwrapper
+from yapf.pytree import pytree_utils
 from yapf.pytree import split_penalty
 from yapf.pytree import subtype_assigner
 from yapf.yapflib import errors

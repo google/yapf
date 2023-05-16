@@ -35,7 +35,10 @@ import sys
 
 from importlib_metadata import metadata
 
-from yapf.yapflib import errors, file_resources, style, yapf_api
+from yapf.yapflib import errors
+from yapf.yapflib import file_resources
+from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 __version__ = metadata('yapf')['Version']
 

@@ -13,13 +13,11 @@ __author__ = 'Guido van Rossum <guido@python.org>'
 
 import sys
 from io import StringIO
-from typing import (
-    List,
-    Optional,
-    Text,
-    Tuple,
-    Union,
-)
+from typing import List
+from typing import Optional
+from typing import Text
+from typing import Tuple
+from typing import Union
 
 HUGE = 0x7FFFFFFF  # maximum repeat count, default max
 
@@ -30,6 +28,7 @@ def type_repr(type_num):
   global _type_reprs
   if not _type_reprs:
     from .pygram import python_symbols
+
     # printing tokens is possible but not as useful
     # from .pgen2 import token // token.__dict__.items():
     for name, val in python_symbols.__dict__.items():

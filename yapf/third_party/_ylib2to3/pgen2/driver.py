@@ -22,16 +22,24 @@ import sys
 # Python imports
 from configparser import ConfigParser
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from pathlib import Path
 from pkgutil import get_data
-from typing import Any, Iterator, List, Optional
+from typing import Any
+from typing import Iterator
+from typing import List
+from typing import Optional
 
 from importlib_metadata import metadata
 from platformdirs import user_cache_dir
 
 # Pgen imports
-from . import grammar, parse, pgen, token, tokenize
+from . import grammar
+from . import parse
+from . import pgen
+from . import token
+from . import tokenize
 
 
 @dataclass

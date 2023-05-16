@@ -17,7 +17,6 @@ import unittest
 
 from yapf.third_party._ylib2to3 import pytree
 from yapf.third_party._ylib2to3.pgen2 import token
-
 from yapf.yapflib import format_token
 
 

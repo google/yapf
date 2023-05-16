@@ -17,7 +17,9 @@ import codecs
 import sys
 import unittest
 
-from setuptools import Command, find_packages, setup
+from setuptools import Command
+from setuptools import find_packages
+from setuptools import setup
 
 
 class RunTests(Command):

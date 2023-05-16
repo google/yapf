@@ -28,13 +28,26 @@ __author__ = 'Ka-Ping Yee <ping@lfw.org>'
 __credits__ = \
     'GvR, ESR, Tim Peters, Thomas Wouters, Fred Drake, Skip Montanaro'
 
-import string
 import re
-from codecs import BOM_UTF8, lookup
-from .token import (ENDMARKER, ERRORTOKEN, OP, tok_name, NEWLINE, NL, NAME,
-                    NUMBER, ASYNC, AWAIT, INDENT, DEDENT, COMMENT, STRING)
+import string
+from codecs import BOM_UTF8
+from codecs import lookup
 
 from . import token
+from .token import ASYNC
+from .token import AWAIT
+from .token import COMMENT
+from .token import DEDENT
+from .token import ENDMARKER
+from .token import ERRORTOKEN
+from .token import INDENT
+from .token import NAME
+from .token import NEWLINE
+from .token import NL
+from .token import NUMBER
+from .token import OP
+from .token import STRING
+from .token import tok_name
 
 __all__ = [x for x in dir(token) if x[0] != '_'
           ] + ['tokenize', 'generate_tokens', 'untokenize']

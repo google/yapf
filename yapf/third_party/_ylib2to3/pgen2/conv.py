@@ -29,7 +29,8 @@ without having to invoke the Python pgen C program.
 import re
 
 # Local imports
-from pgen2 import grammar, token
+from pgen2 import grammar
+from pgen2 import token
 
 
 class Converter(grammar.Grammar):

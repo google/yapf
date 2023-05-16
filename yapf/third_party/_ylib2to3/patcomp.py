@@ -12,12 +12,16 @@ __author__ = 'Guido van Rossum <guido@python.org>'
 # Python imports
 import io
 
-# Fairly local imports
-from .pgen2 import driver, literals, token, tokenize, parse, grammar
-
 # Really local imports
-from . import pytree
 from . import pygram
+from . import pytree
+# Fairly local imports
+from .pgen2 import driver
+from .pgen2 import grammar
+from .pgen2 import literals
+from .pgen2 import parse
+from .pgen2 import token
+from .pgen2 import tokenize
 
 
 class PatternSyntaxError(Exception):

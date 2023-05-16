@@ -3,7 +3,10 @@
 
 # Pgen imports
 from io import StringIO
-from . import grammar, token, tokenize
+
+from . import grammar
+from . import token
+from . import tokenize
 
 
 class PgenGrammar(grammar.Grammar):

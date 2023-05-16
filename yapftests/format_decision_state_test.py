@@ -17,7 +17,6 @@ import textwrap
 import unittest
 
 from yapf.pytree import pytree_utils
-
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import logical_line
 from yapf.yapflib import style
