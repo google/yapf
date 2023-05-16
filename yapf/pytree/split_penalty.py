@@ -14,7 +14,6 @@
 """Computation of split penalties before/between tokens."""
 
 import re
-
 from lib2to3 import pytree
 from lib2to3.pgen2 import token as grammar_token
 

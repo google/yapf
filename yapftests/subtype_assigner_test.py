@@ -19,7 +19,6 @@ import unittest
 from yapf.pytree import pytree_utils
 from yapf.yapflib import format_token
 from yapf.yapflib import subtypes
-
 from yapftests import yapf_test_helper
 
 

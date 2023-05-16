@@ -19,7 +19,6 @@ import unittest
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
-
 from yapftests import yapf_test_helper
 
 PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8

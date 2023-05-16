@@ -14,12 +14,12 @@
 # limitations under the License.
 """Tests for yapf.__init__.main."""
 
-from contextlib import contextmanager
-from io import StringIO
 import sys
 import unittest
-import yapf
+from contextlib import contextmanager
+from io import StringIO
 
+import yapf
 from yapftests import yapf_test_helper
 
 

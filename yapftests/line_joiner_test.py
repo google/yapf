@@ -18,7 +18,6 @@ import unittest
 
 from yapf.yapflib import line_joiner
 from yapf.yapflib import style
-
 from yapftests import yapf_test_helper
 
 
