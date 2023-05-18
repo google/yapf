@@ -35,5 +35,5 @@
 /yapf.egg-info
 
 /.idea
-.vscode/settings.json
+/.vscode/settings.json
 /.venv*/
