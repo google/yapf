@@ -41,4 +41,4 @@ jobs:
         isort . --check --diff
     - name: Lint with yapf
       run: |
-        yapf . -vv --diff --recursive
+        yapf . --diff --recursive
