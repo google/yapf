@@ -19,9 +19,10 @@ line if there were no line length restrictions. It's then used by the parser to
 perform the wrapping required to comply with the style guide.
 """
 
+from yapf.third_party._ylib2to3.fixer_util import syms as python_symbols
+
 from yapf.pytree import pytree_utils
 from yapf.pytree import split_penalty
-from yapf.third_party._ylib2to3.fixer_util import syms as python_symbols
 from yapf.yapflib import format_token
 from yapf.yapflib import style
 from yapf.yapflib import subtypes

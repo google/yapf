@@ -24,11 +24,12 @@ Annotations:
       subtypes.
 """
 
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
 from yapf.third_party._ylib2to3 import pytree
 from yapf.third_party._ylib2to3.pgen2 import token as grammar_token
 from yapf.third_party._ylib2to3.pygram import python_symbols as syms
+
+from yapf.pytree import pytree_utils
+from yapf.pytree import pytree_visitor
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 

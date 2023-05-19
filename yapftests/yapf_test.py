@@ -26,6 +26,7 @@ import unittest
 from io import StringIO
 
 from yapf.third_party._ylib2to3.pgen2 import tokenize
+
 from yapf.yapflib import errors
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api

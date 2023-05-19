@@ -17,9 +17,10 @@ import keyword
 import re
 from functools import lru_cache
 
-from yapf.pytree import pytree_utils
 from yapf.third_party._ylib2to3.pgen2 import token
 from yapf.third_party._ylib2to3.pytree import type_repr
+
+from yapf.pytree import pytree_utils
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 

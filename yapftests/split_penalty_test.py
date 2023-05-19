@@ -17,10 +17,11 @@ import sys
 import textwrap
 import unittest
 
+from yapf.third_party._ylib2to3 import pytree
+
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
 from yapf.pytree import split_penalty
-from yapf.third_party._ylib2to3 import pytree
 from yapf.yapflib import style
 
 from yapftests import yapf_test_helper
