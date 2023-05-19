@@ -14,7 +14,6 @@
 """Tests for yapf.format_token."""
 
 import unittest
-
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
