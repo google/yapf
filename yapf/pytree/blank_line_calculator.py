@@ -174,5 +174,4 @@ def _StartsInZerothColumn(node):
 
 
 def _AsyncFunction(node):
-  return (node.prev_sibling and
-          node.prev_sibling.type == grammar_token.ASYNC)
+  return (node.prev_sibling and node.prev_sibling.type == grammar_token.ASYNC)

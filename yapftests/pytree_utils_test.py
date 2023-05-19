@@ -14,7 +14,6 @@
 """Tests for yapf.pytree_utils."""
 
 import unittest
-
 from lib2to3 import pygram
 from lib2to3 import pytree
 from lib2to3.pgen2 import token

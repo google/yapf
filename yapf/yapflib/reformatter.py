@@ -22,7 +22,6 @@ can be merged together are. The best formatting is returned as a string.
 import collections
 import heapq
 import re
-
 from lib2to3 import pytree
 from lib2to3.pgen2 import token
 
