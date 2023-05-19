@@ -36,7 +36,7 @@ import codecs
 import difflib
 import re
 
-from yapf import pyparser
+from yapf.pyparser import pyparser
 from yapf.pytree import blank_line_calculator
 from yapf.pytree import comment_splicer
 from yapf.pytree import continuation_splicer
