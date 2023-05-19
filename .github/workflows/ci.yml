@@ -23,7 +23,7 @@ jobs:
     - name: Update pip
       run: |
         python -m pip install --upgrade pip
-    - name: Install YAPF
+    - name: Install yapf
       run: |
         pip install .
     - name: Lint with flake8
@@ -41,5 +41,4 @@ jobs:
         isort . --check --diff
     - name: Lint with yapf
       run: |
-        pip install .
         yapf . -vv --diff --recursive
