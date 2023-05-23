@@ -145,7 +145,8 @@ def main(argv):
       verify=args.verify,
       parallel=args.parallel,
       quiet=args.quiet,
-      verbose=args.verbose)
+      verbose=args.verbose,
+      print_modified=args.print_modified)
   return 1 if changed and (args.diff or args.quiet) else 0
 
 
@@ -175,7 +176,8 @@ def FormatFiles(filenames,
                 verify=False,
                 parallel=False,
                 quiet=False,
-                verbose=False):
+                verbose=False,
+                print_modified=False):
   """Format a list of files.
 
   Arguments:
@@ -194,6 +196,7 @@ def FormatFiles(filenames,
     parallel: (bool) True if should format multiple files in parallel.
     quiet: (bool) True if should output nothing.
     verbose: (bool) True if should print out filenames while processing.
+    print_modified: (bool) True if should print out filenames of modified files.
 
   Returns:
     True if the source code changed in any of the files being formatted.
@@ -207,14 +210,15 @@ def FormatFiles(filenames,
       future_formats = [
           executor.submit(_FormatFile, filename, lines, style_config,
                           no_local_style, in_place, print_diff, verify, quiet,
-                          verbose) for filename in filenames
+                          verbose, print_modified) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
   else:
     for filename in filenames:
       changed |= _FormatFile(filename, lines, style_config, no_local_style,
-                             in_place, print_diff, verify, quiet, verbose)
+                             in_place, print_diff, verify, quiet, verbose,
+                             print_modified)
   return changed
 
 
@@ -226,10 +230,11 @@ def _FormatFile(filename,
                 print_diff=False,
                 verify=False,
                 quiet=False,
-                verbose=False):
+                verbose=False,
+                print_modified=False):
   """Format an individual file."""
   if verbose and not quiet:
-    print('Reformatting %s' % filename)
+    print(f'Reformatting {filename}')
 
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
@@ -252,6 +257,8 @@ def _FormatFile(filename,
   if not in_place and not quiet and reformatted_code:
     file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
                                         in_place)
+  if print_modified and has_change and in_place and not quiet:
+    print(f'Formatted {filename}')
   return has_change
 
 
@@ -358,6 +365,11 @@ def _BuildParser():
       action='store_true',
       help=('run YAPF in parallel when formatting multiple files. Requires '
             'concurrent.futures in Python 2.X'))
+  parser.add_argument(
+      '-m',
+      '--print-modified',
+      action='store_true',
+      help='print out file names of modified files')
   parser.add_argument(
       '-vv',
       '--verbose',
