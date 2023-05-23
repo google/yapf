@@ -5,6 +5,8 @@
 ## [0.40.0] UNRELEASED
 ### Added
 - Support for Python 3.11
+- Add the `--print-modified` flag to print out file names of modified files when
+  running in in-place mode.
 ### Removed
 - Support for Python <3.7
 

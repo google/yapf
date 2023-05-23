@@ -116,6 +116,7 @@ Options::
       --no-local-style      don't search for local style definition
       -p, --parallel        run YAPF in parallel when formatting multiple
                             files. Requires concurrent.futures in Python 2.X
+      -m, --print-modified  print out file names of modified files
       -vv, --verbose        print out file names while processing
 
 
