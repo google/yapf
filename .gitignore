@@ -33,5 +33,12 @@
 /.tox
 /yapf.egg-info
 
+# IDEs
 /.idea
+/.vscode/settings.json
+
+# Virtual Environment
 /.venv*/
+
+# Worktrees
+/.wt
