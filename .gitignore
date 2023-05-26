@@ -13,14 +13,14 @@
 *~
 # Merge files created by git.
 *.orig
-# Byte compiled python modules.
+# Compiled python.
 *.pyc
+*.pickle
 # vim swap files
 .*.sw?
 .sw?
 # OS X specific files.
 .DS_store
-*.pickle
 
 #==============================================================================#
 # Files to ignore
@@ -34,6 +34,12 @@
 /.tox
 /yapf.egg-info
 
+# IDEs
 /.idea
 /.vscode/settings.json
+
+# Virtual Environment
 /.venv*/
+
+# Worktrees
+/.wt

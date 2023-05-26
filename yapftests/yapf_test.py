@@ -506,6 +506,16 @@ class CommandLineTest(unittest.TestCase):
         reformatted_code = fd.read()
     self.assertEqual(reformatted_code, expected_formatted_code)
 
+  def testPrintModified(self):
+    for unformatted_code, has_change in [('1==2', True), ('1 == 2', False)]:
+      with utils.TempFileContents(
+          self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
+        output = subprocess.check_output(
+            YAPF_BINARY + ['--in-place', '--print-modified', filepath],
+            text=True)
+        check = self.assertIn if has_change else self.assertNotIn
+        check(f'Formatted {filepath}', output)
+
   def testReadFromStdin(self):
     unformatted_code = textwrap.dedent("""\
         def foo():
