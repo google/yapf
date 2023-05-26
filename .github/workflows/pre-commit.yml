@@ -1,0 +1,37 @@
+# Copyright (c) 2023 Sebastian Pipping <sebastian@pipping.org>
+# Licensed under the Apache License Version 2.0
+
+name: Run pre-commit
+
+# Drop permissions to minimum for security
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 2 * * 5'  # Every Friday at 2am
+  workflow_dispatch:
+
+jobs:
+  pre_commit_run:
+    name: Run pre-commit
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
+
+      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435  # v4.5.0
+        with:
+          python-version: 3.11
+
+      - name: Install yapf (to be available to pre-commit)
+        run: |-
+          pip install \
+            --disable-pip-version-check \
+            --no-warn-script-location \
+            --user \
+            .
+          echo "PATH=${HOME}/.local/bin:${PATH}" >> "${GITHUB_ENV}"
+
+      - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507  # v3.0.0
