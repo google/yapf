@@ -22,7 +22,7 @@ Annotations:
   newlines: The number of newlines required before the node.
 """
 
-from yapf.third_party._ylib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor

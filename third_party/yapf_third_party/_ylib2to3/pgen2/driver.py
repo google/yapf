@@ -234,7 +234,7 @@ def load_grammar(gt='Grammar.txt',
   if not os.path.exists(gt):
     # Assume package data
     gt_basename = os.path.basename(gt)
-    pd = pkgutil.get_data('yapf.third_party._ylib2to3', gt_basename)
+    pd = pkgutil.get_data('yapf_third_party._ylib2to3', gt_basename)
     if pd is None:
       raise RuntimeError('Failed to load grammer %s from package' % gt_basename)
     grammar_text = io.StringIO(pd.decode(encoding='utf-8'))
