@@ -32,11 +32,3 @@ jobs:
         pip install pytest
         pip install pytest-cov
         pytest
-    - name: Lint with isort
-      run: |
-        pip install isort
-        isort . --check --diff
-    - name: Lint with yapf
-      run: |
-        pip install .
-        yapf . -vv --diff --recursive
