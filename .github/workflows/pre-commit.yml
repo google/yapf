@@ -1,7 +1,7 @@
 # Copyright (c) 2023 Sebastian Pipping <sebastian@pipping.org>
 # Licensed under the Apache License Version 2.0
 
-name: Run pre-commit
+name: Format with pre-commit
 
 # Drop permissions to minimum for security
 permissions:
