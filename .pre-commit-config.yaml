@@ -13,7 +13,7 @@ repos:
         name: yapf
         language: python
         entry: yapf
-        args: [-i, -vv]
+        args: [-i]
         types: [python]
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
