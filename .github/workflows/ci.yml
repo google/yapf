@@ -25,8 +25,6 @@ jobs:
         python -m pip install
         --upgrade
         --disable-pip-version-check
-        --no-warn-script-location
-        --user
         .
         pip
         pytest
