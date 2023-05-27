@@ -25,13 +25,4 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Install yapf (to be available to pre-commit)
-        run: |-
-          pip install \
-            --disable-pip-version-check \
-            --no-warn-script-location \
-            --user \
-            .
-          echo "PATH=${HOME}/.local/bin:${PATH}" >> "${GITHUB_ENV}"
-
       - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507  # v3.0.0
