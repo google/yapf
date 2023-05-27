@@ -20,11 +20,16 @@ jobs:
       uses: actions/setup-python@57ded4d7d5e986d7296eab16560982c6dd7c923b  # v4.6.0
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Update pip
-      run: |
-        python -m pip install --upgrade pip
+    - name: Perform package installs
+      run: >-
+        python -m pip install
+          --upgrade
+          --disable-pip-version-check
+          --no-warn-script-location
+          --user
+          .
+          pip
+          pytest
+          pytest-cov
     - name: Test with pytest
-      run: |
-        pip install pytest
-        pip install pytest-cov
-        pytest
+      run: pytest
