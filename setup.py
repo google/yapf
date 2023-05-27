@@ -52,6 +52,9 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       author='Google Inc.',
       maintainer='Bill Wendling',
       maintainer_email='morbo@google.com',
+      options={'bdist_wheel': {
+          'python_tag': 'py3'
+      }},
       packages=find_packages('.'),
       project_urls={
           'Source': 'https://github.com/google/yapf',
