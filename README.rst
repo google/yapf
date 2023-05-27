@@ -7,8 +7,12 @@ YAPF
     :alt: PyPI version
 
 .. image:: https://github.com/google/yapf/actions/workflows/ci.yml/badge.svg
-    :target: https://github.com/google/yapf/actions
+    :target: https://github.com/google/yapf/actions/workflows/ci.yml
     :alt: Build status
+
+.. image:: https://github.com/google/yapf/actions/workflows/pre-commit.yml/badge.svg
+    :target: https://github.com/google/yapf/actions/workflows/pre-commit.yml
+    :alt: Run pre-commit
 
 .. image:: https://coveralls.io/repos/google/yapf/badge.svg?branch=main
     :target: https://coveralls.io/r/google/yapf?branch=main

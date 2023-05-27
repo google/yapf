@@ -23,20 +23,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-    - name: Lint with flake8
-      run: |
-        python -m pip install flake8
-        flake8 . --statistics
     - name: Test with pytest
       run: |
         pip install pytest
         pip install pytest-cov
         pytest
-    - name: Lint with isort
-      run: |
-        pip install isort
-        isort . --check --diff
-    - name: Lint with yapf
-      run: |
-        pip install .
-        yapf . -vv --diff --recursive
