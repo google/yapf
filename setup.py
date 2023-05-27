@@ -50,6 +50,9 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
       author='Google Inc.',
       maintainer='Bill Wendling',
       maintainer_email='morbo@google.com',
+      options={'bdist_wheel': {
+          'python_tag': 'py3'
+      }},
       packages=find_packages(where='.', include=['yapf*', 'yapftests*']) +
       find_packages(where='third_party'),
       package_dir={'yapf_third_party': 'third_party/yapf_third_party'},
@@ -63,13 +66,12 @@ with codecs.open('README.rst', 'r', 'utf-8') as fd:
           'License :: OSI Approved :: Apache Software License',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3 :: Only',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
           'Programming Language :: Python :: 3.9',
           'Programming Language :: Python :: 3.10',
           'Programming Language :: Python :: 3.11',
-          'Programming Language :: Python :: 3 :: Only',
           'Topic :: Software Development :: Libraries :: Python Modules',
           'Topic :: Software Development :: Quality Assurance',
       ],
