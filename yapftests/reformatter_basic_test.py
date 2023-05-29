@@ -3177,6 +3177,107 @@ my_dict = {
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
+  ########for align dictionary colons#########
+  def testAlignDictColonNestedDictInBetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_dict_colon: true}'))
+      unformatted_code = textwrap.dedent("""\
+fields = [{"type": "text","required": True,"html": {"attr": 'style="width: 250px;" maxlength="30"',"page": 0,},
+        "list" : [1, 2, 3, 4]}]
+""")
+      expected_formatted_code = textwrap.dedent("""\
+fields = [{
+    "type"     : "text",
+    "required" : True,
+    "html"     : {
+        "attr" : 'style="width: 250px;" maxlength="30"',
+        "page" : 0,
+    },
+    "list" : [1, 2, 3, 4]
+}]
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignDictColonCommentLineInBetween(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_dict_colon: true,'
+                                      'new_alignment_after_commentline: true}'))
+      unformatted_code = textwrap.dedent("""\
+fields = [{
+  "type": "text",
+  "required": True,
+  # comment
+  "list": [1, 2, 3, 4]}]
+""")
+      expected_formatted_code = textwrap.dedent("""\
+fields = [{
+    "type"     : "text",
+    "required" : True,
+    # comment
+    "list" : [1, 2, 3, 4]
+}]
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignDictColonLargerExistingSpacesBefore(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_dict_colon: true}'))
+      unformatted_code = textwrap.dedent("""\
+fields = [{
+  "type"     : "text",
+  "required"   : True,
+  "list"         : [1, 2, 3, 4],
+}]
+""")
+      expected_formatted_code = textwrap.dedent("""\
+fields = [{
+    "type"     : "text",
+    "required" : True,
+    "list"     : [1, 2, 3, 4],
+}]
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignDictColonCommentAfterOpenBracket(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_dict_colon: true}'))
+      unformatted_code = textwrap.dedent("""\
+fields = [{
+  # comment
+  "type": "text",
+  "required": True,
+  "list": [1, 2, 3, 4]}]
+""")
+      expected_formatted_code = textwrap.dedent("""\
+fields = [{
+    # comment
+    "type"     : "text",
+    "required" : True,
+    "list"     : [1, 2, 3, 4]
+}]
+""")
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
 
 if __name__ == '__main__':
   unittest.main()

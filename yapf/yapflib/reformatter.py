@@ -20,6 +20,7 @@ can be merged together are. The best formatting is returned as a string.
 """
 
 import collections
+from distutils.errors import LinkError
 import heapq
 import re
 from lib2to3 import pytree
@@ -98,6 +99,10 @@ def Reformat(llines, verify=False, lines=None):
 
     final_lines.append(lline)
     prev_line = lline
+
+  if (style.Get('EACH_DICT_ENTRY_ON_SEPARATE_LINE') and
+      style.Get('ALIGN_DICT_COLON')):
+    _AlignDictColon(final_lines)
 
   _AlignTrailingComments(final_lines)
   return _FormatFinalLines(final_lines, verify)
@@ -388,6 +393,186 @@ def _AlignTrailingComments(final_lines):
         break
 
     if not processed_content:
+      final_lines_index += 1
+
+
+def _AlignDictColon(final_lines):
+  """Align colons in a dict to the same column"""
+  """NOTE One (nested) dict/list is one logical line!"""
+  final_lines_index = 0
+  while final_lines_index < len(final_lines):
+    line = final_lines[final_lines_index]
+    if line.disable:
+      final_lines_index += 1
+      continue
+
+    assert line.tokens
+    process_content = False
+
+    for tok in line.tokens:
+      # make sure each dict entry on separate lines and
+      # the dict has more than one entry
+      if (tok.is_dict_key and
+          tok.formatted_whitespace_prefix.startswith('\n') and
+          not tok.is_comment):
+
+        this_line = line
+
+        line_tokens = this_line.tokens
+        for open_index in range(len(line_tokens)):
+          line_tok = line_tokens[open_index]
+
+          # check each time if the detected dict is the dict we aim for
+          if line_tok.value == '{' and line_tok.next_token.formatted_whitespace_prefix.startswith(
+              '\n'):
+            index = open_index
+            # skip the comments in the beginning
+            index += 1
+            line_tok = line_tokens[index]
+            while not line_tok.is_dict_key and index < len(line_tokens) - 1:
+              index += 1
+              line_tok = line_tokens[index]
+            # in case empty dict, check if dict key again
+            if line_tok.is_dict_key and line_tok.formatted_whitespace_prefix.startswith(
+                '\n'):
+              closing = False  # the closing bracket in dict '}'.
+              keys_content = ''
+              all_dict_keys_lengths = []
+              dict_keys_lengths = []
+
+              # record the column number of the first key
+              first_key_column = len(
+                  line_tok.formatted_whitespace_prefix.lstrip('\n'))
+              key_column = first_key_column
+
+              # while not closing:
+              while not closing:
+                prefix = line_tok.formatted_whitespace_prefix
+                newline = prefix.startswith('\n')
+                if newline:
+                  # if comments inbetween, save, reset and continue to caluclate new alignment
+                  if (style.Get('NEW_ALIGNMENT_AFTER_COMMENTLINE') and
+                      dict_keys_lengths and line_tok.is_comment):
+                    all_dict_keys_lengths.append(dict_keys_lengths)
+                    dict_keys_lengths = []
+                    index += 1
+                    line_tok = line_tokens[index]
+                    continue
+                  if line_tok.is_dict_key_start:
+                    keys_content = ''
+                    prefix = prefix.lstrip('\n')
+                    key_column = len(prefix)
+                  # if the dict key is so long that it has multi-lines
+                  # only caculate the last line that has the colon
+                  elif line_tok.is_dict_key:
+                    keys_content = ''
+                    prefix = prefix.lstrip('\n')
+                elif line_tok.is_dict_key_start:
+                  key_column = line_tok.column
+
+                if line_tok.is_dict_colon and key_column == first_key_column:
+                  dict_keys_lengths.append(len(keys_content))
+                elif line_tok.is_dict_key and key_column == first_key_column:
+                  keys_content += '{}{}'.format(prefix, line_tok.value)
+
+                index += 1
+                if index < len(line_tokens):
+                  line_tok = line_tokens[index]
+                # when the matching closing bracket is never found
+                # due to edge cases where the closing bracket
+                # is not indented or dedented, e.g. ']}', with another bracket before
+                else:
+                  all_dict_keys_lengths.append(dict_keys_lengths)
+                  break
+
+                # if there is new objects(list/tuple/dict) with its entries on newlines,
+                # or a function call with any of its arguments on newlines,
+                # save, reset and continue to calulate new alignment
+                if (line_tok.value in ['(', '[', '{'] and
+                    not line_tok.is_pseudo and line_tok.next_token and
+                    line_tok.next_token.formatted_whitespace_prefix.startswith(
+                        '\n')):
+                  if dict_keys_lengths:
+                    all_dict_keys_lengths.append(dict_keys_lengths)
+                  dict_keys_lengths = []
+                  index += 1
+                  line_tok = line_tokens[index]
+                  continue
+                # the matching closing bracket is either same indented or dedented
+                # accordingly to previous level's indentation
+                # the first found, immediately break the while loop
+                if line_tok.value == '}':
+                  if line_tok.formatted_whitespace_prefix.startswith('\n'):
+                    close_column = len(
+                        line_tok.formatted_whitespace_prefix.lstrip('\n'))
+                  else:
+                    close_column = line_tok.column
+                  if close_column < first_key_column:
+                    if dict_keys_lengths:
+                      all_dict_keys_lengths.append(dict_keys_lengths)
+                    closing = True
+
+              # update the alignment once one dict is processed
+              if all_dict_keys_lengths:
+                max_keys_length = 0
+                all_dict_keys_lengths_index = 0
+                dict_keys_lengths = all_dict_keys_lengths[
+                    all_dict_keys_lengths_index]
+                max_keys_length = max(dict_keys_lengths or [0]) + 2
+                keys_lengths_index = 0
+                for token in line_tokens[open_index + 1:index]:
+                  if token.is_dict_colon:
+                    # check if the key has multiple tokens and
+                    # get the first key token in this key
+                    key_token = token.previous_token
+                    while key_token.is_dict_key and not key_token.is_dict_key_start:
+                      key_token = key_token.previous_token
+                    key_column = len(
+                        key_token.formatted_whitespace_prefix.lstrip('\n'))
+
+                    if key_column == first_key_column:
+
+                      if keys_lengths_index == len(dict_keys_lengths):
+                        all_dict_keys_lengths_index += 1
+                        dict_keys_lengths = all_dict_keys_lengths[
+                            all_dict_keys_lengths_index]
+                        max_keys_length = max(dict_keys_lengths or [0]) + 2
+                        keys_lengths_index = 0
+
+                      if keys_lengths_index < len(dict_keys_lengths):
+                        assert dict_keys_lengths[
+                            keys_lengths_index] < max_keys_length
+
+                        padded_spaces = ' ' * (
+                            max_keys_length -
+                            dict_keys_lengths[keys_lengths_index] - 1)
+                        keys_lengths_index += 1
+                        #NOTE if the existing whitespaces are larger than padded spaces
+                        existing_whitespace_prefix = \
+                              token.formatted_whitespace_prefix.lstrip('\n')
+                        colon_content = '{}{}'.format(padded_spaces,
+                                                      token.value.strip())
+
+                        # in case the existing spaces are larger than the paddes spaces
+                        if (len(padded_spaces) == 1 or
+                            len(padded_spaces) > 1 and
+                            len(existing_whitespace_prefix)
+                            >= len(padded_spaces)):
+                          # remove the existing spaces
+                          token.whitespace_prefix = ''
+                        elif colon_content.startswith(
+                            existing_whitespace_prefix):
+                          colon_content = colon_content[
+                              len(existing_whitespace_prefix):]
+
+                        token.value = colon_content
+
+        final_lines_index += 1
+
+        process_content = True
+        break
+
+    if not process_content:
       final_lines_index += 1
 
 

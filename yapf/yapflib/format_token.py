@@ -321,3 +321,24 @@ class FormatToken(object):
   def is_copybara_comment(self):
     return self.is_comment and re.match(
         r'#.*\bcopybara:\s*(strip|insert|replace)', self.value)
+
+  @property
+  def is_dict_colon(self):
+    # if the token is dictionary colon and
+    # the dictionary has no comp_for
+    return self.value == ':' and self.previous_token.is_dict_key
+
+  @property
+  def is_dict_key(self):
+    # if the token is dictionary key which is not preceded by doubel stars and
+    # the dictionary has no comp_for
+    return subtypes.DICTIONARY_KEY_PART in self.subtypes
+
+  @property
+  def is_dict_key_start(self):
+    # if the token is dictionary key start
+    return subtypes.DICTIONARY_KEY in self.subtypes
+
+  @property
+  def is_dict_value(self):
+    return subtypes.DICTIONARY_VALUE in self.subtypes
