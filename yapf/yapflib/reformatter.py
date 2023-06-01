@@ -20,6 +20,7 @@ can be merged together are. The best formatting is returned as a string.
 """
 
 import collections
+from distutils.errors import LinkError
 import heapq
 import re
 from lib2to3 import pytree
@@ -280,6 +281,8 @@ def _AlignTrailingComments(final_lines):
         # the block and calculate the max line length. Once complete, use the
         # first col value greater than that value and create the necessary for
         # each line accordingly.
+        # NOTE comments that appear on a line by themselves will be excluded if
+        # align_newline_comments_with_inline_comments is false.
         all_pc_line_lengths = []  # All pre-comment line lengths
         max_line_length = 0
 
@@ -306,7 +309,15 @@ def _AlignTrailingComments(final_lines):
           line_content = ''
           pc_line_lengths = []
 
+          contain_object = False
           for line_tok in this_line.tokens:
+
+            #if a line with inline comment is itself
+            # with newlines object, we want to start new alignment
+            if (line_tok.value in [')', ']','}']
+              and line_tok.formatted_whitespace_prefix.startswith('\n')):
+              contain_object = True
+
             whitespace_prefix = line_tok.formatted_whitespace_prefix
 
             newline_index = whitespace_prefix.rfind('\n')
@@ -316,6 +327,7 @@ def _AlignTrailingComments(final_lines):
 
               whitespace_prefix = whitespace_prefix[newline_index + 1:]
 
+            # if comment starts with '\n', it will save length 0
             if line_tok.is_comment:
               pc_line_lengths.append(len(line_content))
             else:
@@ -325,6 +337,11 @@ def _AlignTrailingComments(final_lines):
             max_line_length = max(max_line_length, max(pc_line_lengths))
 
           all_pc_line_lengths.append(pc_line_lengths)
+
+          #NOTE if it's a logical line with object(dict/list/tuple)
+          # that have its items in separate lines
+          if contain_object:
+            break
 
         # Calculate the aligned column value
         max_line_length += 2
@@ -356,19 +373,29 @@ def _AlignTrailingComments(final_lines):
               # we need to apply a whitespace prefix to each line.
               whitespace = ' ' * (
                   aligned_col - pc_line_lengths[pc_line_length_index] - 1)
-              pc_line_length_index += 1
 
-              line_content = []
-
-              for comment_line_index, comment_line in enumerate(
-                  line_tok.value.split('\n')):
-                line_content.append('{}{}'.format(whitespace,
+              #this is added when we don't want comments on newlines
+              #to align with comments inline
+              if not style.Get('ALIGN_NEWLINE_COMMENTS_WITH_INLINE_COMMENTS'):
+                # if this comment starts with '\n', pass and go to next comment
+                if pc_line_lengths[pc_line_length_index] == 0:
+                  pc_line_length_index += 1
+                  continue
+                line_content = '{}{}'.format(whitespace, line_tok.value.strip())
+              else:
+                line_content = []
+                for comment_line_index, comment_line in enumerate(
+                    line_tok.value.split('\n')):
+                  line_content.append('{}{}'.format(whitespace,
                                                   comment_line.strip()))
 
-                if comment_line_index == 0:
-                  whitespace = ' ' * (aligned_col - 1)
+                  if comment_line_index == 0:
+                    whitespace = ' ' * (aligned_col - 1)
 
-              line_content = '\n'.join(line_content)
+                line_content = '\n'.join(line_content)
+
+              # after process, go to next pre comment tokens length
+              pc_line_length_index += 1
 
               # Account for initial whitespace already slated for the
               # beginning of the line.

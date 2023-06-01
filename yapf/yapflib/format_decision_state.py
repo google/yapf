@@ -936,15 +936,19 @@ class FormatDecisionState(object):
     previous = current.previous_token
     top_of_stack = self.stack[-1]
 
-    if isinstance(current.spaces_required_before, list):
-      # Don't set the value here, as we need to look at the lines near
-      # this one to determine the actual horizontal alignment value.
-      return 0
-    elif current.spaces_required_before > 2 or self.line.disable:
-      return current.spaces_required_before
-
     cont_aligned_indent = self._IndentWithContinuationAlignStyle(
         top_of_stack.indent)
+
+    if isinstance(current.spaces_required_before, list):
+      # only when the commet is not inside an object logical line that has
+      # its entries output on separate output lines(e.g. list, dictionary,
+      # function call), aka when the comment' parent level is 0
+      if self.paren_level == 0:
+        # Don't set the value here, as we need to look at the lines near
+        # this one to determine the actual horizontal alignment value.
+        return 0
+    elif current.spaces_required_before > 2 or self.line.disable:
+      return current.spaces_required_before
 
     if current.OpensScope():
       return cont_aligned_indent if self.paren_level else self.first_indent
