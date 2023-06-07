@@ -7,18 +7,18 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
   - repo: local
     hooks:
       - id: yapf
         name: yapf
         language: python
         entry: yapf
-        args: [-i, -vv]
+        args: [-i]
         types: [python]
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
