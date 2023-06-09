@@ -24,7 +24,8 @@ import tempfile
 import textwrap
 import unittest
 from io import StringIO
-from lib2to3.pgen2 import tokenize
+
+from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
 from yapf.yapflib import style

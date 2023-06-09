@@ -15,8 +15,9 @@
 
 import textwrap
 import unittest
-from lib2to3 import pytree
-from lib2to3.pgen2 import token
+
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token
 
 from yapf.pytree import split_penalty
 from yapf.yapflib import format_token

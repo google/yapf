@@ -35,7 +35,6 @@ These APIs have some common arguments:
 import codecs
 import difflib
 import re
-import sys
 
 from yapf.pyparser import pyparser
 from yapf.pytree import blank_line_calculator

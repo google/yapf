@@ -19,7 +19,7 @@ to the opening bracket and vice-versa.
   IdentifyContainers(): the main function exported by this module.
 """
 
-from lib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
