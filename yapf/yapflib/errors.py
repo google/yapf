@@ -13,7 +13,7 @@
 # limitations under the License.
 """YAPF error objects."""
 
-from lib2to3.pgen2 import tokenize
+from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 
 def FormatErrorMsg(e):

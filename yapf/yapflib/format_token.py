@@ -16,7 +16,9 @@
 import keyword
 import re
 from functools import lru_cache
-from lib2to3.pgen2 import token
+
+from yapf_third_party._ylib2to3.pgen2 import token
+from yapf_third_party._ylib2to3.pytree import type_repr
 
 from yapf.pytree import pytree_utils
 from yapf.yapflib import style
@@ -278,7 +280,11 @@ class FormatToken(object):
   @property
   @lru_cache()
   def is_keyword(self):
-    return keyword.iskeyword(self.value)
+    return keyword.iskeyword(
+        self.value) or (self.value == 'match' and
+                        type_repr(self.node.parent.type) == 'match_stmt') or (
+                            self.value == 'case' and
+                            type_repr(self.node.parent.type) == 'case_block')
 
   @property
   def is_name(self):
