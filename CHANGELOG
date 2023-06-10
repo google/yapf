@@ -7,6 +7,9 @@
 - Support for Python 3.11
 - Add the `--print-modified` flag to print out file names of modified files when
   running in in-place mode.
+### Changes
+- Replace the outdated and no-longer-supported lib2to3 with a fork of blib2to3,
+  Black's version of lib2to3.
 ### Removed
 - Support for Python <3.7
 
@@ -47,7 +50,7 @@
 
 ## [0.31.0] 2021-03-14
 ### Added
-- Renamed 'master' brannch to 'main'.
+- Renamed 'master' branch to 'main'.
 - Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
   a custom number of blank lines between top-level imports and variable
   definitions.
