@@ -371,13 +371,13 @@ optional arguments:
 
     Allow dictionary keys to exist on multiple lines. For example:
 
-        ```python
+```python
         x = {
             ('this is the first element of a tuple',
              'this is the second element of a tuple'):
                  value,
         }
-        ```
+```
 
 `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS`
 
@@ -391,37 +391,37 @@ optional arguments:
 
     Let spacing indicate operator precedence. For example:
 
-        ```python
+```python
         a = 1 * 2 + 3 / 4
         b = 1 / 2 - 3 * 4
         c = (1 + 2) * (3 - 4)
         d = (1 - 2) / (3 + 4)
         e = 1 * 2 - 3
         f = 1 + 2 + 3 + 4
-        ```
+```
 
     will be formatted as follows to indicate precedence:
 
-        ```python
+```python
         a = 1*2 + 3/4
         b = 1/2 - 3*4
         c = (1+2) * (3-4)
         d = (1-2) / (3+4)
         e = 1*2 - 3
         f = 1 + 2 + 3 + 4
-        ```
+```
 
 `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF`
 
     Insert a blank line before a `def` or `class` immediately nested within
     another `def` or `class`. For example:
 
-        ```python
+```python
         class Foo:
                            # <------ this blank line
             def method():
                 pass
-        ```
+```
 
 `BLANK_LINE_BEFORE_MODULE_DOCSTRING`
 
@@ -436,14 +436,14 @@ optional arguments:
     Sets the number of desired blank lines surrounding top-level function and
     class definitions. For example:
 
-        ```python
+```python
         class Foo:
             pass
                            # <------ having two blank lines here
                            # <------ is the default setting
         class Bar:
             pass
-        ```
+```
 
 `BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES`
 
@@ -455,23 +455,23 @@ optional arguments:
     Do not split consecutive brackets. Only relevant when
     `DEDENT_CLOSING_BRACKETS` or `INDENT_CLOSING_BRACKETS` is set. For example:
 
-        ```python
+```python
         call_func_that_takes_a_dict(
             {
                 'key1': 'value1',
                 'key2': 'value2',
             }
         )
-        ```
+```
     
     would reformat to:
 
-        ```python
+```python
         call_func_that_takes_a_dict({
             'key1': 'value1',
             'key2': 'value2',
         })
-        ```
+```
 
 `COLUMN_LIMIT`
 
@@ -500,7 +500,7 @@ optional arguments:
     expression can't fit in a single line. Applies to all kinds of brackets,
     including function definitions and calls. For example:
 
-        ```python
+```python
         config = {
             'key1': 'value1',
             'key2': 'value2',
@@ -513,7 +513,7 @@ optional arguments:
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
         )  # <--- this bracket is dedented and on a separate line
-        ```
+```
 
 `DISABLE_ENDING_COMMA_HEURISTIC`
 
@@ -546,14 +546,14 @@ optional arguments:
     Indent the dictionary value if it cannot fit on the same line as the
     dictionary key. For example:
 
-        ```python
+```python
         config = {
             'key1':
                 'value1',
             'key2': value1 +
                     value2,
         }
-        ```
+```
 
 `INDENT_WIDTH`
 
@@ -569,7 +569,7 @@ optional arguments:
     expression can't fit in a single line. Applies to all kinds of brackets,
     including function definitions and calls. For example:
 
-        ```python
+```python
         config = {
             'key1': 'value1',
             'key2': 'value2',
@@ -582,7 +582,7 @@ optional arguments:
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
             )  # <--- this bracket is indented and on a separate line
-        ```
+```
 
 `JOIN_MULTIPLE_LINES`
 
@@ -592,15 +592,15 @@ optional arguments:
 
     Do not include spaces around selected binary operators. For example:
 
-        ```python
+```python
         1 + 2 * 3 - 4 / 5
-        ```
+```
 
     will be formatted as follows when configured with `*`, `/`:
 
-        ```python
+```python
         1 + 2*3 - 4/5
-        ```
+```
 
 `SPACES_AROUND_POWER_OPERATOR`
 
@@ -615,51 +615,51 @@ optional arguments:
 
     Adds a space after the opening '{' and before the ending '}' dict delimiters.
 
-        ```python
+```python
         {1: 2}
-        ```
+```
 
     will be formatted as:
 
-        ```python
+```python
         { 1: 2 }
-        ```
+```
 
 `SPACES_AROUND_LIST_DELIMITERS`
 
     Adds a space after the opening '[' and before the ending ']' list delimiters.
 
-        ```python
+```python
         [1, 2]
-        ```
+```
 
     will be formatted as:
 
-        ```python
+```python
         [ 1, 2 ]
-        ```
+```
 
 `SPACES_AROUND_SUBSCRIPT_COLON`
 
     Use spaces around the subscript / slice operator.  For example:
 
-        ```python
+```python
         my_list[1 : 10 : 2]
-        ```
+```
 
 `SPACES_AROUND_TUPLE_DELIMITERS`
 
     Adds a space after the opening '(' and before the ending ')' tuple delimiters.
 
-        ```python
+```python
         (1, 2, 3)
-        ```
+```
 
     will be formatted as:
 
-        ```python
+```python
         ( 1, 2, 3 )
-        ```
+```
 
 `SPACES_BEFORE_COMMENT`
 
@@ -675,19 +675,19 @@ optional arguments:
 
     For example, with `spaces_before_comment=5`:
 
-        ```python
+```python
         1 + 1 # Adding values
-        ```
+```
 
     will be formatted as:
 
-        ```python
+```python
         1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
-        ```
+```
 
     with `spaces_before_comment="15, 20"`:
 
-        ```python
+```python
         1 + 1 # Adding values
         two + two # More adding
     
@@ -696,11 +696,11 @@ optional arguments:
     
         a_very_long_statement_that_extends_beyond_the_final_column # Comment
         short # This is a shorter statement
-        ```
+```
 
     will be formatted as:
 
-        ```python
+```python
         1 + 1          # Adding values <-- end of line comments in block aligned to col 15
         two + two      # More adding
     
@@ -709,7 +709,7 @@ optional arguments:
     
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
-        ```
+```
 
 `SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET`
 
@@ -719,11 +719,11 @@ optional arguments:
 
     Use spaces inside brackets, braces, and parentheses.  For example:
 
-        ```
+```
         method_call( 1 )
         my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
         my_set = { 1, 2, 3 }
-        ```
+```
 
 `SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED`
 
@@ -742,20 +742,20 @@ optional arguments:
     subexpression is not split. This avoids splits like the one for
     `b` in this code:
 
-        ```python
+```python
         abcdef(
             aReallyLongThing: int,
             b: [Int,
                 Int])
-        ```
+```
 
     with the new knob this is split as:
 
-        ```python
+```python
         abcdef(
             aReallyLongThing: int,
             b: [Int, Int])
-        ```
+```
 
 `SPLIT_BEFORE_BITWISE_OPERATOR`
 
@@ -776,27 +776,27 @@ optional arguments:
     Split before a dictionary or set generator (`comp_for`). For example, note
     the split before the `for`:
 
-        ```python
+```python
         foo = {
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
         }
-        ```
+```
 
 `SPLIT_BEFORE_DOT`
 
     Split before the `.` if we need to split a longer expression:
 
-        ```python
+```python
         foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
-        ```
+```
 
     would reformat to something like:
 
-        ```python
+```python
         foo = ('This is a really long string: {}, {}, {}, {}'
                .format(a, b, c, d))
-        ```
+```
 
 `SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN`
 
@@ -822,21 +822,21 @@ optional arguments:
     (e.g multiple `for` calls, `if` filter expressions) and which need to be
     reflowed, split each clause onto its own line. For example:
 
-        ```python
+```python
         result = [
             a_var + b_var for a_var in xrange(1000) for b_var in xrange(1000)
             if a_var % b_var]
-        ```
+```
 
     would reformat to something like:
 
-        ```python
+```python
         result = [
             a_var + b_var
             for a_var in xrange(1000)
             for b_var in xrange(1000)
             if a_var % b_var]
-        ```
+```
 
 `SPLIT_PENALTY_AFTER_OPENING_BRACKET`
 
@@ -876,18 +876,18 @@ optional arguments:
 
     The penalty of splitting a list of `import as` names. For example:
 
-        ```python
+```python
         from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
                                                                   long_argument_2,
                                                                   long_argument_3)
-        ```
+```
 
     would reformat to something like:
 
-        ```python
+```python
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
-        ```
+```
 
 `SPLIT_PENALTY_LOGICAL_OPERATOR`
 
