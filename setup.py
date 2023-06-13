@@ -42,7 +42,7 @@ class RunTests(Command):
 with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(
       name='yapf',
-      version='0.33.0',
+      version='0.40.0',
       description='A formatter for Python code.',
       url='https://github.com/google/yapf',
       long_description=fd.read(),

@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.40.0] UNRELEASED
+## [0.40.0] 2023-06-13
 ### Added
 - Support for Python 3.11
 - Add the `--print-modified` flag to print out file names of modified files when
@@ -11,7 +11,7 @@
 - Replace the outdated and no-longer-supported lib2to3 with a fork of blib2to3,
   Black's version of lib2to3.
 ### Removed
-- Support for Python <3.7
+- Support for Python versions < 3.7 are no longer supported.
 
 ## [0.33.0] 2023-04-18
 ### Added

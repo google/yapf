@@ -15,7 +15,7 @@ Releasing a new version
 * Run tests: python setup.py test
   [don't forget to run with at least Python 3.7 and 3.11]
 
-* Bump version in yapf/__init__.py
+* Bump version in setup.py.
 
 * Build source distribution: python setup.py sdist
 

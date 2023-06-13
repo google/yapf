@@ -365,8 +365,7 @@ def _BuildParser():
       '-p',
       '--parallel',
       action='store_true',
-      help=('run YAPF in parallel when formatting multiple files. Requires '
-            'concurrent.futures in Python 2.X'))
+      help=('run YAPF in parallel when formatting multiple files.'))
   parser.add_argument(
       '-m',
       '--print-modified',
