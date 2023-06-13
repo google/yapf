@@ -455,7 +455,7 @@ optional arguments:
             }
         )
 ```
-    
+
     would reformat to:
 
 ```python
@@ -497,7 +497,7 @@ optional arguments:
             'key1': 'value1',
             'key2': 'value2',
         }  # <--- this bracket is dedented and on a separate line
-    
+
         time_series = self.remote_client.query_entity_counters(
             entity='dev3246.region1',
             key='dns.query_latency_tcp',
@@ -566,7 +566,7 @@ optional arguments:
             'key1': 'value1',
             'key2': 'value2',
             }  # <--- this bracket is indented and on a separate line
-    
+
         time_series = self.remote_client.query_entity_counters(
             entity='dev3246.region1',
             key='dns.query_latency_tcp',
@@ -682,10 +682,10 @@ optional arguments:
 ```python
         1 + 1 # Adding values
         two + two # More adding
-    
+
         longer_statement # This is a longer statement
         short # This is a shorter statement
-    
+
         a_very_long_statement_that_extends_beyond_the_final_column # Comment
         short # This is a shorter statement
 ```
@@ -695,10 +695,10 @@ optional arguments:
 ```python
         1 + 1          # Adding values <-- end of line comments in block aligned to col 15
         two + two      # More adding
-    
+
         longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
         short               # This is a shorter statement
-    
+
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
 ```
@@ -711,7 +711,7 @@ optional arguments:
 
     Use spaces inside brackets, braces, and parentheses.  For example:
 
-```
+```python
         method_call( 1 )
         my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
         my_set = { 1, 2, 3 }
