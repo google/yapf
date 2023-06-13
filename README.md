@@ -2,18 +2,10 @@
 
 <p align="center">
 <a href="https://badge.fury.io/py/yapf"><img alt="PyPI Version" src="https://badge.fury.io/py/yapf.svg"></a>
-<a href="https://github.com/google/yapf/actions/workflows/ci.yml"><img alt="Build Status" src="https://github.com/google/yapf/workflows/ci.yml/badge.svg"></a>
-<a href="https://github.com/google/yapf/actions/workflows/pre-commit.yml"><img alt="Actions Status" src="https://github.com/google/yapf/workflows/pre-commit.yml/badge.svg"></a>
+<a href="https://github.com/google/yapf/actions/workflows/ci.yml"><img alt="Build Status" src="https://github.com/google/yapf/actions/workflows/ci.yml/badge.svg"></a>
+<a href="https://github.com/google/yapf/actions/workflows/pre-commit.yml"><img alt="Actions Status" src="https://github.com/google/yapf/actions/workflows/pre-commit.yml/badge.svg"></a>
 <a href="https://coveralls.io/github/google/yapf?branch=main"><img alt="Coverage Status" src="https://coveralls.io/repos/github/google/yapf/badge.svg?branch=main"></a>
 </p>
-
-
-----
-
-- TOC
-{:toc}
-
-----
 
 
 ## Introduction
@@ -952,7 +944,7 @@ to convert to using clang-format's algorithm.
 Please do! YAPF was designed to be used as a library as well as a command line
 tool. This means that a tool or IDE plugin is free to use YAPF.
 
-### I still get non Pep8 compliant code! Why?
+### I still get non-PEP8 compliant code! Why?
 
 YAPF tries very hard to be fully PEP 8 compliant. However, it is paramount
 to not risk altering the semantics of your code. Thus, YAPF tries to be as
@@ -964,6 +956,7 @@ All these cases however, can be easily fixed manually. For instance,
 from my_package import my_function_1, my_function_2, my_function_3, my_function_4, my_function_5
 
 FOO = my_variable_1 + my_variable_2 + my_variable_3 + my_variable_4 + my_variable_5 + my_variable_6 + my_variable_7 + my_variable_8
+```
 
 won't be split, but you can easily get it right by just adding parentheses:
 
