@@ -31,7 +31,7 @@ To install YAPF from PyPI:
 $ pip install yapf
 ```
 
-YAPF is still considered in "alpha" stage, and the released version may change
+YAPF is still considered in "beta" stage, and the released version may change
 often; therefore, the best way to keep up-to-date with the latest development
 is to clone this repository.
 
