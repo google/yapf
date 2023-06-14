@@ -351,363 +351,254 @@ optional arguments:
 
 ## Knobs
 
-`ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT`
+#### `ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT`
 
-    Align closing bracket with visual indentation.
+>    Align closing bracket with visual indentation.
 
-`ALLOW_MULTILINE_LAMBDAS`
+#### `ALLOW_MULTILINE_LAMBDAS`
 
-    Allow lambdas to be formatted on more than one line.
+>    Allow lambdas to be formatted on more than one line.
 
-`ALLOW_MULTILINE_DICTIONARY_KEYS`
+#### `ALLOW_MULTILINE_DICTIONARY_KEYS`
 
-    Allow dictionary keys to exist on multiple lines. For example:
+>    Allow dictionary keys to exist on multiple lines. For example:
 
 ```python
-        x = {
-            ('this is the first element of a tuple',
-             'this is the second element of a tuple'):
-                 value,
-        }
+    x = {
+        ('this is the first element of a tuple',
+         'this is the second element of a tuple'):
+             value,
+    }
 ```
 
-`ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS`
+#### `ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS`
 
-    Allow splitting before a default / named assignment in an argument list.
+>    Allow splitting before a default / named assignment in an argument list.
 
-`ALLOW_SPLIT_BEFORE_DICT_VALUE`
+#### `ALLOW_SPLIT_BEFORE_DICT_VALUE`
 
-    Allow splits before the dictionary value.
+>    Allow splits before the dictionary value.
 
-`ARITHMETIC_PRECEDENCE_INDICATION`
+#### `ARITHMETIC_PRECEDENCE_INDICATION`
 
-    Let spacing indicate operator precedence. For example:
+>    Let spacing indicate operator precedence. For example:
 
 ```python
-        a = 1 * 2 + 3 / 4
-        b = 1 / 2 - 3 * 4
-        c = (1 + 2) * (3 - 4)
-        d = (1 - 2) / (3 + 4)
-        e = 1 * 2 - 3
-        f = 1 + 2 + 3 + 4
+    a = 1 * 2 + 3 / 4
+    b = 1 / 2 - 3 * 4
+    c = (1 + 2) * (3 - 4)
+    d = (1 - 2) / (3 + 4)
+    e = 1 * 2 - 3
+    f = 1 + 2 + 3 + 4
 ```
 
-    will be formatted as follows to indicate precedence:
+>    will be formatted as follows to indicate precedence:
 
 ```python
-        a = 1*2 + 3/4
-        b = 1/2 - 3*4
-        c = (1+2) * (3-4)
-        d = (1-2) / (3+4)
-        e = 1*2 - 3
-        f = 1 + 2 + 3 + 4
+    a = 1*2 + 3/4
+    b = 1/2 - 3*4
+    c = (1+2) * (3-4)
+    d = (1-2) / (3+4)
+    e = 1*2 - 3
+    f = 1 + 2 + 3 + 4
 ```
 
-`BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF`
+#### `BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION`
 
-    Insert a blank line before a `def` or `class` immediately nested within
-    another `def` or `class`. For example:
+>    Sets the number of desired blank lines surrounding top-level function and
+>    class definitions. For example:
 
 ```python
-        class Foo:
-                           # <------ this blank line
-            def method():
-                pass
+    class Foo:
+        pass
+                       # <------ having two blank lines here
+                       # <------ is the default setting
+    class Bar:
+        pass
 ```
 
-`BLANK_LINE_BEFORE_MODULE_DOCSTRING`
+#### `BLANK_LINE_BEFORE_CLASS_DOCSTRING`
 
-    Insert a blank line before a module docstring.
+>    Insert a blank line before a class-level docstring.
 
-`BLANK_LINE_BEFORE_CLASS_DOCSTRING`
+#### `BLANK_LINE_BEFORE_MODULE_DOCSTRING`
 
-    Insert a blank line before a class-level docstring.
+>    Insert a blank line before a module docstring.
 
-`BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION`
+#### `BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF`
 
-    Sets the number of desired blank lines surrounding top-level function and
-    class definitions. For example:
+>    Insert a blank line before a `def` or `class` immediately nested within
+>    another `def` or `class`. For example:
 
 ```python
-        class Foo:
+    class Foo:
+                       # <------ this blank line
+        def method():
             pass
-                           # <------ having two blank lines here
-                           # <------ is the default setting
-        class Bar:
-            pass
 ```
 
-`BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES`
+#### `BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES`
 
-    Sets the number of desired blank lines between top-level imports and
-    variable definitions. Useful for compatibility with tools like isort.
+>    Sets the number of desired blank lines between top-level imports and
+>    variable definitions. Useful for compatibility with tools like isort.
 
-`COALESCE_BRACKETS`
+#### `COALESCE_BRACKETS`
 
-    Do not split consecutive brackets. Only relevant when
-    `DEDENT_CLOSING_BRACKETS` or `INDENT_CLOSING_BRACKETS` is set. For example:
-
-```python
-        call_func_that_takes_a_dict(
-            {
-                'key1': 'value1',
-                'key2': 'value2',
-            }
-        )
-```
-
-    would reformat to:
+>    Do not split consecutive brackets. Only relevant when
+>    `DEDENT_CLOSING_BRACKETS` or `INDENT_CLOSING_BRACKETS` is set. For example:
 
 ```python
-        call_func_that_takes_a_dict({
+    call_func_that_takes_a_dict(
+        {
             'key1': 'value1',
             'key2': 'value2',
-        })
-```
-
-`COLUMN_LIMIT`
-
-    The column limit (or max line-length)
-
-`CONTINUATION_ALIGN_STYLE`
-
-    The style for continuation alignment. Possible values are:
-
-    - `SPACE`: Use spaces for continuation alignment. This is default
-      behavior.
-    - `FIXED`: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
-      (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs or
-      CONTINUATION_INDENT_WIDTH spaces) for continuation alignment.
-    - `VALIGN-RIGHT`: Vertically align continuation lines to multiple of
-      INDENT_WIDTH columns. Slightly right (one tab or a few spaces) if cannot
-      vertically align continuation lines with indent characters.
-
-`CONTINUATION_INDENT_WIDTH`
-
-    Indent width used for line continuations.
-
-`DEDENT_CLOSING_BRACKETS`
-
-    Put closing brackets on a separate line, dedented, if the bracketed
-    expression can't fit in a single line. Applies to all kinds of brackets,
-    including function definitions and calls. For example:
-
-```python
-        config = {
-            'key1': 'value1',
-            'key2': 'value2',
-        }  # <--- this bracket is dedented and on a separate line
-
-        time_series = self.remote_client.query_entity_counters(
-            entity='dev3246.region1',
-            key='dns.query_latency_tcp',
-            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
-            start_ts=now()-timedelta(days=3),
-            end_ts=now(),
-        )  # <--- this bracket is dedented and on a separate line
-```
-
-`DISABLE_ENDING_COMMA_HEURISTIC`
-
-    Disable the heuristic which places each list element on a separate line if
-    the list is comma-terminated.
-
-`EACH_DICT_ENTRY_ON_SEPARATE_LINE`
-
-    Place each dictionary entry onto its own line.
-
-`FORCE_MULTILINE_DICT`
-
-    Respect `EACH_DICT_ENTRY_ON_SEPARATE_LINE` even if the line is shorter than
-    `COLUMN_LIMIT`.
-
-`I18N_COMMENT`
-
-    The regex for an internationalization comment. The presence of this comment
-    stops reformatting of that line, because the comments are required to be
-    next to the string they translate.
-
-`I18N_FUNCTION_CALL`
-
-    The internationalization function call names. The presence of this function
-    stops reformatting on that line, because the string it has cannot be moved
-    away from the i18n comment.
-
-`INDENT_DICTIONARY_VALUE`
-
-    Indent the dictionary value if it cannot fit on the same line as the
-    dictionary key. For example:
-
-```python
-        config = {
-            'key1':
-                'value1',
-            'key2': value1 +
-                    value2,
         }
+    )
 ```
 
-`INDENT_WIDTH`
-
-    The number of columns to use for indentation.
-
-`INDENT_BLANK_LINES`
-
-    Set to `True` to prefer indented blank lines rather than empty
-
-`INDENT_CLOSING_BRACKETS`
-
-    Put closing brackets on a separate line, indented, if the bracketed
-    expression can't fit in a single line. Applies to all kinds of brackets,
-    including function definitions and calls. For example:
+>    would reformat to:
 
 ```python
-        config = {
-            'key1': 'value1',
-            'key2': 'value2',
-            }  # <--- this bracket is indented and on a separate line
-
-        time_series = self.remote_client.query_entity_counters(
-            entity='dev3246.region1',
-            key='dns.query_latency_tcp',
-            transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
-            start_ts=now()-timedelta(days=3),
-            end_ts=now(),
-            )  # <--- this bracket is indented and on a separate line
+    call_func_that_takes_a_dict({
+        'key1': 'value1',
+        'key2': 'value2',
+    })
 ```
 
-`JOIN_MULTIPLE_LINES`
+#### `COLUMN_LIMIT`
 
-    Join short lines into one line. E.g., single line `if` statements.
+>    The column limit (or max line-length)
 
-`NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS`
+#### `CONTINUATION_ALIGN_STYLE`
 
-    Do not include spaces around selected binary operators. For example:
+>    The style for continuation alignment. Possible values are:
+
+>    - `SPACE`: Use spaces for continuation alignment. This is default
+>      behavior.
+>    - `FIXED`: Use fixed number (`CONTINUATION_INDENT_WIDTH`) of columns
+>      (i.e. `CONTINUATION_INDENT_WIDTH`/`INDENT_WIDTH` tabs or
+>      `CONTINUATION_INDENT_WIDTH` spaces) for continuation alignment.
+>    - `VALIGN-RIGHT`: Vertically align continuation lines to multiple of
+>      `INDENT_WIDTH` columns. Slightly right (one tab or a few spaces) if cannot
+>      vertically align continuation lines with indent characters.
+
+#### `CONTINUATION_INDENT_WIDTH`
+
+>    Indent width used for line continuations.
+
+#### `DEDENT_CLOSING_BRACKETS`
+
+>    Put closing brackets on a separate line, dedented, if the bracketed
+>    expression can't fit in a single line. Applies to all kinds of brackets,
+>    including function definitions and calls. For example:
 
 ```python
-        1 + 2 * 3 - 4 / 5
+    config = {
+        'key1': 'value1',
+        'key2': 'value2',
+    }  # <--- this bracket is dedented and on a separate line
+
+    time_series = self.remote_client.query_entity_counters(
+        entity='dev3246.region1',
+        key='dns.query_latency_tcp',
+        transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+        start_ts=now()-timedelta(days=3),
+        end_ts=now(),
+    )  # <--- this bracket is dedented and on a separate line
 ```
 
-    will be formatted as follows when configured with `*`, `/`:
+#### `DISABLE_ENDING_COMMA_HEURISTIC`
+
+>    Disable the heuristic which places each list element on a separate line if
+>    the list is comma-terminated.
+
+#### `EACH_DICT_ENTRY_ON_SEPARATE_LINE`
+
+>    Place each dictionary entry onto its own line.
+
+#### `FORCE_MULTILINE_DICT`
+
+>    Respect `EACH_DICT_ENTRY_ON_SEPARATE_LINE` even if the line is shorter than
+>    `COLUMN_LIMIT`.
+
+#### `I18N_COMMENT`
+
+>    The regex for an internationalization comment. The presence of this comment
+>    stops reformatting of that line, because the comments are required to be
+>    next to the string they translate.
+
+#### `I18N_FUNCTION_CALL`
+
+>    The internationalization function call names. The presence of this function
+>    stops reformatting on that line, because the string it has cannot be moved
+>    away from the i18n comment.
+
+#### `INDENT_BLANK_LINES`
+
+>    Set to `True` to prefer indented blank lines rather than empty
+
+#### `INDENT_CLOSING_BRACKETS`
+
+>    Put closing brackets on a separate line, indented, if the bracketed
+>    expression can't fit in a single line. Applies to all kinds of brackets,
+>    including function definitions and calls. For example:
 
 ```python
-        1 + 2*3 - 4/5
+    config = {
+        'key1': 'value1',
+        'key2': 'value2',
+        }  # <--- this bracket is indented and on a separate line
+
+    time_series = self.remote_client.query_entity_counters(
+        entity='dev3246.region1',
+        key='dns.query_latency_tcp',
+        transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+        start_ts=now()-timedelta(days=3),
+        end_ts=now(),
+        )  # <--- this bracket is indented and on a separate line
 ```
 
-`SPACES_AROUND_POWER_OPERATOR`
+#### `INDENT_DICTIONARY_VALUE`
 
-    Set to `True` to prefer using spaces around `**`.
-
-`SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN`
-
-    Set to `True` to prefer spaces around the assignment operator for default
-    or keyword arguments.
-
-`SPACES_AROUND_DICT_DELIMITERS`
-
-    Adds a space after the opening '{' and before the ending '}' dict delimiters.
+>    Indent the dictionary value if it cannot fit on the same line as the
+>    dictionary key. For example:
 
 ```python
-        {1: 2}
+    config = {
+        'key1':
+            'value1',
+        'key2': value1 +
+                value2,
+    }
 ```
 
-    will be formatted as:
+#### `INDENT_WIDTH`
+
+>    The number of columns to use for indentation.
+
+#### `JOIN_MULTIPLE_LINES`
+
+>    Join short lines into one line. E.g., single line `if` statements.
+
+#### `NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS`
+
+>    Do not include spaces around selected binary operators. For example:
 
 ```python
-        { 1: 2 }
+    1 + 2 * 3 - 4 / 5
 ```
 
-`SPACES_AROUND_LIST_DELIMITERS`
-
-    Adds a space after the opening '[' and before the ending ']' list delimiters.
+>    will be formatted as follows when configured with `*`, `/`:
 
 ```python
-        [1, 2]
+    1 + 2*3 - 4/5
 ```
 
-    will be formatted as:
+#### `SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET`
 
-```python
-        [ 1, 2 ]
-```
+>    Insert a space between the ending comma and closing bracket of a list, etc.
 
-`SPACES_AROUND_SUBSCRIPT_COLON`
-
-    Use spaces around the subscript / slice operator.  For example:
-
-```python
-        my_list[1 : 10 : 2]
-```
-
-`SPACES_AROUND_TUPLE_DELIMITERS`
-
-    Adds a space after the opening '(' and before the ending ')' tuple delimiters.
-
-```python
-        (1, 2, 3)
-```
-
-    will be formatted as:
-
-```python
-        ( 1, 2, 3 )
-```
-
-`SPACES_BEFORE_COMMENT`
-
-    The number of spaces required before a trailing comment.
-    This can be a single value (representing the number of spaces
-    before each trailing comment) or list of values (representing
-    alignment column values; trailing comments within a block will
-    be aligned to the first column value that is greater than the maximum
-    line length within the block).
-
-    > **Note:** Lists of values may need to be quoted in some contexts
-    > (eg. shells or editor config files).
-
-    For example, with `spaces_before_comment=5`:
-
-```python
-        1 + 1 # Adding values
-```
-
-    will be formatted as:
-
-```python
-        1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
-```
-
-    with `spaces_before_comment="15, 20"`:
-
-```python
-        1 + 1 # Adding values
-        two + two # More adding
-
-        longer_statement # This is a longer statement
-        short # This is a shorter statement
-
-        a_very_long_statement_that_extends_beyond_the_final_column # Comment
-        short # This is a shorter statement
-```
-
-    will be formatted as:
-
-```python
-        1 + 1          # Adding values <-- end of line comments in block aligned to col 15
-        two + two      # More adding
-
-        longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
-        short               # This is a shorter statement
-
-        a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
-        short                                                       # This is a shorter statement
-```
-
-`SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET`
-
-    Insert a space between the ending comma and closing bracket of a list, etc.
-
-`SPACE_INSIDE_BRACKETS`
+#### `SPACE_INSIDE_BRACKETS`
 
     Use spaces inside brackets, braces, and parentheses.  For example:
 
@@ -717,177 +608,286 @@ optional arguments:
         my_set = { 1, 2, 3 }
 ```
 
-`SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED`
+#### `SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN`
 
-    Split before arguments if the argument list is terminated by a comma.
+>    Set to `True` to prefer spaces around the assignment operator for default
+>    or keyword arguments.
 
-`SPLIT_ALL_COMMA_SEPARATED_VALUES`
+#### `SPACES_AROUND_DICT_DELIMITERS`
 
-    If a comma separated list (`dict`, `list`, `tuple`, or function `def`) is
-    on a line that is too long, split such that each element is on a separate
-    line.
-
-`SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES`
-
-    Variation on `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a
-    subexpression with a comma fits in its starting line, then the
-    subexpression is not split. This avoids splits like the one for
-    `b` in this code:
+>    Adds a space after the opening '{' and before the ending '}' dict delimiters.
 
 ```python
-        abcdef(
-            aReallyLongThing: int,
-            b: [Int,
-                Int])
+        {1: 2}
 ```
 
-    with the new knob this is split as:
+>    will be formatted as:
 
 ```python
-        abcdef(
-            aReallyLongThing: int,
-            b: [Int, Int])
+        { 1: 2 }
 ```
 
-`SPLIT_BEFORE_BITWISE_OPERATOR`
+#### `SPACES_AROUND_LIST_DELIMITERS`
 
-    Set to `True` to prefer splitting before `&`, `|` or `^` rather than after.
-
-`SPLIT_BEFORE_ARITHMETIC_OPERATOR`
-
-    Set to `True` to prefer splitting before `+`, `-`, `*`, `/`, `//`, or `@`
-    rather than after.
-
-`SPLIT_BEFORE_CLOSING_BRACKET`
-
-    Split before the closing bracket if a `list` or `dict` literal doesn't fit
-    on a single line.
-
-`SPLIT_BEFORE_DICT_SET_GENERATOR`
-
-    Split before a dictionary or set generator (`comp_for`). For example, note
-    the split before the `for`:
+>    Adds a space after the opening '[' and before the ending ']' list delimiters.
 
 ```python
-        foo = {
-            variable: 'Hello world, have a nice day!'
-            for variable in bar if variable != 42
-        }
+    [1, 2]
 ```
 
-`SPLIT_BEFORE_DOT`
-
-    Split before the `.` if we need to split a longer expression:
+>    will be formatted as:
 
 ```python
-        foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+    [ 1, 2 ]
 ```
 
-    would reformat to something like:
+#### `SPACES_AROUND_POWER_OPERATOR`
+
+>    Set to `True` to prefer using spaces around `**`.
+
+#### `SPACES_AROUND_SUBSCRIPT_COLON`
+
+>    Use spaces around the subscript / slice operator.  For example:
 
 ```python
-        foo = ('This is a really long string: {}, {}, {}, {}'
-               .format(a, b, c, d))
+    my_list[1 : 10 : 2]
 ```
 
-`SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN`
+##### `SPACES_AROUND_TUPLE_DELIMITERS`
 
-    Split after the opening paren which surrounds an expression if it doesn't
-    fit on a single line.
-
-`SPLIT_BEFORE_FIRST_ARGUMENT`
-
-    If an argument / parameter list is going to be split, then split before the
-    first argument.
-
-`SPLIT_BEFORE_LOGICAL_OPERATOR`
-
-    Set to `True` to prefer splitting before `and` or `or` rather than after.
-
-`SPLIT_BEFORE_NAMED_ASSIGNS`
-
-    Split named assignments onto individual lines.
-
-`SPLIT_COMPLEX_COMPREHENSION`
-
-    For list comprehensions and generator expressions with multiple clauses
-    (e.g multiple `for` calls, `if` filter expressions) and which need to be
-    reflowed, split each clause onto its own line. For example:
+>    Adds a space after the opening '(' and before the ending ')' tuple delimiters.
 
 ```python
-        result = [
-            a_var + b_var for a_var in xrange(1000) for b_var in xrange(1000)
-            if a_var % b_var]
+    (1, 2, 3)
 ```
 
-    would reformat to something like:
+>    will be formatted as:
 
 ```python
-        result = [
-            a_var + b_var
-            for a_var in xrange(1000)
-            for b_var in xrange(1000)
-            if a_var % b_var]
+    ( 1, 2, 3 )
 ```
 
-`SPLIT_PENALTY_AFTER_OPENING_BRACKET`
+#### `SPACES_BEFORE_COMMENT`
 
-    The penalty for splitting right after the opening bracket.
+>    The number of spaces required before a trailing comment.
+>    This can be a single value (representing the number of spaces
+>    before each trailing comment) or list of values (representing
+>    alignment column values; trailing comments within a block will
+>    be aligned to the first column value that is greater than the maximum
+>    line length within the block).
 
-`SPLIT_PENALTY_AFTER_UNARY_OPERATOR`
+> **Note:** Lists of values may need to be quoted in some contexts
+> (eg. shells or editor config files).
 
-    The penalty for splitting the line after a unary operator.
-
-`SPLIT_PENALTY_ARITHMETIC_OPERATOR`
-
-    The penalty of splitting the line around the `+`, `-`, `*`, `/`, `//`, `%`,
-    and `@` operators.
-
-`SPLIT_PENALTY_BEFORE_IF_EXPR`
-
-    The penalty for splitting right before an `if` expression.
-
-`SPLIT_PENALTY_BITWISE_OPERATOR`
-
-    The penalty of splitting the line around the `&`, `|`, and `^` operators.
-
-`SPLIT_PENALTY_COMPREHENSION`
-
-    The penalty for splitting a list comprehension or generator expression.
-
-`SPLIT_PENALTY_EXCESS_CHARACTER`
-
-    The penalty for characters over the column limit.
-
-`SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT`
-
-    The penalty incurred by adding a line split to the logical line. The more
-    line splits added the higher the penalty.
-
-`SPLIT_PENALTY_IMPORT_NAMES`
-
-    The penalty of splitting a list of `import as` names. For example:
+>    For example, with `spaces_before_comment=5`:
 
 ```python
-        from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
-                                                                  long_argument_2,
-                                                                  long_argument_3)
+    1 + 1 # Adding values
 ```
 
-    would reformat to something like:
+>    will be formatted as:
 
 ```python
-        from a_very_long_or_indented_module_name_yada_yad import (
-            long_argument_1, long_argument_2, long_argument_3)
+    1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
 ```
 
-`SPLIT_PENALTY_LOGICAL_OPERATOR`
+>    with `spaces_before_comment="15, 20"`:
 
-    The penalty of splitting the line around the `and` and `or` operators.
+```python
+    1 + 1 # Adding values
+    two + two # More adding
 
-`USE_TABS`
+    longer_statement # This is a longer statement
+    short # This is a shorter statement
 
-    Use the Tab character for indentation.
+    a_very_long_statement_that_extends_beyond_the_final_column # Comment
+    short # This is a shorter statement
+```
+
+>    will be formatted as:
+
+```python
+    1 + 1          # Adding values <-- end of line comments in block aligned to col 15
+    two + two      # More adding
+
+    longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
+    short               # This is a shorter statement
+
+    a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
+    short                                                       # This is a shorter statement
+```
+
+#### `SPLIT_ALL_COMMA_SEPARATED_VALUES`
+
+>    If a comma separated list (`dict`, `list`, `tuple`, or function `def`) is
+>    on a line that is too long, split such that each element is on a separate
+>    line.
+
+#### `SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES`
+
+>    Variation on `SPLIT_ALL_COMMA_SEPARATED_VALUES` in which, if a
+>    subexpression with a comma fits in its starting line, then the
+>    subexpression is not split. This avoids splits like the one for
+>    `b` in this code:
+
+```python
+    abcdef(
+        aReallyLongThing: int,
+        b: [Int,
+            Int])
+```
+
+>    with the new knob this is split as:
+
+```python
+    abcdef(
+        aReallyLongThing: int,
+        b: [Int, Int])
+```
+
+#### `SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED`
+
+>    Split before arguments if the argument list is terminated by a comma.
+
+#### `SPLIT_BEFORE_ARITHMETIC_OPERATOR`
+
+>    Set to `True` to prefer splitting before `+`, `-`, `*`, `/`, `//`, or `@`
+>    rather than after.
+
+#### `SPLIT_BEFORE_BITWISE_OPERATOR`
+
+>    Set to `True` to prefer splitting before `&`, `|` or `^` rather than after.
+
+#### `SPLIT_BEFORE_CLOSING_BRACKET`
+
+>    Split before the closing bracket if a `list` or `dict` literal doesn't fit
+>    on a single line.
+
+#### `SPLIT_BEFORE_DICT_SET_GENERATOR`
+
+>    Split before a dictionary or set generator (`comp_for`). For example, note
+>    the split before the `for`:
+
+```python
+    foo = {
+        variable: 'Hello world, have a nice day!'
+        for variable in bar if variable != 42
+    }
+```
+
+#### `SPLIT_BEFORE_DOT`
+
+>    Split before the `.` if we need to split a longer expression:
+
+```python
+    foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+```
+
+>    would reformat to something like:
+
+```python
+    foo = ('This is a really long string: {}, {}, {}, {}'
+           .format(a, b, c, d))
+```
+
+#### `SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN`
+
+>    Split after the opening paren which surrounds an expression if it doesn't
+>    fit on a single line.
+
+#### `SPLIT_BEFORE_FIRST_ARGUMENT`
+
+>    If an argument / parameter list is going to be split, then split before the
+>    first argument.
+
+#### `SPLIT_BEFORE_LOGICAL_OPERATOR`
+
+>    Set to `True` to prefer splitting before `and` or `or` rather than after.
+
+#### `SPLIT_BEFORE_NAMED_ASSIGNS`
+
+>    Split named assignments onto individual lines.
+
+#### `SPLIT_COMPLEX_COMPREHENSION`
+
+>    For list comprehensions and generator expressions with multiple clauses
+>    (e.g multiple `for` calls, `if` filter expressions) and which need to be
+>    reflowed, split each clause onto its own line. For example:
+
+```python
+    result = [
+        a_var + b_var for a_var in xrange(1000) for b_var in xrange(1000)
+        if a_var % b_var]
+```
+
+>    would reformat to something like:
+
+```python
+    result = [
+        a_var + b_var
+        for a_var in xrange(1000)
+        for b_var in xrange(1000)
+        if a_var % b_var]
+```
+
+#### `SPLIT_PENALTY_AFTER_OPENING_BRACKET`
+
+>    The penalty for splitting right after the opening bracket.
+
+#### `SPLIT_PENALTY_AFTER_UNARY_OPERATOR`
+
+>    The penalty for splitting the line after a unary operator.
+
+#### `SPLIT_PENALTY_ARITHMETIC_OPERATOR`
+
+>    The penalty of splitting the line around the `+`, `-`, `*`, `/`, `//`, `%`,
+>    and `@` operators.
+
+#### `SPLIT_PENALTY_BEFORE_IF_EXPR`
+
+>    The penalty for splitting right before an `if` expression.
+
+#### `SPLIT_PENALTY_BITWISE_OPERATOR`
+
+>    The penalty of splitting the line around the `&`, `|`, and `^` operators.
+
+#### `SPLIT_PENALTY_COMPREHENSION`
+
+>    The penalty for splitting a list comprehension or generator expression.
+
+#### `SPLIT_PENALTY_EXCESS_CHARACTER`
+
+>    The penalty for characters over the column limit.
+
+#### `SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT`
+
+>    The penalty incurred by adding a line split to the logical line. The more
+>    line splits added the higher the penalty.
+
+#### `SPLIT_PENALTY_IMPORT_NAMES`
+
+>    The penalty of splitting a list of `import as` names. For example:
+
+```python
+    from a_very_long_or_indented_module_name_yada_yad import (long_argument_1,
+                                                              long_argument_2,
+                                                              long_argument_3)
+```
+
+>    would reformat to something like:
+
+```python
+    from a_very_long_or_indented_module_name_yada_yad import (
+        long_argument_1, long_argument_2, long_argument_3)
+```
+
+#### `SPLIT_PENALTY_LOGICAL_OPERATOR`
+
+>    The penalty of splitting the line around the `and` and `or` operators.
+
+#### `USE_TABS`
+
+>    Use the Tab character for indentation.
 
 
 ## (Potentially) Frequently Asked Questions
