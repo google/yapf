@@ -110,8 +110,8 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
   def testSplittingTopLevelAllArgs(self):
     style_dict = style.CreateStyleFromConfig(
-            '{split_all_top_level_comma_separated_values: true, '
-            'column_limit: 40}')
+        '{split_all_top_level_comma_separated_values: true, '
+        'column_limit: 40}')
     style.SetGlobalStyle(style_dict)
     # Works the same way as split_all_comma_separated_values
     unformatted_code = textwrap.dedent("""\
