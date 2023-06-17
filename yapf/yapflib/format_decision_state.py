@@ -26,6 +26,8 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
+from yapf_third_party._ylib2to3.pytree import type_repr
+
 from yapf.pytree import split_penalty
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
@@ -1096,16 +1098,21 @@ class FormatDecisionState(object):
             self.stack[-1].indent) <= self.column_limit
 
 
-_COMPOUND_STMTS = frozenset({
-    'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class', 'match',
-    'case'
-})
+_COMPOUND_STMTS = frozenset(
+    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
 
 
 def _IsCompoundStatement(token):
-  if token.value == 'async':
+  value = token.value
+  if value == 'async':
     token = token.next_token
-  return token.value in _COMPOUND_STMTS
+  if token.value in _COMPOUND_STMTS:
+    return True
+  if value == 'match':
+    return type_repr(token.node.parent.type) == 'match_stmt'
+  if value == 'case':
+    return type_repr(token.node.parent.type) == 'case_stmt'
+  return False
 
 
 def _IsFunctionDef(token):
