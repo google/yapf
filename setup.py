@@ -94,6 +94,9 @@ with codecs.open('README.md', 'r', 'utf-8') as fd:
       },
       include_package_data=True,
       python_requires='>=3.7',
+      setup_requires=[
+          'setuptools>=58.5.0',  # for include_package_data fix (issue #1107)
+      ],
       install_requires=[
           'importlib-metadata>=6.6.0',
           'platformdirs>=3.5.1',
