@@ -19,7 +19,7 @@ i.e., lines which, if there were no column limit, we would place all tokens on
 that line. It then uses a priority queue to figure out what the best formatting
 is --- i.e., the formatting with the least penalty.
 
-It differs from tools like autopep8 and pep8ify in that it doesn't just look for
+It differs from tools like autopep8 in that it doesn't just look for
 violations of the style guide, but looks at the module as a whole, making
 formatting decisions based on what's the best format for each line.
 
