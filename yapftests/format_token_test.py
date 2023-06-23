@@ -20,8 +20,9 @@ from yapf_third_party._ylib2to3.pgen2 import token
 
 from yapf.yapflib import format_token
 
+from yapftests import yapf_test_helper
 
-class TabbedContinuationAlignPaddingTest(unittest.TestCase):
+class TabbedContinuationAlignPaddingTest(yapf_test_helper.YAPFTest):
 
   def testSpace(self):
     align_style = 'SPACE'
@@ -63,7 +64,7 @@ class TabbedContinuationAlignPaddingTest(unittest.TestCase):
     self.assertEqual(pad, '\t' * 2)
 
 
-class FormatTokenTest(unittest.TestCase):
+class FormatTokenTest(yapf_test_helper.YAPFTest):
 
   def testSimple(self):
     tok = format_token.FormatToken(

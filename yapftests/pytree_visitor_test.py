@@ -19,6 +19,8 @@ from io import StringIO
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
 
+from yapftests import yapf_test_helper
+
 
 class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
   """A tree visitor that collects the names of all tree nodes into a list.
@@ -46,19 +48,19 @@ class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
     self.DefaultLeafVisit(leaf)
 
 
-_VISITOR_TEST_SIMPLE_CODE = r"""
+_VISITOR_TEST_SIMPLE_CODE = """\
 foo = bar
 baz = x
 """
 
-_VISITOR_TEST_NESTED_CODE = r"""
+_VISITOR_TEST_NESTED_CODE = """\
 if x:
   if y:
     return z
 """
 
 
-class PytreeVisitorTest(unittest.TestCase):
+class PytreeVisitorTest(yapf_test_helper.YAPFTest):
 
   def testCollectAllNodeNamesSimpleCode(self):
     tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)

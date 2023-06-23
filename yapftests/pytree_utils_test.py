@@ -21,6 +21,8 @@ from yapf_third_party._ylib2to3.pgen2 import token
 
 from yapf.pytree import pytree_utils
 
+from yapftests import yapf_test_helper
+
 # More direct access to the symbol->number mapping living within the grammar
 # module.
 _GRAMMAR_SYMBOL2NUMBER = pygram.python_grammar.symbol2number
@@ -33,7 +35,7 @@ _FOO4 = 'foo4'
 _FOO5 = 'foo5'
 
 
-class NodeNameTest(unittest.TestCase):
+class NodeNameTest(yapf_test_helper.YAPFTest):
 
   def testNodeNameForLeaf(self):
     leaf = pytree.Leaf(token.LPAR, '(')
@@ -45,7 +47,7 @@ class NodeNameTest(unittest.TestCase):
     self.assertEqual('suite', pytree_utils.NodeName(node))
 
 
-class ParseCodeToTreeTest(unittest.TestCase):
+class ParseCodeToTreeTest(yapf_test_helper.YAPFTest):
 
   def testParseCodeToTree(self):
     # Since ParseCodeToTree is a thin wrapper around underlying lib2to3
@@ -71,7 +73,7 @@ class ParseCodeToTreeTest(unittest.TestCase):
       pytree_utils.ParseCodeToTree('class nonlocal: pass\n')
 
 
-class InsertNodesBeforeAfterTest(unittest.TestCase):
+class InsertNodesBeforeAfterTest(yapf_test_helper.YAPFTest):
 
   def _BuildSimpleTree(self):
     # Builds a simple tree we can play with in the tests.
@@ -143,7 +145,7 @@ class InsertNodesBeforeAfterTest(unittest.TestCase):
                                     self._simple_tree.children[0])
 
 
-class AnnotationsTest(unittest.TestCase):
+class AnnotationsTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):
     self._leaf = pytree.Leaf(token.LPAR, '(')

@@ -45,10 +45,10 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
 
   def testFuncDefDefaultAssign(self):
     self.maxDiff = None  # pylint: disable=invalid-name
-    code = textwrap.dedent(r"""
+    code = textwrap.dedent("""\
         def foo(a=37, *b, **c):
           return -x[:42]
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -106,9 +106,9 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     ])
 
   def testFuncCallWithDefaultAssign(self):
-    code = textwrap.dedent(r"""
+    code = textwrap.dedent("""\
         foo(x, a='hello world')
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -133,7 +133,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(value):
           return {value.lower()}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -163,7 +163,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(strs):
           return {s.lower() for s in strs}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -200,7 +200,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(strs):
           return {s + s.lower() for s in strs}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -239,7 +239,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(strs):
           return {c.lower() for s in strs for c in s}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -285,7 +285,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(value):
           return {value: value.lower()}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -317,7 +317,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(strs):
           return {s: s.lower() for s in strs}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -359,7 +359,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         def foo(strs):
           return {c: c.lower() for s in strs for c in s}
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -409,7 +409,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
   def testUnaryNotOperator(self):
     code = textwrap.dedent("""\
         not a
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [[('not', {subtypes.UNARY_OPERATOR}),
                                              ('a', {subtypes.NONE})]])
@@ -446,7 +446,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
   def testArithmeticOperators(self):
     code = textwrap.dedent("""\
         x = ((a + (b - 3) * (1 % c) @ d) / 3) // 1
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -487,7 +487,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
   def testSubscriptColon(self):
     code = textwrap.dedent("""\
         x[0:42:1]
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [
@@ -505,7 +505,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
   def testFunctionCallWithStarExpression(self):
     code = textwrap.dedent("""\
         [a, *b]
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self._CheckFormatTokenSubtypes(llines, [
         [

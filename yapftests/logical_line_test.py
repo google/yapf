@@ -26,7 +26,7 @@ from yapf.yapflib import logical_line
 from yapftests import yapf_test_helper
 
 
-class LogicalLineBasicTest(unittest.TestCase):
+class LogicalLineBasicTest(yapf_test_helper.YAPFTest):
 
   def testConstruction(self):
     toks = _MakeFormatTokenList([(token.DOT, '.', 'DOT'),
@@ -61,10 +61,10 @@ class LogicalLineBasicTest(unittest.TestCase):
 class LogicalLineFormattingInformationTest(yapf_test_helper.YAPFTest):
 
   def testFuncDef(self):
-    code = textwrap.dedent(r"""
+    code = textwrap.dedent("""\
         def f(a, b):
           pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
 
     f = llines[0].tokens[1]
