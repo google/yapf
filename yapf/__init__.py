@@ -117,8 +117,7 @@ def main(argv):
           str('\n'.join(source) + '\n'),
           filename='<stdin>',
           style_config=style_config,
-          lines=lines,
-          verify=args.verify)
+          lines=lines)
     except errors.YapfError:
       raise
     except Exception as e:
@@ -144,7 +143,6 @@ def main(argv):
       no_local_style=args.no_local_style,
       in_place=args.in_place,
       print_diff=args.diff,
-      verify=args.verify,
       parallel=args.parallel,
       quiet=args.quiet,
       verbose=args.verbose,
@@ -175,7 +173,6 @@ def FormatFiles(filenames,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 parallel=False,
                 quiet=False,
                 verbose=False,
@@ -194,7 +191,6 @@ def FormatFiles(filenames,
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
     parallel: (bool) True if should format multiple files in parallel.
     quiet: (bool) True if should output nothing.
     verbose: (bool) True if should print out filenames while processing.
@@ -211,16 +207,16 @@ def FormatFiles(filenames,
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
           executor.submit(_FormatFile, filename, lines, style_config,
-                          no_local_style, in_place, print_diff, verify, quiet,
-                          verbose, print_modified) for filename in filenames
+			  no_local_style, in_place, print_diff, quiet, verbose,
+			  print_modified) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
   else:
     for filename in filenames:
       changed |= _FormatFile(filename, lines, style_config, no_local_style,
-                             in_place, print_diff, verify, quiet, verbose,
-                             print_modified)
+			     in_place, print_diff, quiet, verbose,
+			     print_modified)
   return changed
 
 
@@ -230,7 +226,6 @@ def _FormatFile(filename,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 quiet=False,
                 verbose=False,
                 print_modified=False):
@@ -249,7 +244,6 @@ def _FormatFile(filename,
         style_config=style_config,
         lines=lines,
         print_diff=print_diff,
-        verify=verify,
         logger=logging.warning)
   except errors.YapfError:
     raise
@@ -360,7 +354,6 @@ def _BuildParser():
       '--no-local-style',
       action='store_true',
       help="don't search for local style definition")
-  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
   parser.add_argument(
       '-p',
       '--parallel',
