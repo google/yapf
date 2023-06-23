@@ -52,10 +52,10 @@ def SetGlobalStyle(style):
 
 
 _STYLE_HELP = dict(
+    # BASED_ON_STYLE='Which predefined style this style is based on',
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=textwrap.dedent("""\
-      Align closing bracket with visual indentation."""),
-    ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
-      Allow lambdas to be formatted on more than one line."""),
+      Align closing bracket with visual indentation.
+    """),
     ALLOW_MULTILINE_DICTIONARY_KEYS=textwrap.dedent("""\
       Allow dictionary keys to exist on multiple lines. For example:
 
@@ -63,12 +63,17 @@ _STYLE_HELP = dict(
             ('this is the first element of a tuple',
              'this is the second element of a tuple'):
                  value,
-        }"""),
+        }
+    """),
+    ALLOW_MULTILINE_LAMBDAS=textwrap.dedent("""\
+      Allow lambdas to be formatted on more than one line.
+    """),
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=textwrap.dedent("""\
       Allow splitting before a default / named assignment in an argument list.
-      """),
+    """),
     ALLOW_SPLIT_BEFORE_DICT_VALUE=textwrap.dedent("""\
-      Allow splits before the dictionary value."""),
+      Allow splits before the dictionary value.
+    """),
     ARITHMETIC_PRECEDENCE_INDICATION=textwrap.dedent("""\
       Let spacing indicate operator precedence. For example:
 
@@ -88,7 +93,13 @@ _STYLE_HELP = dict(
         e = 1*2 - 3
         f = 1 + 2 + 3 + 4
 
-      """),
+    """),
+    BLANK_LINE_BEFORE_CLASS_DOCSTRING=textwrap.dedent("""\
+      Insert a blank line before a class-level docstring.
+    """),
+    BLANK_LINE_BEFORE_MODULE_DOCSTRING=textwrap.dedent("""\
+      Insert a blank line before a module docstring.
+    """),
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=textwrap.dedent("""\
       Insert a blank line before a 'def' or 'class' immediately nested
       within another 'def' or 'class'. For example:
@@ -96,17 +107,16 @@ _STYLE_HELP = dict(
         class Foo:
                            # <------ this blank line
           def method():
-            ..."""),
-    BLANK_LINE_BEFORE_CLASS_DOCSTRING=textwrap.dedent("""\
-      Insert a blank line before a class-level docstring."""),
-    BLANK_LINE_BEFORE_MODULE_DOCSTRING=textwrap.dedent("""\
-      Insert a blank line before a module docstring."""),
+            pass
+    """),
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=textwrap.dedent("""\
       Number of blank lines surrounding top-level function and class
-      definitions."""),
+      definitions.
+    """),
     BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=textwrap.dedent("""\
       Number of blank lines between top-level imports and variable
-      definitions."""),
+      definitions.
+    """),
     COALESCE_BRACKETS=textwrap.dedent("""\
       Do not split consecutive brackets. Only relevant when
       dedent_closing_brackets is set. For example:
@@ -123,9 +133,11 @@ _STYLE_HELP = dict(
          call_func_that_takes_a_dict({
              'key1': 'value1',
              'key2': 'value2',
-         })"""),
+         })
+    """),
     COLUMN_LIMIT=textwrap.dedent("""\
-      The column limit."""),
+      The column limit.
+    """),
     CONTINUATION_ALIGN_STYLE=textwrap.dedent("""\
       The style for continuation alignment. Possible values are:
 
@@ -135,9 +147,11 @@ _STYLE_HELP = dict(
         CONTINUATION_INDENT_WIDTH spaces) for continuation alignment.
       - VALIGN-RIGHT: Vertically align continuation lines to multiple of
         INDENT_WIDTH columns. Slightly right (one tab or a few spaces) if
-        cannot vertically align continuation lines with indent characters."""),
+        cannot vertically align continuation lines with indent characters.
+    """),
     CONTINUATION_INDENT_WIDTH=textwrap.dedent("""\
-      Indent width used for line continuations."""),
+      Indent width used for line continuations.
+    """),
     DEDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, dedented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
@@ -155,27 +169,32 @@ _STYLE_HELP = dict(
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
         )        # <--- this bracket is dedented and on a separate line
-      """),
+    """),
     DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
-      if the list is comma-terminated."""),
+      if the list is comma-terminated.
+    """),
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
-      Place each dictionary entry onto its own line."""),
+      Place each dictionary entry onto its own line.
+    """),
     FORCE_MULTILINE_DICT=textwrap.dedent("""\
       Require multiline dictionary even if it would normally fit on one line.
       For example:
 
         config = {
             'key1': 'value1'
-        }"""),
+        }
+    """),
     I18N_COMMENT=textwrap.dedent("""\
       The regex for an i18n comment. The presence of this comment stops
       reformatting of that line, because the comments are required to be
-      next to the string they translate."""),
+      next to the string they translate.
+    """),
     I18N_FUNCTION_CALL=textwrap.dedent("""\
       The i18n function call names. The presence of this function stops
       reformattting on that line, because the string it has cannot be moved
-      away from the i18n comment."""),
+      away from the i18n comment.
+    """),
     INDENT_CLOSING_BRACKETS=textwrap.dedent("""\
       Put closing brackets on a separate line, indented, if the bracketed
       expression can't fit in a single line. Applies to all kinds of brackets,
@@ -193,7 +212,7 @@ _STYLE_HELP = dict(
             start_ts=now()-timedelta(days=3),
             end_ts=now(),
             )        # <--- this bracket is indented and on a separate line
-        """),
+    """),
     INDENT_DICTIONARY_VALUE=textwrap.dedent("""\
       Indent the dictionary value if it cannot fit on the same line as the
       dictionary key. For example:
@@ -204,13 +223,16 @@ _STYLE_HELP = dict(
             'key2': value1 +
                     value2,
         }
-      """),
-    INDENT_WIDTH=textwrap.dedent("""\
-      The number of columns to use for indentation."""),
+    """),
     INDENT_BLANK_LINES=textwrap.dedent("""\
-      Indent blank lines."""),
+      Indent blank lines.
+    """),
+    INDENT_WIDTH=textwrap.dedent("""\
+      The number of columns to use for indentation.
+    """),
     JOIN_MULTIPLE_LINES=textwrap.dedent("""\
-      Join short lines into one line. E.g., single line 'if' statements."""),
+      Join short lines into one line. E.g., single line 'if' statements.
+    """),
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=textwrap.dedent("""\
       Do not include spaces around selected binary operators. For example:
 
@@ -219,21 +241,21 @@ _STYLE_HELP = dict(
       will be formatted as follows when configured with "*,/":
 
         1 + 2*3 - 4/5
-      """),
+    """),
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=textwrap.dedent("""\
       Insert a space between the ending comma and closing bracket of a list,
-      etc."""),
+      etc.
+    """),
     SPACE_INSIDE_BRACKETS=textwrap.dedent("""\
       Use spaces inside brackets, braces, and parentheses.  For example:
 
         method_call( 1 )
         my_dict[ 3 ][ 1 ][ get_index( *args, **kwargs ) ]
         my_set = { 1, 2, 3 }
-      """),
-    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
-      Use spaces around the power operator."""),
+    """),
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=textwrap.dedent("""\
-      Use spaces around default or named assigns."""),
+      Use spaces around default or named assigns.
+    """),
     SPACES_AROUND_DICT_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '{' and before the ending '}' dict
       delimiters.
@@ -243,7 +265,7 @@ _STYLE_HELP = dict(
       will be formatted as:
 
         { 1: 2 }
-      """),
+    """),
     SPACES_AROUND_LIST_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '[' and before the ending ']' list
       delimiters.
@@ -253,12 +275,15 @@ _STYLE_HELP = dict(
       will be formatted as:
 
         [ 1, 2 ]
-      """),
+    """),
+    SPACES_AROUND_POWER_OPERATOR=textwrap.dedent("""\
+      Use spaces around the power operator.
+    """),
     SPACES_AROUND_SUBSCRIPT_COLON=textwrap.dedent("""\
       Use spaces around the subscript / slice operator.  For example:
 
         my_list[1 : 10 : 2]
-      """),
+    """),
     SPACES_AROUND_TUPLE_DELIMITERS=textwrap.dedent("""\
       Adds a space after the opening '(' and before the ending ')' tuple
       delimiters.
@@ -268,7 +293,7 @@ _STYLE_HELP = dict(
       will be formatted as:
 
         ( 1, 2, 3 )
-      """),
+    """),
     SPACES_BEFORE_COMMENT=textwrap.dedent("""\
       The number of spaces required before a trailing comment.
       This can be a single value (representing the number of spaces
@@ -310,24 +335,30 @@ _STYLE_HELP = dict(
         a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
         short                                                       # This is a shorter statement
 
-      """),  # noqa
-    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
-      Split before arguments if the argument list is terminated by a
-      comma."""),
+    """),  # noqa
     SPLIT_ALL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
-      Split before arguments"""),
+      Split before arguments.
+    """),
     SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
       Split before arguments, but do not split all subexpressions recursively
-      (unless needed)."""),
+      (unless needed).
+    """),
+    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=textwrap.dedent("""\
+      Split before arguments if the argument list is terminated by a
+      comma.
+    """),
     SPLIT_BEFORE_ARITHMETIC_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '+', '-', '*', '/', '//', or '@'
-      rather than after."""),
+      rather than after.
+    """),
     SPLIT_BEFORE_BITWISE_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before '&', '|' or '^' rather than
-      after."""),
+      after.
+    """),
     SPLIT_BEFORE_CLOSING_BRACKET=textwrap.dedent("""\
       Split before the closing bracket if a list or dict literal doesn't fit on
-      a single line."""),
+      a single line.
+    """),
     SPLIT_BEFORE_DICT_SET_GENERATOR=textwrap.dedent("""\
       Split before a dictionary or set generator (comp_for). For example, note
       the split before the 'for':
@@ -335,7 +366,8 @@ _STYLE_HELP = dict(
         foo = {
             variable: 'Hello world, have a nice day!'
             for variable in bar if variable != 42
-        }"""),
+        }
+    """),
     SPLIT_BEFORE_DOT=textwrap.dedent("""\
       Split before the '.' if we need to split a longer expression:
 
@@ -345,19 +377,22 @@ _STYLE_HELP = dict(
 
         foo = ('This is a really long string: {}, {}, {}, {}'
                .format(a, b, c, d))
-      """),  # noqa
+    """),  # noqa
     SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN=textwrap.dedent("""\
       Split after the opening paren which surrounds an expression if it doesn't
       fit on a single line.
-      """),
+    """),
     SPLIT_BEFORE_FIRST_ARGUMENT=textwrap.dedent("""\
       If an argument / parameter list is going to be split, then split before
-      the first argument."""),
+      the first argument.
+    """),
     SPLIT_BEFORE_LOGICAL_OPERATOR=textwrap.dedent("""\
       Set to True to prefer splitting before 'and' or 'or' rather than
-      after."""),
+      after.
+    """),
     SPLIT_BEFORE_NAMED_ASSIGNS=textwrap.dedent("""\
-      Split named assignments onto individual lines."""),
+      Split named assignments onto individual lines.
+    """),
     SPLIT_COMPLEX_COMPREHENSION=textwrap.dedent("""\
       Set to True to split list comprehensions and generators that have
       non-trivial expressions and multiple clauses before each of these
@@ -373,27 +408,34 @@ _STYLE_HELP = dict(
             a_long_var + 100
             for a_long_var in xrange(1000)
             if a_long_var % 10]
-      """),
+    """),
     SPLIT_PENALTY_AFTER_OPENING_BRACKET=textwrap.dedent("""\
-      The penalty for splitting right after the opening bracket."""),
+      The penalty for splitting right after the opening bracket.
+    """),
     SPLIT_PENALTY_AFTER_UNARY_OPERATOR=textwrap.dedent("""\
-      The penalty for splitting the line after a unary operator."""),
+      The penalty for splitting the line after a unary operator.
+    """),
     SPLIT_PENALTY_ARITHMETIC_OPERATOR=textwrap.dedent("""\
       The penalty of splitting the line around the '+', '-', '*', '/', '//',
-      ``%``, and '@' operators."""),
+      `%`, and '@' operators.
+    """),
     SPLIT_PENALTY_BEFORE_IF_EXPR=textwrap.dedent("""\
-      The penalty for splitting right before an if expression."""),
+      The penalty for splitting right before an if expression.
+    """),
     SPLIT_PENALTY_BITWISE_OPERATOR=textwrap.dedent("""\
-      The penalty of splitting the line around the '&', '|', and '^'
-      operators."""),
+      The penalty of splitting the line around the '&', '|', and '^' operators.
+    """),
     SPLIT_PENALTY_COMPREHENSION=textwrap.dedent("""\
       The penalty for splitting a list comprehension or generator
-      expression."""),
+      expression.
+    """),
     SPLIT_PENALTY_EXCESS_CHARACTER=textwrap.dedent("""\
-      The penalty for characters over the column limit."""),
+      The penalty for characters over the column limit.
+    """),
     SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT=textwrap.dedent("""\
       The penalty incurred by adding a line split to the logical line. The
-      more line splits added the higher the penalty."""),
+      more line splits added the higher the penalty.
+    """),
     SPLIT_PENALTY_IMPORT_NAMES=textwrap.dedent("""\
       The penalty of splitting a list of "import as" names. For example:
 
@@ -405,13 +447,13 @@ _STYLE_HELP = dict(
 
         from a_very_long_or_indented_module_name_yada_yad import (
             long_argument_1, long_argument_2, long_argument_3)
-      """),  # noqa
+    """),  # noqa
     SPLIT_PENALTY_LOGICAL_OPERATOR=textwrap.dedent("""\
-      The penalty of splitting the line around the 'and' and 'or'
-      operators."""),
+      The penalty of splitting the line around the 'and' and 'or' operators.
+    """),
     USE_TABS=textwrap.dedent("""\
-      Use the Tab character for indentation."""),
-    # BASED_ON_STYLE='Which predefined style this style is based on',
+      Use the Tab character for indentation.
+    """),
 )
 
 
@@ -419,14 +461,14 @@ def CreatePEP8Style():
   """Create the PEP8 formatting style."""
   return dict(
       ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=True,
-      ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_MULTILINE_DICTIONARY_KEYS=False,
+      ALLOW_MULTILINE_LAMBDAS=False,
       ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=True,
       ALLOW_SPLIT_BEFORE_DICT_VALUE=True,
       ARITHMETIC_PRECEDENCE_INDICATION=False,
-      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=True,
       BLANK_LINE_BEFORE_CLASS_DOCSTRING=False,
       BLANK_LINE_BEFORE_MODULE_DOCSTRING=False,
+      BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=True,
       BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=2,
       BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=1,
       COALESCE_BRACKETS=False,
@@ -434,12 +476,12 @@ def CreatePEP8Style():
       CONTINUATION_ALIGN_STYLE='SPACE',
       CONTINUATION_INDENT_WIDTH=4,
       DEDENT_CLOSING_BRACKETS=False,
-      INDENT_CLOSING_BRACKETS=False,
       DISABLE_ENDING_COMMA_HEURISTIC=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
       FORCE_MULTILINE_DICT=False,
       I18N_COMMENT='',
       I18N_FUNCTION_CALL='',
+      INDENT_CLOSING_BRACKETS=False,
       INDENT_DICTIONARY_VALUE=False,
       INDENT_WIDTH=4,
       INDENT_BLANK_LINES=False,
@@ -447,16 +489,16 @@ def CreatePEP8Style():
       NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=set(),
       SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=True,
       SPACE_INSIDE_BRACKETS=False,
-      SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=False,
       SPACES_AROUND_DICT_DELIMITERS=False,
       SPACES_AROUND_LIST_DELIMITERS=False,
+      SPACES_AROUND_POWER_OPERATOR=False,
       SPACES_AROUND_SUBSCRIPT_COLON=False,
       SPACES_AROUND_TUPLE_DELIMITERS=False,
       SPACES_BEFORE_COMMENT=2,
-      SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
       SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=False,
+      SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_BEFORE_ARITHMETIC_OPERATOR=False,
       SPLIT_BEFORE_BITWISE_OPERATOR=True,
       SPLIT_BEFORE_CLOSING_BRACKET=True,
@@ -526,15 +568,15 @@ def CreateFacebookStyle():
   style['SPLIT_PENALTY_AFTER_OPENING_BRACKET'] = 0
   style['SPLIT_PENALTY_BEFORE_IF_EXPR'] = 30
   style['SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT'] = 30
-  style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
   style['SPLIT_BEFORE_BITWISE_OPERATOR'] = False
+  style['SPLIT_BEFORE_LOGICAL_OPERATOR'] = False
   return style
 
 
 _STYLE_NAME_TO_FACTORY = dict(
-    pep8=CreatePEP8Style,
-    google=CreateGoogleStyle,
     facebook=CreateFacebookStyle,
+    google=CreateGoogleStyle,
+    pep8=CreatePEP8Style,
     yapf=CreateYapfStyle,
 )
 
@@ -607,14 +649,14 @@ def _IntOrIntListConverter(s):
 # Note: this dict has to map all the supported style options.
 _STYLE_OPTION_VALUE_CONVERTER = dict(
     ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT=_BoolConverter,
-    ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_MULTILINE_DICTIONARY_KEYS=_BoolConverter,
+    ALLOW_MULTILINE_LAMBDAS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DEFAULT_OR_NAMED_ASSIGNS=_BoolConverter,
     ALLOW_SPLIT_BEFORE_DICT_VALUE=_BoolConverter,
     ARITHMETIC_PRECEDENCE_INDICATION=_BoolConverter,
-    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINE_BEFORE_CLASS_DOCSTRING=_BoolConverter,
     BLANK_LINE_BEFORE_MODULE_DOCSTRING=_BoolConverter,
+    BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=int,
     BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=int,
     COALESCE_BRACKETS=_BoolConverter,
@@ -622,29 +664,29 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     CONTINUATION_ALIGN_STYLE=_ContinuationAlignStyleStringConverter,
     CONTINUATION_INDENT_WIDTH=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
-    INDENT_CLOSING_BRACKETS=_BoolConverter,
     DISABLE_ENDING_COMMA_HEURISTIC=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
     FORCE_MULTILINE_DICT=_BoolConverter,
     I18N_COMMENT=str,
     I18N_FUNCTION_CALL=_StringListConverter,
+    INDENT_BLANK_LINES=_BoolConverter,
+    INDENT_CLOSING_BRACKETS=_BoolConverter,
     INDENT_DICTIONARY_VALUE=_BoolConverter,
     INDENT_WIDTH=int,
-    INDENT_BLANK_LINES=_BoolConverter,
     JOIN_MULTIPLE_LINES=_BoolConverter,
     NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS=_StringSetConverter,
     SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET=_BoolConverter,
     SPACE_INSIDE_BRACKETS=_BoolConverter,
-    SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN=_BoolConverter,
     SPACES_AROUND_DICT_DELIMITERS=_BoolConverter,
     SPACES_AROUND_LIST_DELIMITERS=_BoolConverter,
+    SPACES_AROUND_POWER_OPERATOR=_BoolConverter,
     SPACES_AROUND_SUBSCRIPT_COLON=_BoolConverter,
     SPACES_AROUND_TUPLE_DELIMITERS=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
-    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,
     SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=_BoolConverter,
+    SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_BEFORE_ARITHMETIC_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_BITWISE_OPERATOR=_BoolConverter,
     SPLIT_BEFORE_CLOSING_BRACKET=_BoolConverter,
