@@ -34,10 +34,7 @@ from yapf.yapflib import yapf_api
 from yapftests import utils
 from yapftests import yapf_test_helper
 
-ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-
-# Verification is turned off by default, but want to enable it for testing.
-YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
+YAPF_BINARY = [sys.executable, '-m', 'yapf', '--no-local-style']
 
 
 class FormatCodeTest(yapf_test_helper.YAPFTest):
@@ -392,7 +389,7 @@ class FormatFileTest(yapf_test_helper.YAPFTest):
       self.assertCodeEqual(code, formatted_code)
 
 
-class CommandLineTest(unittest.TestCase):
+class CommandLineTest(yapf_test_helper.YAPFTest):
   """Test how calling yapf from the command line acts."""
 
   @classmethod
@@ -1556,7 +1553,7 @@ def foo_function(arg1, arg2,
         extra_options=['--style', 'yapf', '--lines', '1-100'])
 
 
-class BadInputTest(unittest.TestCase):
+class BadInputTest(yapf_test_helper.YAPFTest):
   """Test yapf's behaviour when passed bad input."""
 
   def testBadSyntax(self):
@@ -1568,7 +1565,7 @@ class BadInputTest(unittest.TestCase):
     self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
 
-class DiffIndentTest(unittest.TestCase):
+class DiffIndentTest(yapf_test_helper.YAPFTest):
 
   @staticmethod
   def _OwnStyle():
@@ -1874,7 +1871,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
     self._Check(unformatted_code, expected_formatted_code)
 
 
-class _SpacesAroundDictListTupleTestImpl(unittest.TestCase):
+class _SpacesAroundDictListTupleTestImpl(yapf_test_helper.YAPFTest):
 
   @staticmethod
   def _OwnStyle():

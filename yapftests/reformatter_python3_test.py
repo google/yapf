@@ -106,7 +106,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                 pass
     """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(llines, verify=False))
+    self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testNoSpacesAroundPowerOperator(self):
     unformatted_code = textwrap.dedent("""\
