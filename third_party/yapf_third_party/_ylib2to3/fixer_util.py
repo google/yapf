@@ -101,8 +101,8 @@ def String(string, prefix=None):
 def ListComp(xp, fp, it, test=None):
   """A list comprehension of the form [xp for fp in it if test].
 
-    If test is None, the "if test" part is omitted.
-    """
+  If test is None, the "if test" part is omitted.
+  """
   xp.prefix = ''
   fp.prefix = ' '
   it.prefix = ' '
@@ -124,7 +124,9 @@ def ListComp(xp, fp, it, test=None):
 
 def FromImport(package_name, name_leafs):
   """ Return an import statement in the form:
-        from package import name_leafs"""
+
+       from package import name_leafs
+  """
   # XXX: May not handle dotted imports properly (eg, package_name='foo.bar')
   # #assert package_name == '.' or '.' not in package_name, "FromImport has "\
   #       "not been tested with dotted package names -- use at your own "\
@@ -145,11 +147,11 @@ def FromImport(package_name, name_leafs):
 
 
 def ImportAndCall(node, results, names):
-  """Returns an import statement and calls a method
-    of the module:
+  """Returns an import statement and calls a method of the module:
 
-    import module
-    module.name()"""
+      import module
+      module.name()
+  """
   obj = results['obj'].clone()
   if obj.type == syms.arglist:
     newarglist = obj.clone()
@@ -210,17 +212,17 @@ consuming_calls = {
 def attr_chain(obj, attr):
   """Follow an attribute chain.
 
-    If you have a chain of objects where a.foo -> b, b.foo-> c, etc,
-    use this to iterate over all objects in the chain. Iteration is
-    terminated by getattr(x, attr) is None.
+  If you have a chain of objects where a.foo -> b, b.foo-> c, etc, use this to
+  iterate over all objects in the chain. Iteration is terminated by getattr(x,
+  attr) is None.
 
-    Args:
-        obj: the starting object
-        attr: the name of the chaining attribute
+  Args:
+      obj: the starting object
+      attr: the name of the chaining attribute
 
-    Yields:
-        Each successive object in the chain.
-    """
+  Yields:
+      Each successive object in the chain.
+  """
   next = getattr(obj, attr)
   while next:
     yield next
@@ -250,10 +252,10 @@ pats_built = False
 
 def in_special_context(node):
   """ Returns true if node is in an environment where all that is required
-        of it is being iterable (ie, it doesn't matter if it returns a list
-        or an iterator).
-        See test_map_nochange in test_fixers.py for some examples and tests.
-        """
+      of it is being iterable (ie, it doesn't matter if it returns a list
+      or an iterator).
+      See test_map_nochange in test_fixers.py for some examples and tests.
+  """
   global p0, p1, p2, pats_built
   if not pats_built:
     p0 = patcomp.compile_pattern(p0)
@@ -269,9 +271,7 @@ def in_special_context(node):
 
 
 def is_probably_builtin(node):
-  """
-    Check that something isn't an attribute or function name etc.
-    """
+  """Check that something isn't an attribute or function name etc."""
   prev = node.prev_sibling
   if prev is not None and prev.type == token.DOT:
     # Attribute lookup.
@@ -328,9 +328,10 @@ def find_root(node):
 
 def does_tree_import(package, name, node):
   """ Returns true if name is imported from package at the
-        top level of the tree which node belongs to.
-        To cover the case of an import like 'import foo', use
-        None for the package and 'foo' for the name. """
+      top level of the tree which node belongs to.
+      To cover the case of an import like 'import foo', use
+      None for the package and 'foo' for the name.
+  """
   binding = find_binding(name, find_root(node), package)
   return bool(binding)
 
@@ -342,7 +343,7 @@ def is_import(node):
 
 def touch_import(package, name, node):
   """ Works like `does_tree_import` but adds an import statement
-        if it was not imported. """
+      if it was not imported. """
 
   def is_import_stmt(node):
     return (node.type == syms.simple_stmt and node.children and
@@ -391,9 +392,10 @@ _def_syms = {syms.classdef, syms.funcdef}
 
 def find_binding(name, node, package=None):
   """ Returns the node which binds variable name, otherwise None.
-        If optional argument package is supplied, only imports will
-        be returned.
-        See test cases for examples."""
+      If optional argument package is supplied, only imports will
+      be returned.
+      See test cases for examples.
+  """
   for child in node.children:
     ret = None
     if child.type == syms.for_stmt:
@@ -451,9 +453,9 @@ def _find(name, node):
 
 def _is_import_binding(node, name, package=None):
   """ Will return node if node will import name, or node
-        will import * from package.  None is returned otherwise.
-        See test cases for examples. """
-
+      will import * from package.  None is returned otherwise.
+      See test cases for examples.
+  """
   if node.type == syms.import_name and not package:
     imp = node.children[1]
     if imp.type == syms.dotted_as_names:
