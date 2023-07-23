@@ -41,7 +41,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
               ccccccccccccccc: dict,
               eeeeeeeeeeeeee: set = {1, 2, 3}) -> bool:
             pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -62,11 +62,11 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         def foo(a, *, kw):
           return a+kw
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo(a, *, kw):
             return a + kw
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -74,11 +74,11 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         def foo(a: list, b: "bar") -> dict:
           return a+b
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo(a: list, b: "bar") -> dict:
             return a + b
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -104,17 +104,17 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
             start = time.time()
             if (await get_html()):
                 pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
-    self.assertCodeEqual(code, reformatter.Reformat(llines, verify=False))
+    self.assertCodeEqual(code, reformatter.Reformat(llines))
 
   def testNoSpacesAroundPowerOperator(self):
     unformatted_code = textwrap.dedent("""\
         a**b
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         a ** b
-    """)  # noqa
+    """)
 
     try:
       style.SetGlobalStyle(
@@ -130,10 +130,10 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
   def testSpacesAroundDefaultOrNamedAssign(self):
     unformatted_code = textwrap.dedent("""\
         f(a=5)
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         f(a = 5)
-    """)  # noqa
+    """)
 
     try:
       style.SetGlobalStyle(
@@ -155,7 +155,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
         def foo2(x: 'int' =42):
             pass
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo(x: int = 42):
             pass
@@ -163,24 +163,24 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
         def foo2(x: 'int' = 42):
             pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testMatrixMultiplication(self):
     unformatted_code = textwrap.dedent("""\
         a=b@c
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         a = b @ c
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testNoneKeyword(self):
     code = textwrap.dedent("""\
         None.__ne__()
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -194,7 +194,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
         async def foo():
             pass
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         import asyncio
 
@@ -206,7 +206,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
         async def foo():
             pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -216,7 +216,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
             async def inner():
                 pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -232,7 +232,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
             self, *args: Optional[automation_converter.PyiCollectionAbc]
         ) -> List[automation_converter.PyiCollectionAbc]:
             pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -242,13 +242,13 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
             async with session.ws_connect(
                 r"ws://a_really_long_long_long_long_long_long_url") as ws:
                 pass
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         async def start_websocket():
             async with session.ws_connect(
                     r"ws://a_really_long_long_long_long_long_long_url") as ws:
                 pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -301,7 +301,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
         def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
             pass
-    """)  # noqa
+    """)
 
     try:
       style.SetGlobalStyle(
@@ -329,7 +329,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
                     **foofoofoo
                 })
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         class Foo:
 
@@ -338,7 +338,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                     'foo': 'foo',
                     **foofoofoo
                 })
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -349,7 +349,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
         (f'''
           ''')
         # yapf: enable
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -369,7 +369,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
             timestamp: Optional[ffffffff.FFFFFFFFFFF] = None
         ) -> Sequence[ssssssssssss.SSSSSSSSSSSSSSS]:
             pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -392,7 +392,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                     pass
             else:
                 pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -403,7 +403,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                 pass
             else:
                 pass
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -431,7 +431,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
        def my_coroutine():
            x: int = yield
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -446,7 +446,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                 b=1
             case _	:
                 b=2
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         a = 3
         b = 0
@@ -455,7 +455,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                 b = 1
             case _:
                 b = 2
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -466,12 +466,12 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
             with (Dataset() as target_ds,
                   Dataset() as source_ds):
                 do_something
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def test_copy_dimension(self):
             with (Dataset() as target_ds, Dataset() as source_ds):
                 do_something
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -483,13 +483,13 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
           t = (2,3)
           for i in range(5):
             yield i,*t
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def a():
             t = (2, 3)
             for i in range(5):
                 yield i, *t
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -499,7 +499,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         t: tuple = 1, 2
         args = tuple(x for x in [2], )
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -510,14 +510,14 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
         a=[1,2,3,4]
         if (n:=len(a))>2:
             print()
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         import os
 
         a = [1, 2, 3, 4]
         if (n := len(a)) > 2:
             print()
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -535,7 +535,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                     if x := getattr(self , i):
                         result[i] = x  # type: ignore
                 return result
-    """)  # noqa
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def json(self) -> JSONTask:
             result: JSONTask = {
@@ -548,7 +548,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
                 if x := getattr(self, i):
                     result[i] = x  # type: ignore
             return result
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -560,7 +560,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
         a_dict_copy = {**a_dict}
         print('a_dict:', a_dict)
         print('a_dict_copy:', a_dict_copy)
-    """)  # noqa
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 

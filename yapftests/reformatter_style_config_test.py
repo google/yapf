@@ -33,11 +33,11 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       unformatted_code = textwrap.dedent("""\
           for i in range(5):
            print('bar')
-          """)
+      """)
       expected_formatted_code = textwrap.dedent("""\
           for i in range(5):
             print('bar')
-          """)
+      """)
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
                            reformatter.Reformat(llines))
@@ -48,11 +48,11 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
     unformatted_code = textwrap.dedent("""\
         for i in range(5):
          print('bar')
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         for i in range(5):
             print('bar')
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -65,11 +65,11 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       unformatted_code = textwrap.dedent("""\
           a = 1+2 * 3 - 4 / 5
           b = '0' * 1
-          """)
+      """)
       expected_formatted_code = textwrap.dedent("""\
           a = 1 + 2*3 - 4/5
           b = '0'*1
-          """)
+      """)
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
@@ -97,7 +97,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           i = 1 * 2 / 3 * 4
           j = (1 * 2 - 3) + 4
           k = (1 * 2 * 3) + (4 * 5 * 6 * 7 * 8)
-          """)
+      """)
       expected_formatted_code = textwrap.dedent("""\
           1 + 2
           (1+2) * (3 - (4/5))
@@ -112,7 +112,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
           i = 1 * 2 / 3 * 4
           j = (1*2 - 3) + 4
           k = (1*2*3) + (4*5*6*7*8)
-          """)
+      """)
 
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
@@ -155,7 +155,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
 
           plt.plot(veryverylongvariablename, veryverylongvariablename, marker="x",
                    color="r")
-          """)  # noqa
+      """)  # noqa
       llines = yapf_test_helper.ParseAndUnwrap(formatted_code)
       self.assertCodeEqual(formatted_code, reformatter.Reformat(llines))
     finally:
@@ -186,7 +186,7 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
                    veryverylongvariablename,
                    marker="x",
                    color="r")
-          """)
+      """)
       llines = yapf_test_helper.ParseAndUnwrap(formatted_code)
       self.assertCodeEqual(formatted_code, reformatter.Reformat(llines))
     finally:
