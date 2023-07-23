@@ -3198,6 +3198,17 @@ my_dict = {
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
   @unittest.skipUnless(PY310, 'Requires Python 3.10')
+  def testMatchVarNameNotTreatedAsMatchStmt(self):
+    unformatted_code = expected = textwrap.dedent("""\
+        match = (
+            1,
+            2,
+        )
+        """)  # #1110 - Expected should not change
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+
+  @unittest.skipUnless(PY310, 'Requires Python 3.10')
   def testParenthesizedContextManagers(self):
     unformatted_code = textwrap.dedent("""\
         with (cert_authority.cert_pem.tempfile() as ca_temp_path, patch.object(os, 'environ', os.environ | {'REQUESTS_CA_BUNDLE': ca_temp_path}),):
