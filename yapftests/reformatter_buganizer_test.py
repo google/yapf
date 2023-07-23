@@ -344,7 +344,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
             ('eeeeeeeeeeeeeeeeeeeeee', 'eeeeeeeeeeeeeeeeeeeeeeeeeee'),
         ]:
           pass
-    """)
+    """)  # noqa: E501
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -393,7 +393,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
             aaaaaaaaaaaaaaaaaaaaaa=1,
             bbbbbbbbbbbbbbbbbbbbb=2,
             ccccccccccccccccccc=3)
-    """)
+    """)  # noqa: E501
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -645,7 +645,7 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                          k.TimestampMicros() / 1000000L) -
                   m.Cond(m.VAL['start'] != 0, m.VAL['start'],
                          m.TimestampMicros() / 1000000L)))
-    """)
+    """)  # noqa: E501
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 

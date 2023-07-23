@@ -200,8 +200,7 @@ def FormatCode(unformatted_source,
     e.filename = filename
     raise errors.YapfError(errors.FormatErrorMsg(e))
 
-  reformatted_source = FormatTree(
-      tree, style_config=style_config, lines=lines)
+  reformatted_source = FormatTree(tree, style_config=style_config, lines=lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False

@@ -301,7 +301,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
 
         def run_sync_in_worker_thread(sync_fn, *args, cancellable=False, limiter=None):
             pass
-    """)
+    """)  # noqa: E501
 
     try:
       style.SetGlobalStyle(

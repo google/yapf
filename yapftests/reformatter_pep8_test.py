@@ -832,7 +832,8 @@ class TestsForSpacesAroundSubscriptColon(yapf_test_helper.YAPFTest):
   def testWithSpaceInsideBrackets(self):
     style.SetGlobalStyle(
         style.CreateStyleFromConfig(
-            '{spaces_around_subscript_colon: true, space_inside_brackets: true,}'))  # noqa
+            '{spaces_around_subscript_colon: true, space_inside_brackets: true,}'  # noqa: E501
+        ))
     expected_formatted_code = textwrap.dedent("""\
         a = list1[ : ]
         b = list2[ slice_start : ]
