@@ -31,7 +31,7 @@ class TabbedContinuationAlignPaddingTest(yapf_test_helper.YAPFTest):
     self.assertEqual(pad, '')
 
     pad = format_token._TabbedContinuationAlignPadding(2, align_style, 2)
-    self.assertEqual(pad, ' ' * 2)
+    self.assertEqual(pad, '\t')
 
     pad = format_token._TabbedContinuationAlignPadding(5, align_style, 2)
     self.assertEqual(pad, ' ' * 5)

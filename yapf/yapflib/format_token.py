@@ -45,7 +45,9 @@ def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
     if spaces > 0:
       return '\t' * int((spaces + tab_width - 1) / tab_width)
     return ''
-  return ' ' * spaces
+  if tab_width > 1 and spaces % tab_width == 0:
+    return '\t' * (spaces // tab_width)
+  return ' ' * spaces  # TODO: add a comment why we indent with spaces in a tab area?
 
 
 class FormatToken(object):
