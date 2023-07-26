@@ -5,10 +5,10 @@
 # Python imports
 import itertools
 
-# Local imports
-from .patcomp import PatternCompiler
 from . import pygram
 from .fixer_util import does_tree_import
+# Local imports
+from .patcomp import PatternCompiler
 
 
 class BaseFix(object):
@@ -27,7 +27,7 @@ class BaseFix(object):
   filename = None  # The filename (set by set_filename)
   numbers = itertools.count(1)  # For new_name()
   used_names = set()  # A set of all used NAMEs
-  order = "post"  # Does the fixer prefer pre- or post-order traversal
+  order = 'post'  # Does the fixer prefer pre- or post-order traversal
   explicit = False  # Is this ignored by refactor.py -f all?
   run_order = 5  # Fixers will be sorted by run order before execution
   # Lower numbers will be run first.
@@ -82,7 +82,7 @@ class BaseFix(object):
 
     Subclass may override.
     """
-    results = {"node": node}
+    results = {'node': node}
     return self.pattern.match(node, results) and results
 
   def transform(self, node, results):
@@ -101,7 +101,7 @@ class BaseFix(object):
     """
     raise NotImplementedError()
 
-  def new_name(self, template="xxx_todo_changeme"):
+  def new_name(self, template='xxx_todo_changeme'):
     """Return a string suitable for use as an identifier
 
     The new name is guaranteed not to conflict with other identifiers.
@@ -115,7 +115,7 @@ class BaseFix(object):
   def log_message(self, message):
     if self.first_log:
       self.first_log = False
-      self.log.append("### In file %s ###" % self.filename)
+      self.log.append('### In file %s ###' % self.filename)
     self.log.append(message)
 
   def cannot_convert(self, node, reason=None):
@@ -127,8 +127,8 @@ class BaseFix(object):
     """
     lineno = node.get_lineno()
     for_output = node.clone()
-    for_output.prefix = ""
-    msg = "Line %d: could not convert: %s"
+    for_output.prefix = ''
+    msg = 'Line %d: could not convert: %s'
     self.log_message(msg % (lineno, for_output))
     if reason:
       self.log_message(reason)
@@ -140,7 +140,7 @@ class BaseFix(object):
     Optional second argument is why it can't be converted.
     """
     lineno = node.get_lineno()
-    self.log_message("Line %d: %s" % (lineno, reason))
+    self.log_message('Line %d: %s' % (lineno, reason))
 
   def start_tree(self, tree, filename):
     """Some fixers need to maintain tree-wide state.
@@ -179,8 +179,8 @@ class ConditionalFix(BaseFix):
   def should_skip(self, node):
     if self._should_skip is not None:
       return self._should_skip
-    pkg = self.skip_on.split(".")
+    pkg = self.skip_on.split('.')
     name = pkg[-1]
-    pkg = ".".join(pkg[:-1])
+    pkg = '.'.join(pkg[:-1])
     self._should_skip = does_tree_import(pkg, name, node)
     return self._should_skip

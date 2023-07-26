@@ -1376,7 +1376,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             pass
         except:
           pass
-    """)   # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         import signal
 
