@@ -23,7 +23,6 @@ import os
 import re
 import sys
 from configparser import ConfigParser
-from io import StringIO
 from tokenize import detect_encoding
 
 from yapf.yapflib import errors

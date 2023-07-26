@@ -29,13 +29,11 @@ These APIs have some common arguments:
     than a whole file.
   print_diff: (bool) Instead of returning the reformatted source, return a
     diff that turns the formatted source into reformatter source.
-  verify: (bool) True if reformatted code should be verified for syntax.
 """
 
 import codecs
 import difflib
 import re
-import sys
 
 from yapf.pyparser import pyparser
 from yapf.pytree import blank_line_calculator
@@ -56,7 +54,6 @@ def FormatFile(filename,
                style_config=None,
                lines=None,
                print_diff=False,
-               verify=False,
                in_place=False,
                logger=None):
   """Format a single Python file and return the formatted code.
@@ -72,7 +69,6 @@ def FormatFile(filename,
       than a whole file.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
     in_place: (bool) If True, write the reformatted code back to the file.
     logger: (io streamer) A stream to output logging.
 
@@ -94,8 +90,7 @@ def FormatFile(filename,
       style_config=style_config,
       filename=filename,
       lines=lines,
-      print_diff=print_diff,
-      verify=verify)
+      print_diff=print_diff)
   if newline != '\n':
     reformatted_source = reformatted_source.replace('\n', newline)
   if in_place:
@@ -107,7 +102,7 @@ def FormatFile(filename,
   return reformatted_source, encoding, changed
 
 
-def FormatTree(tree, style_config=None, lines=None, verify=False):
+def FormatTree(tree, style_config=None, lines=None):
   """Format a parsed lib2to3 pytree.
 
   This provides an alternative entry point to YAPF.
@@ -121,7 +116,6 @@ def FormatTree(tree, style_config=None, lines=None, verify=False):
       that we want to format. The lines are 1-based indexed. It can be used by
       third-party code (e.g., IDEs) when reformatting a snippet of code rather
       than a whole file.
-    verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
     The source formatted according to the given formatting style.
@@ -142,10 +136,10 @@ def FormatTree(tree, style_config=None, lines=None, verify=False):
 
   lines = _LineRangesToSet(lines)
   _MarkLinesToFormat(llines, lines)
-  return reformatter.Reformat(_SplitSemicolons(llines), verify, lines)
+  return reformatter.Reformat(_SplitSemicolons(llines), lines)
 
 
-def FormatAST(ast, style_config=None, lines=None, verify=False):
+def FormatAST(ast, style_config=None, lines=None):
   """Format a parsed lib2to3 pytree.
 
   This provides an alternative entry point to YAPF.
@@ -159,7 +153,6 @@ def FormatAST(ast, style_config=None, lines=None, verify=False):
       that we want to format. The lines are 1-based indexed. It can be used by
       third-party code (e.g., IDEs) when reformatting a snippet of code rather
       than a whole file.
-    verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
     The source formatted according to the given formatting style.
@@ -172,15 +165,14 @@ def FormatAST(ast, style_config=None, lines=None, verify=False):
 
   lines = _LineRangesToSet(lines)
   _MarkLinesToFormat(llines, lines)
-  return reformatter.Reformat(_SplitSemicolons(llines), verify, lines)
+  return reformatter.Reformat(_SplitSemicolons(llines), lines)
 
 
 def FormatCode(unformatted_source,
                filename='<unknown>',
                style_config=None,
                lines=None,
-               print_diff=False,
-               verify=False):
+               print_diff=False):
   """Format a string of Python code.
 
   This provides an alternative entry point to YAPF.
@@ -197,7 +189,6 @@ def FormatCode(unformatted_source,
       than a whole file.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
 
   Returns:
     Tuple of (reformatted_source, changed). reformatted_source conforms to the
@@ -210,7 +201,7 @@ def FormatCode(unformatted_source,
     raise errors.YapfError(errors.FormatErrorMsg(e))
 
   reformatted_source = FormatTree(
-      tree, style_config=style_config, lines=lines, verify=verify)
+      tree, style_config=style_config, lines=lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False

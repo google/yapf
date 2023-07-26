@@ -2,13 +2,25 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.40.0] UNRELEASED
+## [0.41.0] UNRELEASED
+### Changes
+- The verification module has been removed. NOTE: this changes the public APIs
+  by removing the "verify" parameter.
+
+## [0.40.1] 2023-06-20
+### Fixed
+- Corrected bad distribution v0.40.0 package.
+
+## [0.40.0] 2023-06-13
 ### Added
 - Support for Python 3.11
 - Add the `--print-modified` flag to print out file names of modified files when
   running in in-place mode.
+### Changes
+- Replace the outdated and no-longer-supported lib2to3 with a fork of blib2to3,
+  Black's version of lib2to3.
 ### Removed
-- Support for Python <3.7
+- Support for Python versions < 3.7 are no longer supported.
 
 ## [0.33.0] 2023-04-18
 ### Added
@@ -47,7 +59,7 @@
 
 ## [0.31.0] 2021-03-14
 ### Added
-- Renamed 'master' brannch to 'main'.
+- Renamed 'master' branch to 'main'.
 - Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
   a custom number of blank lines between top-level imports and variable
   definitions.
