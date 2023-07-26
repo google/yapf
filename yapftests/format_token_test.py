@@ -22,6 +22,7 @@ from yapf.yapflib import format_token
 
 from yapftests import yapf_test_helper
 
+
 class TabbedContinuationAlignPaddingTest(yapf_test_helper.YAPFTest):
 
   def testSpace(self):
