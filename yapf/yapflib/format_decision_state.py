@@ -515,7 +515,14 @@ class FormatDecisionState(object):
                 (opening.matching_bracket.next_token and
                  opening.matching_bracket.next_token.value != ',' and
                  not opening.matching_bracket.next_token.ClosesScope())):
-              return True
+
+              argLengths = _CalculateArgLengths(opening)
+              startCol = self.column + len(current.value) + len(opening.value)
+              for length in argLengths:
+                length += startCol
+                if length > self.column_limit:
+                  return True
+              return False
 
     if (previous.OpensScope() and not current.OpensScope() and
         not current.is_comment and
@@ -1216,6 +1223,55 @@ def _ScopeHasNoCommas(token):
       return False
     token = token.matching_bracket if token.OpensScope() else token.next_token
   return True
+
+
+def _CalculateArgLengths(opening):
+  """Calculate the length of each function arg, if the args are wrapped"""
+  argList = list()
+  token = opening.next_token
+  shortList = list()
+  deltaList = list()
+  delta = 0
+  while token.name in ("NAME", "EQUAL", "DOT", "STRING", "NUMBER"):
+    shortList.append(token)
+    token = token.next_token
+    if token.name == "COMMA":
+      shortList.append(token)
+      argList.append(shortList)
+      deltaList.append(delta)
+      shortList = list()
+      delta = 0
+      token = token.next_token
+    elif token.name == "LPAR":
+      shortList.append(token)
+      if _IsFunctionCallWithArguments(token.previous_token):
+        maxArg = max(_CalculateArgLengths(token))
+        endToken = token.matching_bracket
+        innerLength = endToken.total_length - token.total_length
+        delta = innerLength - maxArg
+      token = token.matching_bracket
+      if token.next_token.name == "COMMA":
+        token = token.next_token
+        shortList.append(token)
+        argList.append(shortList)
+        deltaList.append(delta)
+        shortList = list()
+        delta = 0
+      else:
+        shortList.append(token)
+      token = token.next_token
+    elif token.name == "RPAR":
+      shortList.append(token)
+      deltaList.append(delta)
+      shortList = list()
+      delta = 0
+      break
+
+  argLengths = list()
+  for l, d in zip(argList, deltaList):
+    argLen = l[-1].total_length - l[0].total_length + len(l[0].value) - d
+    argLengths.append(argLen)
+  return argLengths
 
 
 class _ParenState(object):
