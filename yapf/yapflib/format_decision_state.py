@@ -522,7 +522,6 @@ class FormatDecisionState(object):
                 length += startCol
                 if length > self.column_limit:
                   return True
-              return False
 
     if (previous.OpensScope() and not current.OpensScope() and
         not current.is_comment and
