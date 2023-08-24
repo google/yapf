@@ -515,7 +515,6 @@ class FormatDecisionState(object):
                 (opening.matching_bracket.next_token and
                  opening.matching_bracket.next_token.value != ',' and
                  not opening.matching_bracket.next_token.ClosesScope())):
-
               argLengths = _CalculateArgLengths(opening)
               startCol = self.column + len(current.value) + len(opening.value)
               for length in argLengths:
