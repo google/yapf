@@ -1248,15 +1248,7 @@ def _CalculateArgLengths(opening):
         innerLength = endToken.total_length - token.total_length
         delta = innerLength - maxArg
       token = token.matching_bracket
-      if token.next_token.name == "COMMA":
-        token = token.next_token
-        shortList.append(token)
-        argList.append(shortList)
-        deltaList.append(delta)
-        shortList = list()
-        delta = 0
-      else:
-        shortList.append(token)
+      shortList.append(token)
     elif token.name == "RPAR":
       shortList.append(token)
       argList.append(shortList)
