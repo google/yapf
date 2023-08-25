@@ -556,6 +556,37 @@ class FormatDecisionState(object):
           return True
 
     ###########################################################################
+    # Logical Operator Splitting
+    if style.Get('SPLIT_ALL_LOGICAL_OPERATORS_IF_ANY_SPLIT'):
+      split_before = style.Get("SPLIT_BEFORE_LOGICAL_OPERATOR")
+      check_token = current if split_before else current.previous_token
+      if (check_token and check_token.name == "NAME" and check_token.value in logical_line._LOGICAL_OPERATORS):
+        opening = _GetOpeningBracket(check_token)
+        if opening:
+          ending = opening.matching_bracket
+          length = ending.total_length - opening.total_length
+          length += self.stack[-1].indent
+          # If we're keeping it on a single line, but the next token is also
+          # a logical operator then we have to consider that as part of the
+          # length because we might wrap after it
+          next_token = ending.next_token
+          prev_token = opening.previous_token
+          if split_before:
+             if prev_token:
+               clause_start = _PrevLogicalClause(prev_token)
+               length += opening.total_length - clause_start.total_length
+          else:
+            if next_token:
+              clause_end = _NextLogicalClause(next_token)
+              length += clause_end.total_length - ending.total_length
+        else:
+          end_token = _LastTokenInLine(check_token)
+          length = end_token.total_length + self.stack[-1].indent
+
+        if length >= self.column_limit:
+          return True
+
+    ###########################################################################
     # Original Formatting Splitting
     # These checks rely upon the original formatting. This is in order to
     # attempt to keep hand-written code in the same condition as it was before.
@@ -1179,6 +1210,26 @@ def _LastTokenInLine(current):
   while not current.is_comment and current.next_token:
     current = current.next_token
   return current
+
+
+def _NextLogicalClause(token):
+  """ Get the start of the next logical clause or the last token in the line"""
+  while token:
+    if token in logical_line._LOGICAL_OPERATORS:
+      return token
+    if not token.next_token:
+      return token
+    token = token.next_token
+
+
+def _PrevLogicalClause(token):
+  """ Get the start of the previous logical clause or the first token"""
+  while token:
+    if token.value in logical_line._LOGICAL_OPERATORS:
+      return token
+    if not token.previous_token:
+      return token
+    token = token.previous_token
 
 
 def _IsFunctionDefinition(current):

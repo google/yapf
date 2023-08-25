@@ -355,6 +355,12 @@ _STYLE_HELP = dict(
     SPLIT_ALL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
       Split before arguments.
     """),
+    SPLIT_ALL_LOGICAL_OPERATORS_IF_ANY_SPLIT=textwrap.dedent("""\
+      If a line that contains logical operators needs to be split, split on all
+      the logical operators in that line. This will treat logical operators
+      in sub-clauses defined by parentheses as a discrete element that will
+      ignore wrapping unless the entire clause is longer than the column width.
+    """),
     SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=textwrap.dedent("""\
       Split before arguments, but do not split all subexpressions recursively
       (unless needed).
@@ -514,6 +520,7 @@ def CreatePEP8Style():
       SPACES_AROUND_TUPLE_DELIMITERS=False,
       SPACES_BEFORE_COMMENT=2,
       SPLIT_ALL_COMMA_SEPARATED_VALUES=False,
+      SPLIT_ALL_LOGICAL_OPERATORS_IF_ANY_SPLIT=False,
       SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=False,
       SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=False,
       SPLIT_BEFORE_ARITHMETIC_OPERATOR=False,
@@ -703,6 +710,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     SPACES_AROUND_TUPLE_DELIMITERS=_BoolConverter,
     SPACES_BEFORE_COMMENT=_IntOrIntListConverter,
     SPLIT_ALL_COMMA_SEPARATED_VALUES=_BoolConverter,
+    SPLIT_ALL_LOGICAL_OPERATORS_IF_ANY_SPLIT=_BoolConverter,
     SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES=_BoolConverter,
     SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED=_BoolConverter,
     SPLIT_BEFORE_ARITHMETIC_OPERATOR=_BoolConverter,
