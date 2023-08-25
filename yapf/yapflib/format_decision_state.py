@@ -572,14 +572,12 @@ class FormatDecisionState(object):
           # length because we might wrap after it
           next_token = ending.next_token
           prev_token = opening.previous_token
-          if split_before:
-            if prev_token:
-              clause_start = _PrevLogicalClause(prev_token)
-              length += opening.total_length - clause_start.total_length
-          else:
-            if next_token:
-              clause_end = _NextLogicalClause(next_token)
-              length += clause_end.total_length - ending.total_length
+          if split_before and prev_token:
+            clause_start = _PrevLogicalClause(prev_token)
+            length += opening.total_length - clause_start.total_length
+          elif not split_before and next_token
+            clause_end = _NextLogicalClause(next_token)
+            length += clause_end.total_length - ending.total_length
         else:
           end_token = _LastTokenInLine(check_token)
           length = end_token.total_length + self.stack[-1].indent
