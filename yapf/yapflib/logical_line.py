@@ -616,17 +616,19 @@ def _SplitPenalty(prev_token, cur_token):
 
   if logical_splitting:
     if style.Get('SPLIT_BEFORE_LOGICAL_OPERATOR'):
-        # Prefer to split before 'and' and 'or'.
-        if pval in _LOGICAL_OPERATORS:
-          return max(node_split_penalty, style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR'))
-        if cval in _LOGICAL_OPERATORS:
-          return max(node_split_penalty, 0)
+      # Prefer to split before 'and' and 'or'.
+      if pval in _LOGICAL_OPERATORS:
+        return max(node_split_penalty,
+                   style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR'))
+      if cval in _LOGICAL_OPERATORS:
+        return max(node_split_penalty, 0)
     else:
       # Prefer to split after 'and' and 'or'.
       if pval in _LOGICAL_OPERATORS:
         return max(node_split_penalty, 0)
       if cval in _LOGICAL_OPERATORS:
-        return max(node_split_penalty, style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR'))
+        return max(node_split_penalty,
+                   style.Get('SPLIT_PENALTY_LOGICAL_OPERATOR'))
 
   if node_split_penalty > 0:
     return node_split_penalty

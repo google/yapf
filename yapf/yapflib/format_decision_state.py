@@ -560,7 +560,8 @@ class FormatDecisionState(object):
     if style.Get('SPLIT_ALL_LOGICAL_OPERATORS_IF_ANY_SPLIT'):
       split_before = style.Get("SPLIT_BEFORE_LOGICAL_OPERATOR")
       check_token = current if split_before else current.previous_token
-      if (check_token and check_token.name == "NAME" and check_token.value in logical_line._LOGICAL_OPERATORS):
+      if (check_token and check_token.name == "NAME" and
+          check_token.value in logical_line._LOGICAL_OPERATORS):
         opening = _GetOpeningBracket(check_token)
         if opening:
           ending = opening.matching_bracket
@@ -572,9 +573,9 @@ class FormatDecisionState(object):
           next_token = ending.next_token
           prev_token = opening.previous_token
           if split_before:
-             if prev_token:
-               clause_start = _PrevLogicalClause(prev_token)
-               length += opening.total_length - clause_start.total_length
+            if prev_token:
+              clause_start = _PrevLogicalClause(prev_token)
+              length += opening.total_length - clause_start.total_length
           else:
             if next_token:
               clause_end = _NextLogicalClause(next_token)
