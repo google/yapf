@@ -575,7 +575,7 @@ class FormatDecisionState(object):
           if split_before and prev_token:
             clause_start = _PrevLogicalClause(prev_token)
             length += opening.total_length - clause_start.total_length
-          elif not split_before and next_token
+          elif not split_before and next_token:
             clause_end = _NextLogicalClause(next_token)
             length += clause_end.total_length - ending.total_length
         else:
