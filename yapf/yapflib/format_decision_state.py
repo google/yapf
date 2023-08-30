@@ -551,7 +551,8 @@ class FormatDecisionState(object):
               return True
             i += 1
 
-          if (self.column_limit - self.column) / float(self.column_limit) < 0.3:
+          per = style.Get('SPLIT_ARGUMENTS_SQUISH_PERCENTAGE') / 100
+          if (self.column_limit - self.column) / float(self.column_limit) < per:
             # Try not to squish all of the arguments off to the right.
             return True
       else:
