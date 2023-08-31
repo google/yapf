@@ -1180,7 +1180,8 @@ class CommandLineTest(yapf_test_helper.YAPFTest):
        })
     """)
     with utils.NamedTempFile(dirname=self.test_tmpdir, mode='w') as (f, name):
-      f.write(textwrap.dedent("""\
+      f.write(
+          textwrap.dedent("""\
           [style]
           column_limit=82
           coalesce_brackets = True

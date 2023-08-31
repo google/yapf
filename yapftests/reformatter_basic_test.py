@@ -110,10 +110,10 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testSplittingTopLevelAllArgs(self):
-    style.SetGlobalStyle(
-        style.CreateStyleFromConfig(
-            '{split_all_top_level_comma_separated_values: true, '
-            'column_limit: 40}'))
+    style_dict = style.CreateStyleFromConfig(
+        '{split_all_top_level_comma_separated_values: true, '
+        'column_limit: 40}')
+    style.SetGlobalStyle(style_dict)
     # Works the same way as split_all_comma_separated_values
     unformatted_code = textwrap.dedent("""\
         responseDict = {"timestamp": timestamp, "someValue":   value, "whatever": 120}
@@ -192,6 +192,48 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+
+    # This tests when there is an embedded dictionary that will fit in a line
+    original_multiline = style_dict['FORCE_MULTILINE_DICT']
+    style_dict['FORCE_MULTILINE_DICT'] = False
+    style.SetGlobalStyle(style_dict)
+    unformatted_code = textwrap.dedent("""\
+          someLongFunction(this_is_a_very_long_parameter,
+              abc={a: b, b: c})
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          someLongFunction(
+              this_is_a_very_long_parameter,
+              abc={
+                  a: b, b: c
+              })
+          """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    actual_formatted_code = reformatter.Reformat(llines)
+    self.assertCodeEqual(expected_formatted_code, actual_formatted_code)
+
+    # This tests when there is an embedded dictionary that will fit in a line,
+    #  but FORCE_MULTILINE_DICT is set
+    style_dict['FORCE_MULTILINE_DICT'] = True
+    style.SetGlobalStyle(style_dict)
+    unformatted_code = textwrap.dedent("""\
+          someLongFunction(this_is_a_very_long_parameter,
+              abc={a: b, b: c})
+          """)
+    expected_formatted_code = textwrap.dedent("""\
+          someLongFunction(
+              this_is_a_very_long_parameter,
+              abc={
+                  a: b,
+                  b: c
+              })
+          """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    actual_formatted_code = reformatter.Reformat(llines)
+    self.assertCodeEqual(expected_formatted_code, actual_formatted_code)
+
+    style_dict['FORCE_MULTILINE_DICT'] = original_multiline
+    style.SetGlobalStyle(style_dict)
 
     # Exercise the case where there's no opening bracket (for a, b)
     unformatted_code = textwrap.dedent("""\
@@ -1376,7 +1418,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             pass
         except:
           pass
-    """)   # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         import signal
 

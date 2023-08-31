@@ -182,6 +182,10 @@ class FormatDecisionState(object):
     if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
       return True
 
+    if (style.Get('FORCE_MULTILINE_DICT') and
+        subtypes.DICTIONARY_KEY in current.subtypes and not current.is_comment):
+      return True
+
     if (style.Get('SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES') and
         previous.value == ','):
       # Avoid breaking in a container that fits in the current line if possible
