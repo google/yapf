@@ -39,7 +39,7 @@ class RunTests(Command):
     sys.exit(0 if results.wasSuccessful() else 1)
 
 
-with codecs.open('README.md', 'r', 'utf-8') as fd:
+with codecs.open('README.rst', 'r', 'utf-8') as fd:
   setup(
       name='yapf',
       version='0.40.1',
@@ -94,9 +94,7 @@ with codecs.open('README.md', 'r', 'utf-8') as fd:
       },
       include_package_data=True,
       python_requires='>=3.7',
-      setup_requires=[
-          'setuptools>=58.5.0',  # for include_package_data fix (issue #1107)
-      ],
+      # editable_requires=['pip>=23.1'], # editable_requires is not a valid key
       install_requires=[
           'importlib-metadata>=6.6.0',
           'platformdirs>=3.5.1',
