@@ -2,10 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-
+## [0.41.0] UNRELEASED
+### Changes
 - The verification module has been removed. NOTE: this changes the public APIs
   by removing the "verify" parameter.
 - Changed FORCE_MULTILINE_DICT to override SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES.
+- Do not treat variables named `match` as the match keyword
 
 ## [0.40.1] 2023-06-20
 ### Fixed
