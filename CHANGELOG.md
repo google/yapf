@@ -7,6 +7,7 @@
 - The verification module has been removed. NOTE: this changes the public APIs
   by removing the "verify" parameter.
 - Changed FORCE_MULTILINE_DICT to override SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES.
+- Adopt pyproject.toml (PEP 517) for build system
 
 ## [0.40.1] 2023-06-20
 ### Fixed
