@@ -10,7 +10,7 @@ YAPF is supported by multiple editors via community extensions or plugins.
 Use the `File Watchers` plugin to run YAPF against a file when you perform a save.
 
 1.  Install the File Watchers Plugin
-1.  Add the following to `.idea/watcherTasks.xml`. If you already have this file just add the `TaskOptions` section from below. This example uses Windows and a virtual environemtn, modify the `program` option as appropriate
+1.  Add the following `.idea/watcherTasks.xml` to your project. If you already have this file just add the `TaskOptions` section from below. This example uses Windows and a virtual environemtn, modify the `program` option as appropriate
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <project version="4">
