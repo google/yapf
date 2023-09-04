@@ -14,30 +14,16 @@ $ PYTHONPATH=$PWD/yapf python -m yapf -i $(git diff --name-only @{upstream})
 
 ## Releasing a new version
 
-- Run tests with Python 3.7 and 3.11:
+- Run tests against Python 3.7 - 3.11 with `tox`
 
-```bash
-$ python setup.py test
-```
+- Bump version in `pyproject.toml`.
 
-- Bump version in `setup.py`.
-
-- Build source distribution:
-
-```bash
-$ python setup.py sdist
-```
+- Build distributions with `build`
 
 - Check that it looks OK.
   - Install it onto a virtualenv,
   - run tests, and
   - run yapf as a tool.
-
-- Build release:
-
-```bash
-$ python setup.py sdist bdist_wheel
-```
 
 - Push to PyPI:
 
