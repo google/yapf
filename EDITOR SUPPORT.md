@@ -16,24 +16,24 @@ Use the `File Watchers` plugin to run YAPF against a file when you perform a sav
     <project version="4">
     <component name="ProjectTasksOptions">
         <TaskOptions isEnabled="true">
-        <option name="arguments" value="-i $FilePathRelativeToProjectRoot$" />
-        <option name="checkSyntaxErrors" value="true" />
-        <option name="description" />
-        <option name="exitCodeBehavior" value="ERROR" />
-        <option name="fileExtension" value="py" />
-        <option name="immediateSync" value="true" />
-        <option name="name" value="yapf" />
-        <option name="output" value="" />
-        <option name="outputFilters">
-            <array />
-        </option>
-        <option name="outputFromStdout" value="false" />
-        <option name="program" value="$PROJECT_DIR$/.venv/Scripts/yapf.exe" />
-        <option name="runOnExternalChanges" value="true" />
-        <option name="scopeName" value="Project Files" />
-        <option name="trackOnlyRoot" value="false" />
-        <option name="workingDir" value="$Projectpath$" />
-        <envs />
+            <option name="arguments" value="-i $FilePathRelativeToProjectRoot$" />
+            <option name="checkSyntaxErrors" value="true" />
+            <option name="description" />
+            <option name="exitCodeBehavior" value="ERROR" />
+            <option name="fileExtension" value="py" />
+            <option name="immediateSync" value="true" />
+            <option name="name" value="yapf" />
+            <option name="output" value="" />
+            <option name="outputFilters">
+                <array />
+            </option>
+            <option name="outputFromStdout" value="false" />
+            <option name="program" value="$PROJECT_DIR$/.venv/Scripts/yapf.exe" />
+            <option name="runOnExternalChanges" value="true" />
+            <option name="scopeName" value="Project Files" />
+            <option name="trackOnlyRoot" value="false" />
+            <option name="workingDir" value="$Projectpath$" />
+            <envs />
         </TaskOptions>
     </component>
     </project>
