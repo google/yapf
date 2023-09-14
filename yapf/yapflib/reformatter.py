@@ -246,6 +246,11 @@ def _CanPlaceOnSingleLine(line):
     True if the line can or should be added to a single line. False otherwise.
   """
   token_types = [x.type for x in line.tokens]
+  if (style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED') and
+      any(token_types[token_index - 1] == token.COMMA
+          for token_index, token_type in enumerate(token_types[1:], start=1)
+          if token_type == token.RPAR)):
+    return False
   if (style.Get('FORCE_MULTILINE_DICT') and token.LBRACE in token_types):
     return False
   indent_amt = style.Get('INDENT_WIDTH') * line.depth
