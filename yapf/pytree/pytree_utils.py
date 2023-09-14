@@ -87,7 +87,7 @@ def LastLeafNode(node):
 # Note that pygram.python_grammar_no_print_and_exec_statement with "_and_exec"
 # will require Python >=3.8.
 _PYTHON_GRAMMAR = pygram.python_grammar_no_print_statement.copy()
-del _PYTHON_GRAMMAR.keywords['exec']
+# del _PYTHON_GRAMMAR.keywords['exec']
 
 
 def ParseCodeToTree(code):

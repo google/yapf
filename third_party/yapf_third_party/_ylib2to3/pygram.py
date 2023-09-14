@@ -31,10 +31,10 @@ python_grammar = driver.load_grammar(_GRAMMAR_FILE)
 python_symbols = Symbols(python_grammar)
 
 python_grammar_no_print_statement = python_grammar.copy()
-del python_grammar_no_print_statement.keywords['print']
+# del python_grammar_no_print_statement.keywords['print']
 
 python_grammar_no_print_and_exec_statement = python_grammar_no_print_statement.copy()  # yapf: disable # noqa: E501
-del python_grammar_no_print_and_exec_statement.keywords['exec']
+# del python_grammar_no_print_and_exec_statement.keywords['exec']
 
 pattern_grammar = driver.load_grammar(_PATTERN_GRAMMAR_FILE)
 pattern_symbols = Symbols(pattern_grammar)
