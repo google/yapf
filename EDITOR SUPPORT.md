@@ -3,6 +3,7 @@
 YAPF is supported by multiple editors via community extensions or plugins.
 
 - [IntelliJ/PyCharm](#intellijpycharm)
+- [IPython](#ipython)
 - [VSCode](#vscode)
 
 ## IntelliJ/PyCharm
@@ -38,6 +39,29 @@ Use the `File Watchers` plugin to run YAPF against a file when you perform a sav
         </component>
     </project>
     ```
+
+## IPython
+
+IPython supports formatting lines automatically when you press the `<Enter>` button to submit the current code block.
+
+Make sure that the YAPF module is available to the IPython runtime:
+
+```shell
+pip install ipython yapf
+```
+
+pipx example:
+
+```shell
+pipx install ipython
+pipx inject ipython yapf
+```
+
+Add following to `~/.ipython/profile_default/ipython_config.py`:
+
+```python
+c.TerminalInteractiveShell.autoformatter = 'yapf'
+```
 
 ## VSCode
 
