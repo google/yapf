@@ -72,7 +72,7 @@ VSCode has deprecated support for YAPF in its official Python extension [in favo
    ```
    pip install yapf
    ```
-1. Setup vscode settings by editting settings.json in User scope or Workspace scope in following: Example of settings
+1. Add the following to VSCode's `settings.json`:
    ```jsonc
    "[python]": {
        "editor.formatOnSaveMode": "file",
