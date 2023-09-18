@@ -92,6 +92,9 @@ optional arguments:
   -vv, --verbose        print out file names while processing
 ```
 
+### Using YAPF within your favorite editor
+YAPF is supported by multiple editors via community extensions or plugins. See [Editor Support](EDITOR%20SUPPORT.md) for more info.
+
 ### Return Codes
 
 Normally YAPF returns zero on successful program termination and non-zero
