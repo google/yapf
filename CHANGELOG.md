@@ -8,8 +8,9 @@
   by removing the "verify" parameter.
 - Changed FORCE_MULTILINE_DICT to override SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES.
 - Adopt pyproject.toml (PEP 517) for build system
+### Fixed
 - Do not treat variables named `match` as the match keyword
-- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item argument lists
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item argument lists.
 
 ## [0.40.1] 2023-06-20
 ### Fixed
