@@ -2275,6 +2275,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         a_very_long_function_name(long_argument_name_1, long_argument_name_2, long_argument_name_3, long_argument_name_4,)
 
         r =f0 (1,  2,3,)
+
+        r =f0 (1,)
     """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
@@ -2302,6 +2304,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
             1,
             2,
             3,
+        )
+
+        r = f0(
+            1,
         )
     """)
 
