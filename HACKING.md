@@ -37,7 +37,7 @@ $ tox -e bdist_wheel -e sdist
 
 1. Install all expected pyenv environements
     ```bash
-    $ xargs -t -n1 pyenv install  < .python-version`
+    $ xargs -t -n1 pyenv install  < .python-version
     ```
 
 1. Run tests against Python 3.7 - 3.11 with
