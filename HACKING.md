@@ -14,9 +14,9 @@ $ PYTHONPATH=$PWD/yapf python -m yapf -i $(git diff --name-only @{upstream})
 
 ## Testing and building redistributables locally
 
-YAPF uses tox 3 to test against multiple python versions simultaneouslt and to build redistributables.
+YAPF uses tox 3 to test against multiple python versions and to build redistributables.
 
-Tox will opportunistically use pyenv environments to test if available.
+Tox will opportunistically use pyenv environments when available.
 To configure pyenv run the following in bash:
 
 ```bash
@@ -28,7 +28,7 @@ Test against all supported Python versions that are currently installed:
 $ pipx run --spec='tox<4' tox
 ```
 
-To build and test the sdist and wheel against your current Python. The redistributables will be in the `dist` directory.
+Build and test the sdist and wheel against your default Python environment. The redistributables will be in the `dist` directory.
 ```bash
 $ tox -e bdist_wheel -e sdist
 ```
