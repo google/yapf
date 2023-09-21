@@ -114,7 +114,7 @@ def main(argv):
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
-          str('\n'.join(source).replace("\r\n", "\n") + '\n'),
+          str('\n'.join(source).replace('\r\n', '\n') + '\n'),
           filename='<stdin>',
           style_config=style_config,
           lines=lines)
