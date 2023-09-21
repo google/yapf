@@ -20,7 +20,7 @@ Tox will opportunistically use pyenv environments to test if available.
 To configure pyenv run the following in bash:
 
 ```bash
-$ xargs -t -n1 pyenv install  < .python-version`
+$ xargs -t -n1 pyenv install  < .python-version
 ```
 
 Test against all supported Python versions that are currently installed:
@@ -42,7 +42,7 @@ $ tox -e bdist_wheel -e sdist
 
 1. Run tests against Python 3.7 - 3.11 with
     ```bash
-    $ pipx run --spec='tox<4' tox`
+    $ pipx run --spec='tox<4' tox
     ```
 
 1. Bump version in `pyproject.toml`.
@@ -50,7 +50,7 @@ $ tox -e bdist_wheel -e sdist
 1. Build and test redistributables
 
     ```bash
-    $ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist`
+    $ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist
     ```
 
 1. Check that it looks OK.
