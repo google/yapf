@@ -35,6 +35,14 @@ with two exceptions:
 The rationale for this is that YAPF was initially developed at Google where
 these two exceptions are still part of the internal Python style guide.
 
+## Getting started
+YAPF supports using tox 3 for creating a local dev environment, testing, and
+building redistributables. See [HACKING.md](HACKING.md) for more info.
+
+```bash
+$ pipx run --spec='tox<4' tox --devenv .venv
+```
+
 ## Small print
 
 Contributions made by corporations are covered by a different agreement than

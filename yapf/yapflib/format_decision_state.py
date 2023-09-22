@@ -27,6 +27,7 @@ through the code to commit the whitespace formatting.
 """
 
 from yapf.pytree import split_penalty
+from yapf.pytree.pytree_utils import NodeName
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
 from yapf.yapflib import style
@@ -1101,15 +1102,26 @@ class FormatDecisionState(object):
 
 
 _COMPOUND_STMTS = frozenset({
-    'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class', 'match',
-    'case'
+    'for',
+    'while',
+    'if',
+    'elif',
+    'with',
+    'except',
+    'def',
+    'class',
 })
 
 
 def _IsCompoundStatement(token):
-  if token.value == 'async':
+  value = token.value
+  if value == 'async':
     token = token.next_token
-  return token.value in _COMPOUND_STMTS
+  if token.value in _COMPOUND_STMTS:
+    return True
+  parent_name = NodeName(token.node.parent)
+  return value == 'match' and parent_name == 'match_stmt' or \
+    value == 'case' and parent_name == 'case_stmt'
 
 
 def _IsFunctionDef(token):
