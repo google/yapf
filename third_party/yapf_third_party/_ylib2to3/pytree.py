@@ -32,7 +32,7 @@ def type_repr(type_num):
     # printing tokens is possible but not as useful
     # from .pgen2 import token // token.__dict__.items():
     for name, val in python_symbols.__dict__.items():
-      if type(val) == int:
+      if isinstance(val, int):
         _type_reprs[val] = name
   return _type_reprs.setdefault(type_num, type_num)
 
