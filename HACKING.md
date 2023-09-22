@@ -30,7 +30,7 @@ $ pipx run --spec='tox<4' tox
 
 Build and test the sdist and wheel against your default Python environment. The redistributables will be in the `dist` directory.
 ```bash
-$ tox -e bdist_wheel -e sdist
+$ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist
 ```
 
 ## Releasing a new version
