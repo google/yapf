@@ -2,15 +2,16 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.41.0] UNRELEASED
+## [0.41.2] UNRELEASED
 ### Changes
 - The verification module has been removed. NOTE: this changes the public APIs
   by removing the "verify" parameter.
 - Changed FORCE_MULTILINE_DICT to override SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES.
 - Adopt pyproject.toml (PEP 517) for build system
 ### Fixed
-- Do not treat variables named `match` as the match keyword
+- Do not treat variables named `match` as the match keyword.
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item argument lists.
+- Fix trailing backslash-newline on Windows when using stdin.
 
 ## [0.40.1] 2023-06-20
 ### Fixed
