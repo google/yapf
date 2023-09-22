@@ -2,7 +2,7 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.41.2] UNRELEASED
+## [0.40.2] 2023-09-22
 ### Changes
 - The verification module has been removed. NOTE: this changes the public APIs
   by removing the "verify" parameter.
