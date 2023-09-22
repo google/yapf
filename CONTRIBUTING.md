@@ -37,8 +37,8 @@ these two exceptions are still part of the internal Python style guide.
 
 ## Getting started
 YAPF supports using tox 3 for creating a local dev environment, testing, and building redistributables. See [HACKING.md] for more info.
-```shell
-pipx run --spec='tox<4' tox --devenv .venv
+```bash
+$ pipx run --spec='tox<4' tox --devenv .venv
 ```
 
 ## Small print
