@@ -792,11 +792,14 @@ def _CreateConfigParserFromConfigFile(config_filename):
 
   if config_filename.endswith(PYPROJECT_TOML):
     try:
-      import tomli as tomllib
+      import tomllib
     except ImportError:
-      raise errors.YapfError(
-          'tomli package is needed for using pyproject.toml as a '
-          'configuration file')
+      try:
+        import tomli as tomllib
+      except ImportError:
+        raise errors.YapfError(
+            'tomli package is needed for using pyproject.toml as a '
+            'configuration file')
 
     with open(config_filename, 'rb') as style_file:
       pyproject_toml = tomllib.load(style_file)

@@ -52,11 +52,14 @@ def _GetExcludePatternsFromPyprojectToml(filename):
   """Get a list of file patterns to ignore from pyproject.toml."""
   ignore_patterns = []
   try:
-    import tomli as tomllib
+    import tomllib
   except ImportError:
-    raise errors.YapfError(
-        'tomli package is needed for using pyproject.toml as a '
-        'configuration file')
+    try:
+      import tomli as tomllib
+    except ImportError:
+      raise errors.YapfError(
+          'tomli package is needed for using pyproject.toml as a '
+          'configuration file')
 
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
     with open(filename, 'rb') as fd:
@@ -137,11 +140,14 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
     else:
       with fd:
         try:
-          import tomli as tomllib
+          import tomllib
         except ImportError:
-          raise errors.YapfError(
-              'tomli package is needed for using pyproject.toml as a '
-              'configuration file')
+          try:
+            import tomli as tomllib
+          except ImportError:
+            raise errors.YapfError(
+                'tomli package is needed for using pyproject.toml as a '
+                'configuration file')
 
         pyproject_toml = tomllib.load(fd)
         style_dict = pyproject_toml.get('tool', {}).get('yapf', None)

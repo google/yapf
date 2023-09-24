@@ -230,9 +230,12 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
 
   def testPyprojectTomlNoYapfSection(self):
     try:
-      import tomli  # noqa: F401
+      import tomllib  # noqa: F401
     except ImportError:
-      return
+      try:
+        import tomli  # noqa: F401
+      except ImportError:
+        return
 
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     _ = open(filepath, 'w')
@@ -242,9 +245,12 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
 
   def testPyprojectTomlParseYapfSection(self):
     try:
-      import tomli  # noqa: F401
+      import tomllib  # noqa: F401
     except ImportError:
-      return
+      try:
+        import tomli  # noqa: F401
+      except ImportError:
+        return
 
     cfg = textwrap.dedent("""\
         [tool.yapf]
