@@ -69,10 +69,11 @@ N_TOKENS = 60
 NT_OFFSET = 256
 # --end constants--
 
-tok_name = {}
-for _name, _value in list(globals().items()):
-  if isinstance(_value, int):
-    tok_name[_value] = _name
+tok_name = {
+    _value: _name
+    for _name, _value in globals().copy().items()
+    if isinstance(_value, int)
+}
 
 
 def ISTERMINAL(x):
