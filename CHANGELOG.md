@@ -17,7 +17,7 @@
 ### Fixed
 - Corrected bad distribution v0.40.0 package.
 
-## [0.40.0] 2023-06-13
+## [0.40.0] 2023-06-13 [YANKED - [#1107](https://github.com/google/yapf/issues/1107)]
 ### Added
 - Support for Python 3.11
 - Add the `--print-modified` flag to print out file names of modified files when
@@ -28,7 +28,7 @@
 ### Removed
 - Support for Python versions < 3.7 are no longer supported.
 
-## [0.33.0] 2023-04-18
+## [0.33.0] 2023-04-18 [YANKED - [#1154](https://github.com/google/yapf/issues/1154)]
 ### Added
 - Add a new Python parser to generate logical lines.
 - Added support for `# fmt: on` and `# fmt: off` pragmas.
