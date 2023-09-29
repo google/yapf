@@ -38,7 +38,7 @@ from yapf.yapflib import file_resources
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 8):
   from importlib.metadata import metadata
 else:
   from importlib_metadata import metadata

@@ -28,7 +28,7 @@ classifiers = [
     'Topic :: Software Development :: Quality Assurance',
 ]
 dependencies = [
-    'importlib-metadata>=6.6.0; python_version<"3.10"',
+    'importlib-metadata>=6.6.0; python_version<"3.8"',
     'platformdirs>=3.5.1',
     'tomli>=2.0.1; python_version<"3.11"',
 ]

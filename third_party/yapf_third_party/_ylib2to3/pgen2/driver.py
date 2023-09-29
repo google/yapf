@@ -31,7 +31,7 @@ from typing import Optional
 
 from platformdirs import user_cache_dir
 
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 8):
   from importlib.metadata import metadata
 else:
   from importlib_metadata import metadata
