@@ -76,10 +76,6 @@ class GetExcludePatternsForDir(yapf_test_helper.YAPFTest):
       file_resources.GetExcludePatternsForDir(self.test_tmpdir)
 
   def test_get_exclude_file_patterns_from_pyproject(self):
-    try:
-      import tomli
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
     with open(local_ignore_file, 'w') as f:
@@ -93,10 +89,6 @@ class GetExcludePatternsForDir(yapf_test_helper.YAPFTest):
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
-    try:
-      import tomli
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     open(local_ignore_file, 'w').close()
@@ -106,10 +98,6 @@ class GetExcludePatternsForDir(yapf_test_helper.YAPFTest):
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
-    try:
-      import tomli
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     with open(local_ignore_file, 'w') as f:
@@ -175,12 +163,6 @@ class GetDefaultStyleForDirTest(yapf_test_helper.YAPFTest):
                      file_resources.GetDefaultStyleForDir(test_dir))
 
   def test_pyproject_toml(self):
-    # An empty pyproject.toml file should not be used
-    try:
-      import tomli
-    except ImportError:
-      return
-
     pyproject_toml = os.path.join(self.test_tmpdir, 'pyproject.toml')
     open(pyproject_toml, 'w').close()
 
