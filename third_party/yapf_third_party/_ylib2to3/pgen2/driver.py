@@ -20,19 +20,21 @@ import os
 import pkgutil
 import sys
 # Python imports
-from configparser import ConfigParser
 from contextlib import contextmanager
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
-from pkgutil import get_data
 from typing import Any
 from typing import Iterator
 from typing import List
 from typing import Optional
 
-from importlib_metadata import metadata
 from platformdirs import user_cache_dir
+
+if sys.version_info >= (3, 10):
+  from importlib.metadata import metadata
+else:
+  from importlib_metadata import metadata
 
 # Pgen imports
 from . import grammar

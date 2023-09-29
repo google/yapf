@@ -33,12 +33,15 @@ import logging
 import os
 import sys
 
-from importlib_metadata import metadata
-
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
+
+if sys.version_info >= (3, 10):
+  from importlib.metadata import metadata
+else:
+  from importlib_metadata import metadata
 
 __version__ = metadata('yapf')['Version']
 
