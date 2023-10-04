@@ -3,13 +3,13 @@
 - To run YAPF on all of YAPF:
 
 ```bash
-$ PYTHONPATH=$PWD/yapf python -m yapf -i -r .
+$ pipx run --spec=${PWD} --no-cache yapf -m -i -r yapf/ yapftests/ third_party/
 ```
 
 - To run YAPF on just the files changed in the current git branch:
 
 ```bash
-$ PYTHONPATH=$PWD/yapf python -m yapf -i $(git diff --name-only @{upstream})
+$ pipx run --spec=${PWD} --no-cache yapf -m -i $(git diff --name-only @{upstream})
 ```
 
 ## Testing and building redistributables locally
