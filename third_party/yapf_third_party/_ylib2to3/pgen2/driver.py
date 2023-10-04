@@ -205,7 +205,7 @@ def _generate_pickle_name(gt):
     tail = ''
   yapf_version = pkgutil.get_data('yapf', 'VERSION')
   if yapf_version is None:
-    raise RuntimeError('Unable to get YAPF version')
+    raise RuntimeError('Unable to get YAPF version from package data')
   cache_dir = user_cache_dir(
       appname='YAPF',
       appauthor='Google',
