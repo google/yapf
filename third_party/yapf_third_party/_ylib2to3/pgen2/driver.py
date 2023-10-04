@@ -209,7 +209,7 @@ def _generate_pickle_name(gt):
   cache_dir = user_cache_dir(
       appname='YAPF',
       appauthor='Google',
-      version=yapf_version.decode(encoding='utf-8'),
+      version=yapf_version.decode(encoding='utf-8').strip(),
   )
   return cache_dir + os.sep + head + tail + '-py' + '.'.join(
       map(str, sys.version_info)) + '.pickle'

@@ -41,8 +41,8 @@ from yapf.yapflib import yapf_api
 
 __version__ = pkgutil.get_data('yapf', 'VERSION')
 if __version__ is None:
-  raise RuntimeError('Unable to get YAPF version')
-__version__ = __version__.decode(encoding='utf-8')
+  raise RuntimeError('Unable to get YAPF version from package data')
+__version__ = __version__.decode(encoding='utf-8').strip()
 
 
 def _raw_input():
