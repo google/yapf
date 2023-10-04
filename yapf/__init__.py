@@ -31,6 +31,7 @@ import codecs
 import io
 import logging
 import os
+import pkgutil
 import sys
 
 from yapf.yapflib import errors
@@ -38,12 +39,10 @@ from yapf.yapflib import file_resources
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-if sys.version_info >= (3, 8):
-  from importlib.metadata import metadata
-else:
-  from importlib_metadata import metadata
-
-__version__ = metadata('yapf')['Version']
+__version__ = pkgutil.get_data('yapf', 'VERSION')
+if __version__ is None:
+  raise RuntimeError('Unable to get YAPF version')
+__version__ = __version__.decode(encoding='utf-8')
 
 
 def _raw_input():
