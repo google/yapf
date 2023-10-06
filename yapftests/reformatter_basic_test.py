@@ -2277,6 +2277,8 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         r =f0 (1,  2,3,)
 
         r =f0 (1,)
+
+        r =f0 (a=1,)
     """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
@@ -2308,6 +2310,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
         r = f0(
             1,
+        )
+
+        r = f0(
+            a=1,
         )
     """)
 

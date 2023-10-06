@@ -2,6 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## '[0.41.0] 'UNRELEASED
+### Fixed
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
+
 ## [0.40.2] 2023-09-22
 ### Changes
 - The verification module has been removed. NOTE: this changes the public APIs
