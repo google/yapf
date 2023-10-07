@@ -2,6 +2,12 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## (0.40.3) UNRELEASED
+### Changes
+- Remove dependency on importlib-metadata
+- Remove dependency on tomli when Python ?= 3.11
+
+
 ## [0.40.2] 2023-09-22
 ### Changes
 - The verification module has been removed. NOTE: this changes the public APIs
