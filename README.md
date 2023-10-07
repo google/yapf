@@ -351,8 +351,8 @@ optional arguments:
   --binary BINARY       location of binary to use for YAPF
 ```
 
-## Unsupport Python features
-* [PEP 701 – Syntactic formalization of f-strings](https://peps.python.org/pep-0701/) - [YAPF #1136](https://github.com/google/yapf/issues/1136)
+## Unsupported Python features
+* Python 3.12 - [PEP 701 – Syntactic formalization of f-strings](https://peps.python.org/pep-0701/) - [YAPF #1136](https://github.com/google/yapf/issues/1136)
 
 ## Knobs
 
