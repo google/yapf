@@ -5,7 +5,7 @@
 ## (0.40.3) UNRELEASED
 ### Changes
 - Remove dependency on importlib-metadata
-- Remove dependency on tomli when Python ?= 3.11
+- Remove dependency on tomli when using >= py311
 
 
 ## [0.40.2] 2023-09-22
