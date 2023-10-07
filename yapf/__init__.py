@@ -31,7 +31,6 @@ import codecs
 import io
 import logging
 import os
-import pkgutil
 import sys
 
 from yapf._version import __version__
