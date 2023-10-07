@@ -45,7 +45,7 @@ $ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist
     $ pipx run --spec='tox<4' tox
     ```
 
-1. Bump version in `pyproject.toml`.
+1. Bump version in `yapf/_version.py`.
 
 1. Build and test redistributables
 

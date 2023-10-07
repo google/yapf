@@ -31,6 +31,8 @@ from typing import Optional
 
 from platformdirs import user_cache_dir
 
+from yapf._version import __version__ as yapf_version
+
 # Pgen imports
 from . import grammar
 from . import parse
@@ -203,14 +205,8 @@ def _generate_pickle_name(gt):
   head, tail = os.path.splitext(grammar_textfile_name)
   if tail == '.txt':
     tail = ''
-  yapf_version = pkgutil.get_data('yapf', 'VERSION')
-  if yapf_version is None:
-    raise RuntimeError('Unable to get YAPF version from package data')
   cache_dir = user_cache_dir(
-      appname='YAPF',
-      appauthor='Google',
-      version=yapf_version.decode(encoding='utf-8').strip(),
-  )
+      appname='YAPF', appauthor='Google', version=yapf_version)
   return cache_dir + os.sep + head + tail + '-py' + '.'.join(
       map(str, sys.version_info)) + '.pickle'
 

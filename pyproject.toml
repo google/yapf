@@ -48,14 +48,13 @@ include-package-data = true
 package-dir = { yapf_third_party = 'third_party/yapf_third_party' }
 
 [tool.setuptools.dynamic]
-version = { file = "yapf/VERSION" }
+version = { attr = "yapf._version.__version__" }
 
 [tool.setuptools.packages.find]
 where = [".", 'third_party']
 include = ["yapf*", 'yapftests*']
 
 [tool.setuptools.package-data]
-yapf = ['VERSION']
 yapf_third_party = [
     'yapf_diff/LICENSE',
     '_ylib2to3/Grammar.txt',
