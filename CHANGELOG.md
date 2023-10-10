@@ -6,7 +6,9 @@
 ### Changes
 - Remove dependency on importlib-metadata
 - Remove dependency on tomli when using >= py311
-
+### Fixed
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
+  by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
 
 ## [0.40.2] 2023-09-22
 ### Changes
