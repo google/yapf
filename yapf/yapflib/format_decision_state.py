@@ -373,6 +373,16 @@ class FormatDecisionState(object):
 
     ###########################################################################
     # Argument List Splitting
+
+    if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
+      # Split before arguments in a function call or definition if the
+      # arguments are terminated by a comma.
+      opening = _GetOpeningBracket(current)
+      if opening and opening.previous_token and opening.previous_token.is_name:
+        if previous.value in '(,':
+          if opening.matching_bracket.previous_token.value == ',':
+            return True
+
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
         subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
@@ -408,15 +418,6 @@ class FormatDecisionState(object):
     if (current.value not in '{)' and previous.value == '(' and
         self._ArgumentListHasDictionaryEntry(current)):
       return True
-
-    if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
-      # Split before arguments in a function call or definition if the
-      # arguments are terminated by a comma.
-      opening = _GetOpeningBracket(current)
-      if opening and opening.previous_token and opening.previous_token.is_name:
-        if previous.value in '(,':
-          if opening.matching_bracket.previous_token.value == ',':
-            return True
 
     if ((current.is_name or current.value in {'*', '**'}) and
         previous.value == ','):
