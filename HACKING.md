@@ -3,13 +3,13 @@
 - To run YAPF on all of YAPF:
 
 ```bash
-$ PYTHONPATH=$PWD/yapf python -m yapf -i -r .
+$ pipx run --spec=${PWD} --no-cache yapf -m -i -r yapf/ yapftests/ third_party/
 ```
 
 - To run YAPF on just the files changed in the current git branch:
 
 ```bash
-$ PYTHONPATH=$PWD/yapf python -m yapf -i $(git diff --name-only @{upstream})
+$ pipx run --spec=${PWD} --no-cache yapf -m -i $(git diff --name-only @{upstream})
 ```
 
 ## Testing and building redistributables locally
@@ -45,7 +45,7 @@ $ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist
     $ pipx run --spec='tox<4' tox
     ```
 
-1. Bump version in `pyproject.toml`.
+1. Bump version in `yapf/_version.py`.
 
 1. Build and test redistributables
 

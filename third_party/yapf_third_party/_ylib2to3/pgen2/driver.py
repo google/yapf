@@ -20,19 +20,18 @@ import os
 import pkgutil
 import sys
 # Python imports
-from configparser import ConfigParser
 from contextlib import contextmanager
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
-from pkgutil import get_data
 from typing import Any
 from typing import Iterator
 from typing import List
 from typing import Optional
 
-from importlib_metadata import metadata
 from platformdirs import user_cache_dir
+
+from yapf._version import __version__ as yapf_version
 
 # Pgen imports
 from . import grammar
@@ -207,10 +206,7 @@ def _generate_pickle_name(gt):
   if tail == '.txt':
     tail = ''
   cache_dir = user_cache_dir(
-      appname=metadata('yapf')['Name'].upper(),
-      appauthor=metadata('yapf')['Author'].split(' ')[0],
-      version=metadata('yapf')['Version'],
-  )
+      appname='YAPF', appauthor='Google', version=yapf_version)
   return cache_dir + os.sep + head + tail + '-py' + '.'.join(
       map(str, sys.version_info)) + '.pickle'
 

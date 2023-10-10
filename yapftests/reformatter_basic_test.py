@@ -22,9 +22,6 @@ from yapf.yapflib import style
 
 from yapftests import yapf_test_helper
 
-PY38 = sys.version_info[0] >= 3 and sys.version_info[1] >= 8
-PY310 = sys.version_info[0] >= 3 and sys.version_info[1] >= 10
-
 
 class BasicReformatterTest(yapf_test_helper.YAPFTest):
 
@@ -3223,7 +3220,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
-  @unittest.skipUnless(PY38, 'Requires Python 3.8')
   def testWalrus(self):
     unformatted_code = textwrap.dedent("""\
         if (x  :=  len([1]*1000)>100):
@@ -3236,7 +3232,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
-  @unittest.skipUnless(PY310, 'Requires Python 3.10')
   def testStructuredPatternMatching(self):
     unformatted_code = textwrap.dedent("""\
         match command.split():
@@ -3255,7 +3250,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
-  @unittest.skipUnless(PY310, 'Requires Python 3.10')
   def testParenthesizedContextManagers(self):
     unformatted_code = textwrap.dedent("""\
         with (cert_authority.cert_pem.tempfile() as ca_temp_path, patch.object(os, 'environ', os.environ | {'REQUESTS_CA_BUNDLE': ca_temp_path}),):
