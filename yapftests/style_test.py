@@ -229,11 +229,6 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
         style.CreateStyleFromConfig(filepath)
 
   def testPyprojectTomlNoYapfSection(self):
-    try:
-      import tomli  # noqa: F401
-    except ImportError:
-      return
-
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     _ = open(filepath, 'w')
     with self.assertRaisesRegex(style.StyleConfigError,
@@ -241,10 +236,6 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       style.CreateStyleFromConfig(filepath)
 
   def testPyprojectTomlParseYapfSection(self):
-    try:
-      import tomli  # noqa: F401
-    except ImportError:
-      return
 
     cfg = textwrap.dedent("""\
         [tool.yapf]

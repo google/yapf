@@ -2,6 +2,14 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## (0.40.3) UNRELEASED
+### Changes
+- Remove dependency on importlib-metadata
+- Remove dependency on tomli when using >= py311
+### Fixed
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
+  by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
+
 ## [0.40.2] 2023-09-22
 ### Changes
 - The verification module has been removed. NOTE: this changes the public APIs
@@ -17,7 +25,7 @@
 ### Fixed
 - Corrected bad distribution v0.40.0 package.
 
-## [0.40.0] 2023-06-13
+## [0.40.0] 2023-06-13 [YANKED - [#1107](https://github.com/google/yapf/issues/1107)]
 ### Added
 - Support for Python 3.11
 - Add the `--print-modified` flag to print out file names of modified files when
@@ -28,7 +36,7 @@
 ### Removed
 - Support for Python versions < 3.7 are no longer supported.
 
-## [0.33.0] 2023-04-18
+## [0.33.0] 2023-04-18 [YANKED - [#1154](https://github.com/google/yapf/issues/1154)]
 ### Added
 - Add a new Python parser to generate logical lines.
 - Added support for `# fmt: on` and `# fmt: off` pragmas.
