@@ -12,6 +12,9 @@
         "editor.wordBasedSuggestions": false,
         "files.trimTrailingWhitespace": true,
     },
+    "python.analysis.extraPaths": [
+        "./third_party"
+    ],
     "python.analysis.typeCheckingMode": "basic",
     "python.languageServer": "Pylance",
     "files.exclude": {
