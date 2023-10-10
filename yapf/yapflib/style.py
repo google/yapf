@@ -15,10 +15,16 @@
 
 import os
 import re
+import sys
 import textwrap
 from configparser import ConfigParser
 
 from yapf.yapflib import errors
+
+if sys.version_info >= (3, 11):
+  import tomllib
+else:
+  import tomli as tomllib
 
 
 class StyleConfigError(errors.YapfError):
@@ -791,13 +797,6 @@ def _CreateConfigParserFromConfigFile(config_filename):
   config = ConfigParser()
 
   if config_filename.endswith(PYPROJECT_TOML):
-    try:
-      import tomli as tomllib
-    except ImportError:
-      raise errors.YapfError(
-          'tomli package is needed for using pyproject.toml as a '
-          'configuration file')
-
     with open(config_filename, 'rb') as style_file:
       pyproject_toml = tomllib.load(style_file)
       style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
