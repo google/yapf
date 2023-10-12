@@ -51,10 +51,6 @@ YAPF is supported by multiple editors via community extensions or plugins. See [
 
 YAPF supports Python 3.7+.
 
-> **Note**
-> YAPF requires the code it formats to be valid Python for the version YAPF
-> itself runs under.
-
 
 ## Usage
 
