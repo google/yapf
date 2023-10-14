@@ -180,6 +180,10 @@ class FormatDecisionState(object):
       return False
 
     if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
+      if (subtypes.COMP_FOR in current.subtypes or
+          subtypes.LAMBDEF in current.subtypes):
+        return False
+
       return True
 
     if (style.Get('FORCE_MULTILINE_DICT') and
@@ -188,6 +192,11 @@ class FormatDecisionState(object):
 
     if (style.Get('SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES') and
         previous.value == ','):
+
+      if (subtypes.COMP_FOR in current.subtypes or
+          subtypes.LAMBDEF in current.subtypes):
+        return False
+
       # Avoid breaking in a container that fits in the current line if possible
       opening = _GetOpeningBracket(current)
 

@@ -9,6 +9,8 @@
 ### Fixed
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
+- Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
+  being too agressive for lambdas and unpacking.
 
 ## [0.40.2] 2023-09-22
 ### Changes
