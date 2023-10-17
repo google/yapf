@@ -91,6 +91,30 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+    unformatted_code = textwrap.dedent("""\
+        values = [ lambda arg1, arg2: arg1 + arg2 ]
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        values = [
+            lambda arg1, arg2: arg1 + arg2
+        ]
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+    unformatted_code = textwrap.dedent("""\
+        values = [
+            (some_arg1, some_arg2) for some_arg1, some_arg2 in values
+        ]
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        values = [
+            (some_arg1,
+             some_arg2)
+            for some_arg1, some_arg2 in values
+        ]
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
     # There is a test for split_all_top_level_comma_separated_values, with
     # different expected value
     unformatted_code = textwrap.dedent("""\
@@ -158,6 +182,32 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     """)
     expected_formatted_code = textwrap.dedent("""\
         foo_tuple = [short, arg]
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+    # Works the same way as split_all_comma_separated_values
+    unformatted_code = textwrap.dedent("""\
+        values = [ lambda arg1, arg2: arg1 + arg2 ]
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        values = [
+            lambda arg1, arg2: arg1 + arg2
+        ]
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+    # There is a test for split_all_comma_separated_values, with different
+    # expected value
+    unformatted_code = textwrap.dedent("""\
+        values = [
+            (some_arg1, some_arg2) for some_arg1, some_arg2 in values
+        ]
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        values = [
+            (some_arg1, some_arg2)
+            for some_arg1, some_arg2 in values
+        ]
     """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))

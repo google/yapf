@@ -222,6 +222,11 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == '**':
         _AppendTokenSubtype(child, subtypes.BINARY_OPERATOR)
 
+  def Visit_lambdef(self, node):  # pylint: disable=invalid-name
+    # trailer: '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
+    _AppendSubtypeRec(node, subtypes.LAMBDEF)
+    self.DefaultNodeVisit(node)
+
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self.Visit(child)
