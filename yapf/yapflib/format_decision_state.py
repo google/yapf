@@ -213,7 +213,9 @@ class FormatDecisionState(object):
       # Allow the fallthrough code to handle the closing bracket.
       if current != opening.matching_bracket:
         # If the container doesn't fit in the current line, must split
-        return not self._ContainerFitsOnStartLine(opening)
+        if (subtypes.COMP_FOR not in current.subtypes and
+            not self._ContainerFitsOnStartLine(opening)):
+          return True
 
     if (self.stack[-1].split_before_closing_bracket and
         (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
@@ -557,9 +559,14 @@ class FormatDecisionState(object):
             return True
       else:
         # Split after the opening of a container if it doesn't fit on the
-        # current line.
+        # current line, including checking for wrapping.
         if not self._FitsOnLine(previous, previous.matching_bracket):
-          return True
+          arg_lengths = _CalculateArgLengths(previous)
+          start_col = self.column + len(current.value) + len(previous.value)
+          for length in arg_lengths:
+            length += start_col
+            if length > self.column_limit:
+              return True
 
     ###########################################################################
     # Original Formatting Splitting
