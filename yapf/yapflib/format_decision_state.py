@@ -199,6 +199,10 @@ class FormatDecisionState(object):
 
       # Avoid breaking in a container that fits in the current line if possible
       opening = _GetOpeningBracket(current)
+      # If at the start of a container, then we need to double check if it is
+      # actually  nested.
+      if opening == current:
+        opening = _GetOpeningBracket(previous)
 
       # Can't find opening bracket, behave the same way as
       # SPLIT_ALL_COMMA_SEPARATED_VALUES.
@@ -384,7 +388,6 @@ class FormatDecisionState(object):
 
     ###########################################################################
     # Argument List Splitting
-
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
       # arguments are terminated by a comma.
