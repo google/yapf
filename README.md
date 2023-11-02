@@ -513,6 +513,33 @@ optional arguments:
 >    Disable the heuristic which places each list element on a separate line if
 >    the list is comma-terminated.
 
+#### `DISABLE_DISABLE_SPLIT_LIST_WITH_COMMENT`
+
+>    Don't put every element on a new line within a list that contains
+>    interstitial comments.
+>
+>    Without this flag (default):
+>
+>    ```
+>    [
+>      a,
+>      b,  #
+>      c
+>    ]
+>    ```
+>
+>    With this flag:
+>
+>    ```
+>    [
+>      a, b,  #
+>      c
+>    ]
+>    ```
+>
+>    This is useful for forming "logical groups" of elements in a list.  It also
+>    works in function declarations.
+
 #### `EACH_DICT_ENTRY_ON_SEPARATE_LINE`
 
 >    Place each dictionary entry onto its own line.

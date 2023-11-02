@@ -6,6 +6,28 @@
 ### Changes
 - Remove dependency on importlib-metadata
 - Remove dependency on tomli when using >= py311
+### Added
+- `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
+  behavior of splitting a list when a comment is present inside the list.
+
+  Before, we split a list containing a comment just like we split a list
+  containing a trailing comma: Each element goes on its own line (unless
+  `DISABLE_ENDING_COMMA_HEURISTIC` is true).
+
+  Now, if `DISABLE_SPLIT_LIST_WITH_COMMENT` is true, we do not split every
+  element of the list onto a new line just because there's a comment somewhere
+  in the list.
+
+  This mirrors the behavior of clang-format, and is useful for e.g. forming
+  "logical groups" of elements in a list.
+
+  Note: Upgrading will result in a behavioral change if you have
+  `DISABLE_ENDING_COMMA_HEURISTIC` in your config.  Before this version, this
+  flag caused us not to split lists with a trailing comma *and* lists that
+  contain comments.  Now, if you set only that flag, we *will* split lists
+  that contain comments.  Set the new `DISABLE_SPLIT_LIST_WITH_COMMENT` flag to
+  true to preserve the old behavior.
+
 ### Fixed
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
