@@ -357,7 +357,6 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
               c):
           pass
     """)
-    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     try:
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
