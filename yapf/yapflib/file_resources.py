@@ -252,7 +252,7 @@ def IsIgnored(path, exclude):
 
 def IsPythonFile(filename):
   """Return True if filename is a Python file."""
-  if os.path.splitext(filename)[1] == '.py':
+  if os.path.splitext(filename)[1] in frozenset({'.py', '.pyi'}):
     return True
 
   try:
