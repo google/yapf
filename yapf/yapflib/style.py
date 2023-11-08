@@ -179,6 +179,12 @@ _STYLE_HELP = dict(
     DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
       if the list is comma-terminated.
+
+      Note: The behavior of this flag changed in v0.40.3.  Before, if this flag
+      was true, we would split lists that contained a trailing comma or a
+      comment.  Now, we have a separate flag, `DISABLE_SPLIT_LIT_WITH_COMMENT`,
+      that controls splitting when a list contains a comment.  To get the old
+      behavior, set both flags to true.  More information in CHANGELOG.md.
     """),
     DISABLE_SPLIT_LIST_WITH_COMMENT=textwrap.dedent("""
       Don't put every element on a new line within a list that contains

@@ -7,6 +7,8 @@
 - Remove dependency on importlib-metadata
 - Remove dependency on tomli when using >= py311
 ### Added
+
+#### New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag
 - `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
   behavior of splitting a list when a comment is present inside the list.
 
@@ -14,19 +16,60 @@
   containing a trailing comma: Each element goes on its own line (unless
   `DISABLE_ENDING_COMMA_HEURISTIC` is true).
 
-  Now, if `DISABLE_SPLIT_LIST_WITH_COMMENT` is true, we do not split every
-  element of the list onto a new line just because there's a comment somewhere
-  in the list.
+  This new flag allows you to control the behavior of a list with a comment
+  *separately* from the behavior when the list contains a trailing comma.
 
   This mirrors the behavior of clang-format, and is useful for e.g. forming
   "logical groups" of elements in a list.
 
-  Note: Upgrading will result in a behavioral change if you have
-  `DISABLE_ENDING_COMMA_HEURISTIC` in your config.  Before this version, this
-  flag caused us not to split lists with a trailing comma *and* lists that
-  contain comments.  Now, if you set only that flag, we *will* split lists
-  that contain comments.  Set the new `DISABLE_SPLIT_LIST_WITH_COMMENT` flag to
-  true to preserve the old behavior.
+  Without this flag:
+
+  ```
+  [
+    a,
+    b,  #
+    c
+  ]
+  ```
+
+  With this flag:
+
+  ```
+  [
+    a, b,  #
+    c
+  ]
+  ```
+
+  Before we had one flag that controlled two behaviors.
+
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` (default):
+      - Split a list that has a trailing comma.
+      - Split a list that contains a comment.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true`:
+      - Don't split on trailing comma.
+      - Don't split on comment.
+
+  Now we have two flags.
+
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` and `DISABLE_SPLIT_LIST_WITH_COMMENT=false` (default):
+      - Split a list that has a trailing comma.
+      - Split a list that contains a comment.
+      Behavior is unchanged from the default before.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true` and `DISABLE_SPLIT_LIST_WITH_COMMENT=false` :
+      - Don't split on trailing comma.
+      - Do split on comment.  **This is a change in behavior from before.**
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` and `DISABLE_SPLIT_LIST_WITH_COMMENT=true` :
+      - Split on trailing comma.
+      - Don't split on comment.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true` and `DISABLE_SPLIT_LIST_WITH_COMMENT=true` :
+      - Don't split on trailing comma.
+      - Don't split on comment.
+      **You used to get this behavior just by setting one flag, but now you have to set both.**
+
+  Note the behavioral change above; if you set
+  `DISABLE_ENDING_COMMA_HEURISTIC=true` and want to keep the old behavior, you
+  now also need to set `DISABLE_SPLIT_LIST_WITH_COMMENT=true`.
 
 ### Fixed
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists

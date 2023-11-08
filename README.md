@@ -512,8 +512,15 @@ optional arguments:
 
 >    Disable the heuristic which places each list element on a separate line if
 >    the list is comma-terminated.
+>
+>    Note: The behavior of this flag changed in v0.40.3.  Before, if this flag
+>    was true, we would split lists that contained a trailing comma or a
+>    comment.  Now, we have a separate flag, `DISABLE_SPLIT_LIST_WITH_COMMENT`,
+>    that controls splitting when a list contains a comment.  To get the old
+>    behavior, set both flags to true.  More information in
+>    [CHANGELOG.md](CHANGELOG.md#new-disable_split_list_with_comment-flag).
 
-#### `DISABLE_DISABLE_SPLIT_LIST_WITH_COMMENT`
+#### `DISABLE_DISABLE_SPLIT_LIST_WITH_COMMENT` (new in 0.40.3)
 
 >    Don't put every element on a new line within a list that contains
 >    interstitial comments.
@@ -537,8 +544,9 @@ optional arguments:
 >    ]
 >    ```
 >
->    This is useful for forming "logical groups" of elements in a list.  It also
->    works in function declarations.
+>    This mirrors the behavior of clang-format and is useful for forming
+>    "logical groups" of elements in a list.  It also works in function
+>    declarations.
 
 #### `EACH_DICT_ENTRY_ON_SEPARATE_LINE`
 
