@@ -2,14 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## (0.40.3) UNRELEASED
-### Changes
-- Remove dependency on importlib-metadata
-- Remove dependency on tomli when using >= py311
+## (0.41.0) UNRELEASED
 ### Added
-
-#### New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag
-- `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
+- New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.
+ `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
   behavior of splitting a list when a comment is present inside the list.
 
   Before, we split a list containing a comment just like we split a list
@@ -70,7 +66,10 @@
   Note the behavioral change above; if you set
   `DISABLE_ENDING_COMMA_HEURISTIC=true` and want to keep the old behavior, you
   now also need to set `DISABLE_SPLIT_LIST_WITH_COMMENT=true`.
-
+### Changes
+- Remove dependency on importlib-metadata
+- Remove dependency on tomli when using >= py311
+- Format '.pyi' type sub files.
 ### Fixed
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
