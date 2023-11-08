@@ -348,6 +348,7 @@ optional arguments:
 ```
 
 ## Unsupported Python features
+* Python 3.12 – [PEP 695 – Type Parameter Syntax](https://peps.python.org/pep-0695/) – [YAPF #1170](https://github.com/google/yapf/issues/1170)
 * Python 3.12 – [PEP 701 – Syntactic formalization of f-strings](https://peps.python.org/pep-0701/) – [YAPF #1136](https://github.com/google/yapf/issues/1136)
 
 ## Knobs
