@@ -407,16 +407,27 @@ def _AdjustSplitPenalty(line):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
-  if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
-    return
-  if not _ContainsComments(node):
+
+  def SplitBecauseTrailingComma():
+    if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
+      return False
     token = next(node.parent.leaves())
     if token.value == '(':
       if sum(1 for ch in node.children if ch.type == grammar_token.COMMA) < 2:
-        return
+        return False
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
-      return
+      return False
+    return True
+
+  def SplitBecauseListContainsComment():
+    return (not style.Get('DISABLE_SPLIT_LIST_WITH_COMMENT') and
+            _ContainsComments(node))
+
+  if (not SplitBecauseTrailingComma() and
+      not SplitBecauseListContainsComment()):
+    return
+
   num_children = len(node.children)
   index = 0
   _SetMustSplitOnFirstLeaf(node.children[0])

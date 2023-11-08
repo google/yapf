@@ -179,6 +179,16 @@ _STYLE_HELP = dict(
     DISABLE_ENDING_COMMA_HEURISTIC=textwrap.dedent("""\
       Disable the heuristic which places each list element on a separate line
       if the list is comma-terminated.
+
+      Note: The behavior of this flag changed in v0.40.3.  Before, if this flag
+      was true, we would split lists that contained a trailing comma or a
+      comment.  Now, we have a separate flag, `DISABLE_SPLIT_LIT_WITH_COMMENT`,
+      that controls splitting when a list contains a comment.  To get the old
+      behavior, set both flags to true.  More information in CHANGELOG.md.
+    """),
+    DISABLE_SPLIT_LIST_WITH_COMMENT=textwrap.dedent("""
+      Don't put every element on a new line within a list that contains
+      interstitial comments.
     """),
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=textwrap.dedent("""\
       Place each dictionary entry onto its own line.
@@ -483,6 +493,7 @@ def CreatePEP8Style():
       CONTINUATION_INDENT_WIDTH=4,
       DEDENT_CLOSING_BRACKETS=False,
       DISABLE_ENDING_COMMA_HEURISTIC=False,
+      DISABLE_SPLIT_LIST_WITH_COMMENT=False,
       EACH_DICT_ENTRY_ON_SEPARATE_LINE=True,
       FORCE_MULTILINE_DICT=False,
       I18N_COMMENT='',
@@ -671,6 +682,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     CONTINUATION_INDENT_WIDTH=int,
     DEDENT_CLOSING_BRACKETS=_BoolConverter,
     DISABLE_ENDING_COMMA_HEURISTIC=_BoolConverter,
+    DISABLE_SPLIT_LIST_WITH_COMMENT=_BoolConverter,
     EACH_DICT_ENTRY_ON_SEPARATE_LINE=_BoolConverter,
     FORCE_MULTILINE_DICT=_BoolConverter,
     I18N_COMMENT=str,

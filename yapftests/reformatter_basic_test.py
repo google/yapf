@@ -345,6 +345,29 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
+  def testParamListWithTrailingComments(self):
+    unformatted_code = textwrap.dedent("""\
+        def f(a,
+              b, #
+              c):
+          pass
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        def f(a, b,  #
+              c):
+          pass
+    """)
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: yapf,'
+              ' disable_split_list_with_comment: True}'))
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
   def testBlankLinesBetweenTopLevelImportsAndVariables(self):
     unformatted_code = textwrap.dedent("""\
         import foo as bar

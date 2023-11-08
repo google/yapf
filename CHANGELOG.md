@@ -2,7 +2,70 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## (0.40.3) UNRELEASED
+## (0.41.0) UNRELEASED
+### Added
+- New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.
+ `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
+  behavior of splitting a list when a comment is present inside the list.
+
+  Before, we split a list containing a comment just like we split a list
+  containing a trailing comma: Each element goes on its own line (unless
+  `DISABLE_ENDING_COMMA_HEURISTIC` is true).
+
+  This new flag allows you to control the behavior of a list with a comment
+  *separately* from the behavior when the list contains a trailing comma.
+
+  This mirrors the behavior of clang-format, and is useful for e.g. forming
+  "logical groups" of elements in a list.
+
+  Without this flag:
+
+  ```
+  [
+    a,
+    b,  #
+    c
+  ]
+  ```
+
+  With this flag:
+
+  ```
+  [
+    a, b,  #
+    c
+  ]
+  ```
+
+  Before we had one flag that controlled two behaviors.
+
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` (default):
+      - Split a list that has a trailing comma.
+      - Split a list that contains a comment.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true`:
+      - Don't split on trailing comma.
+      - Don't split on comment.
+
+  Now we have two flags.
+
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` and `DISABLE_SPLIT_LIST_WITH_COMMENT=false` (default):
+      - Split a list that has a trailing comma.
+      - Split a list that contains a comment.
+      Behavior is unchanged from the default before.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true` and `DISABLE_SPLIT_LIST_WITH_COMMENT=false` :
+      - Don't split on trailing comma.
+      - Do split on comment.  **This is a change in behavior from before.**
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` and `DISABLE_SPLIT_LIST_WITH_COMMENT=true` :
+      - Split on trailing comma.
+      - Don't split on comment.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true` and `DISABLE_SPLIT_LIST_WITH_COMMENT=true` :
+      - Don't split on trailing comma.
+      - Don't split on comment.
+      **You used to get this behavior just by setting one flag, but now you have to set both.**
+
+  Note the behavioral change above; if you set
+  `DISABLE_ENDING_COMMA_HEURISTIC=true` and want to keep the old behavior, you
+  now also need to set `DISABLE_SPLIT_LIST_WITH_COMMENT=true`.
 ### Changes
 - Remove dependency on importlib-metadata
 - Remove dependency on tomli when using >= py311
