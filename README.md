@@ -520,7 +520,7 @@ optional arguments:
 >    behavior, set both flags to true.  More information in
 >    [CHANGELOG.md](CHANGELOG.md#new-disable_split_list_with_comment-flag).
 
-#### `DISABLE_DISABLE_SPLIT_LIST_WITH_COMMENT` (new in 0.40.3)
+#### `DISABLE_SPLIT_LIST_WITH_COMMENT`
 
 >    Don't put every element on a new line within a list that contains
 >    interstitial comments.
