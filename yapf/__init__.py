@@ -108,6 +108,8 @@ def main(argv):
 
     source = [line.rstrip() for line in original_source]
     source[0] = _removeBOM(source[0])
+    # filter all the tuples with empty space
+    source = list(filter(None, source))
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
