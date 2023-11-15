@@ -16,7 +16,7 @@
 The `logical_line.LogicalLine`s are now ready to be formatted. LogicalLInes that
 can be merged together are. The best formatting is returned as a string.
 
-  Reformat(): the main function exported by this module.
+  ): the main function exported by this module.
 """
 
 import collections
@@ -398,12 +398,19 @@ def _AlignTrailingComments(final_lines):
 def _FormatFinalLines(final_lines):
   """Compose the final output from the finalized lines."""
   formatted_code = []
+  comment_start = False
+  quote_str = '\'\'\''
   for line in final_lines:
     formatted_line = []
     for tok in line.tokens:
       if not tok.is_pseudo:
-        formatted_line.append(tok.formatted_whitespace_prefix)
-        formatted_line.append(tok.value)
+        if not comment_start and tok.value.startswith(quote_str):
+          comment_start = True
+          formatted_line.append(tok.formatted_whitespace_prefix)
+          formatted_line.append(tok.value)
+        else:
+          formatted_line.append(re.sub('\n+','\n',tok.formatted_whitespace_prefix))
+          formatted_line.append(tok.value)
       elif (not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
         if (tok.previous_token.value == ':' or
