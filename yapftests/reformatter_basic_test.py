@@ -16,6 +16,7 @@
 import sys
 import textwrap
 import unittest
+import yapf
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
@@ -3336,6 +3337,29 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         ):
           httpserver_url = httpserver.url_for('/resource.jar')
     """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+
+  def testExtraBlankLine(self):
+    unformatted_code = textwrap.dedent("""\
+    '''
+    Comment section started
+    '''
+    if True:
+    
+    
+      print(2)
+      """)
+
+    #input_code = "\'\'\'\n Comment Section started\n\'\'\'\nif True:\n\n\n\t print(2)"
+    expected = textwrap.dedent("""\
+    '''
+    Comment section started
+    '''
+    if True:
+        print(2)
+      """)
+
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
