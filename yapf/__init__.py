@@ -60,12 +60,10 @@ def filterEmptyTuples(source):
   reformatted_source = []
   for code_val in source:
     if not comment_start and quote_str in code_val:
-      print("Starting quote")
       reformatted_source.append(code_val)
       comment_start = True
     elif comment_start and quote_str in code_val:
       comment_start = False
-      print("Ending quote")
       reformatted_source.append(code_val)
     elif code_val != '':
       reformatted_source.append(code_val)
