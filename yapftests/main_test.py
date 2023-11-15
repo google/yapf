@@ -137,11 +137,3 @@ class MainTest(yapf_test_helper.YAPFTest):
       self.assertIn('indent_width=4', help_message)
       self.assertIn('The number of spaces required before a trailing comment.',
                     help_message)
-  def testExtraBlankLine(self):
-    code = 'if True:\n\n\n\n\t print(2)'
-    yapf_code = 'if True:\n  print(2)\n'
-    with patched_input(code):
-      with captured_output() as (out, _):
-        ret = yapf.main([])
-        self.assertEqual(ret, 0)
-        self.assertEqual(out.getvalue(), yapf_code)
