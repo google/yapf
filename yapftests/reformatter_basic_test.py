@@ -16,7 +16,6 @@
 import sys
 import textwrap
 import unittest
-import yapf
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style

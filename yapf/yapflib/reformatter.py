@@ -16,7 +16,7 @@
 The `logical_line.LogicalLine`s are now ready to be formatted. LogicalLInes that
 can be merged together are. The best formatting is returned as a string.
 
-  ): the main function exported by this module.
+  Reformat(): the main function exported by this module.
 """
 
 import collections
