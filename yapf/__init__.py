@@ -54,6 +54,7 @@ def _removeBOM(source):
   return source
 
 
+<<<<<<< HEAD
 def filterEmptyTuples(source):
   comment_start = False
   quote_str = '\'\'\''
@@ -70,6 +71,8 @@ def filterEmptyTuples(source):
   return reformatted_source
 
 
+=======
+>>>>>>> parent of 70a28e1 (feat: add a util function to remove extra blank spaces)
 def main(argv):
   """Main program.
 
@@ -124,15 +127,15 @@ def main(argv):
 
     source = [line.rstrip() for line in original_source]
     source[0] = _removeBOM(source[0])
-    # filter the tuples with empty spaces (excluding the disabled sections)
-    source = filterEmptyTuples(source)
+    # filter all the tuples with empty space
+    source = list(filter(None, source))
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
-        str('\n'.join(source).replace('\r\n', '\n') + '\n'),
-        filename='<stdin>',
-        style_config=style_config,
-        lines=lines)
+          str('\n'.join(source).replace('\r\n', '\n') + '\n'),
+          filename='<stdin>',
+          style_config=style_config,
+          lines=lines)
     except errors.YapfError:
       raise
     except Exception as e:
@@ -143,7 +146,7 @@ def main(argv):
 
   # Get additional exclude patterns from ignorefile
   exclude_patterns_from_ignore_file = file_resources.GetExcludePatternsForDir(
-    os.getcwd())
+      os.getcwd())
 
   files = file_resources.GetCommandLineFiles(args.files, args.recursive,
                                              (args.exclude or []) +
@@ -152,16 +155,16 @@ def main(argv):
     raise errors.YapfError('input filenames did not match any python files')
 
   changed = FormatFiles(
-    files,
-    lines,
-    style_config=args.style,
-    no_local_style=args.no_local_style,
-    in_place=args.in_place,
-    print_diff=args.diff,
-    parallel=args.parallel,
-    quiet=args.quiet,
-    verbose=args.verbose,
-    print_modified=args.print_modified)
+      files,
+      lines,
+      style_config=args.style,
+      no_local_style=args.no_local_style,
+      in_place=args.in_place,
+      print_diff=args.diff,
+      parallel=args.parallel,
+      quiet=args.quiet,
+      verbose=args.verbose,
+      print_modified=args.print_modified)
   return 1 if changed and (args.diff or args.quiet) else 0
 
 
@@ -221,9 +224,9 @@ def FormatFiles(filenames,
     workers = min(multiprocessing.cpu_count(), len(filenames))
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
-        executor.submit(_FormatFile, filename, lines, style_config,
-                        no_local_style, in_place, print_diff, quiet, verbose,
-                        print_modified) for filename in filenames
+          executor.submit(_FormatFile, filename, lines, style_config,
+                          no_local_style, in_place, print_diff, quiet, verbose,
+                          print_modified) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
@@ -250,16 +253,16 @@ def _FormatFile(filename,
 
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
-      os.path.dirname(filename))
+        os.path.dirname(filename))
 
   try:
     reformatted_code, encoding, has_change = yapf_api.FormatFile(
-      filename,
-      in_place=in_place,
-      style_config=style_config,
-      lines=lines,
-      print_diff=print_diff,
-      logger=logging.warning)
+        filename,
+        in_place=in_place,
+        style_config=style_config,
+        lines=lines,
+        print_diff=print_diff,
+        logger=logging.warning)
   except errors.YapfError:
     raise
   except Exception as e:
@@ -305,88 +308,88 @@ def _BuildParser():
     An ArgumentParser instance for the CLI.
   """
   parser = argparse.ArgumentParser(
-    prog='yapf', description='Formatter for Python code.')
+      prog='yapf', description='Formatter for Python code.')
   parser.add_argument(
-    '-v',
-    '--version',
-    action='version',
-    version='%(prog)s {}'.format(__version__))
+      '-v',
+      '--version',
+      action='version',
+      version='%(prog)s {}'.format(__version__))
 
   diff_inplace_quiet_group = parser.add_mutually_exclusive_group()
   diff_inplace_quiet_group.add_argument(
-    '-d',
-    '--diff',
-    action='store_true',
-    help='print the diff for the fixed source')
+      '-d',
+      '--diff',
+      action='store_true',
+      help='print the diff for the fixed source')
   diff_inplace_quiet_group.add_argument(
-    '-i',
-    '--in-place',
-    action='store_true',
-    help='make changes to files in place')
+      '-i',
+      '--in-place',
+      action='store_true',
+      help='make changes to files in place')
   diff_inplace_quiet_group.add_argument(
-    '-q',
-    '--quiet',
-    action='store_true',
-    help='output nothing and set return value')
+      '-q',
+      '--quiet',
+      action='store_true',
+      help='output nothing and set return value')
 
   lines_recursive_group = parser.add_mutually_exclusive_group()
   lines_recursive_group.add_argument(
-    '-r',
-    '--recursive',
-    action='store_true',
-    help='run recursively over directories')
+      '-r',
+      '--recursive',
+      action='store_true',
+      help='run recursively over directories')
   lines_recursive_group.add_argument(
-    '-l',
-    '--lines',
-    metavar='START-END',
-    action='append',
-    default=None,
-    help='range of lines to reformat, one-based')
+      '-l',
+      '--lines',
+      metavar='START-END',
+      action='append',
+      default=None,
+      help='range of lines to reformat, one-based')
 
   parser.add_argument(
-    '-e',
-    '--exclude',
-    metavar='PATTERN',
-    action='append',
-    default=None,
-    help='patterns for files to exclude from formatting')
+      '-e',
+      '--exclude',
+      metavar='PATTERN',
+      action='append',
+      default=None,
+      help='patterns for files to exclude from formatting')
   parser.add_argument(
-    '--style',
-    action='store',
-    help=('specify formatting style: either a style name (for example "pep8" '
-          'or "google"), or the name of a file with style settings. The '
-          'default is pep8 unless a %s or %s or %s file located in the same '
-          'directory as the source or one of its parent directories '
-          '(for stdin, the current directory is used).' %
-          (style.LOCAL_STYLE, style.SETUP_CONFIG, style.PYPROJECT_TOML)))
+      '--style',
+      action='store',
+      help=('specify formatting style: either a style name (for example "pep8" '
+            'or "google"), or the name of a file with style settings. The '
+            'default is pep8 unless a %s or %s or %s file located in the same '
+            'directory as the source or one of its parent directories '
+            '(for stdin, the current directory is used).' %
+            (style.LOCAL_STYLE, style.SETUP_CONFIG, style.PYPROJECT_TOML)))
   parser.add_argument(
-    '--style-help',
-    action='store_true',
-    help=('show style settings and exit; this output can be '
-          'saved to .style.yapf to make your settings '
-          'permanent'))
+      '--style-help',
+      action='store_true',
+      help=('show style settings and exit; this output can be '
+            'saved to .style.yapf to make your settings '
+            'permanent'))
   parser.add_argument(
-    '--no-local-style',
-    action='store_true',
-    help="don't search for local style definition")
+      '--no-local-style',
+      action='store_true',
+      help="don't search for local style definition")
   parser.add_argument(
-    '-p',
-    '--parallel',
-    action='store_true',
-    help=('run YAPF in parallel when formatting multiple files.'))
+      '-p',
+      '--parallel',
+      action='store_true',
+      help=('run YAPF in parallel when formatting multiple files.'))
   parser.add_argument(
-    '-m',
-    '--print-modified',
-    action='store_true',
-    help='print out file names of modified files')
+      '-m',
+      '--print-modified',
+      action='store_true',
+      help='print out file names of modified files')
   parser.add_argument(
-    '-vv',
-    '--verbose',
-    action='store_true',
-    help='print out file names while processing')
+      '-vv',
+      '--verbose',
+      action='store_true',
+      help='print out file names while processing')
 
   parser.add_argument(
-    'files', nargs='*', help='reads from stdin when no files are specified.')
+      'files', nargs='*', help='reads from stdin when no files are specified.')
   return parser
 
 
