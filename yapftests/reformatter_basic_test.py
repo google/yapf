@@ -3349,8 +3349,6 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     
       print(2)
       """)
-
-    #input_code = "\'\'\'\n Comment Section started\n\'\'\'\nif True:\n\n\n\t print(2)"
     expected = textwrap.dedent("""\
     '''
     Comment section started
