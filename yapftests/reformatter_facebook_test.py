@@ -33,11 +33,11 @@ class TestsForFacebookStyle(yapf_test_helper.YAPFTest):
         def overly_long_function_name(
           just_one_arg, **kwargs):
           pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def overly_long_function_name(just_one_arg, **kwargs):
             pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -47,13 +47,13 @@ class TestsForFacebookStyle(yapf_test_helper.YAPFTest):
           first_argument_on_the_same_line,
           second_argument_makes_the_line_too_long):
           pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def overly_long_function_name(
             first_argument_on_the_same_line, second_argument_makes_the_line_too_long
         ):
             pass
-        """)  # noqa
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -62,14 +62,13 @@ class TestsForFacebookStyle(yapf_test_helper.YAPFTest):
         def overly_long_function_name(a, b, c, d, e, f, g, h, i, j, k, l, m,
           n, o, p, q, r, s, t, u, v, w, x, y, z):
           pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def overly_long_function_name(
-            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, \
-v, w, x, y, z
+            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z
         ):
             pass
-        """)
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -81,7 +80,7 @@ v, w, x, y, z
           # comment about the second argument
           second_argument_makes_the_line_too_long):
           pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def overly_long_function_name(
             # comment about the first argument
@@ -90,7 +89,7 @@ v, w, x, y, z
             second_argument_makes_the_line_too_long
         ):
             pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -102,7 +101,7 @@ v, w, x, y, z
             SOME_CONSTANT_NUMBER2,
             SOME_CONSTANT_NUMBER3,
         )
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -121,7 +120,7 @@ v, w, x, y, z
             IOError, OSError, LookupError, RuntimeError, OverflowError,
         ) as exception:
             pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         try:
             pass
@@ -140,7 +139,7 @@ v, w, x, y, z
             OverflowError,
         ) as exception:
             pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -151,7 +150,7 @@ v, w, x, y, z
             pass
         except (IOError, OSError, LookupError, RuntimeError, OverflowError) as exception:
             pass
-        """)  # noqa
+    """)  # noqa
     pass1_code = textwrap.dedent("""\
         try:
             pass
@@ -159,7 +158,7 @@ v, w, x, y, z
             IOError, OSError, LookupError, RuntimeError, OverflowError
         ) as exception:
             pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(pass0_code)
     self.assertCodeEqual(pass1_code, reformatter.Reformat(llines))
 
@@ -170,7 +169,7 @@ v, w, x, y, z
             IOError, OSError, LookupError, RuntimeError, OverflowError
         ) as exception:
             pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(pass1_code)
     self.assertCodeEqual(pass2_code, reformatter.Reformat(llines))
 
@@ -183,7 +182,7 @@ v, w, x, y, z
                        self.foobars.counters['db.cheeses'] != 1 or
                        self.foobars.counters['db.marshmellow_skins'] != 1):
                         pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
             if True:
@@ -193,7 +192,7 @@ v, w, x, y, z
                         self.foobars.counters['db.marshmellow_skins'] != 1
                     ):
                         pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -201,13 +200,13 @@ v, w, x, y, z
     unformatted_code = textwrap.dedent("""\
         if True:
             self.assertEqual(result.reason_not_added, "current preflight is still running")
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
             self.assertEqual(
                 result.reason_not_added, "current preflight is still running"
             )
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -220,7 +219,7 @@ v, w, x, y, z
                     if clues_lists:
                        return cls.single_constraint_not(clues_lists, effect, constraints[0], constraint_manager)
 
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class Foo:
             class Bar:
@@ -230,7 +229,7 @@ v, w, x, y, z
                         return cls.single_constraint_not(
                             clues_lists, effect, constraints[0], constraint_manager
                         )
-        """)  # noqa
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -241,7 +240,7 @@ v, w, x, y, z
                 cls.effect_clues = {
                     'effect': Clue((cls.effect_time, 'apache_host'), effect_line, 40)
                 }
-        """)  # noqa
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -283,7 +282,7 @@ v, w, x, y, z
                     ('localhost', os.path.join(path, 'node_1.log'), super_parser),
                     ('localhost', os.path.join(path, 'node_2.log'), super_parser)
                 ]
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         class Foo():
             def _pack_results_for_constraint_or():
@@ -319,7 +318,7 @@ v, w, x, y, z
                     ('localhost', os.path.join(path, 'node_1.log'), super_parser),
                     ('localhost', os.path.join(path, 'node_2.log'), super_parser)
                 ]
-        """)  # noqa
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
@@ -331,7 +330,7 @@ v, w, x, y, z
                     effect_line_offset, line_content,
                     LineSource('localhost', xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
                 )
-        """)  # noqa
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -345,7 +344,7 @@ v, w, x, y, z
                         self.foobars.counters['db.marshmellow_skins'] != 1
                     ):
                         pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -361,7 +360,7 @@ v, w, x, y, z
                         (2, 20, 200),
                     ]
                 )
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
@@ -374,7 +373,7 @@ v, w, x, y, z
                     (clue for clue in combination if not clue == Verifier.UNMATCHED),
                     constraints, InvestigationResult.OR
                 )
-        """)  # noqa
+    """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(code)
     reformatted_code = reformatter.Reformat(llines)
     self.assertCodeEqual(code, reformatted_code)
@@ -396,7 +395,7 @@ v, w, x, y, z
 
 
         print(foo())
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             if 0:
@@ -408,22 +407,22 @@ v, w, x, y, z
 
 
         print(foo())
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
   def testIfStmtClosingBracket(self):
-    unformatted_code = """\
-if (isinstance(value  , (StopIteration  , StopAsyncIteration  )) and exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs):
-    return False
-"""  # noqa
-    expected_formatted_code = """\
-if (
-    isinstance(value, (StopIteration, StopAsyncIteration)) and
-    exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs
-):
-    return False
-"""
+    unformatted_code = textwrap.dedent("""\
+        if (isinstance(value  , (StopIteration  , StopAsyncIteration  )) and exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs):
+            return False
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        if (
+            isinstance(value, (StopIteration, StopAsyncIteration)) and
+            exc.__cause__ is value_asdfasdfasdfasdfsafsafsafdasfasdfs
+        ):
+            return False
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 

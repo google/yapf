@@ -23,11 +23,15 @@ import os
 import re
 import sys
 from configparser import ConfigParser
-from io import StringIO
 from tokenize import detect_encoding
 
 from yapf.yapflib import errors
 from yapf.yapflib import style
+
+if sys.version_info >= (3, 11):
+  import tomllib
+else:
+  import tomli as tomllib
 
 CR = '\r'
 LF = '\n'
@@ -52,12 +56,6 @@ def _GetExcludePatternsFromYapfIgnore(filename):
 def _GetExcludePatternsFromPyprojectToml(filename):
   """Get a list of file patterns to ignore from pyproject.toml."""
   ignore_patterns = []
-  try:
-    import tomli as tomllib
-  except ImportError:
-    raise errors.YapfError(
-        'tomli package is needed for using pyproject.toml as a '
-        'configuration file')
 
   if os.path.isfile(filename) and os.access(filename, os.R_OK):
     with open(filename, 'rb') as fd:
@@ -137,13 +135,6 @@ def GetDefaultStyleForDir(dirname, default_style=style.DEFAULT_STYLE):
       pass  # It's okay if it's not there.
     else:
       with fd:
-        try:
-          import tomli as tomllib
-        except ImportError:
-          raise errors.YapfError(
-              'tomli package is needed for using pyproject.toml as a '
-              'configuration file')
-
         pyproject_toml = tomllib.load(fd)
         style_dict = pyproject_toml.get('tool', {}).get('yapf', None)
         if style_dict is not None:
@@ -261,7 +252,7 @@ def IsIgnored(path, exclude):
 
 def IsPythonFile(filename):
   """Return True if filename is a Python file."""
-  if os.path.splitext(filename)[1] == '.py':
+  if os.path.splitext(filename)[1] in frozenset({'.py', '.pyi'}):
     return True
 
   try:

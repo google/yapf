@@ -24,9 +24,9 @@ Annotations:
       subtypes.
 """
 
-from lib2to3 import pytree
-from lib2to3.pgen2 import token as grammar_token
-from lib2to3.pygram import python_symbols as syms
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3.pygram import python_symbols as syms
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
@@ -221,6 +221,11 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
       if isinstance(child, pytree.Leaf) and child.value == '**':
         _AppendTokenSubtype(child, subtypes.BINARY_OPERATOR)
+
+  def Visit_lambdef(self, node):  # pylint: disable=invalid-name
+    # trailer: '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
+    _AppendSubtypeRec(node, subtypes.LAMBDEF)
+    self.DefaultNodeVisit(node)
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     for child in node.children:

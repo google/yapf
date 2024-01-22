@@ -31,10 +31,10 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testSimpleFunctionDefWithNoSplitting(self):
-    code = textwrap.dedent(r"""
-      def f(a, b):
-        pass
-      """)
+    code = textwrap.dedent("""\
+        def f(a, b):
+          pass
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     lline = logical_line.LogicalLine(0, _FilterLine(llines[0]))
     lline.CalculateFormattingInformation()
@@ -85,10 +85,10 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
     self.assertEqual(repr(state), repr(clone))
 
   def testSimpleFunctionDefWithSplitting(self):
-    code = textwrap.dedent(r"""
-      def f(a, b):
-        pass
-      """)
+    code = textwrap.dedent("""\
+        def f(a, b):
+          pass
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     lline = logical_line.LogicalLine(0, _FilterLine(llines[0]))
     lline.CalculateFormattingInformation()

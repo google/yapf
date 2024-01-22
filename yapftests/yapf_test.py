@@ -24,7 +24,8 @@ import tempfile
 import textwrap
 import unittest
 from io import StringIO
-from lib2to3.pgen2 import tokenize
+
+from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
 from yapf.yapflib import style
@@ -33,10 +34,7 @@ from yapf.yapflib import yapf_api
 from yapftests import utils
 from yapftests import yapf_test_helper
 
-ROOT_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-
-# Verification is turned off by default, but want to enable it for testing.
-YAPF_BINARY = [sys.executable, '-m', 'yapf', '--verify', '--no-local-style']
+YAPF_BINARY = [sys.executable, '-m', 'yapf', '--no-local-style']
 
 
 class FormatCodeTest(yapf_test_helper.YAPFTest):
@@ -49,7 +47,7 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
   def testSimple(self):
     unformatted_code = textwrap.dedent("""\
         print('foo')
-        """)
+    """)
     self._Check(unformatted_code, unformatted_code)
 
   def testNoEndingNewline(self):
@@ -59,11 +57,11 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
     expected_formatted_code = textwrap.dedent("""\
         if True:
           pass
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
 
-class FormatFileTest(unittest.TestCase):
+class FormatFileTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -71,29 +69,19 @@ class FormatFileTest(unittest.TestCase):
   def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
 
-  def assertCodeEqual(self, expected_code, code):
-    if code != expected_code:
-      msg = 'Code format mismatch:\n'
-      msg += 'Expected:\n >'
-      msg += '\n > '.join(expected_code.splitlines())
-      msg += '\nActual:\n >'
-      msg += '\n > '.join(code.splitlines())
-      # TODO(sbc): maybe using difflib here to produce easy to read deltas?
-      self.fail(msg)
-
   def testFormatFile(self):
     unformatted_code = textwrap.dedent("""\
         if True:
          pass
-        """)
+    """)
     expected_formatted_code_pep8 = textwrap.dedent("""\
         if True:
             pass
-        """)
+    """)
     expected_formatted_code_yapf = textwrap.dedent("""\
         if True:
           pass
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code_pep8, formatted_code)
@@ -109,7 +97,7 @@ class FormatFileTest(unittest.TestCase):
         if f:    g
 
         if h:    i
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if a: b
 
@@ -117,7 +105,7 @@ class FormatFileTest(unittest.TestCase):
         if f:    g
 
         if h:    i
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
@@ -131,7 +119,7 @@ class FormatFileTest(unittest.TestCase):
         # yapf: enable
 
         if h:    i
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if a: b
 
@@ -140,7 +128,7 @@ class FormatFileTest(unittest.TestCase):
         # yapf: enable
 
         if h: i
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
@@ -154,7 +142,7 @@ class FormatFileTest(unittest.TestCase):
         # fmt: on
 
         if h:    i
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if a: b
 
@@ -163,7 +151,7 @@ class FormatFileTest(unittest.TestCase):
         # fmt: on
 
         if h: i
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
@@ -179,8 +167,7 @@ class FormatFileTest(unittest.TestCase):
         # This is a multiline comment that enables YAPF.
 
         if h:    i
-        """)
-
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if a: b
 
@@ -191,7 +178,7 @@ class FormatFileTest(unittest.TestCase):
         # This is a multiline comment that enables YAPF.
 
         if h: i
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
@@ -207,7 +194,7 @@ class FormatFileTest(unittest.TestCase):
           )
 
           # yapf: enable
-      """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
@@ -220,7 +207,7 @@ class FormatFileTest(unittest.TestCase):
         # yapf: disable
         a(bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, ccccccccccccccccccccccccccccccc, ddddddddddddddddddddddd, eeeeeeeeeeeeeeeeeeeeeeeeeee)
         # yapf: enable
-        """)  # noqa
+    """)  # noqa
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
@@ -232,21 +219,21 @@ class FormatFileTest(unittest.TestCase):
         if f:    g
 
         if h:    i
-        """)
+    """)
     expected_formatted_code_lines1and2 = textwrap.dedent("""\
         if a: b
 
         if f:    g
 
         if h:    i
-        """)
+    """)
     expected_formatted_code_lines3 = textwrap.dedent("""\
         if a:    b
 
         if f: g
 
         if h:    i
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(
           filepath, style_config='pep8', lines=[(1, 2)])
@@ -259,7 +246,7 @@ class FormatFileTest(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         if True:
          pass
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       diff, _, _ = yapf_api.FormatFile(filepath, print_diff=True)
       self.assertIn('+  pass', diff)
@@ -295,7 +282,7 @@ class FormatFileTest(unittest.TestCase):
             'one',
             # quark
             'two'] # yapf: disable
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
@@ -306,7 +293,7 @@ class FormatFileTest(unittest.TestCase):
         a = [
         1]
         # yapf: enable
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
@@ -316,7 +303,7 @@ class FormatFileTest(unittest.TestCase):
         def f():
           x = y + 42 ; z = n * 42
           if True: a += 1 ; b += 1; c += 1
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def f():
             x = y + 42
@@ -325,7 +312,7 @@ class FormatFileTest(unittest.TestCase):
                 a += 1
                 b += 1
                 c += 1
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
@@ -335,7 +322,7 @@ class FormatFileTest(unittest.TestCase):
         def f():
           x = y + 42 ; z = n * 42  # yapf: disable
           if True: a += 1 ; b += 1; c += 1
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def f():
             x = y + 42 ; z = n * 42  # yapf: disable
@@ -343,7 +330,7 @@ class FormatFileTest(unittest.TestCase):
                 a += 1
                 b += 1
                 c += 1
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, unformatted_code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(expected_formatted_code, formatted_code)
@@ -352,7 +339,7 @@ class FormatFileTest(unittest.TestCase):
     code = textwrap.dedent("""\
         # yapf: disable
         if True: a ; b
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='pep8')
       self.assertCodeEqual(code, formatted_code)
@@ -371,7 +358,7 @@ class FormatFileTest(unittest.TestCase):
         ''',
             },
         ]
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
@@ -390,7 +377,7 @@ class FormatFileTest(unittest.TestCase):
         ''',
             },
         ]
-        """)
+    """)
     with utils.TempFileContents(self.test_tmpdir, code) as filepath:
       formatted_code, _, _ = yapf_api.FormatFile(filepath, style_config='yapf')
       self.assertCodeEqual(code, formatted_code)
@@ -402,7 +389,7 @@ class FormatFileTest(unittest.TestCase):
       self.assertCodeEqual(code, formatted_code)
 
 
-class CommandLineTest(unittest.TestCase):
+class CommandLineTest(yapf_test_helper.YAPFTest):
   """Test how calling yapf from the command line acts."""
 
   @classmethod
@@ -445,11 +432,11 @@ class CommandLineTest(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         def foo():
           x = 37
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             x = 37
-        """)
+    """)
     with utils.TempFileContents(
         self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
       p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
@@ -485,7 +472,7 @@ class CommandLineTest(unittest.TestCase):
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             x = 37
-        """)
+    """)
     with utils.TempFileContents(
         self.test_tmpdir, unformatted_code, suffix='.py') as filepath:
       p = subprocess.Popen(YAPF_BINARY + ['--in-place', filepath])
@@ -519,31 +506,31 @@ class CommandLineTest(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         def foo():
           x = 37
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             x = 37
-        """)
+    """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testReadFromStdinWithEscapedStrings(self):
     unformatted_code = textwrap.dedent("""\
         s =   "foo\\nbar"
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         s = "foo\\nbar"
-        """)
+    """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testSetYapfStyle(self):
     unformatted_code = textwrap.dedent("""\
         def foo(): # trail
             x = 37
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():  # trail
           x = 37
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -553,16 +540,16 @@ class CommandLineTest(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         def foo(): # trail
             x = 37
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():    # trail
           x = 37
-        """)
-    style_file = textwrap.dedent('''\
+    """)
+    style_file = textwrap.dedent("""\
         [style]
         based_on_style = yapf
         spaces_before_comment = 4
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -573,15 +560,15 @@ class CommandLineTest(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         a_very_long_statement_that_extends_way_beyond # Comment
         short # This is a shorter statement
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         a_very_long_statement_that_extends_way_beyond # Comment
         short                                         # This is a shorter statement
-        """)  # noqa
-    style_file = textwrap.dedent('''\
+    """)  # noqa
+    style_file = textwrap.dedent("""\
         [style]
         spaces_before_comment = 15, 20
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_file) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -591,10 +578,10 @@ class CommandLineTest(unittest.TestCase):
   def testReadSingleLineCodeFromStdin(self):
     unformatted_code = textwrap.dedent("""\
         if True: pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if True: pass
-        """)
+    """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testEncodingVerification(self):
@@ -603,7 +590,7 @@ class CommandLineTest(unittest.TestCase):
         # -*- coding: utf-8 -*-
         def f():
             x = 37
-        """)
+    """)
 
     with utils.NamedTempFile(
         suffix='.py', dirname=self.test_tmpdir) as (out, _):
@@ -636,7 +623,7 @@ class CommandLineTest(unittest.TestCase):
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
-        """)  # noqa
+    """)  # noqa
     # TODO(ambv): the `expected_formatted_code` here is not PEP8 compliant,
     # raising "E129 visually indented line with same indent as next logical
     # line" with flake8.
@@ -652,14 +639,14 @@ class CommandLineTest(unittest.TestCase):
         # Comment
         def some_func(x):
             x = ["badly" , "formatted","line" ]
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         import sys
 
         # Comment
         def some_func(x):
             x = ["badly", "formatted", "line"]
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -676,7 +663,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
         # yapf: enable
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
@@ -689,7 +676,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
                 pass
         # yapf: enable
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testReformattingSkippingToEndOfFile(self):
@@ -709,7 +696,7 @@ class CommandLineTest(unittest.TestCase):
                        xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
                        'bbbbbbb'):
                     pass
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
@@ -728,7 +715,7 @@ class CommandLineTest(unittest.TestCase):
                        xxxxxxxxxxxxxxxxxxxxx(yyyyyyyyyyyyy[zzzzz].aaaaaaaa[0]) ==
                        'bbbbbbb'):
                     pass
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testReformattingSkippingSingleLine(self):
@@ -740,7 +727,7 @@ class CommandLineTest(unittest.TestCase):
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):  # yapf: disable
                 pass
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
@@ -751,7 +738,7 @@ class CommandLineTest(unittest.TestCase):
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):  # yapf: disable
                 pass
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testDisableWholeDataStructure(self):
@@ -760,13 +747,13 @@ class CommandLineTest(unittest.TestCase):
             'hello',
             'world',
         ])  # yapf: disable
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         A = set([
             'hello',
             'world',
         ])  # yapf: disable
-        """)
+    """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testDisableButAdjustIndentations(self):
@@ -776,14 +763,14 @@ class CommandLineTest(unittest.TestCase):
           def testUnbreakable(self):
             self._CheckPenalties(tree, [
             ])  # yapf: disable
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         class SplitPenaltyTest(unittest.TestCase):
 
             def testUnbreakable(self):
                 self._CheckPenalties(tree, [
                 ])  # yapf: disable
-        """)
+    """)
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testRetainingHorizontalWhitespace(self):
@@ -795,7 +782,7 @@ class CommandLineTest(unittest.TestCase):
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy        (zzzzzzzzzzzzz  [0]) ==     'aaaaaaaaaaa' and    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):  # yapf: disable
                 pass
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
@@ -806,7 +793,7 @@ class CommandLineTest(unittest.TestCase):
         def g():
             if (xxxxxxxxxxxx.yyyyyyyy        (zzzzzzzzzzzzz  [0]) ==     'aaaaaaaaaaa' and    xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):  # yapf: disable
                 pass
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(unformatted_code, expected_formatted_code)
 
   def testRetainingVerticalWhitespace(self):
@@ -821,7 +808,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
 
                 pass
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def h():
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and
@@ -834,7 +821,7 @@ class CommandLineTest(unittest.TestCase):
             if (xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0]) == 'aaaaaaaaaaa' and xxxxxxxxxxxx.yyyyyyyy(zzzzzzzzzzzzz[0].mmmmmmmm[0]) == 'bbbbbbb'):
 
                 pass
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -856,7 +843,7 @@ class CommandLineTest(unittest.TestCase):
         #comment
 
         #   trailing whitespace
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if a: b
 
@@ -871,7 +858,7 @@ class CommandLineTest(unittest.TestCase):
         #comment
 
         #   trailing whitespace
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -884,28 +871,28 @@ class CommandLineTest(unittest.TestCase):
         '''
 
         import blah
-        """)
+    """)
 
     self.assertYapfReformats(
         unformatted_code, unformatted_code, extra_options=['--lines', '2-2'])
 
   def testVerticalSpacingWithCommentWithContinuationMarkers(self):
-    unformatted_code = """\
-# \\
-# \\
-# \\
+    unformatted_code = textwrap.dedent("""\
+        # \\
+        # \\
+        # \\
 
-x = {
-}
-"""
-    expected_formatted_code = """\
-# \\
-# \\
-# \\
+        x = {
+        }
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        # \\
+        # \\
+        # \\
 
-x = {
-}
-"""
+        x = {
+        }
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -917,13 +904,13 @@ x = {
         def f():
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         a = line_to_format
         def f():
             x = y + 42; z = n * 42
             if True: a += 1 ; b += 1 ; c += 1
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -939,7 +926,7 @@ x = {
         <b>Residence: </b>"""+palace["Winter"]+"""<br>
         </body>
         </html>"""
-        ''')  # noqa
+    ''')  # noqa
     expected_formatted_code = textwrap.dedent('''\
         foo = 42
         def f():
@@ -949,7 +936,7 @@ x = {
         <b>Residence: </b>"""+palace["Winter"]+"""<br>
         </body>
         </html>"""
-        ''')  # noqa
+    ''')  # noqa
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -967,7 +954,7 @@ x = {
             'hello',
             'world',
         ])  # yapf: disable
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         # yapf: disable
         A = set([
@@ -979,7 +966,7 @@ x = {
             'hello',
             'world',
         ])  # yapf: disable
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1004,7 +991,7 @@ x = {
 
                 'that'
             ]
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def horrible():
             oh_god()
@@ -1019,7 +1006,7 @@ x = {
             oh_god()
             why_would_you()
             ['do', 'that']
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1036,7 +1023,7 @@ x = {
                      c.ffffffffffff),
              gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         class A(object):
             def aaaaaaaaaaaaa(self):
@@ -1045,7 +1032,7 @@ x = {
                                   'eeeeeeeeeeeeeeeeeeeeeeeee.%s' % c.ffffffffffff),
                                  gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1060,7 +1047,7 @@ x = {
 
             def bbbbbbbbbbbbb(self):  # 5
                 pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         class A(object):
             def aaaaaaaaaaaaa(self):
@@ -1069,7 +1056,7 @@ x = {
 
             def bbbbbbbbbbbbb(self):  # 5
                 pass
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1086,7 +1073,7 @@ x = {
                      c.ffffffffffff),
              gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         class A(object):
             def aaaaaaaaaaaaa(self):
@@ -1095,7 +1082,7 @@ x = {
                                   'eeeeeeeeeeeeeeeeeeeeeeeee.%s' % c.ffffffffffff),
                                  gggggggggggg.hhhhhhhhh(c, c.ffffffffffff))
                 iiiii = jjjjjjjjjjjjjj.iiiii
-        """)  # noqa
+    """)  # noqa
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1109,7 +1096,7 @@ x = {
             '''  # comment
             x = '''hello world'''  # second comment
             return 42  # another comment
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
             '''First line.
@@ -1117,7 +1104,7 @@ x = {
             '''  # comment
             x = '''hello world'''  # second comment
             return 42  # another comment
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1126,15 +1113,15 @@ x = {
   def testDedentClosingBracket(self):
     # no line-break on the first argument, not dedenting closing brackets
     unformatted_code = textwrap.dedent("""\
-      def overly_long_function_name(first_argument_on_the_same_line,
-      second_argument_makes_the_line_too_long):
-        pass
-    """)
-    expected_formatted_code = textwrap.dedent("""\
-      def overly_long_function_name(first_argument_on_the_same_line,
-                                    second_argument_makes_the_line_too_long):
+        def overly_long_function_name(first_argument_on_the_same_line,
+        second_argument_makes_the_line_too_long):
           pass
     """)
+    expected_formatted_code = textwrap.dedent("""\
+        def overly_long_function_name(first_argument_on_the_same_line,
+                                      second_argument_makes_the_line_too_long):
+            pass
+    """)  # noqa
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1149,10 +1136,10 @@ x = {
 
     # line-break before the first argument, dedenting closing brackets if set
     unformatted_code = textwrap.dedent("""\
-      def overly_long_function_name(
-        first_argument_on_the_same_line,
-        second_argument_makes_the_line_too_long):
-        pass
+        def overly_long_function_name(
+          first_argument_on_the_same_line,
+          second_argument_makes_the_line_too_long):
+          pass
     """)
     # expected_formatted_pep8_code = textwrap.dedent("""\
     #   def overly_long_function_name(
@@ -1161,10 +1148,10 @@ x = {
     #       pass
     # """)
     expected_formatted_fb_code = textwrap.dedent("""\
-      def overly_long_function_name(
-          first_argument_on_the_same_line, second_argument_makes_the_line_too_long
-      ):
-          pass
+        def overly_long_function_name(
+            first_argument_on_the_same_line, second_argument_makes_the_line_too_long
+        ):
+            pass
     """)  # noqa
     self.assertYapfReformats(
         unformatted_code,
@@ -1184,20 +1171,21 @@ x = {
                'first_argument_of_the_thing': id,
                'second_argument_of_the_thing': "some thing"
            }
-       )""")
+       )
+    """)
     expected_formatted_code = textwrap.dedent("""\
        some_long_function_name_foo({
            'first_argument_of_the_thing': id,
            'second_argument_of_the_thing': "some thing"
        })
-       """)
+    """)
     with utils.NamedTempFile(dirname=self.test_tmpdir, mode='w') as (f, name):
       f.write(
-          textwrap.dedent('''\
+          textwrap.dedent("""\
           [style]
           column_limit=82
           coalesce_brackets = True
-          '''))
+      """))
       f.flush()
       self.assertYapfReformats(
           unformatted_code,
@@ -1209,12 +1197,12 @@ x = {
         def   foo():
           def bar():
             return {msg_id: author for author, msg_id in reader}
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo():
           def bar():
             return {msg_id: author for author, msg_id in reader}
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1234,7 +1222,7 @@ x = {
                 ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
             '#': lambda x: x  # do nothing
         }
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         # This is a comment
         FOO = {
@@ -1248,7 +1236,7 @@ x = {
                 ('yyyyy', zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz),
             '#': lambda x: x  # do nothing
         }
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1261,36 +1249,36 @@ x = {
         SCOPES = [
             'hello world'  # This is a comment.
         ]
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         import os
 
         SCOPES = [
             'hello world'  # This is a comment.
         ]
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
         extra_options=['--lines', '1-1', '--style', 'yapf'])
 
   def testUseTabs(self):
-    unformatted_code = """\
-def foo_function():
- if True:
-  pass
-"""
+    unformatted_code = textwrap.dedent("""\
+        def foo_function():
+         if True:
+          pass
+    """)
     expected_formatted_code = """\
 def foo_function():
 	if True:
 		pass
 """  # noqa: W191,E101
-    style_contents = """\
-[style]
-based_on_style = yapf
-USE_TABS = true
-INDENT_WIDTH=1
-"""
+    style_contents = textwrap.dedent("""\
+        [style]
+        based_on_style = yapf
+        use_tabs = true
+        indent_width = 1
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -1309,12 +1297,12 @@ def f():
 	    'world',
 	]
 """  # noqa: W191,E101
-    style_contents = """\
-[style]
-based_on_style = yapf
-USE_TABS = true
-INDENT_WIDTH=1
-"""
+    style_contents = textwrap.dedent("""\
+        [style]
+        based_on_style = yapf
+        use_tabs = true
+        indent_width = 1
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -1334,15 +1322,15 @@ def foo_function(
 			'world',
 	]
 """  # noqa: W191,E101
-    style_contents = """\
-[style]
-based_on_style = yapf
-USE_TABS = true
-COLUMN_LIMIT=32
-INDENT_WIDTH=4
-CONTINUATION_INDENT_WIDTH=8
-CONTINUATION_ALIGN_STYLE = fixed
-"""
+    style_contents = textwrap.dedent("""\
+        [style]
+        based_on_style = yapf
+        use_tabs = true
+        column_limit=32
+        indent_width=4
+        continuation_indent_width=8
+        continuation_align_style = fixed
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -1362,15 +1350,15 @@ def foo_function(arg1, arg2,
 			'world',
 	]
 """  # noqa: W191,E101
-    style_contents = """\
-[style]
-based_on_style = yapf
-USE_TABS = true
-COLUMN_LIMIT=32
-INDENT_WIDTH=4
-CONTINUATION_INDENT_WIDTH=8
-CONTINUATION_ALIGN_STYLE = valign-right
-"""
+    style_contents = textwrap.dedent("""\
+        [style]
+        based_on_style = yapf
+        use_tabs = true
+        column_limit = 32
+        indent_width = 4
+        continuation_indent_width = 8
+        continuation_align_style = valign-right
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -1378,26 +1366,26 @@ CONTINUATION_ALIGN_STYLE = valign-right
           extra_options=['--style={0}'.format(stylepath)])
 
   def testUseSpacesContinuationAlignStyleFixed(self):
-    unformatted_code = """\
-def foo_function(arg1, arg2, arg3):
-  return ['hello', 'world',]
-"""
-    expected_formatted_code = """\
-def foo_function(
-        arg1, arg2, arg3):
-    return [
-            'hello',
-            'world',
-    ]
-"""
-    style_contents = """\
-[style]
-based_on_style = yapf
-COLUMN_LIMIT=32
-INDENT_WIDTH=4
-CONTINUATION_INDENT_WIDTH=8
-CONTINUATION_ALIGN_STYLE = fixed
-"""
+    unformatted_code = textwrap.dedent("""\
+        def foo_function(arg1, arg2, arg3):
+          return ['hello', 'world',]
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo_function(
+                arg1, arg2, arg3):
+            return [
+                    'hello',
+                    'world',
+            ]
+    """)
+    style_contents = textwrap.dedent("""\
+        [style]
+        based_on_style = yapf
+        column_limit = 32
+        indent_width = 4
+        continuation_indent_width = 8
+        continuation_align_style = fixed
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -1405,26 +1393,26 @@ CONTINUATION_ALIGN_STYLE = fixed
           extra_options=['--style={0}'.format(stylepath)])
 
   def testUseSpacesContinuationAlignStyleVAlignRight(self):
-    unformatted_code = """\
-def foo_function(arg1, arg2, arg3):
-  return ['hello', 'world',]
-"""
-    expected_formatted_code = """\
-def foo_function(arg1, arg2,
-                    arg3):
-    return [
-            'hello',
-            'world',
-    ]
-"""
-    style_contents = """\
-[style]
-based_on_style = yapf
-COLUMN_LIMIT=32
-INDENT_WIDTH=4
-CONTINUATION_INDENT_WIDTH=8
-CONTINUATION_ALIGN_STYLE = valign-right
-"""
+    unformatted_code = textwrap.dedent("""\
+        def foo_function(arg1, arg2, arg3):
+          return ['hello', 'world',]
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        def foo_function(arg1, arg2,
+                            arg3):
+            return [
+                    'hello',
+                    'world',
+            ]
+    """)
+    style_contents = textwrap.dedent("""\
+        [style]
+        based_on_style = yapf
+        column_limit = 32
+        indent_width = 4
+        continuation_indent_width = 8
+        continuation_align_style = valign-right
+    """)
     with utils.TempFileContents(self.test_tmpdir, style_contents) as stylepath:
       self.assertYapfReformats(
           unformatted_code,
@@ -1435,11 +1423,11 @@ CONTINUATION_ALIGN_STYLE = valign-right
     unformatted_code = textwrap.dedent("""\
         def foo_function():
           pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def foo_function():
             pass
-        """)
+    """)
 
     with utils.NamedTempFile(dirname=self.test_tmpdir) as (stylefile,
                                                            stylepath):
@@ -1465,7 +1453,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
             pass
         def _():
             pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         A = 42
 
@@ -1475,7 +1463,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
             pass
         def _():
             pass
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1496,7 +1484,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
             BORKED:  # Broken.
                 'BROKEN'
         }
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         A = 42
 
@@ -1511,7 +1499,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
             BORKED:  # Broken.
                 'BROKEN'
         }
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
@@ -1526,7 +1514,7 @@ CONTINUATION_ALIGN_STYLE = valign-right
                 return
             return
         # yapf: enable
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         # yapf_lines_bug.py
         # yapf: disable
@@ -1535,38 +1523,38 @@ CONTINUATION_ALIGN_STYLE = valign-right
                 return
             return
         # yapf: enable
-        """)
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
         extra_options=['--lines', '1-8'])
 
   def testDisableWithLineRanges(self):
-    unformatted_code = """\
-# yapf: disable
-a = [
-    1,
-    2,
+    unformatted_code = textwrap.dedent("""\
+        # yapf: disable
+        a = [
+            1,
+            2,
 
-    3
-]
-"""
-    expected_formatted_code = """\
-# yapf: disable
-a = [
-    1,
-    2,
+            3
+        ]
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        # yapf: disable
+        a = [
+            1,
+            2,
 
-    3
-]
-"""
+            3
+        ]
+    """)
     self.assertYapfReformats(
         unformatted_code,
         expected_formatted_code,
         extra_options=['--style', 'yapf', '--lines', '1-100'])
 
 
-class BadInputTest(unittest.TestCase):
+class BadInputTest(yapf_test_helper.YAPFTest):
   """Test yapf's behaviour when passed bad input."""
 
   def testBadSyntax(self):
@@ -1578,7 +1566,7 @@ class BadInputTest(unittest.TestCase):
     self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
 
-class DiffIndentTest(unittest.TestCase):
+class DiffIndentTest(yapf_test_helper.YAPFTest):
 
   @staticmethod
   def _OwnStyle():
@@ -1596,11 +1584,11 @@ class DiffIndentTest(unittest.TestCase):
     unformatted_code = textwrap.dedent("""\
         for i in range(5):
          print('bar')
-         """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         for i in range(5):
            print('bar')
-           """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
 
@@ -1630,7 +1618,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         foo = '3____________<25>' # Aligned at third list value
 
         foo = '4______________________<35>' # Aligned beyond list values
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         foo = '1'     # Aligned at first list value
 
@@ -1639,7 +1627,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         foo = '3____________<25>'         # Aligned at third list value
 
         foo = '4______________________<35>' # Aligned beyond list values
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlock(self):
@@ -1650,7 +1638,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func(3)                             # Line 4
                                             # Line 5
                                             # Line 6
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         func(1)       # Line 1
         func(2)       # Line 2
@@ -1658,7 +1646,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func(3)       # Line 4
                       # Line 5
                       # Line 6
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlockWithLongLine(self):
@@ -1669,7 +1657,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func(3)                             # Line 4
                                             # Line 5
                                             # Line 6
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         func(1)                           # Line 1
         func___________________(2)        # Line 2
@@ -1677,7 +1665,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func(3)                           # Line 4
                                           # Line 5
                                           # Line 6
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlockFuncSuffix(self):
@@ -1691,7 +1679,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
         def Func():
             pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         func(1)       # Line 1
         func(2)       # Line 2
@@ -1703,7 +1691,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
         def Func():
             pass
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlockCommentSuffix(self):
@@ -1716,7 +1704,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                                     # Line 6
 
                                             # Aligned with prev comment block
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         func(1)       # Line 1
         func(2)       # Line 2
@@ -1726,7 +1714,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                       # Line 6
 
                       # Aligned with prev comment block
-        """)  # noqa
+    """)  # noqa
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlockIndentedFuncSuffix(self):
@@ -1743,7 +1731,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
             def Func():
                 pass
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
             func(1)   # Line 1
@@ -1759,7 +1747,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
             def Func():
                 pass
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlockIndentedCommentSuffix(self):
@@ -1773,7 +1761,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                                                 # Line 6
 
                                                 # Not aligned
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         if True:
             func(1)   # Line 1
@@ -1784,7 +1772,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                       # Line 6
 
             # Not aligned
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testBlockMultiIndented(self):
@@ -1800,7 +1788,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                                                         # Line 6
 
                                                         # Not aligned
-        """)  # noqa
+    """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         if True:
             if True:
@@ -1813,7 +1801,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                                 # Line 6
 
                     # Not aligned
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testArgs(self):
@@ -1827,7 +1815,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
             arg6,
         ):
             pass
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         def MyFunc(
             arg1,               # Desc 1
@@ -1838,7 +1826,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
             arg6,
         ):
             pass
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testDisableBlock(self):
@@ -1853,7 +1841,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
         e() # comment 5
         f() # comment 6
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         a()           # comment 1
         b()           # comment 2
@@ -1865,7 +1853,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
 
         e()           # comment 5
         f()           # comment 6
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
   def testDisabledLine(self):
@@ -1874,17 +1862,17 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         do_not_touch1 # yapf: disable
         do_not_touch2   # yapf: disable
         a_longer_statement # comment 2
-        """)
+    """)
     expected_formatted_code = textwrap.dedent("""\
         short                   # comment 1
         do_not_touch1 # yapf: disable
         do_not_touch2   # yapf: disable
         a_longer_statement      # comment 2
-        """)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
 
-class _SpacesAroundDictListTupleTestImpl(unittest.TestCase):
+class _SpacesAroundDictListTupleTestImpl(yapf_test_helper.YAPFTest):
 
   @staticmethod
   def _OwnStyle():
@@ -1914,40 +1902,39 @@ class SpacesAroundDictTest(_SpacesAroundDictListTupleTestImpl):
 
   def testStandard(self):
     unformatted_code = textwrap.dedent("""\
-      {1 : 2}
-      {k:v for k, v in other.items()}
-      {k for k in [1, 2, 3]}
+        {1 : 2}
+        {k:v for k, v in other.items()}
+        {k for k in [1, 2, 3]}
 
-      # The following statements should not change
-      {}
-      {1 : 2} # yapf: disable
+        # The following statements should not change
+        {}
+        {1 : 2} # yapf: disable
 
-      # yapf: disable
-      {1 : 2}
-      # yapf: enable
+        # yapf: disable
+        {1 : 2}
+        # yapf: enable
 
-      # Dict settings should not impact lists or tuples
-      [1, 2]
-      (3, 4)
-      """)
+        # Dict settings should not impact lists or tuples
+        [1, 2]
+        (3, 4)
+    """)
     expected_formatted_code = textwrap.dedent("""\
-      { 1: 2 }
-      { k: v for k, v in other.items() }
-      { k for k in [1, 2, 3] }
+        { 1: 2 }
+        { k: v for k, v in other.items() }
+        { k for k in [1, 2, 3] }
 
-      # The following statements should not change
-      {}
-      {1 : 2} # yapf: disable
+        # The following statements should not change
+        {}
+        {1 : 2} # yapf: disable
 
-      # yapf: disable
-      {1 : 2}
-      # yapf: enable
+        # yapf: disable
+        {1 : 2}
+        # yapf: enable
 
-      # Dict settings should not impact lists or tuples
-      [1, 2]
-      (3, 4)
-      """)
-
+        # Dict settings should not impact lists or tuples
+        [1, 2]
+        (3, 4)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
 
@@ -1962,48 +1949,47 @@ class SpacesAroundListTest(_SpacesAroundDictListTupleTestImpl):
 
   def testStandard(self):
     unformatted_code = textwrap.dedent("""\
-      [a,b,c]
-      [4,5,]
-      [6, [7, 8], 9]
-      [v for v in [1,2,3] if v & 1]
+        [a,b,c]
+        [4,5,]
+        [6, [7, 8], 9]
+        [v for v in [1,2,3] if v & 1]
 
-      # The following statements should not change
-      index[0]
-      index[a, b]
-      []
-      [v for v in [1,2,3] if v & 1] # yapf: disable
+        # The following statements should not change
+        index[0]
+        index[a, b]
+        []
+        [v for v in [1,2,3] if v & 1] # yapf: disable
 
-      # yapf: disable
-      [a,b,c]
-      [4,5,]
-      # yapf: enable
+        # yapf: disable
+        [a,b,c]
+        [4,5,]
+        # yapf: enable
 
-      # List settings should not impact dicts or tuples
-      {a: b}
-      (1, 2)
-      """)
+        # List settings should not impact dicts or tuples
+        {a: b}
+        (1, 2)
+    """)
     expected_formatted_code = textwrap.dedent("""\
-      [ a, b, c ]
-      [ 4, 5, ]
-      [ 6, [ 7, 8 ], 9 ]
-      [ v for v in [ 1, 2, 3 ] if v & 1 ]
+        [ a, b, c ]
+        [ 4, 5, ]
+        [ 6, [ 7, 8 ], 9 ]
+        [ v for v in [ 1, 2, 3 ] if v & 1 ]
 
-      # The following statements should not change
-      index[0]
-      index[a, b]
-      []
-      [v for v in [1,2,3] if v & 1] # yapf: disable
+        # The following statements should not change
+        index[0]
+        index[a, b]
+        []
+        [v for v in [1,2,3] if v & 1] # yapf: disable
 
-      # yapf: disable
-      [a,b,c]
-      [4,5,]
-      # yapf: enable
+        # yapf: disable
+        [a,b,c]
+        [4,5,]
+        # yapf: enable
 
-      # List settings should not impact dicts or tuples
-      {a: b}
-      (1, 2)
-      """)
-
+        # List settings should not impact dicts or tuples
+        {a: b}
+        (1, 2)
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
 
@@ -2018,52 +2004,51 @@ class SpacesAroundTupleTest(_SpacesAroundDictListTupleTestImpl):
 
   def testStandard(self):
     unformatted_code = textwrap.dedent("""\
-      (0, 1)
-      (2, 3)
-      (4, 5, 6,)
-      func((7, 8), 9)
+        (0, 1)
+        (2, 3)
+        (4, 5, 6,)
+        func((7, 8), 9)
 
-      # The following statements should not change
-      func(1, 2)
-      (this_func or that_func)(3, 4)
-      if (True and False): pass
-      ()
+        # The following statements should not change
+        func(1, 2)
+        (this_func or that_func)(3, 4)
+        if (True and False): pass
+        ()
 
-      (0, 1) # yapf: disable
+        (0, 1) # yapf: disable
 
-      # yapf: disable
-      (0, 1)
-      (2, 3)
-      # yapf: enable
+        # yapf: disable
+        (0, 1)
+        (2, 3)
+        # yapf: enable
 
-      # Tuple settings should not impact dicts or lists
-      {a: b}
-      [3, 4]
-      """)
+        # Tuple settings should not impact dicts or lists
+        {a: b}
+        [3, 4]
+    """)
     expected_formatted_code = textwrap.dedent("""\
-      ( 0, 1 )
-      ( 2, 3 )
-      ( 4, 5, 6, )
-      func(( 7, 8 ), 9)
+        ( 0, 1 )
+        ( 2, 3 )
+        ( 4, 5, 6, )
+        func(( 7, 8 ), 9)
 
-      # The following statements should not change
-      func(1, 2)
-      (this_func or that_func)(3, 4)
-      if (True and False): pass
-      ()
+        # The following statements should not change
+        func(1, 2)
+        (this_func or that_func)(3, 4)
+        if (True and False): pass
+        ()
 
-      (0, 1) # yapf: disable
+        (0, 1) # yapf: disable
 
-      # yapf: disable
-      (0, 1)
-      (2, 3)
-      # yapf: enable
+        # yapf: disable
+        (0, 1)
+        (2, 3)
+        # yapf: enable
 
-      # Tuple settings should not impact dicts or lists
-      {a: b}
-      [3, 4]
-      """)
-
+        # Tuple settings should not impact dicts or lists
+        {a: b}
+        [3, 4]
+    """)
     self._Check(unformatted_code, expected_formatted_code)
 
 

@@ -26,6 +26,7 @@ from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 
 from yapftests import utils
+from yapftests import yapf_test_helper
 
 
 @contextlib.contextmanager
@@ -47,7 +48,7 @@ def _exists_mocked_in_module(module, mock_implementation):
     setattr(module, 'exists', unmocked_exists)
 
 
-class GetExcludePatternsForDir(unittest.TestCase):
+class GetExcludePatternsForDir(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -75,10 +76,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
       file_resources.GetExcludePatternsForDir(self.test_tmpdir)
 
   def test_get_exclude_file_patterns_from_pyproject(self):
-    try:
-      import tomli
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
     with open(local_ignore_file, 'w') as f:
@@ -92,10 +89,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
-    try:
-      import tomli
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     open(local_ignore_file, 'w').close()
@@ -105,10 +98,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
-    try:
-      import tomli
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     with open(local_ignore_file, 'w') as f:
@@ -126,7 +115,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(ignore_patterns))
 
 
-class GetDefaultStyleForDirTest(unittest.TestCase):
+class GetDefaultStyleForDirTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -174,12 +163,6 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
                      file_resources.GetDefaultStyleForDir(test_dir))
 
   def test_pyproject_toml(self):
-    # An empty pyproject.toml file should not be used
-    try:
-      import tomli
-    except ImportError:
-      return
-
     pyproject_toml = os.path.join(self.test_tmpdir, 'pyproject.toml')
     open(pyproject_toml, 'w').close()
 
@@ -221,7 +204,7 @@ def _touch_files(filenames):
     open(name, 'a').close()
 
 
-class GetCommandLineFilesTest(unittest.TestCase):
+class GetCommandLineFilesTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -408,7 +391,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
       file_resources.GetCommandLineFiles([], False, exclude=['./z'])
 
 
-class IsPythonFileTest(unittest.TestCase):
+class IsPythonFileTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -451,7 +434,7 @@ class IsPythonFileTest(unittest.TestCase):
     self.assertFalse(file_resources.IsPythonFile(file1))
 
 
-class IsIgnoredTest(unittest.TestCase):
+class IsIgnoredTest(yapf_test_helper.YAPFTest):
 
   def test_root_path(self):
     self.assertTrue(file_resources.IsIgnored('media', ['media']))
@@ -480,7 +463,7 @@ class BufferedByteStream(object):
     return self.stream
 
 
-class WriteReformattedCodeTest(unittest.TestCase):
+class WriteReformattedCodeTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):  # pylint: disable=g-missing-super-call
@@ -517,7 +500,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
     self.assertEqual(stream.getvalue(), s)
 
 
-class LineEndingTest(unittest.TestCase):
+class LineEndingTest(yapf_test_helper.YAPFTest):
 
   def test_line_ending_linefeed(self):
     lines = ['spam\n', 'spam\n']

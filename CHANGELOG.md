@@ -2,15 +2,107 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.40.0] UNRELEASED
+## (0.41.0) UNRELEASED
+### Added
+- New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.
+ `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
+  behavior of splitting a list when a comment is present inside the list.
+
+  Before, we split a list containing a comment just like we split a list
+  containing a trailing comma: Each element goes on its own line (unless
+  `DISABLE_ENDING_COMMA_HEURISTIC` is true).
+
+  This new flag allows you to control the behavior of a list with a comment
+  *separately* from the behavior when the list contains a trailing comma.
+
+  This mirrors the behavior of clang-format, and is useful for e.g. forming
+  "logical groups" of elements in a list.
+
+  Without this flag:
+
+  ```
+  [
+    a,
+    b,  #
+    c
+  ]
+  ```
+
+  With this flag:
+
+  ```
+  [
+    a, b,  #
+    c
+  ]
+  ```
+
+  Before we had one flag that controlled two behaviors.
+
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` (default):
+      - Split a list that has a trailing comma.
+      - Split a list that contains a comment.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true`:
+      - Don't split on trailing comma.
+      - Don't split on comment.
+
+  Now we have two flags.
+
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` and `DISABLE_SPLIT_LIST_WITH_COMMENT=false` (default):
+      - Split a list that has a trailing comma.
+      - Split a list that contains a comment.
+      Behavior is unchanged from the default before.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true` and `DISABLE_SPLIT_LIST_WITH_COMMENT=false` :
+      - Don't split on trailing comma.
+      - Do split on comment.  **This is a change in behavior from before.**
+    - `DISABLE_ENDING_COMMA_HEURISTIC=false` and `DISABLE_SPLIT_LIST_WITH_COMMENT=true` :
+      - Split on trailing comma.
+      - Don't split on comment.
+    - `DISABLE_ENDING_COMMA_HEURISTIC=true` and `DISABLE_SPLIT_LIST_WITH_COMMENT=true` :
+      - Don't split on trailing comma.
+      - Don't split on comment.
+      **You used to get this behavior just by setting one flag, but now you have to set both.**
+
+  Note the behavioral change above; if you set
+  `DISABLE_ENDING_COMMA_HEURISTIC=true` and want to keep the old behavior, you
+  now also need to set `DISABLE_SPLIT_LIST_WITH_COMMENT=true`.
+### Changes
+- Remove dependency on importlib-metadata
+- Remove dependency on tomli when using >= py311
+- Format '.pyi' type sub files.
+### Fixed
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
+  by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
+- Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
+  being too agressive for lambdas and unpacking.
+
+## [0.40.2] 2023-09-22
+### Changes
+- The verification module has been removed. NOTE: this changes the public APIs
+  by removing the "verify" parameter.
+- Changed FORCE_MULTILINE_DICT to override SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES.
+- Adopt pyproject.toml (PEP 517) for build system
+### Fixed
+- Do not treat variables named `match` as the match keyword.
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item argument lists.
+- Fix trailing backslash-newline on Windows when using stdin.
+
+## [0.40.1] 2023-06-20
+### Fixed
+- Corrected bad distribution v0.40.0 package.
+
+## [0.40.0] 2023-06-13 [YANKED - [#1107](https://github.com/google/yapf/issues/1107)]
 ### Added
 - Support for Python 3.11
 - Add the `--print-modified` flag to print out file names of modified files when
   running in in-place mode.
+### Changes
+- Replace the outdated and no-longer-supported lib2to3 with a fork of blib2to3,
+  Black's version of lib2to3.
 ### Removed
-- Support for Python <3.7
+- Support for Python versions < 3.7 are no longer supported.
 
-## [0.33.0] 2023-04-18
+## [0.33.0] 2023-04-18 [YANKED - [#1154](https://github.com/google/yapf/issues/1154)]
 ### Added
 - Add a new Python parser to generate logical lines.
 - Added support for `# fmt: on` and `# fmt: off` pragmas.
@@ -47,7 +139,7 @@
 
 ## [0.31.0] 2021-03-14
 ### Added
-- Renamed 'master' brannch to 'main'.
+- Renamed 'master' branch to 'main'.
 - Add 'BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES' to support setting
   a custom number of blank lines between top-level imports and variable
   definitions.
