@@ -33,7 +33,11 @@ $ pip install yapf
 
 YAPF is still considered in "beta" stage, and the released version may change
 often; therefore, the best way to keep up-to-date with the latest development
-is to clone this repository.
+is to clone this repository or install directly from github:
+
+```bash
+$ pip install git+https://github.com/google/yapf.git
+```
 
 Note that if you intend to use YAPF as a command-line tool rather than as a
 library, installation is not necessary. YAPF supports being run as a directory
