@@ -18,7 +18,7 @@ away a lot of the drudgery of maintaining your code.
 The ultimate goal is that the code YAPF produces is as good as the code that a
 programmer would write if they were following the style guide.
 
-> **Note:**
+> **Note**
 > YAPF is not an official Google product (experimental or otherwise); it is
 > just code that happens to be owned by Google.
 
