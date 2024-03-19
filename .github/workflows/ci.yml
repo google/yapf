@@ -15,7 +15,7 @@ jobs:
         python-version: ["3.7", "3.11", "3.12"]  # no particular need for 3.9 or 3.10
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633  # v4.1.2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v4.6.0
       with:
