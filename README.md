@@ -10,7 +10,7 @@
 
 ## Introduction
 
-YAPF is a Python formatter based off of [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html)
+YAPF is a Python formatter based on [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html)
 (developed by Daniel Jasper). In essence, the algorithm takes the code and
 calculates the best formatting that conforms to the configured style. It takes
 away a lot of the drudgery of maintaining your code.
