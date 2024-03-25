@@ -85,6 +85,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
   def __init__(self):
     # A list of all logical lines finished visiting so far.
     self._logical_lines = []
+    self.prefix = ""
 
     # Builds up a "current" logical line while visiting pytree nodes. Some nodes
     # will finish a line and start a new one.
@@ -315,12 +316,17 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     Arguments:
       leaf: the leaf to visit.
     """
+    self.prefix += leaf.prefix
     if leaf.type in _WHITESPACE_TOKENS:
       self._StartNewLine()
+      if leaf.type == grammar_token.NEWLINE:
+        self.prefix += "\n"
     elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
       # Add non-whitespace tokens and comments that aren't empty.
       self._cur_logical_line.AppendToken(
-          format_token.FormatToken(leaf, pytree_utils.NodeName(leaf)))
+          format_token.FormatToken(leaf, pytree_utils.NodeName(leaf),
+                                   self.prefix))
+      self.prefix = ""
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}
