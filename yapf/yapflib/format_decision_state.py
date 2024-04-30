@@ -199,6 +199,10 @@ class FormatDecisionState(object):
 
       # Avoid breaking in a container that fits in the current line if possible
       opening = _GetOpeningBracket(current)
+      # If at the start of a container, then we need to double check if it is
+      # actually  nested.
+      if opening == current:
+        opening = _GetOpeningBracket(previous)
 
       # Can't find opening bracket, behave the same way as
       # SPLIT_ALL_COMMA_SEPARATED_VALUES.
@@ -213,7 +217,9 @@ class FormatDecisionState(object):
       # Allow the fallthrough code to handle the closing bracket.
       if current != opening.matching_bracket:
         # If the container doesn't fit in the current line, must split
-        return not self._ContainerFitsOnStartLine(opening)
+        if (subtypes.COMP_FOR not in current.subtypes and
+            not self._ContainerFitsOnStartLine(opening)):
+          return True
 
     if (self.stack[-1].split_before_closing_bracket and
         (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
@@ -382,7 +388,6 @@ class FormatDecisionState(object):
 
     ###########################################################################
     # Argument List Splitting
-
     if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
       # Split before arguments in a function call or definition if the
       # arguments are terminated by a comma.
@@ -515,7 +520,12 @@ class FormatDecisionState(object):
                 (opening.matching_bracket.next_token and
                  opening.matching_bracket.next_token.value != ',' and
                  not opening.matching_bracket.next_token.ClosesScope())):
-              return True
+              arg_lengths = _CalculateArgLengths(opening)
+              start_col = self.column + len(current.value) + len(opening.value)
+              for length in arg_lengths:
+                length += start_col
+                if length > self.column_limit:
+                  return True
 
     if (previous.OpensScope() and not current.OpensScope() and
         not current.is_comment and
@@ -546,14 +556,20 @@ class FormatDecisionState(object):
               return True
             i += 1
 
-          if (self.column_limit - self.column) / float(self.column_limit) < 0.3:
+          per = style.Get('SPLIT_ARGUMENTS_SQUISH_PERCENTAGE') / 100
+          if (self.column_limit - self.column) / float(self.column_limit) < per:
             # Try not to squish all of the arguments off to the right.
             return True
       else:
         # Split after the opening of a container if it doesn't fit on the
-        # current line.
+        # current line, including checking for wrapping.
         if not self._FitsOnLine(previous, previous.matching_bracket):
-          return True
+          arg_lengths = _CalculateArgLengths(previous)
+          start_col = self.column + len(current.value) + len(previous.value)
+          for length in arg_lengths:
+            length += start_col
+            if length > self.column_limit:
+              return True
 
     ###########################################################################
     # Original Formatting Splitting
@@ -1216,6 +1232,41 @@ def _ScopeHasNoCommas(token):
       return False
     token = token.matching_bracket if token.OpensScope() else token.next_token
   return True
+
+
+def _CalculateArgLengths(opening):
+  """Calculate the length of each function arg, if the args are wrapped"""
+  arg_list = list()
+  token = opening.next_token
+  short_list = list()
+  delta_list = list()
+  delta = 0
+  while token:
+    short_list.append(token)
+    if token.name == "COMMA":
+      arg_list.append(short_list)
+      delta_list.append(delta)
+      short_list = list()
+      delta = 0
+    elif token.name == "LPAR":
+      if _IsFunctionCallWithArguments(token.previous_token):
+        max_arg = max(_CalculateArgLengths(token))
+        end_token = token.matching_bracket
+        inner_length = end_token.total_length - token.total_length
+        delta = inner_length - max_arg
+      token = token.matching_bracket
+      short_list.append(token)
+    elif token.name == "RPAR":
+      arg_list.append(short_list)
+      delta_list.append(delta)
+      break
+    token = token.next_token
+
+  arg_lengths = list()
+  for l, d in zip(arg_list, delta_list):
+    arg_len = l[-1].total_length - l[0].total_length + len(l[0].value) - d
+    arg_lengths.append(arg_len)
+  return arg_lengths
 
 
 class _ParenState(object):
