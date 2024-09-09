@@ -42,7 +42,7 @@ jobs:
 
       - name: Create pull request from changes (if any)
         id: create-pull-request
-        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e  # v6.0.2
+        uses: peter-evans/create-pull-request@8867c4aba1b742c39f8d0ba35429c2dfa4b6cb20  # v7.0.1
         with:
           author: 'pre-commit <pre-commit@tools.invalid>'
           base: main
