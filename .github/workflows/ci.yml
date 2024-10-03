@@ -11,6 +11,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.7", "3.11", "3.12"]  # no particular need for 3.9 or 3.10
         os: [macos-latest, ubuntu-latest, windows-latest]
