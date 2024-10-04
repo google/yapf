@@ -7,3 +7,15 @@
   args: [-i] #inplace
   language: python
   types: [python]
+
+- id: yapf-diff
+  name: yapf-diff
+  description: "A formatter for Python files. (formats only changes included in commit)"
+  always_run: true
+  language: python
+  pass_filenames: false
+  stages: [pre-commit]
+  entry: |
+    bash -c "git diff -U0 --no-color --relative HEAD \
+                  | yapf-diff \
+                  | tee >(git apply --allow-empty -p0)"
