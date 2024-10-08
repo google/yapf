@@ -72,22 +72,22 @@ def CanMergeMultipleLines(lines, last_was_merged=False):
   if lines[0].last.total_length < limit:
     limit -= lines[0].last.total_length
 
-    if lines[0].first.value == 'if':
-      return _CanMergeLineIntoIfStatement(lines, limit)
+    if lines[0].first.value in {'if', 'case'}:
+      return _CanMergeLineIntoIfOrCaseStatement(lines, limit)
     if last_was_merged and lines[0].first.value in {'elif', 'else'}:
-      return _CanMergeLineIntoIfStatement(lines, limit)
+      return _CanMergeLineIntoIfOrCaseStatement(lines, limit)
 
   # TODO(morbo): Other control statements?
 
   return False
 
 
-def _CanMergeLineIntoIfStatement(lines, limit):
-  """Determine if we can merge a short if-then statement into one line.
+def _CanMergeLineIntoIfOrCaseStatement(lines, limit):
+  """Determine if we can merge a short if-then or case statement into one line.
 
-  Two lines of an if-then statement can be merged if they were that way in the
-  original source, fit on the line without going over the column limit, and are
-  considered "simple" statements --- typically statements like 'pass',
+  Two lines of an if-then or case statement can be merged if they were that way 
+  in the original source, fit on the line without going over the column limit, 
+  and are considered "simple" statements --- typically statements like 'pass',
   'continue', and 'break'.
 
   Arguments:
