@@ -54,6 +54,22 @@ def _removeBOM(source):
   return source
 
 
+def filterEmptyTuples(source):
+  comment_start = False
+  quote_str = '\'\'\''
+  reformatted_source = []
+  for code_val in source:
+    if not comment_start and quote_str in code_val:
+      reformatted_source.append(code_val)
+      comment_start = True
+    elif comment_start and quote_str in code_val:
+      comment_start = False
+      reformatted_source.append(code_val)
+    elif code_val != '':
+      reformatted_source.append(code_val)
+  return reformatted_source
+
+
 def main(argv):
   """Main program.
 
@@ -108,6 +124,8 @@ def main(argv):
 
     source = [line.rstrip() for line in original_source]
     source[0] = _removeBOM(source[0])
+    # filter all the tuples with empty space
+    source = filterEmptyTuples(source)
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
