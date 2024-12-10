@@ -390,6 +390,10 @@ class FormatDecisionState(object):
       if opening and opening.previous_token and opening.previous_token.is_name:
         if previous.value in '(,':
           if opening.matching_bracket.previous_token.value == ',':
+            if current.is_comment:
+              # Don't require splitting before a comment, since it may be
+              # related to the current line.
+              return False
             return True
 
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and

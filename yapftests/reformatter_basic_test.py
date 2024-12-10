@@ -2336,6 +2336,10 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
   def testSplittingArgumentsTerminatedByComma(self):
     unformatted_code = textwrap.dedent("""\
+        class Class(  # comment
+            object,):
+          pass
+
         function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
 
         function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3,)
@@ -2351,6 +2355,12 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
         r =f0 (a=1,)
     """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
+        class Class(  # comment
+            object,
+        ):
+          pass
+
+
         function_name(argument_name_1=1, argument_name_2=2, argument_name_3=3)
 
         function_name(
