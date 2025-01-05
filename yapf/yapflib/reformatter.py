@@ -19,18 +19,19 @@ can be merged together are. The best formatting is returned as a string.
   Reformat(): the main function exported by this module.
 """
 
+import json
 import collections
 import heapq
 import re
-
-from yapf_third_party._ylib2to3 import pytree
-from yapf_third_party._ylib2to3.pgen2 import token
+import sys
 
 from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
 from yapf.yapflib import style
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token
 
 
 def Reformat(llines, lines=None):
@@ -72,6 +73,21 @@ def Reformat(llines, lines=None):
     if lline.disable or _LineHasContinuationMarkers(lline):
       _RetainHorizontalSpacing(lline)
       _RetainRequiredVerticalSpacing(lline, prev_line, lines)
+      if not _LineHasContinuationMarkers(lline):
+        for token in lline.tokens:
+          # print(
+          #     repr(token.value) + ":" + str(token.lineno) + ":" +
+          #     json.dumps(token.prefix) + ":" +
+          #     json.dumps(token.whitespace_prefix), file=sys.stderr)
+          if token.prefix:
+            prefix_new = token.whitespace_prefix.split("\n")
+            if len(prefix_new) >= 2:
+              prefix_old = token.prefix.split("\n")
+              offset = len(prefix_new) - len(prefix_old)
+              prefix = prefix_new[0:max(0, offset)] + prefix_old[
+                  max(0, -offset):-1] + prefix_new[-1:]
+              token.whitespace_prefix = "\n".join(prefix)
+              # print("--> " + repr(token.whitespace_prefix), file=sys.stderr)
       _EmitLineUnformatted(state)
 
     elif (_LineContainsPylintDisableLineTooLong(lline) or
@@ -403,7 +419,12 @@ def _FormatFinalLines(final_lines):
     for tok in line.tokens:
       if not tok.is_pseudo:
         formatted_line.append(tok.formatted_whitespace_prefix)
-        formatted_line.append(tok.value)
+        # print(
+        #     repr(tok.formatted_whitespace_prefix),
+        #     repr(tok.value),
+        #     file=sys.stderr)
+        formatted_line.append("\n".join(map(str.rstrip, tok.value.split(
+            "\n"))) if not line.disable and tok.is_comment else tok.value)
       elif (not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
         if (tok.previous_token.value == ':' or
