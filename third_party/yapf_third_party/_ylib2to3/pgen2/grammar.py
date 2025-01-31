@@ -111,6 +111,8 @@ class Grammar(object):
         dir=tempfile_dir,
         delete=False) as f:
       pickle.dump(self.__dict__, f.file, pickle.HIGHEST_PROTOCOL)
+      f.flush()
+      f.close()
       try:
         os.rename(f.name, filename)
       except OSError:
