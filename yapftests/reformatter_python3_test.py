@@ -13,7 +13,6 @@
 # limitations under the License.
 """Python 3 tests for yapf.reformatter."""
 
-import sys
 import textwrap
 import unittest
 

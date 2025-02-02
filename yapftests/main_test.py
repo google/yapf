@@ -15,7 +15,6 @@
 """Tests for yapf.__init__.main."""
 
 import sys
-import unittest
 from contextlib import contextmanager
 from io import StringIO
 
