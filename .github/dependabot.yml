@@ -6,6 +6,10 @@ updates:
       include: "scope"
       prefix: "Actions"
     directory: "/"
+    groups:
+      github-actions:
+        patterns:
+          - "*"  # Group all Actions updates into a single larger pull request
     labels:
       - "enhancement"
     schedule:
