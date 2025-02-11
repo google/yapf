@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install Python dependencies, run tests, and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Test with pytest
@@ -13,7 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.11", "3.12"]  # no particular need for 3.9 or 3.10
+        # There is version-specific code for Python 3.8 but none for 3.9.
+        # Python 3.13 functionally tests everything for Python >= v3.10.
+        python-version: ["3.8", "3.13"]
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
