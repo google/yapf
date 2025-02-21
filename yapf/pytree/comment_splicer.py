@@ -73,12 +73,13 @@ def SpliceComments(tree):
             # result of the way pytrees are organized, this node can be under
             # an inappropriate parent.
             comment_column -= len(comment_prefix.lstrip())
-            pytree_utils.InsertNodesAfter(
-                _CreateCommentsFromPrefix(
-                    comment_prefix,
-                    comment_lineno,
-                    comment_column,
-                    standalone=False), prev_leaf[0])
+            nodes, child.prefix = _CreateCommentsFromPrefix(
+                comment_prefix,
+                comment_lineno,
+                comment_column,
+                "",
+                standalone=False)
+            pytree_utils.InsertNodesAfter(nodes, prev_leaf[0])
           elif child.type == token.DEDENT:
             # Comment prefixes on DEDENT nodes also deserve special treatment,
             # because their final placement depends on their prefix.
@@ -101,21 +102,28 @@ def SpliceComments(tree):
             # In this case, we need to split them up ourselves.
 
             # Split into groups of comments at decreasing levels of indentation
+            comment_group_pre = []
             comment_groups = []
             comment_column = None
-            for cmt in comment_prefix.split('\n'):
+            comment_split = comment_prefix.split('\n')
+            for cmt in comment_split[:-1]:
               col = cmt.find('#')
               if col < 0:
                 if comment_column is None:
                   # Skip empty lines at the top of the first comment group
-                  comment_lineno += 1
+                  comment_group_pre.append(cmt)
                   continue
               elif comment_column is None or col < comment_column:
                 comment_column = col
                 comment_indent = cmt[:comment_column]
-                comment_groups.append((comment_column, comment_indent, []))
+                comment_groups.append(
+                    (comment_column, comment_indent, comment_group_pre))
+                comment_group_pre = []
               comment_groups[-1][-1].append(cmt)
 
+            prefix = ""
+            child.prefix = ""
+            ancestor_at_indent = None
             # Insert a node for each group
             for comment_column, comment_indent, comment_group in comment_groups:
               ancestor_at_indent = _FindAncestorAtIndent(child, comment_indent)
@@ -123,13 +131,22 @@ def SpliceComments(tree):
                 InsertNodes = pytree_utils.InsertNodesBefore  # pylint: disable=invalid-name # noqa
               else:
                 InsertNodes = pytree_utils.InsertNodesAfter  # pylint: disable=invalid-name # noqa
-              InsertNodes(
-                  _CreateCommentsFromPrefix(
-                      '\n'.join(comment_group) + '\n',
-                      comment_lineno,
-                      comment_column,
-                      standalone=True), ancestor_at_indent)
+              nodes, prefix = _CreateCommentsFromPrefix(
+                  '\n'.join(comment_group) + '\n',
+                  comment_lineno,
+                  comment_column,
+                  prefix,
+                  standalone=True)
+              InsertNodes(nodes, ancestor_at_indent)
               comment_lineno += len(comment_group)
+            if ancestor_at_indent:
+              leaf = _FindFirstLeafAfter(nodes[-1])
+              # print(
+              #     repr(leaf),
+              #     repr(prefix),
+              #     repr(comment_split[-1]),
+              #     file=sys.stderr)
+              leaf.prefix = prefix + comment_split[-1]
           else:
             # Otherwise there are two cases.
             #
@@ -163,10 +180,9 @@ def SpliceComments(tree):
                   if comment_end < node_with_line_parent.lineno - 1:
                     node_with_line_parent = node_with_line_parent.parent
 
-                pytree_utils.InsertNodesBefore(
-                    _CreateCommentsFromPrefix(
-                        comment_prefix, comment_lineno, 0, standalone=True),
-                    node_with_line_parent)
+                nodes, child.prefix = _CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno, 0, "", standalone=True)
+                pytree_utils.InsertNodesBefore(nodes, node_with_line_parent)
                 break
               else:
                 if comment_lineno == prev_leaf[0].lineno:
@@ -190,10 +206,11 @@ def SpliceComments(tree):
                 comment_column = (
                     len(comment_prefix[rindex:]) -
                     len(comment_prefix[rindex:].lstrip()))
-                comments = _CreateCommentsFromPrefix(
+                comments, child.prefix = _CreateCommentsFromPrefix(
                     comment_prefix,
                     comment_lineno,
                     comment_column,
+                    "",
                     standalone=False)
                 pytree_utils.InsertNodesBefore(comments, child)
                 break
@@ -206,6 +223,7 @@ def SpliceComments(tree):
 def _CreateCommentsFromPrefix(comment_prefix,
                               comment_lineno,
                               comment_column,
+                              prefix,
                               standalone=False):
   """Create pytree nodes to represent the given comment prefix.
 
@@ -226,29 +244,40 @@ def _CreateCommentsFromPrefix(comment_prefix,
   comments = []
 
   lines = comment_prefix.split('\n')
+  # print(comment_lineno, repr(lines), repr(prefix), file=sys.stderr)
   index = 0
   while index < len(lines):
     comment_block = []
-    while index < len(lines) and lines[index].lstrip().startswith('#'):
-      comment_block.append(lines[index].strip())
-      index += 1
+    lstrip = lines[index].lstrip()
+    if lstrip.startswith('#'):
+      # get whitespace on the left
+      prefix += lines[index][:len(lines[index]) - len(lstrip)]
+      # get all lines of block
+      while True:
+        comment_block.append(lines[index].lstrip())
+        index += 1
+        if not (index < len(lines) and lines[index].lstrip().startswith("#")):
+          break
 
-    if comment_block:
+      # print(repr(comment_block), repr(prefix), file=sys.stderr)
       new_lineno = comment_lineno + index - 1
-      comment_block[0] = comment_block[0].strip()
-      comment_block[-1] = comment_block[-1].strip()
       comment_leaf = pytree.Leaf(
           type=token.COMMENT,
           value='\n'.join(comment_block),
-          context=('', (new_lineno, comment_column)))
+          context=('', (new_lineno, comment_column)),
+          prefix=prefix)
+      prefix = ""
       comment_node = comment_leaf if not standalone else pytree.Node(
           pygram.python_symbols.simple_stmt, [comment_leaf])
       comments.append(comment_node)
-
-    while index < len(lines) and not lines[index].lstrip():
+    else:
+      prefix += lines[index]
       index += 1
+    if index < len(lines):
+      prefix += "\n"
 
-  return comments
+  # print("prefix", repr(prefix), file=sys.stderr)
+  return comments, prefix
 
 
 # "Standalone line nodes" are tree nodes that have to start a new line in Python
@@ -285,6 +314,45 @@ def _FindNodeWithStandaloneLineParent(node):
     # This is guaranteed to terminate because 'file_input' is the root node of
     # any pytree.
     return _FindNodeWithStandaloneLineParent(node.parent)
+
+
+def _FindFirstLeafAfter(node):
+  """Find the first node after the given node.
+
+  Arguments:
+    node: node to start from
+
+  Returns:
+    The first node after the given node or None
+  """
+  next_sibling = node.next_sibling
+  if next_sibling:
+    return _FindFirstLeafAt(next_sibling)
+  if node.parent:
+    return _FindFirstLeafAfter(node.parent)
+  return None
+
+
+def _FindFirstLeafAt(node):
+  """Find the first leaf of the given node.
+
+  Arguments:
+    node: node to start from
+
+  Returns:
+    The first leaf or None
+  """
+  if isinstance(node, pytree.Leaf):
+    return node
+  else:
+    for child in node.children:
+      leaf = _FindFirstLeafAt(child)
+      if leaf is not None:
+        return leaf
+    next_sibling = node.next_sibling
+    if next_sibling:
+      return _FindFirstLeafAt(next_sibling)
+    return None
 
 
 # "Statement nodes" are standalone statements. The don't have to start a new
