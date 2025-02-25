@@ -3339,6 +3339,27 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected, reformatter.Reformat(llines))
 
+  def testExtraBlankLine(self):
+    unformatted_code = textwrap.dedent("""\
+    '''
+    Comment section started
+    '''
+    if True:
+    
+    
+      print(2)
+      """)
+    expected = textwrap.dedent("""\
+    '''
+    Comment section started
+    '''
+    if True:
+        print(2)
+      """)
+
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected, reformatter.Reformat(llines))
+
 
 if __name__ == '__main__':
   unittest.main()
