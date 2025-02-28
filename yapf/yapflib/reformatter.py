@@ -340,7 +340,7 @@ def _AlignTrailingComments(final_lines):
             break
 
         if aligned_col is None:
-          aligned_col = max_line_length
+          aligned_col = max_line_length + 1
 
         # Update the comment token values based on the aligned values
         for all_pc_line_lengths_index, pc_line_lengths in enumerate(
