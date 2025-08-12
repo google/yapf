@@ -240,7 +240,6 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # argument ::=
     #     test [comp_for] | test '=' test
     self._ProcessArgLists(node)
-    #TODO add a subtype to each argument?
 
   def Visit_arglist(self, node):  # pylint: disable=invalid-name
     # arglist ::=

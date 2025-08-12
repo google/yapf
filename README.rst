@@ -391,7 +391,7 @@ Knobs
 =====
 
 ``ALIGN_ASSIGNMENT``
-    Align assignment or augmented assignment operators.
+    Align assignment and augmented assignment operators.
     If there is a blank line or a newline comment or a multiline object
     (e.g. a dictionary, a list, a function call) in between,
     it will start new block alignment. Lines in the same block have the same
@@ -407,43 +407,9 @@ Knobs
         b  = 3
         bc = 4
 
-``ALIGN_ARGUMENT_ASSIGNMENT``
-    Align assignment operators in the argument list if they are all split on newlines.
-    Arguments without assignment in between will initiate new block alignment calulation;
-    for example, a comment line.
-    Multiline objects in between will also initiate a new alignment block.
-
-    .. code-block:: python
-
-        rglist = test(
-            var_first  = 0,
-            var_second = '',
-            var_dict   = {
-                "key_1" : '',
-                "key_2" : 2,
-                "key_3" : True,
-            },
-            var_third     = 1,
-            var_very_long = None )
-
-``ALIGN_DICT_COLON``
-    Align the colons in the dictionary if all entries in dictionay are split on newlines
-    or 'EACH_DICT_ENTRY_ON_SEPERATE_LINE' is set True.
-    A commentline or multi-line object in between will start new alignment block.
-
-    .. code-block:: python
-
-        fields =
-            {
-                "field" : "ediid",
-                "type"  : "text",
-                # key: value
-                "required" : True,
-            }
-
-``NEW_ALIGNMENT_AFTER_COMMENTLINE``
-    Make it optional to start a new alignmetn block for assignment
-    alignment and colon alignment after a comment line.
+``ALIGN_ASSIGNMENT_RESTART_AFTER_COMMENTS``
+    Choose whether to start a new block for assignment alignment after a
+    comment line.
 
 ``ALIGN_CLOSING_BRACKET_WITH_VISUAL_INDENT``
     Align closing bracket with visual indentation.

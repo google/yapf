@@ -29,6 +29,7 @@ _OPENING_BRACKETS = frozenset({'(', '[', '{'})
 _CLOSING_BRACKETS = frozenset({')', ']', '}'})
 
 
+
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
   """Build padding string for continuation alignment in tabbed indentation.
 
@@ -328,9 +329,20 @@ class FormatToken(object):
     return subtypes.ASSIGN_OPERATOR in self.subtypes
 
   @property
+  @py3compat.lru_cache()
   def is_augassign(self):
-    augassigns = {
-        '+=', '-=', '*=', '@=', '/=', '%=', '&=', '|=', '^=', '<<=', '>>=',
-        '**=', '//='
-    }
-    return self.value in augassigns
+    return self.value in frozenset({
+        '+=',
+        '-=',
+        '*=',
+        '@=',
+        '/=',
+        '//=',
+        '%=',
+        '<<=',
+        '>>=', 
+        '|=',  
+        '&=',  
+        '^=',
+        '**=', 
+    })
