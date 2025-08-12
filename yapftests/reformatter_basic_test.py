@@ -3193,7 +3193,7 @@ my_dict = {
       style.SetGlobalStyle(
           style.CreateStyleFromConfig(
               '{align_assignment: true,'
-              'new_alignment_after_commentline = true}'))
+              'align_assignment_restart_after_comments: true}'))
       unformatted_code = textwrap.dedent("""\
         val_first = 1
         val_second += 2
@@ -3211,6 +3211,30 @@ my_dict = {
                            reformatter.Reformat(llines))
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignAssignContinueWithCommentLineInbetween(self):
+      try:
+        style.SetGlobalStyle(
+            style.CreateStyleFromConfig(
+                '{align_assignment: true,'
+                'align_assignment_restart_after_comments: false}'))
+        unformatted_code = textwrap.dedent("""\
+          val_first = 1
+          val_second += 2
+          # comment
+          val_third = 3
+        """)
+        expected_formatted_code = textwrap.dedent("""\
+          val_first   = 1
+          val_second += 2
+          # comment
+          val_third   = 3
+        """)
+        llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+        self.assertCodeEqual(expected_formatted_code,
+                            reformatter.Reformat(llines))
+      finally:
+        style.SetGlobalStyle(style.CreateYapfStyle())
 
   def testAlignAssignDefLineInbetween(self):
     try:
@@ -3235,6 +3259,30 @@ my_dict = {
 
 
         val_third = 3
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignAssignMultipleDepths(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+      unformatted_code = textwrap.dedent("""\
+        if True:
+          val_first = 1
+          val_second += 2
+        val_third = 3
+        val_fourth = 4                   
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+        if True:
+          val_first   = 1
+          val_second += 2
+        val_third  = 3
+        val_fourth = 4
       """)
       llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
       self.assertCodeEqual(expected_formatted_code,
