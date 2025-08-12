@@ -4,7 +4,8 @@
 
 ## [0.41.1] 2022-08-30
 ### Added
-- Add 4 new knobs to align assignment operators and dictionary colons. They are align_assignment, align_argument_assignment, align_dict_colon and new_alignment_after_commentline.
+- Add 2 new knobs to align assignment operators. They are align_assignment,
+align_assignment_commentline.
 
 ## [0.40.0] UNRELEASED
 ### Added
