@@ -267,8 +267,8 @@ def _CanPlaceOnSingleLine(line):
   return (last.total_length + indent_amt <= style.Get('COLUMN_LIMIT') and
           not any(tok.is_comment for tok in line.tokens[:last_index]))
 
-def _AlignGeneric(final_lines, 
-                  func_is_tok_to_align_current_line, 
+
+def _AlignGeneric(final_lines, func_is_tok_to_align_current_line,
                   func_additional_checks_break_align_block,
                   func_calculate_pre_token_line_lengths,
                   func_calculate_column_to_align_on,
@@ -286,7 +286,7 @@ def _AlignGeneric(final_lines,
 
     for tok in line.tokens:
 
-      if func_is_tok_to_align_current_line(tok):  
+      if func_is_tok_to_align_current_line(tok):
         all_pt_line_lengths = []  # All pre-tok line lengths
         max_line_length = 0
         stop_next_it = False
@@ -303,7 +303,7 @@ def _AlignGeneric(final_lines,
           assert this_line.tokens
           if (all_pt_line_lengths and
               this_line.tokens[0].formatted_whitespace_prefix.startswith('\n\n')
-              ):
+             ):
             break
 
           if this_line.disable:
@@ -311,14 +311,16 @@ def _AlignGeneric(final_lines,
             continue
 
           # Check for additional specific conditions for breaking out of loop.
-          stop_now, stop_next_it = func_additional_checks_break_align_block(tok, final_lines, final_lines_index, all_pt_line_lengths)
+          stop_now, stop_next_it = func_additional_checks_break_align_block(
+              tok, final_lines, final_lines_index, all_pt_line_lengths)
           if stop_now:
             break
 
           # Calculate the length of each line in this logical line.
-          pt_line_lengths, max_line_length, tmp = func_calculate_pre_token_line_lengths(this_line, max_line_length)
+          pt_line_lengths, max_line_length, tmp = func_calculate_pre_token_line_lengths(
+              this_line, max_line_length)
           stop_next_it = stop_next_it or tmp
-          
+
           if pt_line_lengths:
             max_line_length = max(max_line_length, max(pt_line_lengths))
 
@@ -342,7 +344,8 @@ def _AlignGeneric(final_lines,
             if func_is_tok_to_align_following_lines(line_tok):
               assert pt_line_length_index < len(pt_line_lengths)
               assert pt_line_lengths[pt_line_length_index] < aligned_col
-              line_tok.value = func_get_val_after_align(line_tok, aligned_col, pt_line_lengths[pt_line_length_index])
+              line_tok.value = func_get_val_after_align(
+                  line_tok, aligned_col, pt_line_lengths[pt_line_length_index])
               pt_line_length_index += 1
 
           assert pt_line_length_index == len(pt_line_lengths)
@@ -356,7 +359,6 @@ def _AlignGeneric(final_lines,
       final_lines_index += 1
 
 
-
 def _AlignTrailingComments(final_lines):
   """Align trailing comments to the same column."""
 
@@ -367,12 +369,14 @@ def _AlignTrailingComments(final_lines):
     # the block and calculate the max line length. Once complete, use the
     # first col value greater than that value and create the necessary for
     # each line accordingly.
-    return tok.is_comment and isinstance(tok.spaces_required_before, list) and tok.value.startswith('#')
+    return tok.is_comment and isinstance(tok.spaces_required_before,
+                                         list) and tok.value.startswith('#')
 
   def _IsTokToAlignFollowingLines(tok):
     return tok.is_comment
-    
-  def _AdditionalChecksBreakAlignBlock(tok, final_lines, final_lines_index, all_pt_line_lengths):
+
+  def _AdditionalChecksBreakAlignBlock(tok, final_lines, final_lines_index,
+                                       all_pt_line_lengths):
     return False, False
 
   def _CalculatePreTokenLineLengths(this_line, max_line_length):
@@ -416,7 +420,8 @@ def _AlignTrailingComments(final_lines):
 
     line_content = []
 
-    for comment_line_index, comment_line in enumerate(line_tok.value.split('\n')):
+    for comment_line_index, comment_line in enumerate(
+        line_tok.value.split('\n')):
       line_content.append('{}{}'.format(whitespace, comment_line.strip()))
 
       if comment_line_index == 0:
@@ -425,20 +430,18 @@ def _AlignTrailingComments(final_lines):
     line_content = '\n'.join(line_content)
 
     # Account for initial whitespace already slated for beginning of the line.
-    existing_whitespace_prefix = line_tok.formatted_whitespace_prefix.lstrip('\n')
+    existing_whitespace_prefix = line_tok.formatted_whitespace_prefix.lstrip(
+        '\n')
 
     if line_content.startswith(existing_whitespace_prefix):
       line_content = line_content[len(existing_whitespace_prefix):]
 
     return line_content
 
-  return _AlignGeneric(final_lines,
-                       _IsTokToAlignCurrentLine,
+  return _AlignGeneric(final_lines, _IsTokToAlignCurrentLine,
                        _AdditionalChecksBreakAlignBlock,
-                       _CalculatePreTokenLineLengths,
-                       _CalculateColumnToAlignOn,
-                       _IsTokToAlignFollowingLines,
-                       _GetValueAfterAlign)
+                       _CalculatePreTokenLineLengths, _CalculateColumnToAlignOn,
+                       _IsTokToAlignFollowingLines, _GetValueAfterAlign)
 
 
 def _AlignAssignment(final_lines):
@@ -447,23 +450,25 @@ def _AlignAssignment(final_lines):
   def _IsTokToAlign(tok):
     return tok.is_assign or tok.is_augassign
 
-  def _AdditionalChecksBreakAlignBlock(tok, final_lines, final_lines_index, all_pt_line_lengths):
+  def _AdditionalChecksBreakAlignBlock(tok, final_lines, final_lines_index,
+                                       all_pt_line_lengths):
     stop_now = False
     stop_next_it = False
-    
+
     this_line_index = final_lines_index + len(all_pt_line_lengths)
     this_line = final_lines[this_line_index]
 
     if this_line_index < len(final_lines) - 1:
       next_line = final_lines[this_line_index + 1]
       assert next_line.tokens
-    
+
       if this_line.depth != next_line.depth:
         stop_next_it = True
 
     # If there is a standalone comment or keyword statement line or other lines
     # without assignment in between, break.
-    if (all_pt_line_lengths and not any(tok.is_assign or tok.is_augassign for tok in this_line.tokens)):
+    if (all_pt_line_lengths and
+        not any(tok.is_assign or tok.is_augassign for tok in this_line.tokens)):
       if this_line.tokens[0].is_comment:
         if style.Get('ALIGN_ASSIGNMENT_RESTART_AFTER_COMMENTS'):
           stop_now = True
@@ -487,16 +492,14 @@ def _AlignAssignment(final_lines):
         prefix = prefix[newline_index + 1:]
 
       if line_tok.is_assign or line_tok.is_augassign:
-        next_toks = [
-            line_tokens[i] for i in range(index + 1, len(line_tokens))
-        ]
+        next_toks = [line_tokens[i] for i in range(index + 1, len(line_tokens))]
         # if there is object(list/tuple/dict) with newline entries, break,
         # update the alignment so far and start to calulate new alignment
         for tok in next_toks:
           if tok.value in ['(', '[', '{'] and tok.next_token:
             if (tok.next_token.formatted_whitespace_prefix.startswith('\n') or
                 (tok.next_token.is_comment and tok.next_token.next_token
-                  .formatted_whitespace_prefix.startswith('\n'))):
+                 .formatted_whitespace_prefix.startswith('\n'))):
               pt_line_length.append(len(variables_content))
               contain_object = True
               break
@@ -521,7 +524,8 @@ def _AlignAssignment(final_lines):
 
     assign_content = '{}{}'.format(whitespace, line_tok.value.strip())
 
-    existing_whitespace_prefix = line_tok.formatted_whitespace_prefix.lstrip('\n')
+    existing_whitespace_prefix = line_tok.formatted_whitespace_prefix.lstrip(
+        '\n')
 
     # In case the existing spaces are larger than padded spaces
     if (len(whitespace) == 1 or len(whitespace) > 1 and
@@ -531,13 +535,10 @@ def _AlignAssignment(final_lines):
       assign_content = assign_content[len(existing_whitespace_prefix):]
     return assign_content
 
-  return _AlignGeneric(final_lines,
-                       _IsTokToAlign,
+  return _AlignGeneric(final_lines, _IsTokToAlign,
                        _AdditionalChecksBreakAlignBlock,
-                       _CalculatePreTokenLineLengths,
-                       _CalculateColumnToAlignOn,
-                       _IsTokToAlign,
-                       _GetValueAfterAlign)
+                       _CalculatePreTokenLineLengths, _CalculateColumnToAlignOn,
+                       _IsTokToAlign, _GetValueAfterAlign)
 
 
 def _FormatFinalLines(final_lines, verify):

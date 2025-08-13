@@ -29,7 +29,6 @@ _OPENING_BRACKETS = frozenset({'(', '[', '{'})
 _CLOSING_BRACKETS = frozenset({')', ']', '}'})
 
 
-
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
   """Build padding string for continuation alignment in tabbed indentation.
 
@@ -340,9 +339,9 @@ class FormatToken(object):
         '//=',
         '%=',
         '<<=',
-        '>>=', 
-        '|=',  
-        '&=',  
+        '>>=',
+        '|=',
+        '&=',
         '^=',
-        '**=', 
+        '**=',
     })
