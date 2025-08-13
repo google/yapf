@@ -3236,6 +3236,58 @@ my_dict = {
       finally:
         style.SetGlobalStyle(style.CreateYapfStyle())
 
+  def testAlignIgnoreAssignInComment(self):
+      try:
+        style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+        unformatted_code = textwrap.dedent("""\
+          val_first = 1
+          val_second += 2
+          # comments should not be = aligned
+          val_third = 3
+        """)
+        expected_formatted_code = textwrap.dedent("""\
+          val_first   = 1
+          val_second += 2
+          # comments should not be = aligned
+          val_third   = 3
+        """)
+        llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+        self.assertCodeEqual(expected_formatted_code,
+                            reformatter.Reformat(llines))
+      finally:
+        style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testAlignConfuseKwargs(self):
+      try:
+        style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{align_assignment: true}'))
+        unformatted_code = textwrap.dedent("""\
+          val_first = 1
+          val_second += 2
+          def fun(a=1):
+            a = 'example'
+            abc = ''
+          val_third = 3
+        """)
+        expected_formatted_code = textwrap.dedent("""\
+          val_first   = 1
+          val_second += 2
+
+
+          def fun(a=1):
+            a   = 'example'
+            abc = ''
+
+
+          val_third = 3
+        """)
+        llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+        self.assertCodeEqual(expected_formatted_code,
+                            reformatter.Reformat(llines))
+      finally:
+        style.SetGlobalStyle(style.CreateYapfStyle())
+
   def testAlignAssignDefLineInbetween(self):
     try:
       style.SetGlobalStyle(
