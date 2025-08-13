@@ -333,6 +333,7 @@ class FormatToken(object):
     return subtypes.ASSIGN_OPERATOR in self.subtypes
 
   @property
+  @lru_cache()
   def is_augassign(self):
     return self.value in frozenset({
         '+=',
