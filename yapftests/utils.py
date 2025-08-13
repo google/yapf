@@ -52,11 +52,6 @@ def NamedTempFile(mode='w+b',
                   dirname=None,
                   text=False):
   """Context manager creating a new temporary file in text mode."""
-  if sys.version_info < (3, 5):  # covers also python 2
-    if suffix is None:
-      suffix = ''
-    if prefix is None:
-      prefix = 'tmp'
   (fd, fname) = tempfile.mkstemp(
       suffix=suffix, prefix=prefix, dir=dirname, text=text)
   f = io.open(

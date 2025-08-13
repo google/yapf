@@ -16,7 +16,7 @@
 This module collects various utilities related to the parse trees produced by
 the pyparser.
 
-  GetNodeTokens: produces a list of tokens from the logical lines within a
+  GetLogicalLine: produces a list of tokens from the logical lines within a
     range.
   GetTokensInSubRange: produces a sublist of tokens from a current token list
     within a range.
@@ -29,7 +29,7 @@ the pyparser.
 """
 
 
-def GetTokens(logical_lines, node):
+def GetLogicalLine(logical_lines, node):
   """Get a list of tokens within the node's range from the logical lines."""
   start = TokenStart(node)
   end = TokenEnd(node)

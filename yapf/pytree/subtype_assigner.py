@@ -24,9 +24,9 @@ Annotations:
       subtypes.
 """
 
-from lib2to3 import pytree
-from lib2to3.pgen2 import token as grammar_token
-from lib2to3.pygram import python_symbols as syms
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3.pygram import python_symbols as syms
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
@@ -66,20 +66,26 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
 
-    comp_for = False
     dict_maker = False
+
+    def markAsDictSetGenerator(node):
+      _AppendFirstLeafTokenSubtype(node, subtypes.DICT_SET_GENERATOR)
+      for child in node.children:
+        if pytree_utils.NodeName(child) == 'comp_for':
+          markAsDictSetGenerator(child)
 
     for child in node.children:
       if pytree_utils.NodeName(child) == 'comp_for':
-        comp_for = True
-        _AppendFirstLeafTokenSubtype(child, subtypes.DICT_SET_GENERATOR)
+        markAsDictSetGenerator(child)
       elif child.type in (grammar_token.COLON, grammar_token.DOUBLESTAR):
         dict_maker = True
 
-    if not comp_for and dict_maker:
+    if dict_maker:
       last_was_colon = False
       unpacking = False
       for child in node.children:
+        if pytree_utils.NodeName(child) == 'comp_for':
+          break
         if child.type == grammar_token.DOUBLESTAR:
           _AppendFirstLeafTokenSubtype(child, subtypes.KWARGS_STAR_STAR)
         if last_was_colon:
@@ -216,6 +222,11 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == '**':
         _AppendTokenSubtype(child, subtypes.BINARY_OPERATOR)
 
+  def Visit_lambdef(self, node):  # pylint: disable=invalid-name
+    # trailer: '(' [arglist] ')' | '[' subscriptlist ']' | '.' NAME
+    _AppendSubtypeRec(node, subtypes.LAMBDEF)
+    self.DefaultNodeVisit(node)
+
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self.Visit(child)
@@ -335,7 +346,10 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     attr = pytree_utils.GetNodeAnnotation(node.parent,
                                           pytree_utils.Annotation.SUBTYPE)
     if not attr or subtypes.COMP_FOR not in attr:
-      _AppendSubtypeRec(node.parent.children[0], subtypes.COMP_EXPR)
+      sibling = node.prev_sibling
+      while sibling:
+        _AppendSubtypeRec(sibling, subtypes.COMP_EXPR)
+        sibling = sibling.prev_sibling
     self.DefaultNodeVisit(node)
 
   def Visit_old_comp_for(self, node):  # pylint: disable=invalid-name
@@ -449,7 +463,7 @@ def _InsertPseudoParentheses(node):
 
   lparen = pytree.Leaf(
       grammar_token.LPAR,
-      u'(',
+      '(',
       context=('', (first.get_lineno(), first.column - 1)))
   last_lineno = last.get_lineno()
   if last.type == grammar_token.STRING and '\n' in last.value:
@@ -460,7 +474,7 @@ def _InsertPseudoParentheses(node):
   else:
     last_column = last.column + len(last.value) + 1
   rparen = pytree.Leaf(
-      grammar_token.RPAR, u')', context=('', (last_lineno, last_column)))
+      grammar_token.RPAR, ')', context=('', (last_lineno, last_column)))
 
   lparen.is_pseudo = True
   rparen.is_pseudo = True

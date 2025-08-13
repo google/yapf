@@ -14,12 +14,12 @@
 # limitations under the License.
 """Tests for yapf.__init__.main."""
 
-from contextlib import contextmanager
 import sys
 import unittest
-import yapf
+from contextlib import contextmanager
+from io import StringIO
 
-from yapf.yapflib import py3compat
+import yapf
 
 from yapftests import yapf_test_helper
 
@@ -34,10 +34,10 @@ class IO(object):
   class Buffer(object):
 
     def __init__(self):
-      self.string_io = py3compat.StringIO()
+      self.string_io = StringIO()
 
     def write(self, s):
-      if py3compat.PY3 and isinstance(s, bytes):
+      if isinstance(s, bytes):
         s = str(s, 'utf-8')
       self.string_io.write(s)
 
@@ -78,11 +78,11 @@ def patched_input(code):
     return next(lines)
 
   try:
-    orig_raw_import = yapf.py3compat.raw_input
-    yapf.py3compat.raw_input = patch_raw_input
+    orig_raw_import = yapf._raw_input
+    yapf._raw_input = patch_raw_input
     yield
   finally:
-    yapf.py3compat.raw_input = orig_raw_import
+    yapf._raw_input = orig_raw_import
 
 
 class RunMainTest(yapf_test_helper.YAPFTest):

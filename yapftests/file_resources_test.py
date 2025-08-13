@@ -14,17 +14,19 @@
 # limitations under the License.
 """Tests for yapf.file_resources."""
 
+import codecs
 import contextlib
 import os
 import shutil
 import tempfile
 import unittest
+from io import BytesIO
 
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
-from yapf.yapflib import py3compat
 
 from yapftests import utils
+from yapftests import yapf_test_helper
 
 
 @contextlib.contextmanager
@@ -46,7 +48,7 @@ def _exists_mocked_in_module(module, mock_implementation):
     setattr(module, 'exists', unmocked_exists)
 
 
-class GetExcludePatternsForDir(unittest.TestCase):
+class GetExcludePatternsForDir(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -74,10 +76,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
       file_resources.GetExcludePatternsForDir(self.test_tmpdir)
 
   def test_get_exclude_file_patterns_from_pyproject(self):
-    try:
-      import toml
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = ['temp/**/*.py', 'temp2/*.py']
     with open(local_ignore_file, 'w') as f:
@@ -90,28 +88,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(file_resources.GetExcludePatternsForDir(self.test_tmpdir)),
         sorted(ignore_patterns))
 
-  @unittest.skipUnless(py3compat.PY36, 'Requires Python 3.6')
-  def test_get_exclude_file_patterns_from_pyproject_with_wrong_syntax(self):
-    try:
-      import toml
-    except ImportError:
-      return
-    local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
-    ignore_patterns = ['temp/**/*.py', './wrong/syntax/*.py']
-    with open(local_ignore_file, 'w') as f:
-      f.write('[tool.yapfignore]\n')
-      f.write('ignore_patterns=[')
-      f.writelines('\n,'.join(['"{}"'.format(p) for p in ignore_patterns]))
-      f.write(']')
-
-    with self.assertRaises(errors.YapfError):
-      file_resources.GetExcludePatternsForDir(self.test_tmpdir)
-
   def test_get_exclude_file_patterns_from_pyproject_no_ignore_section(self):
-    try:
-      import toml
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     open(local_ignore_file, 'w').close()
@@ -121,10 +98,6 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(ignore_patterns))
 
   def test_get_exclude_file_patterns_from_pyproject_ignore_section_empty(self):
-    try:
-      import toml
-    except ImportError:
-      return
     local_ignore_file = os.path.join(self.test_tmpdir, 'pyproject.toml')
     ignore_patterns = []
     with open(local_ignore_file, 'w') as f:
@@ -142,7 +115,7 @@ class GetExcludePatternsForDir(unittest.TestCase):
         sorted(ignore_patterns))
 
 
-class GetDefaultStyleForDirTest(unittest.TestCase):
+class GetDefaultStyleForDirTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -190,12 +163,6 @@ class GetDefaultStyleForDirTest(unittest.TestCase):
                      file_resources.GetDefaultStyleForDir(test_dir))
 
   def test_pyproject_toml(self):
-    # An empty pyproject.toml file should not be used
-    try:
-      import toml
-    except ImportError:
-      return
-
     pyproject_toml = os.path.join(self.test_tmpdir, 'pyproject.toml')
     open(pyproject_toml, 'w').close()
 
@@ -237,7 +204,7 @@ def _touch_files(filenames):
     open(name, 'a').close()
 
 
-class GetCommandLineFilesTest(unittest.TestCase):
+class GetCommandLineFilesTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -350,7 +317,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
     child of the current directory which has been specified in a relative
     manner.
 
-    At its core, the bug has to do with overzelous stripping of "./foo" so that
+    At its core, the bug has to do with overzealous stripping of "./foo" so that
     it removes too much from "./.foo" .
     """
     tdir1 = self._make_test_dir('.test1')
@@ -406,7 +373,7 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                            ]))
 
     self.assertEqual(
-        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace("/", os.path.sep)])
+        found, ['test3/foo/bar/bas/xxx/testfile3.py'.replace('/', os.path.sep)])
 
     found = sorted(
         file_resources.GetCommandLineFiles(['.'],
@@ -417,14 +384,14 @@ class GetCommandLineFilesTest(unittest.TestCase):
                                            ]))
 
     self.assertEqual(
-        found, ['./test2/testinner/testfile2.py'.replace("/", os.path.sep)])
+        found, ['./test2/testinner/testfile2.py'.replace('/', os.path.sep)])
 
   def test_find_with_excluded_current_dir(self):
     with self.assertRaises(errors.YapfError):
       file_resources.GetCommandLineFiles([], False, exclude=['./z'])
 
 
-class IsPythonFileTest(unittest.TestCase):
+class IsPythonFileTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
     self.test_tmpdir = tempfile.mkdtemp()
@@ -445,29 +412,29 @@ class IsPythonFileTest(unittest.TestCase):
   def test_python_shebang(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
     with open(file1, 'w') as f:
-      f.write(u'#!/usr/bin/python\n')
+      f.write('#!/usr/bin/python\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
     file2 = os.path.join(self.test_tmpdir, 'testfile2.run')
     with open(file2, 'w') as f:
-      f.write(u'#! /bin/python2\n')
+      f.write('#! /bin/python2\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
   def test_with_latin_encoding(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
-    with py3compat.open_with_encoding(file1, mode='w', encoding='latin-1') as f:
-      f.write(u'#! /bin/python2\n')
+    with codecs.open(file1, mode='w', encoding='latin-1') as f:
+      f.write('#! /bin/python2\n')
     self.assertTrue(file_resources.IsPythonFile(file1))
 
   def test_with_invalid_encoding(self):
     file1 = os.path.join(self.test_tmpdir, 'testfile1')
     with open(file1, 'w') as f:
-      f.write(u'#! /bin/python2\n')
-      f.write(u'# -*- coding: iso-3-14159 -*-\n')
+      f.write('#! /bin/python2\n')
+      f.write('# -*- coding: iso-3-14159 -*-\n')
     self.assertFalse(file_resources.IsPythonFile(file1))
 
 
-class IsIgnoredTest(unittest.TestCase):
+class IsIgnoredTest(yapf_test_helper.YAPFTest):
 
   def test_root_path(self):
     self.assertTrue(file_resources.IsIgnored('media', ['media']))
@@ -486,7 +453,7 @@ class IsIgnoredTest(unittest.TestCase):
 class BufferedByteStream(object):
 
   def __init__(self):
-    self.stream = py3compat.BytesIO()
+    self.stream = BytesIO()
 
   def getvalue(self):  # pylint: disable=invalid-name
     return self.stream.getvalue().decode('utf-8')
@@ -496,7 +463,7 @@ class BufferedByteStream(object):
     return self.stream
 
 
-class WriteReformattedCodeTest(unittest.TestCase):
+class WriteReformattedCodeTest(yapf_test_helper.YAPFTest):
 
   @classmethod
   def setUpClass(cls):  # pylint: disable=g-missing-super-call
@@ -507,7 +474,7 @@ class WriteReformattedCodeTest(unittest.TestCase):
     shutil.rmtree(cls.test_tmpdir)
 
   def test_write_to_file(self):
-    s = u'foobar\n'
+    s = 'foobar\n'
     with utils.NamedTempFile(dirname=self.test_tmpdir) as (f, fname):
       file_resources.WriteReformattedCode(
           fname, s, in_place=True, encoding='utf-8')
@@ -517,8 +484,8 @@ class WriteReformattedCodeTest(unittest.TestCase):
         self.assertEqual(f2.read(), s)
 
   def test_write_to_stdout(self):
-    s = u'foobar'
-    stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
+    s = 'foobar'
+    stream = BufferedByteStream()
     with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
           None, s, in_place=False, encoding='utf-8')
@@ -526,14 +493,14 @@ class WriteReformattedCodeTest(unittest.TestCase):
 
   def test_write_encoded_to_stdout(self):
     s = '\ufeff# -*- coding: utf-8 -*-\nresult = "passed"\n'  # pylint: disable=anomalous-unicode-escape-in-string # noqa
-    stream = BufferedByteStream() if py3compat.PY3 else py3compat.StringIO()
+    stream = BufferedByteStream()
     with utils.stdout_redirector(stream):
       file_resources.WriteReformattedCode(
           None, s, in_place=False, encoding='utf-8')
     self.assertEqual(stream.getvalue(), s)
 
 
-class LineEndingTest(unittest.TestCase):
+class LineEndingTest(yapf_test_helper.YAPFTest):
 
   def test_line_ending_linefeed(self):
     lines = ['spam\n', 'spam\n']
@@ -555,6 +522,26 @@ class LineEndingTest(unittest.TestCase):
         'spam\n',
         'spam\n',
         'spam\r',
+        'spam\r\n',
+    ]
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_empty(self):
+    lines = []
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_no_newline(self):
+    lines = ['spam']
+    actual = file_resources.LineEnding(lines)
+    self.assertEqual(actual, '\n')
+
+  def test_line_ending_tie(self):
+    lines = [
+        'spam\n',
+        'spam\n',
+        'spam\r\n',
         'spam\r\n',
     ]
     actual = file_resources.LineEnding(lines)

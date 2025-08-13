@@ -2,28 +2,34 @@
 # to enable run `pip install pre-commit && pre-commit install`
 
 repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.0
+    hooks:
+      - id: isort
+        name: isort (python)
   - repo: local
     hooks:
       - id: yapf
         name: yapf
         language: python
         entry: yapf
-        args: [-i, -vv]
+        args: [-i]
         types: [python]
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: check-docstring-first
-      - id: check-json
       - id: check-added-large-files
       - id: check-yaml
       - id: debug-statements
-      - id: requirements-txt-fixer
       - id: check-merge-conflict
       - id: double-quote-string-fixer
       - id: end-of-file-fixer
-      - id: sort-simple-yaml
   - repo: meta
     hooks:
       - id: check-hooks-apply

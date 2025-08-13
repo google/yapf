@@ -19,26 +19,39 @@ i.e., lines which, if there were no column limit, we would place all tokens on
 that line. It then uses a priority queue to figure out what the best formatting
 is --- i.e., the formatting with the least penalty.
 
-It differs from tools like autopep8 and pep8ify in that it doesn't just look for
+It differs from tools like autopep8 in that it doesn't just look for
 violations of the style guide, but looks at the module as a whole, making
 formatting decisions based on what's the best format for each line.
 
 If no filenames are specified, YAPF reads the code from stdin.
 """
-from __future__ import print_function
 
 import argparse
+import codecs
+import io
 import logging
 import os
 import sys
 
+from yapf._version import __version__
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import yapf_api
 
-__version__ = '0.32.0'
+
+def _raw_input():
+  wrapper = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+  return wrapper.buffer.raw.readall().decode('utf-8')
+
+
+def _removeBOM(source):
+  """Remove any Byte-order-Mark bytes from the beginning of a file."""
+  bom = codecs.BOM_UTF8
+  bom = bom.decode('utf-8')
+  if source.startswith(bom):
+    return source[len(bom):]
+  return source
 
 
 def main(argv):
@@ -77,14 +90,14 @@ def main(argv):
     while True:
       # Test that sys.stdin has the "closed" attribute. When using pytest, it
       # co-opts sys.stdin, which makes the "main_tests.py" fail. This is gross.
-      if hasattr(sys.stdin, "closed") and sys.stdin.closed:
+      if hasattr(sys.stdin, 'closed') and sys.stdin.closed:
         break
       try:
         # Use 'raw_input' instead of 'sys.stdin.read', because otherwise the
         # user will need to hit 'Ctrl-D' more than once if they're inputting
         # the program by hand. 'raw_input' throws an EOFError exception if
         # 'Ctrl-D' is pressed, which makes it easy to bail out of this loop.
-        original_source.append(py3compat.raw_input())
+        original_source.append(_raw_input())
       except EOFError:
         break
       except KeyboardInterrupt:
@@ -94,15 +107,14 @@ def main(argv):
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
     source = [line.rstrip() for line in original_source]
-    source[0] = py3compat.removeBOM(source[0])
+    source[0] = _removeBOM(source[0])
 
     try:
       reformatted_source, _ = yapf_api.FormatCode(
-          py3compat.unicode('\n'.join(source) + '\n'),
+          str('\n'.join(source).replace('\r\n', '\n') + '\n'),
           filename='<stdin>',
           style_config=style_config,
-          lines=lines,
-          verify=args.verify)
+          lines=lines)
     except errors.YapfError:
       raise
     except Exception as e:
@@ -128,10 +140,10 @@ def main(argv):
       no_local_style=args.no_local_style,
       in_place=args.in_place,
       print_diff=args.diff,
-      verify=args.verify,
       parallel=args.parallel,
       quiet=args.quiet,
-      verbose=args.verbose)
+      verbose=args.verbose,
+      print_modified=args.print_modified)
   return 1 if changed and (args.diff or args.quiet) else 0
 
 
@@ -158,10 +170,10 @@ def FormatFiles(filenames,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 parallel=False,
                 quiet=False,
-                verbose=False):
+                verbose=False,
+                print_modified=False):
   """Format a list of files.
 
   Arguments:
@@ -176,31 +188,32 @@ def FormatFiles(filenames,
     in_place: (bool) Modify the files in place.
     print_diff: (bool) Instead of returning the reformatted source, return a
       diff that turns the formatted source into reformatter source.
-    verify: (bool) True if reformatted code should be verified for syntax.
     parallel: (bool) True if should format multiple files in parallel.
     quiet: (bool) True if should output nothing.
     verbose: (bool) True if should print out filenames while processing.
+    print_modified: (bool) True if should print out filenames of modified files.
 
   Returns:
     True if the source code changed in any of the files being formatted.
   """
   changed = False
   if parallel:
-    import multiprocessing  # pylint: disable=g-import-not-at-top
     import concurrent.futures  # pylint: disable=g-import-not-at-top
+    import multiprocessing  # pylint: disable=g-import-not-at-top
     workers = min(multiprocessing.cpu_count(), len(filenames))
     with concurrent.futures.ProcessPoolExecutor(workers) as executor:
       future_formats = [
           executor.submit(_FormatFile, filename, lines, style_config,
-                          no_local_style, in_place, print_diff, verify, quiet,
-                          verbose) for filename in filenames
+                          no_local_style, in_place, print_diff, quiet, verbose,
+                          print_modified) for filename in filenames
       ]
       for future in concurrent.futures.as_completed(future_formats):
         changed |= future.result()
   else:
     for filename in filenames:
       changed |= _FormatFile(filename, lines, style_config, no_local_style,
-                             in_place, print_diff, verify, quiet, verbose)
+                             in_place, print_diff, quiet, verbose,
+                             print_modified)
   return changed
 
 
@@ -210,12 +223,12 @@ def _FormatFile(filename,
                 no_local_style=False,
                 in_place=False,
                 print_diff=False,
-                verify=False,
                 quiet=False,
-                verbose=False):
+                verbose=False,
+                print_modified=False):
   """Format an individual file."""
   if verbose and not quiet:
-    print('Reformatting %s' % filename)
+    print(f'Reformatting {filename}')
 
   if style_config is None and not no_local_style:
     style_config = file_resources.GetDefaultStyleForDir(
@@ -228,7 +241,6 @@ def _FormatFile(filename,
         style_config=style_config,
         lines=lines,
         print_diff=print_diff,
-        verify=verify,
         logger=logging.warning)
   except errors.YapfError:
     raise
@@ -238,6 +250,8 @@ def _FormatFile(filename,
   if not in_place and not quiet and reformatted_code:
     file_resources.WriteReformattedCode(filename, reformatted_code, encoding,
                                         in_place)
+  if print_modified and has_change and in_place and not quiet:
+    print(f'Formatted {filename}')
   return has_change
 
 
@@ -337,13 +351,16 @@ def _BuildParser():
       '--no-local-style',
       action='store_true',
       help="don't search for local style definition")
-  parser.add_argument('--verify', action='store_true', help=argparse.SUPPRESS)
   parser.add_argument(
       '-p',
       '--parallel',
       action='store_true',
-      help=('run YAPF in parallel when formatting multiple files. Requires '
-            'concurrent.futures in Python 2.X'))
+      help=('run YAPF in parallel when formatting multiple files.'))
+  parser.add_argument(
+      '-m',
+      '--print-modified',
+      action='store_true',
+      help='print out file names of modified files')
   parser.add_argument(
       '-vv',
       '--verbose',

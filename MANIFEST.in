@@ -1,4 +1,4 @@
-include HACKING.rst LICENSE AUTHORS CHANGELOG CONTRIBUTING.rst CONTRIBUTORS
-include .coveragerc .editorconfig .flake8 plugins/README.rst
+include HACKING.md LICENSE AUTHORS CHANGELOG.md CONTRIBUTING.md CONTRIBUTORS
+include .coveragerc .editorconfig .flake8 plugins/README.md
 include plugins/vim/autoload/yapf.vim plugins/vim/plugin/yapf.vim pylintrc
 include .style.yapf tox.ini .travis.yml .vimrc

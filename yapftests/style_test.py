@@ -136,55 +136,55 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
     shutil.rmtree(cls.test_tmpdir)
 
   def testDefaultBasedOnStyle(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         continuation_indent_width = 20
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnPEP8Style(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         based_on_style = pep8
         continuation_indent_width = 40
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 40)
 
   def testDefaultBasedOnGoogleStyle(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         based_on_style = google
         continuation_indent_width = 20
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeGoogleStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testDefaultBasedOnFacebookStyle(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         based_on_style = facebook
         continuation_indent_width = 20
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikeFacebookStyle(cfg))
       self.assertEqual(cfg['CONTINUATION_INDENT_WIDTH'], 20)
 
   def testBoolOptionValue(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         based_on_style = pep8
         SPLIT_BEFORE_NAMED_ASSIGNS=False
         split_before_logical_operator = true
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
@@ -192,11 +192,11 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertEqual(cfg['SPLIT_BEFORE_LOGICAL_OPERATOR'], True)
 
   def testStringListOptionValue(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         based_on_style = pep8
         I18N_FUNCTION_CALL = N_, V_, T_
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       cfg = style.CreateStyleFromConfig(filepath)
       self.assertTrue(_LooksLikePEP8Style(cfg))
@@ -208,32 +208,27 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       style.CreateStyleFromConfig('/8822/xyznosuchfile')
 
   def testErrorNoStyleSection(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [s]
         indent_width=2
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       with self.assertRaisesRegex(style.StyleConfigError,
                                   'Unable to find section'):
         style.CreateStyleFromConfig(filepath)
 
   def testErrorUnknownStyleOption(self):
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [style]
         indent_width=2
         hummus=2
-        ''')
+    """)
     with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
       with self.assertRaisesRegex(style.StyleConfigError,
                                   'Unknown style option'):
         style.CreateStyleFromConfig(filepath)
 
   def testPyprojectTomlNoYapfSection(self):
-    try:
-      import toml
-    except ImportError:
-      return
-
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     _ = open(filepath, 'w')
     with self.assertRaisesRegex(style.StyleConfigError,
@@ -241,16 +236,12 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       style.CreateStyleFromConfig(filepath)
 
   def testPyprojectTomlParseYapfSection(self):
-    try:
-      import toml
-    except ImportError:
-      return
 
-    cfg = textwrap.dedent(u'''\
+    cfg = textwrap.dedent("""\
         [tool.yapf]
         based_on_style = "pep8"
         continuation_indent_width = 40
-        ''')
+    """)
     filepath = os.path.join(self.test_tmpdir, 'pyproject.toml')
     with open(filepath, 'w') as f:
       f.write(cfg)
@@ -300,14 +291,14 @@ class StyleFromCommandLine(yapf_test_helper.YAPFTest):
 
   def testDefaultBasedOnStyleNotStrict(self):
     cfg = style.CreateStyleFromConfig(
-        '{based_on_style : pep8'
-        ' ,indent_width=2'
+        '{based_on_style : pep8,'
+        ' indent_width=2'
         ' blank_line_before_nested_class_or_def:True}')
     self.assertTrue(_LooksLikePEP8Style(cfg))
     self.assertEqual(cfg['INDENT_WIDTH'], 2)
 
   def testDefaultBasedOnExplicitlyUnicodeTypeString(self):
-    cfg = style.CreateStyleFromConfig(u'{}')
+    cfg = style.CreateStyleFromConfig('{}')
     self.assertIsInstance(cfg, dict)
 
   def testDefaultBasedOnDetaultTypeString(self):

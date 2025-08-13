@@ -15,12 +15,11 @@
 
 import re
 
-from lib2to3 import pytree
-from lib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
@@ -154,7 +153,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
 
     self.DefaultNodeVisit(node)
 
-    for index in py3compat.range(1, len(node.children)):
+    for index in range(1, len(node.children)):
       child = node.children[index]
       if isinstance(child, pytree.Leaf) and child.value == ',':
         _SetUnbreakable(child)
@@ -167,7 +166,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # argument ::= test [comp_for] | test '=' test  # Really [keyword '='] test
     self.DefaultNodeVisit(node)
 
-    for index in py3compat.range(1, len(node.children) - 1):
+    for index in range(1, len(node.children) - 1):
       child = node.children[index]
       if isinstance(child, pytree.Leaf) and child.value == '=':
         _SetSplitPenalty(
@@ -179,7 +178,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # tname ::= NAME [':' test]
     self.DefaultNodeVisit(node)
 
-    for index in py3compat.range(1, len(node.children) - 1):
+    for index in range(1, len(node.children) - 1):
       child = node.children[index]
       if isinstance(child, pytree.Leaf) and child.value == ':':
         _SetSplitPenalty(
@@ -192,7 +191,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       self.Visit(child)
     start = 2 if hasattr(node.children[0], 'is_pseudo') else 1
-    for i in py3compat.range(start, len(node.children)):
+    for i in range(start, len(node.children)):
       _SetUnbreakable(node.children[i])
 
   def Visit_dictsetmaker(self, node):  # pylint: disable=invalid-name
@@ -540,7 +539,7 @@ def _SetExpressionPenalty(node, penalty):
 
 
 def _SetBitwiseOperandPenalty(node, op):
-  for index in py3compat.range(1, len(node.children) - 1):
+  for index in range(1, len(node.children) - 1):
     child = node.children[index]
     if isinstance(child, pytree.Leaf) and child.value == op:
       if style.Get('SPLIT_BEFORE_BITWISE_OPERATOR'):
@@ -552,7 +551,7 @@ def _SetBitwiseOperandPenalty(node, op):
 
 
 def _SetExpressionOperandPenalty(node, ops):
-  for index in py3compat.range(1, len(node.children) - 1):
+  for index in range(1, len(node.children) - 1):
     child = node.children[index]
     if pytree_utils.NodeName(child) in ops:
       if style.Get('SPLIT_BEFORE_ARITHMETIC_OPERATOR'):

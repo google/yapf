@@ -16,13 +16,13 @@
 import textwrap
 import unittest
 
-from yapf.pytree import pytree_utils
 from yapf.pytree import comment_splicer
+from yapf.pytree import pytree_utils
 
-from yapf.yapflib import py3compat
+from yapftests import yapf_test_helper
 
 
-class CommentSplicerTest(unittest.TestCase):
+class CommentSplicerTest(yapf_test_helper.YAPFTest):
 
   def _AssertNodeType(self, expected_type, node):
     self.assertEqual(expected_type, pytree_utils.NodeName(node))
@@ -39,14 +39,15 @@ class CommentSplicerTest(unittest.TestCase):
 
   def _FindNthChildNamed(self, node, name, n=1):
     for i, child in enumerate(
-        py3compat.ifilter(lambda c: pytree_utils.NodeName(c) == name,
-                          node.pre_order())):
+        [c for c in node.pre_order() if pytree_utils.NodeName(c) == name]):
       if i == n - 1:
         return child
     raise RuntimeError('No Nth child for n={0}'.format(n))
 
   def testSimpleInline(self):
-    code = 'foo = 1 # and a comment\n'
+    code = textwrap.dedent("""\
+        foo = 1 # and a comment
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -59,11 +60,11 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(comment_node, '# and a comment')
 
   def testSimpleSeparateLine(self):
-    code = textwrap.dedent(r'''
-      foo = 1
-      # first comment
-      bar = 2
-      ''')
+    code = textwrap.dedent("""\
+        foo = 1
+        # first comment
+        bar = 2
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -74,12 +75,12 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(comment_node)
 
   def testTwoLineComment(self):
-    code = textwrap.dedent(r'''
-      foo = 1
-      # first comment
-      # second comment
-      bar = 2
-      ''')
+    code = textwrap.dedent("""\
+        foo = 1
+        # first comment
+        # second comment
+        bar = 2
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -88,11 +89,11 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(tree.children[1])
 
   def testCommentIsFirstChildInCompound(self):
-    code = textwrap.dedent(r'''
-      if x:
-        # a comment
-        foo = 1
-      ''')
+    code = textwrap.dedent("""
+        if x:
+          # a comment
+          foo = 1
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -104,11 +105,11 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(if_suite.children[1])
 
   def testCommentIsLastChildInCompound(self):
-    code = textwrap.dedent(r'''
-      if x:
-        foo = 1
-        # a comment
-      ''')
+    code = textwrap.dedent("""\
+        if x:
+          foo = 1
+          # a comment
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -120,11 +121,11 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(if_suite.children[-2])
 
   def testInlineAfterSeparateLine(self):
-    code = textwrap.dedent(r'''
-      bar = 1
-      # line comment
-      foo = 1 # inline comment
-      ''')
+    code = textwrap.dedent("""\
+        bar = 1
+        # line comment
+        foo = 1 # inline comment
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -138,11 +139,11 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(inline_comment_node, '# inline comment')
 
   def testSeparateLineAfterInline(self):
-    code = textwrap.dedent(r'''
-      bar = 1
-      foo = 1 # inline comment
-      # line comment
-      ''')
+    code = textwrap.dedent("""\
+        bar = 1
+        foo = 1 # inline comment
+        # line comment
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -156,12 +157,12 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(inline_comment_node, '# inline comment')
 
   def testCommentBeforeDedent(self):
-    code = textwrap.dedent(r'''
-      if bar:
-        z = 1
-      # a comment
-      j = 2
-      ''')
+    code = textwrap.dedent("""\
+        if bar:
+          z = 1
+        # a comment
+        j = 2
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -171,13 +172,13 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite.children[-1])
 
   def testCommentBeforeDedentTwoLevel(self):
-    code = textwrap.dedent(r'''
-      if foo:
-        if bar:
-          z = 1
-        # a comment
-      y = 1
-      ''')
+    code = textwrap.dedent("""\
+        if foo:
+          if bar:
+            z = 1
+          # a comment
+        y = 1
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -188,13 +189,13 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite.children[-1])
 
   def testCommentBeforeDedentTwoLevelImproperlyIndented(self):
-    code = textwrap.dedent(r'''
-      if foo:
-        if bar:
-          z = 1
-         # comment 2
-      y = 1
-      ''')
+    code = textwrap.dedent("""\
+        if foo:
+          if bar:
+            z = 1
+           # comment 2
+        y = 1
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -208,15 +209,15 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite.children[-1])
 
   def testCommentBeforeDedentThreeLevel(self):
-    code = textwrap.dedent(r'''
-      if foo:
-        if bar:
-          z = 1
-          # comment 2
-        # comment 1
-      # comment 0
-      j = 2
-      ''')
+    code = textwrap.dedent("""\
+        if foo:
+          if bar:
+            z = 1
+            # comment 2
+          # comment 1
+        # comment 0
+        j = 2
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -235,13 +236,13 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeType('DEDENT', if_suite_2.children[-1])
 
   def testCommentsInClass(self):
-    code = textwrap.dedent(r'''
-      class Foo:
-        """docstring abc..."""
-        # top-level comment
-        def foo(): pass
-        # another comment
-      ''')
+    code = textwrap.dedent("""\
+        class Foo:
+          '''docstring abc...'''
+          # top-level comment
+          def foo(): pass
+          # another comment
+    """)
 
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
@@ -257,13 +258,13 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(toplevel_comment, '# top-level')
 
   def testMultipleBlockComments(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent("""\
         # Block comment number 1
 
         # Block comment number 2
         def f():
           pass
-        ''')
+    """)
 
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
@@ -276,7 +277,7 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(block_comment_2, '# Block comment number 2')
 
   def testCommentsOnDedents(self):
-    code = textwrap.dedent(r'''
+    code = textwrap.dedent("""\
         class Foo(object):
           # A comment for qux.
           def qux(self):
@@ -286,7 +287,7 @@ class CommentSplicerTest(unittest.TestCase):
 
           def mux(self):
             pass
-        ''')
+    """)
 
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
@@ -300,10 +301,10 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(interim_comment, '# Interim comment.')
 
   def testExprComments(self):
-    code = textwrap.dedent(r'''
-      foo( # Request fractions of an hour.
-        948.0/3600, 20)
-    ''')
+    code = textwrap.dedent("""\
+        foo( # Request fractions of an hour.
+          948.0/3600, 20)
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 
@@ -312,12 +313,12 @@ class CommentSplicerTest(unittest.TestCase):
     self._AssertNodeIsComment(comment, '# Request fractions of an hour.')
 
   def testMultipleCommentsInOneExpr(self):
-    code = textwrap.dedent(r'''
-      foo( # com 1
-        948.0/3600, # com 2
-        20 + 12 # com 3
-        )
-    ''')
+    code = textwrap.dedent("""\
+        foo( # com 1
+          948.0/3600, # com 2
+          20 + 12 # com 3
+          )
+    """)
     tree = pytree_utils.ParseCodeToTree(code)
     comment_splicer.SpliceComments(tree)
 

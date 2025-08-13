@@ -20,7 +20,6 @@ from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
 
-# This is a skeleton of an AST visitor.
 class SplitPenalty(ast.NodeVisitor):
   """Compute split penalties between tokens."""
 
@@ -35,7 +34,7 @@ class SplitPenalty(ast.NodeVisitor):
           token.split_penalty = split_penalty.UNBREAKABLE
 
   def _GetTokens(self, node):
-    return pyutils.GetTokens(self.logical_lines, node)
+    return pyutils.GetLogicalLine(self.logical_lines, node)
 
   ############################################################################
   # Statements                                                               #
@@ -54,6 +53,7 @@ class SplitPenalty(ast.NodeVisitor):
     #             decorator_list=[Call_1, Call_2, ..., Call_n],
     #             keywords=[])
     tokens = self._GetTokens(node)
+
     for decorator in node.decorator_list:
       # The decorator token list begins after the '@'. The body of the decorator
       # is formatted like a normal "call."
@@ -103,8 +103,8 @@ class SplitPenalty(ast.NodeVisitor):
 
     for decorator in node.decorator_list:
       # Don't split after the '@'.
-      decorator_range = self._GetTokens(decorator)
-      decorator_range[0].split_penalty = split_penalty.UNBREAKABLE
+      tokens = self._GetTokens(decorator)
+      tokens[0].split_penalty = split_penalty.UNBREAKABLE
 
     return self.generic_visit(node)
 
@@ -288,6 +288,7 @@ class SplitPenalty(ast.NodeVisitor):
     #          RShift | BitOr | BitXor | BitAnd | FloorDiv
     #       right=RExpr)
     tokens = self._GetTokens(node)
+
     _IncreasePenalty(tokens[1:], split_penalty.EXPR)
 
     # Lower the split penalty to allow splitting before or after the arithmetic

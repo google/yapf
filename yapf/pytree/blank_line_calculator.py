@@ -22,11 +22,10 @@ Annotations:
   newlines: The number of newlines required before the node.
 """
 
-from lib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 
 _NO_BLANK_LINES = 1
@@ -175,5 +174,4 @@ def _StartsInZerothColumn(node):
 
 
 def _AsyncFunction(node):
-  return (py3compat.PY3 and node.prev_sibling and
-          node.prev_sibling.type == grammar_token.ASYNC)
+  return (node.prev_sibling and node.prev_sibling.type == grammar_token.ASYNC)
