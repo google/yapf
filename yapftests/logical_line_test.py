@@ -16,8 +16,8 @@
 import textwrap
 import unittest
 
-from lib2to3 import pytree
-from lib2to3.pgen2 import token
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token
 
 from yapf.pytree import split_penalty
 from yapf.yapflib import format_token
@@ -26,7 +26,7 @@ from yapf.yapflib import logical_line
 from yapftests import yapf_test_helper
 
 
-class LogicalLineBasicTest(unittest.TestCase):
+class LogicalLineBasicTest(yapf_test_helper.YAPFTest):
 
   def testConstruction(self):
     toks = _MakeFormatTokenList([(token.DOT, '.', 'DOT'),
@@ -61,10 +61,10 @@ class LogicalLineBasicTest(unittest.TestCase):
 class LogicalLineFormattingInformationTest(yapf_test_helper.YAPFTest):
 
   def testFuncDef(self):
-    code = textwrap.dedent(r"""
+    code = textwrap.dedent("""\
         def f(a, b):
           pass
-        """)
+    """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
 
     f = llines[0].tokens[1]

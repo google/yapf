@@ -17,7 +17,7 @@ import sys
 import textwrap
 import unittest
 
-from lib2to3 import pytree
+from yapf_third_party._ylib2to3 import pytree
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
@@ -80,10 +80,10 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
 
   def testUnbreakable(self):
     # Test function definitions.
-    code = textwrap.dedent(r"""
-      def foo(x):
-        pass
-      """)
+    code = textwrap.dedent("""\
+        def foo(x):
+          pass
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('def', None),
@@ -96,10 +96,10 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Test function definition with trailing comment.
-    code = textwrap.dedent(r"""
-      def foo(x):  # trailing comment
-        pass
-      """)
+    code = textwrap.dedent("""\
+        def foo(x):  # trailing comment
+          pass
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('def', None),
@@ -112,12 +112,12 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Test class definitions.
-    code = textwrap.dedent(r"""
-      class A:
-        pass
-      class B(A):
-        pass
-      """)
+    code = textwrap.dedent("""\
+        class A:
+          pass
+        class B(A):
+          pass
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('class', None),
@@ -134,9 +134,9 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Test lambda definitions.
-    code = textwrap.dedent(r"""
-      lambda a, b: None
-      """)
+    code = textwrap.dedent("""\
+        lambda a, b: None
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('lambda', None),
@@ -148,9 +148,9 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Test dotted names.
-    code = textwrap.dedent(r"""
-      import a.b.c
-      """)
+    code = textwrap.dedent("""\
+        import a.b.c
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('import', None),
@@ -163,12 +163,12 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
 
   def testStronglyConnected(self):
     # Test dictionary keys.
-    code = textwrap.dedent(r"""
-      a = {
-          'x': 42,
-          y(lambda a: 23): 37,
-      }
-      """)
+    code = textwrap.dedent("""\
+        a = {
+            'x': 42,
+            y(lambda a: 23): 37,
+        }
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('a', None),
@@ -192,9 +192,9 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Test list comprehension.
-    code = textwrap.dedent(r"""
-      [a for a in foo if a.x == 37]
-      """)
+    code = textwrap.dedent("""\
+        [a for a in foo if a.x == 37]
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('[', None),
@@ -213,7 +213,9 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
   def testFuncCalls(self):
-    code = 'foo(1, 2, 3)\n'
+    code = textwrap.dedent("""\
+        foo(1, 2, 3)
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('foo', None),
@@ -227,7 +229,9 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Now a method call, which has more than one trailer
-    code = 'foo.bar.baz(1, 2, 3)\n'
+    code = textwrap.dedent("""\
+        foo.bar.baz(1, 2, 3)
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('foo', None),
@@ -245,7 +249,9 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
     ])
 
     # Test single generator argument.
-    code = 'max(i for i in xrange(10))\n'
+    code = textwrap.dedent("""\
+        max(i for i in xrange(10))
+    """)
     tree = self._ParseAndComputePenalties(code)
     self._CheckPenalties(tree, [
         ('max', None),

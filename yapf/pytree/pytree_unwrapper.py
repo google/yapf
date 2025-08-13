@@ -28,8 +28,8 @@ For most uses, the convenience function UnwrapPyTree should be sufficient.
 
 # The word "token" is overloaded within this module, so for clarity rename
 # the imported pgen2.token module.
-from lib2to3 import pytree
-from lib2to3.pgen2 import token as grammar_token
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
@@ -125,6 +125,8 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
       'try_stmt',
       'expect_clause',
       'with_stmt',
+      'match_stmt',
+      'case_block',
       'funcdef',
       'classdef',
   })
@@ -144,11 +146,13 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     single_stmt_suite = (
         node.parent and pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
     is_comment_stmt = pytree_utils.IsCommentStatement(node)
-    if single_stmt_suite and not is_comment_stmt:
+    is_inside_match = node.parent and pytree_utils.NodeName(
+        node.parent) == 'match_stmt'
+    if (single_stmt_suite and not is_comment_stmt) or is_inside_match:
       self._cur_depth += 1
     self._StartNewLine()
     self.DefaultNodeVisit(node)
-    if single_stmt_suite and not is_comment_stmt:
+    if (single_stmt_suite and not is_comment_stmt) or is_inside_match:
       self._cur_depth -= 1
 
   def _VisitCompoundStatement(self, node, substatement_names):
@@ -253,6 +257,20 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
   def Visit_with_stmt(self, node):  # pylint: disable=invalid-name
     self._VisitCompoundStatement(node, self._WITH_STMT_ELEMS)
 
+  _MATCH_STMT_ELEMS = frozenset({'match', 'case'})
+
+  def Visit_match_stmt(self, node):  # pylint: disable=invalid-name
+    self._VisitCompoundStatement(node, self._MATCH_STMT_ELEMS)
+
+  # case_block refers to the grammar element name in Grammar.txt
+  _CASE_BLOCK_ELEMS = frozenset({'case'})
+
+  def Visit_case_block(self, node):
+    self._cur_depth += 1
+    self._StartNewLine()
+    self._VisitCompoundStatement(node, self._CASE_BLOCK_ELEMS)
+    self._cur_depth -= 1
+
   def Visit_suite(self, node):  # pylint: disable=invalid-name
     # A 'suite' starts a new indentation level in Python.
     self._cur_depth += 1
@@ -282,6 +300,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     self.DefaultNodeVisit(node)
 
   def Visit_typedargslist(self, node):  # pylint: disable=invalid-name
+    _DetermineMustSplitAnnotation(node)
+    self.DefaultNodeVisit(node)
+
+  def Visit_subscriptlist(self, node):  # pylint: disable=invalid-name
     _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
@@ -385,16 +407,27 @@ def _AdjustSplitPenalty(line):
 
 def _DetermineMustSplitAnnotation(node):
   """Enforce a split in the list if the list ends with a comma."""
-  if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
-    return
-  if not _ContainsComments(node):
+
+  def SplitBecauseTrailingComma():
+    if style.Get('DISABLE_ENDING_COMMA_HEURISTIC'):
+      return False
     token = next(node.parent.leaves())
     if token.value == '(':
       if sum(1 for ch in node.children if ch.type == grammar_token.COMMA) < 2:
-        return
+        return False
     if (not isinstance(node.children[-1], pytree.Leaf) or
         node.children[-1].value != ','):
-      return
+      return False
+    return True
+
+  def SplitBecauseListContainsComment():
+    return (not style.Get('DISABLE_SPLIT_LIST_WITH_COMMENT') and
+            _ContainsComments(node))
+
+  if (not SplitBecauseTrailingComma() and
+      not SplitBecauseListContainsComment()):
+    return
+
   num_children = len(node.children)
   index = 0
   _SetMustSplitOnFirstLeaf(node.children[0])

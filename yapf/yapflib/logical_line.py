@@ -19,14 +19,13 @@ line if there were no line length restrictions. It's then used by the parser to
 perform the wrapping required to comply with the style guide.
 """
 
+from yapf_third_party._ylib2to3.fixer_util import syms as python_symbols
+
 from yapf.pytree import pytree_utils
 from yapf.pytree import split_penalty
 from yapf.yapflib import format_token
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
-
-from lib2to3.fixer_util import syms as python_symbols
 
 
 class LogicalLine(object):
@@ -159,7 +158,7 @@ class LogicalLine(object):
     have spaces around them, for example).
 
     Arguments:
-      indent_per_depth: how much spaces to indend per depth level.
+      indent_per_depth: how much spaces to indent per depth level.
 
     Returns:
       A string representing the line as code.
@@ -505,13 +504,12 @@ def _CanBreakBefore(prev_token, cur_token):
   """Return True if a line break may occur before the current token."""
   pval = prev_token.value
   cval = cur_token.value
-  if py3compat.PY3:
-    if pval == 'yield' and cval == 'from':
-      # Don't break before a yield argument.
-      return False
-    if pval in {'async', 'await'} and cval in {'def', 'with', 'for'}:
-      # Don't break after sync keywords.
-      return False
+  if pval == 'yield' and cval == 'from':
+    # Don't break before a yield argument.
+    return False
+  if pval in {'async', 'await'} and cval in {'def', 'with', 'for'}:
+    # Don't break after sync keywords.
+    return False
   if cur_token.split_penalty >= split_penalty.UNBREAKABLE:
     return False
   if pval == '@':

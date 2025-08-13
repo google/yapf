@@ -18,11 +18,8 @@ requirements on how they're formatted. These state objects keep track of these
 requirements.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from functools import lru_cache
 
-from yapf.yapflib import py3compat
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
@@ -120,26 +117,26 @@ class ParameterListState(object):
     return self.closing_bracket.next_token.value == '->'
 
   @property
-  @py3compat.lru_cache()
+  @lru_cache()
   def has_default_values(self):
     return any(param.has_default_value for param in self.parameters)
 
   @property
-  @py3compat.lru_cache()
+  @lru_cache()
   def ends_in_comma(self):
     if not self.parameters:
       return False
     return self.parameters[-1].last_token.next_token.value == ','
 
   @property
-  @py3compat.lru_cache()
+  @lru_cache()
   def last_token(self):
     token = self.opening_bracket.matching_bracket
     while not token.is_comment and token.next_token:
       token = token.next_token
     return token
 
-  @py3compat.lru_cache()
+  @lru_cache()
   def LastParamFitsOnLine(self, indent):
     """Return true if the last parameter fits on a single line."""
     if not self.has_typed_return:
@@ -151,7 +148,7 @@ class ParameterListState(object):
     total_length -= last_param.total_length - len(last_param.value)
     return total_length + indent <= style.Get('COLUMN_LIMIT')
 
-  @py3compat.lru_cache()
+  @lru_cache()
   def SplitBeforeClosingBracket(self, indent):
     """Return true if there's a split before the closing bracket."""
     if style.Get('DEDENT_CLOSING_BRACKETS'):
@@ -205,7 +202,7 @@ class Parameter(object):
     self.last_token = last_token
 
   @property
-  @py3compat.lru_cache()
+  @lru_cache()
   def has_default_value(self):
     """Returns true if the parameter has a default value."""
     tok = self.first_token

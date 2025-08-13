@@ -1,0 +1,63 @@
+# Copyright (c) 2023 Sebastian Pipping <sebastian@pipping.org>
+# Licensed under the Apache License Version 2.0
+
+name: Keep pre-commit hooks up to date
+
+on:
+  schedule:
+    - cron: '0 16 * * 5'  # Every Friday 4pm
+  workflow_dispatch:
+
+# NOTE: This will drop all permissions from GITHUB_TOKEN except metadata read,
+#       and then (re)add the ones listed below:
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pre_commit_autoupdate:
+    name: Detect outdated pre-commit hooks
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d  # v5.1.0
+        with:
+          python-version: 3.11
+
+      - name: Install pre-commit
+        run: |-
+          pip install \
+            --disable-pip-version-check \
+            --no-warn-script-location \
+            --user \
+            pre-commit
+          echo "PATH=${HOME}/.local/bin:${PATH}" >> "${GITHUB_ENV}"
+
+      - name: Check for outdated hooks
+        run: |-
+          pre-commit autoupdate
+          git diff -- .pre-commit-config.yaml
+
+      - name: Create pull request from changes (if any)
+        id: create-pull-request
+        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f  # v7.0.5
+        with:
+          author: 'pre-commit <pre-commit@tools.invalid>'
+          base: main
+          body: |-
+            For your consideration.
+
+            :warning: Please **CLOSE AND RE-OPEN** this pull request so that [further workflow runs get triggered](https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#triggering-further-workflow-runs) for this pull request.
+          branch: precommit-autoupdate
+          commit-message: "pre-commit: Autoupdate"
+          delete-branch: true
+          draft: true
+          labels: enhancement
+          title: "pre-commit: Autoupdate"
+
+      - name: Log pull request URL
+        if: "${{ steps.create-pull-request.outputs.pull-request-url }}"
+        run: |
+          echo "Pull request URL is: ${{ steps.create-pull-request.outputs.pull-request-url }}"

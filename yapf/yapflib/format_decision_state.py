@@ -14,7 +14,7 @@
 """Implements a format decision state object that manages whitespace decisions.
 
 Each token is processed one at a time, at which point its whitespace formatting
-decisions are made. A graph of potential whitespace formattings is created,
+decisions are made. A graph of potential whitespace formatting is created,
 where each node in the graph is a format decision state object. The heuristic
 tries formatting the token with and without a newline before it to determine
 which one has the least penalty. Therefore, the format decision state object for
@@ -27,6 +27,7 @@ through the code to commit the whitespace formatting.
 """
 
 from yapf.pytree import split_penalty
+from yapf.pytree.pytree_utils import NodeName
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
 from yapf.yapflib import style
@@ -179,10 +180,23 @@ class FormatDecisionState(object):
       return False
 
     if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
+      if (subtypes.COMP_FOR in current.subtypes or
+          subtypes.LAMBDEF in current.subtypes):
+        return False
+
+      return True
+
+    if (style.Get('FORCE_MULTILINE_DICT') and
+        subtypes.DICTIONARY_KEY in current.subtypes and not current.is_comment):
       return True
 
     if (style.Get('SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES') and
         previous.value == ','):
+
+      if (subtypes.COMP_FOR in current.subtypes or
+          subtypes.LAMBDEF in current.subtypes):
+        return False
+
       # Avoid breaking in a container that fits in the current line if possible
       opening = _GetOpeningBracket(current)
 
@@ -205,7 +219,9 @@ class FormatDecisionState(object):
         (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
          current.value in '}])' and style.Get('INDENT_CLOSING_BRACKETS'))):
       # Split before the closing bracket if we can.
-      if subtypes.SUBSCRIPT_BRACKET not in current.subtypes:
+      if (subtypes.SUBSCRIPT_BRACKET not in current.subtypes or
+          (previous.value == ',' and
+           not style.Get('DISABLE_ENDING_COMMA_HEURISTIC'))):
         return current.node_split_penalty != split_penalty.UNBREAKABLE
 
     if (current.value == ')' and previous.value == ',' and
@@ -366,6 +382,16 @@ class FormatDecisionState(object):
 
     ###########################################################################
     # Argument List Splitting
+
+    if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
+      # Split before arguments in a function call or definition if the
+      # arguments are terminated by a comma.
+      opening = _GetOpeningBracket(current)
+      if opening and opening.previous_token and opening.previous_token.is_name:
+        if previous.value in '(,':
+          if opening.matching_bracket.previous_token.value == ',':
+            return True
+
     if (style.Get('SPLIT_BEFORE_NAMED_ASSIGNS') and not current.is_comment and
         subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST in current.subtypes):
       if (previous.value not in {'=', ':', '*', '**'} and
@@ -401,15 +427,6 @@ class FormatDecisionState(object):
     if (current.value not in '{)' and previous.value == '(' and
         self._ArgumentListHasDictionaryEntry(current)):
       return True
-
-    if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
-      # Split before arguments in a function call or definition if the
-      # arguments are terminated by a comma.
-      opening = _GetOpeningBracket(current)
-      if opening and opening.previous_token and opening.previous_token.is_name:
-        if previous.value in '(,':
-          if opening.matching_bracket.previous_token.value == ',':
-            return True
 
     if ((current.is_name or current.value in {'*', '**'}) and
         previous.value == ','):
@@ -1032,6 +1049,8 @@ class FormatDecisionState(object):
     current = opening.next_token.next_token
 
     while current and current != closing:
+      if subtypes.DICT_SET_GENERATOR in current.subtypes:
+        break
       if subtypes.DICTIONARY_KEY in current.subtypes:
         prev = PreviousNonCommentToken(current)
         if prev.value == ',':
@@ -1093,14 +1112,27 @@ class FormatDecisionState(object):
             self.stack[-1].indent) <= self.column_limit
 
 
-_COMPOUND_STMTS = frozenset(
-    {'for', 'while', 'if', 'elif', 'with', 'except', 'def', 'class'})
+_COMPOUND_STMTS = frozenset({
+    'for',
+    'while',
+    'if',
+    'elif',
+    'with',
+    'except',
+    'def',
+    'class',
+})
 
 
 def _IsCompoundStatement(token):
-  if token.value == 'async':
+  value = token.value
+  if value == 'async':
     token = token.next_token
-  return token.value in _COMPOUND_STMTS
+  if token.value in _COMPOUND_STMTS:
+    return True
+  parent_name = NodeName(token.node.parent)
+  return value == 'match' and parent_name == 'match_stmt' or \
+    value == 'case' and parent_name == 'case_stmt'
 
 
 def _IsFunctionDef(token):

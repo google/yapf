@@ -13,8 +13,9 @@
 *~
 # Merge files created by git.
 *.orig
-# Byte compiled python modules.
+# Compiled python.
 *.pyc
+*.pickle
 # vim swap files
 .*.sw?
 .sw?
@@ -33,5 +34,12 @@
 /.tox
 /yapf.egg-info
 
+# IDEs
 /.idea
+/.vscode/settings.json
 
+# Virtual Environment
+/.venv*/
+
+# Worktrees
+/.wt

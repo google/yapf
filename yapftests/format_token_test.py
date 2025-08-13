@@ -15,13 +15,15 @@
 
 import unittest
 
-from lib2to3 import pytree
-from lib2to3.pgen2 import token
+from yapf_third_party._ylib2to3 import pytree
+from yapf_third_party._ylib2to3.pgen2 import token
 
 from yapf.yapflib import format_token
 
+from yapftests import yapf_test_helper
 
-class TabbedContinuationAlignPaddingTest(unittest.TestCase):
+
+class TabbedContinuationAlignPaddingTest(yapf_test_helper.YAPFTest):
 
   def testSpace(self):
     align_style = 'SPACE'
@@ -63,14 +65,14 @@ class TabbedContinuationAlignPaddingTest(unittest.TestCase):
     self.assertEqual(pad, '\t' * 2)
 
 
-class FormatTokenTest(unittest.TestCase):
+class FormatTokenTest(yapf_test_helper.YAPFTest):
 
   def testSimple(self):
     tok = format_token.FormatToken(
         pytree.Leaf(token.STRING, "'hello world'"), 'STRING')
     self.assertEqual(
         "FormatToken(name=DOCSTRING, value='hello world', column=0, "
-        "lineno=0, splitpenalty=0)", str(tok))
+        'lineno=0, splitpenalty=0)', str(tok))
     self.assertTrue(tok.is_string)
 
     tok = format_token.FormatToken(

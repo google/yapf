@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=58.5.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yapf"
+description = "A formatter for Python code"
+authors = [{ name = "Google Inc." }]
+maintainers = [{ name = "Bill Wendling", email = "morbo@google.com" }]
+dynamic = ["version"]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Software Development :: Quality Assurance',
+]
+dependencies = ['platformdirs>=3.5.1', 'tomli>=2.0.1; python_version<"3.11"']
+
+[project.scripts]
+yapf = "yapf:run_main"
+yapf-diff = "yapf_third_party.yapf_diff.yapf_diff:main"
+
+[project.urls]
+# https://daniel.feldroy.com/posts/2023-08-pypi-project-urls-cheatsheet
+Home = 'https://github.com/google/yapf'
+Changelog = 'https://github.com/google/yapf/blob/main/CHANGELOG.md'
+Docs = 'https://github.com/google/yapf/blob/main/README.md#yapf'
+Issues = 'https://github.com/google/yapf/issues'
+
+[tool.distutils.bdist_wheel]
+python_tag = "py3"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { yapf_third_party = 'third_party/yapf_third_party' }
+
+[tool.setuptools.dynamic]
+version = { attr = "yapf._version.__version__" }
+
+[tool.setuptools.packages.find]
+where = [".", 'third_party']
+include = ["yapf*", 'yapftests*']
+
+[tool.setuptools.package-data]
+yapf_third_party = [
+    'yapf_diff/LICENSE',
+    '_ylib2to3/Grammar.txt',
+    '_ylib2to3/PatternGrammar.txt',
+    '_ylib2to3/LICENSE',
+]
