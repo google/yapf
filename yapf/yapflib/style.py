@@ -115,6 +115,18 @@ _STYLE_HELP = dict(
           def method():
             pass
     """),
+    BLANK_LINES_BETWEEN_CLASS_DEFS=textwrap.dedent("""\
+      Sets the number of desired blank lines between methods inside
+      class definitions. For example:
+
+        class Foo:
+          def method1():
+            pass
+                           # <------ multiple
+                           # <------ blank lines
+          def method2():
+            pass
+    """),
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=textwrap.dedent("""\
       Number of blank lines surrounding top-level function and class
       definitions.
@@ -486,6 +498,7 @@ def CreatePEP8Style():
       BLANK_LINE_BEFORE_MODULE_DOCSTRING=False,
       BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=True,
       BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=2,
+      BLANK_LINES_BETWEEN_CLASS_DEFS=1,
       BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=1,
       COALESCE_BRACKETS=False,
       COLUMN_LIMIT=79,
@@ -675,6 +688,7 @@ _STYLE_OPTION_VALUE_CONVERTER = dict(
     BLANK_LINE_BEFORE_MODULE_DOCSTRING=_BoolConverter,
     BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF=_BoolConverter,
     BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION=int,
+    BLANK_LINES_BETWEEN_CLASS_DEFS=int,
     BLANK_LINES_BETWEEN_TOP_LEVEL_IMPORTS_AND_VARIABLES=int,
     COALESCE_BRACKETS=_BoolConverter,
     COLUMN_LIMIT=int,

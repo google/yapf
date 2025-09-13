@@ -423,6 +423,21 @@ optional arguments:
         pass
 ```
 
+#### `BLANK_LINES_BETWEEN_CLASS_DEFS`
+
+>    Sets the number of desired blank lines between methods inside
+>    class definitions. For example:
+
+```python
+    class Foo:
+        def method1():
+            pass
+                       # <------ multiple
+                       # <------ blank lines here
+        def method2():
+            pass
+```
+
 #### `BLANK_LINE_BEFORE_CLASS_DOCSTRING`
 
 >    Insert a blank line before a class-level docstring.

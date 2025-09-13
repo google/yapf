@@ -62,16 +62,25 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_comment_lineno = 0
     self.last_was_decorator = False
     self.last_was_class_or_function = False
+    self._prev_stmt = None
 
   def Visit_simple_stmt(self, node):  # pylint: disable=invalid-name
     self.DefaultNodeVisit(node)
     if node.children[0].type == grammar_token.COMMENT:
       self.last_comment_lineno = node.children[0].lineno
+    else:
+      # Do NOT set _prev_stmt on pure comment lines; keep the last real stmt.
+      self._prev_stmt = node
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
+    func = _DecoratedFuncdef(node)
     if (self.last_comment_lineno and
         self.last_comment_lineno == node.children[0].lineno - 1):
       _SetNumNewlines(node.children[0], _NO_BLANK_LINES)
+    elif self.last_was_decorator:
+      _SetNumNewlines(node.children[0], _NO_BLANK_LINES)
+    elif func is not None and self._prev_stmt is not None and _MethodsInSameClass(self._prev_stmt, func):
+      _SetNumNewlines(node.children[0], max(_ONE_BLANK_LINE, 1 + style.Get('BLANK_LINES_BETWEEN_CLASS_DEFS')))
     else:
       _SetNumNewlines(node.children[0], self._GetNumNewlines(node))
     for child in node.children:
@@ -87,6 +96,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
     self.class_level -= 1
     self.last_was_class_or_function = True
+    self._prev_stmt = node
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
     self.last_was_class_or_function = False
@@ -103,6 +113,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
       self.Visit(child)
     self.function_level -= 1
     self.last_was_class_or_function = True
+    self._prev_stmt = node
 
   def DefaultNodeVisit(self, node):
     """Override the default visitor for Node.
@@ -156,7 +167,11 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
       return _NO_BLANK_LINES
     elif self._IsTopLevel(node):
       return 1 + style.Get('BLANK_LINES_AROUND_TOP_LEVEL_DEFINITION')
-    return _ONE_BLANK_LINE
+    elif self._prev_stmt is not None and _MethodsInSameClass(self._prev_stmt, node):
+      # Only between consecutive methods *in the same class*.
+      # Keep at least one blank line as a floor (to avoid 0 if user misconfigures).
+      return max(_ONE_BLANK_LINE, 1 + style.Get('BLANK_LINES_BETWEEN_CLASS_DEFS'))
+    return _NO_BLANK_LINES
 
   def _IsTopLevel(self, node):
     return (not (self.class_level or self.function_level) and
@@ -175,3 +190,24 @@ def _StartsInZerothColumn(node):
 
 def _AsyncFunction(node):
   return (node.prev_sibling and node.prev_sibling.type == grammar_token.ASYNC)
+
+
+def _MethodsInSameClass(prev_node, curr_node):
+  # 1) Walk up from each node to find the nearest *enclosing function* (def …).
+  prev_func = pytree_utils.EnclosingFunc(prev_node)
+  curr_func = pytree_utils.EnclosingFunc(curr_node)
+
+  # 2) If either enclosing thing is not actually a function definition, bail out.
+  if not (pytree_utils.IsFuncDef(prev_func) and pytree_utils.IsFuncDef(curr_func)):
+    return False
+
+  # 3) From each function, walk up to find the *enclosing class* (class …).
+  prev_cls = pytree_utils.EnclosingClass(prev_func.parent)
+  curr_cls = pytree_utils.EnclosingClass(curr_func.parent)
+
+  # 4) True only if both functions live inside a class, and it’s the *same class node*.
+  return prev_cls is not None and prev_cls is curr_cls
+
+
+def _DecoratedFuncdef(node):
+  return pytree_utils.DecoratedTarget(node, ('funcdef',))

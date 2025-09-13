@@ -332,3 +332,34 @@ def _PytreeNodeRepr(node):
 def IsCommentStatement(node):
   return (NodeName(node) == 'simple_stmt' and
           node.children[0].type == token.COMMENT)
+
+
+def AscendTo(node, target_names):
+  n = node
+  while n is not None and NodeName(n) not in target_names:
+    n = getattr(n, 'parent', None)
+  return n if n is not None and NodeName(n) in target_names else None
+
+
+def EnclosingFunc(node):
+  return node if NodeName(node) == 'funcdef' else AscendTo(node, {'funcdef'})
+
+
+def EnclosingClass(node):
+  return node if NodeName(node) == 'classdef' else AscendTo(node, {'classdef'})
+
+
+def IsFuncDef(node):
+  return node is not None and NodeName(node) == 'funcdef'
+
+
+def IsClassDef(node):
+  return node is not None and NodeName(node) == 'classdef'
+
+
+def DecoratedTarget(node, target_names=('funcdef', 'classdef')):
+  n = node
+  while n.next_sibling is not None and NodeName(n.next_sibling) == 'decorator':
+    n = n.next_sibling
+  cand = n.next_sibling
+  return cand if cand is not None and NodeName(cand) in target_names else None
