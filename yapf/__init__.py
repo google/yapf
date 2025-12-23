@@ -78,6 +78,8 @@ def main(argv):
 
   if args.lines and len(args.files) > 1:
     parser.error('cannot use -l/--lines with more than one file')
+  if args.files and args.assume_filename:
+    parser.error('cannot use --assume-filename with file inputs')
 
   lines = _GetLines(args.lines) if args.lines is not None else None
   if not args.files:
@@ -106,6 +108,15 @@ def main(argv):
     if style_config is None and not args.no_local_style:
       style_config = file_resources.GetDefaultStyleForDir(os.getcwd())
 
+    if args.assume_filename:
+      exclude_patterns = (args.exclude or
+                          []) + file_resources.GetExcludePatternsForDir(
+                              os.getcwd())
+      # If a file on stdin is ignored, it should be left unformatted.
+      if file_resources.IsIgnored(args.assume_filename, exclude_patterns):
+        sys.stdout.write(''.join(original_source))
+        return 0
+
     source = [line.rstrip() for line in original_source]
     source[0] = _removeBOM(source[0])
 
@@ -131,6 +142,8 @@ def main(argv):
                                              (args.exclude or []) +
                                              exclude_patterns_from_ignore_file)
   if not files:
+    if args.allow_no_files:
+      return 0
     raise errors.YapfError('input filenames did not match any python files')
 
   changed = FormatFiles(
@@ -332,6 +345,13 @@ def _BuildParser():
       action='append',
       default=None,
       help='patterns for files to exclude from formatting')
+  # If you run `yapf foo.py` and foo.py is in .yapfignore, you may want to error out,
+  # but it's not unreasonable to expect it to silently succeed as a no-op.
+  parser.add_argument(
+      '--allow-no-files',
+      action='store_true',
+      help='Do not output an error when all files are excluded',
+  )
   parser.add_argument(
       '--style',
       action='store',
@@ -369,6 +389,11 @@ def _BuildParser():
 
   parser.add_argument(
       'files', nargs='*', help='reads from stdin when no files are specified.')
+  parser.add_argument(
+      '--assume-filename',
+      help=(
+          'Provides a hint to YAPF about the name of the file being formatted from stdin. '
+          'This allows yapf to know whether the file is ignored'))
   return parser
 
 

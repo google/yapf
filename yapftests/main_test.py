@@ -118,7 +118,7 @@ class MainTest(yapf_test_helper.YAPFTest):
     yapf_code = 'def f(a=1):\n  return 2 * a\n'
     with patched_input(code):
       with captured_output() as (out, _):
-        ret = yapf.main(['-', '--style=yapf'])
+        ret = yapf.main(['-', '--style=yapf', '--assume-filename=foo.py'])
         self.assertEqual(ret, 0)
         self.assertEqual(out.getvalue(), yapf_code)
 
@@ -128,6 +128,22 @@ class MainTest(yapf_test_helper.YAPFTest):
       with captured_output() as (_, _):
         with self.assertRaisesRegex(yapf.errors.YapfError, 'unexpected indent'):
           yapf.main([])
+
+  def testAllowNoFiles(self):
+    self.assertEqual(
+        yapf.main(['yapf', 'foo.py', '--exclude=foo.py', '--allow-no-files']),
+        0,
+    )
+
+  def testAssumeFilename(self):
+    code = 'print( 1 )'
+    with patched_input(code):
+      with captured_output() as (out, _):
+        ret = yapf.main([
+            '-', '--style=pep8', '--assume-filename=foo.py', '--exclude=foo.py'
+        ])
+        self.assertEqual(ret, 0)
+        self.assertEqual(out.getvalue(), code)
 
   def testHelp(self):
     with captured_output() as (out, _):
