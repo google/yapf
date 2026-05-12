@@ -75,6 +75,8 @@
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
 - Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
   being too agressive for lambdas and unpacking.
+- Report parser errors as a `YapfError` with a location instead of crashing with
+  an unrelated `IndexError`.
 
 ## [0.40.2] 2023-09-22
 ### Changes

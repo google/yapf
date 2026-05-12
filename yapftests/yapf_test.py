@@ -1565,6 +1565,12 @@ class BadInputTest(yapf_test_helper.YAPFTest):
     code = 'x = """hello\n'
     self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
+  def testParseErrorReportedAsYapfError(self):
+    code = 'f"{tab["SOME_STRING"]}"\n'
+    with self.assertRaises(errors.YapfError) as ctx:
+      yapf_api.FormatCode(code)
+    self.assertRegex(str(ctx.exception), r':\d+:\d+: ')
+
 
 class DiffIndentTest(yapf_test_helper.YAPFTest):
 
