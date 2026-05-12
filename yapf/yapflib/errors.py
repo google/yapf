@@ -13,6 +13,7 @@
 # limitations under the License.
 """YAPF error objects."""
 
+from yapf_third_party._ylib2to3.pgen2 import parse
 from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 
@@ -34,6 +35,10 @@ def FormatErrorMsg(e):
   if isinstance(e, tokenize.TokenError):
     return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
                                  e.args[0])
+  if isinstance(e, parse.ParseError):
+    lineno, column = e.context[1]
+    return '{}:{}:{}: {}'.format(
+        getattr(e, 'filename', None), lineno, column, str(e))
   return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
 
 
