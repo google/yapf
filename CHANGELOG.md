@@ -75,6 +75,8 @@
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
 - Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
   being too agressive for lambdas and unpacking.
+- Fix a crash (`TypeError: 'int' object is not subscriptable`) when a style
+  file is missing its `[style]` section header.
 
 ## [0.40.2] 2023-09-22
 ### Changes

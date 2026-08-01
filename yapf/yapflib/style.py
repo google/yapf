@@ -13,6 +13,7 @@
 # limitations under the License.
 """Python formatting style settings."""
 
+import configparser
 import os
 import re
 import sys
@@ -821,7 +822,12 @@ def _CreateConfigParserFromConfigFile(config_filename):
       return config
 
   with open(config_filename) as style_file:
-    config.read_file(style_file)
+    try:
+      config.read_file(style_file)
+    except configparser.MissingSectionHeaderError:
+      raise StyleConfigError(
+          'Unable to parse {0}: missing section header. Did you forget the '
+          '"[style]" header?'.format(config_filename))
 
     if config_filename.endswith(SETUP_CONFIG):
       if not config.has_section('yapf'):

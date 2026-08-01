@@ -207,6 +207,15 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
                                 'is not a valid style or file path'):
       style.CreateStyleFromConfig('/8822/xyznosuchfile')
 
+  def testErrorMissingSectionHeader(self):
+    cfg = textwrap.dedent("""\
+        indent_width=2
+    """)
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
+      with self.assertRaisesRegex(style.StyleConfigError,
+                                  'missing section header'):
+        style.CreateStyleFromConfig(filepath)
+
   def testErrorNoStyleSection(self):
     cfg = textwrap.dedent("""\
         [s]
