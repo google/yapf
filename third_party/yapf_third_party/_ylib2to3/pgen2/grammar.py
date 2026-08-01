@@ -14,10 +14,25 @@ fallback token code OP, but the parser needs the actual token code.
 # Python imports
 import os
 import pickle
-import tempfile
+import uuid
 
 # Local imports
 from . import token
+
+# Flags for opening the temporary cache file written by ``Grammar.dump``.
+# We avoid ``tempfile``/``mkstemp`` here: on Windows, Python's tempfile
+# module treats a ``PermissionError`` from ``os.open`` as a possible name
+# collision and retries up to ``tempfile.TMP_MAX`` (over two billion) times
+# whenever the destination directory exists and ``os.access`` reports it
+# writable. That can make this optional cache write hang for a very long
+# time instead of failing, e.g. in a restricted-token sandbox where the
+# directory exists but file creation is denied. Doing a single, explicit
+# ``os.open`` attempt lets a denied write fail immediately.
+_TEMPFILE_OPEN_FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+if hasattr(os, 'O_BINARY'):
+  _TEMPFILE_OPEN_FLAGS |= os.O_BINARY
+if hasattr(os, 'O_NOINHERIT'):
+  _TEMPFILE_OPEN_FLAGS |= os.O_NOINHERIT
 
 
 class Grammar(object):
@@ -102,25 +117,27 @@ class Grammar(object):
     #   ever have to leave a tempfile around for failure of deletion,
     #   it will have a reasonable filename extension and its name will help
     #   explain is nature.
-    tempfile_dir = os.path.dirname(filename)
-    tempfile_prefix, tempfile_suffix = os.path.splitext(filename)
-    with tempfile.NamedTemporaryFile(
-        mode='wb',
-        suffix=tempfile_suffix,
-        prefix=tempfile_prefix,
-        dir=tempfile_dir,
-        delete=False) as f:
-      pickle.dump(self.__dict__, f.file, pickle.HIGHEST_PROTOCOL)
+    # - We close the tempfile before calling ``os.rename``, since a rename
+    #   of a still-open file can fail on Windows.
+    tempfile_dir = os.path.dirname(filename) or '.'
+    tempfile_prefix, tempfile_suffix = os.path.splitext(
+        os.path.basename(filename))
+    temp_filename = os.path.join(
+        tempfile_dir,
+        '{}.{}{}'.format(tempfile_prefix, uuid.uuid4().hex, tempfile_suffix))
+    try:
+      fd = os.open(temp_filename, _TEMPFILE_OPEN_FLAGS, 0o600)
+      with os.fdopen(fd, 'wb') as f:
+        pickle.dump(self.__dict__, f, pickle.HIGHEST_PROTOCOL)
+      os.rename(temp_filename, filename)
+    except OSError:
+      # This makes sure that we do not leave the tempfile around
+      # unless we have to...
       try:
-        os.rename(f.name, filename)
+        os.remove(temp_filename)
       except OSError:
-        # This makes sure that we do not leave the tempfile around
-        # unless we have to...
-        try:
-          os.remove(f.name)
-        except OSError:
-          pass
-        raise
+        pass
+      raise
 
   def load(self, filename):
     """Load the grammar tables from a pickle file."""
