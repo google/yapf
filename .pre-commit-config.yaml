@@ -3,7 +3,7 @@
 
 repos:
   - repo: https://github.com/pycqa/isort
-    rev: 6.0.0
+    rev: 9.0.1
     hooks:
       - id: isort
         name: isort (python)
@@ -16,11 +16,11 @@ repos:
         args: [-i]
         types: [python]
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+    rev: 7.3.0
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: check-docstring-first
