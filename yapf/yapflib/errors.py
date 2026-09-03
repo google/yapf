@@ -13,6 +13,7 @@
 # limitations under the License.
 """YAPF error objects."""
 
+from yapf_third_party._ylib2to3.pgen2 import parse
 from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 
@@ -34,6 +35,14 @@ def FormatErrorMsg(e):
   if isinstance(e, tokenize.TokenError):
     return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
                                  e.args[0])
+  if isinstance(e, parse.ParseError):
+    # ParseError builds its own message via Exception.__init__, so e.args is
+    # just that single string rather than the (filename, lineno, col) shape
+    # the generic branch below expects. The actual position lives on
+    # e.context, which parse.Parser fills in as (prefix, (lineno, column)).
+    lineno, column = e.context[1]
+    filename = getattr(e, 'filename', '<unknown>')
+    return '{}:{}:{}: {}'.format(filename, lineno, column, e.msg)
   return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
 
 
