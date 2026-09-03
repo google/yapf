@@ -1565,6 +1565,23 @@ class BadInputTest(yapf_test_helper.YAPFTest):
     code = 'x = """hello\n'
     self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
+  @unittest.skipUnless(
+      sys.version_info >= (3, 12),
+      'nested same-quote f-strings need the PEP 701 grammar')
+  def testValidSyntaxYapfGrammarRejects(self):
+    # A nested string inside an f-string reusing the outer quote character
+    # is valid syntax as of PEP 701 (Python 3.12), but yapf's own grammar
+    # doesn't parse it yet and raises a parse.ParseError. Reporting that
+    # error used to crash with an unrelated IndexError rather than surfacing
+    # the actual parse failure.
+    code = 'f"{tab["SOME_STRING"]}"\n'
+    try:
+      yapf_api.FormatCode(code)
+    except errors.YapfError as e:
+      self.assertIn('bad input', str(e))
+    else:
+      self.fail('expected a YapfError')
+
 
 class DiffIndentTest(yapf_test_helper.YAPFTest):
 
