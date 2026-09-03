@@ -776,7 +776,7 @@ def CreateStyleFromConfig(style_config):
 
 
 def _CreateConfigParserFromConfigDict(config_dict):
-  config = ConfigParser()
+  config = ConfigParser(interpolation=None)
   config.add_section('style')
   for key, value in config_dict.items():
     config.set('style', key, str(value))
@@ -788,7 +788,7 @@ def _CreateConfigParserFromConfigString(config_string):
   if config_string[0] != '{' or config_string[-1] != '}':
     raise StyleConfigError(
         "Invalid style dict syntax: '{}'.".format(config_string))
-  config = ConfigParser()
+  config = ConfigParser(interpolation=None)
   config.add_section('style')
   for key, value, _ in re.findall(
       r'([a-zA-Z0-9_]+)\s*[:=]\s*'
@@ -806,7 +806,7 @@ def _CreateConfigParserFromConfigFile(config_filename):
     # Provide a more meaningful error here.
     raise StyleConfigError(
         '"{0}" is not a valid style or file path'.format(config_filename))
-  config = ConfigParser()
+  config = ConfigParser(interpolation=None)
 
   if config_filename.endswith(PYPROJECT_TOML):
     with open(config_filename, 'rb') as style_file:
