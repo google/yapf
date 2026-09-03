@@ -1565,6 +1565,14 @@ class BadInputTest(yapf_test_helper.YAPFTest):
     code = 'x = """hello\n'
     self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
 
+  def testNewerSyntaxRaisesCleanError(self):
+    # These are valid Python 3.12+ that the vendored grammar doesn't handle
+    # yet. The parse failure should be reported as a YapfError, not crash with
+    # an IndexError while building the message.
+    for code in ('print(f"foo -> {os.path.join("bar", "baz")}")\n',
+                 'type Data = dict[str, Any]\n'):
+      self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
+
 
 class DiffIndentTest(yapf_test_helper.YAPFTest):
 
