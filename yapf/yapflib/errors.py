@@ -13,6 +13,7 @@
 # limitations under the License.
 """YAPF error objects."""
 
+from yapf_third_party._ylib2to3.pgen2 import parse
 from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 
@@ -34,7 +35,13 @@ def FormatErrorMsg(e):
   if isinstance(e, tokenize.TokenError):
     return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
                                  e.args[0])
-  return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
+  if isinstance(e, parse.ParseError):
+    # The parser raises this for input it can't handle, e.g. valid Python that
+    # is newer than the vendored grammar. Its .context is a (prefix, (line,
+    # column)) pair rather than a plain offset like SyntaxError.
+    return '{}:{}:{}: {}'.format(e.filename, e.context[1][0], e.context[1][1],
+                                 e.msg)
+  return str(e)
 
 
 class YapfError(Exception):

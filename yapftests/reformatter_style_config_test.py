@@ -78,6 +78,25 @@ class TestsForStyleConfig(yapf_test_helper.YAPFTest):
       style.SetGlobalStyle(style.CreatePEP8Style())
       style.DEFAULT_STYLE = self.current_style
 
+  def testOperatorNoSpaceModuloStyle(self):
+    try:
+      cfg = style.CreateStyleFromConfig(
+          '{based_on_style: pep8,'
+          ' NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS: "%"}')
+      style.SetGlobalStyle(cfg)
+      unformatted_code = textwrap.dedent("""\
+          a = 1 % 2
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+          a = 1%2
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      style.DEFAULT_STYLE = self.current_style
+
   def testOperatorPrecedenceStyle(self):
     try:
       pep8_with_precedence = style.CreatePEP8Style()

@@ -202,6 +202,17 @@ class StyleFromFileTest(yapf_test_helper.YAPFTest):
       self.assertTrue(_LooksLikePEP8Style(cfg))
       self.assertEqual(cfg['I18N_FUNCTION_CALL'], ['N_', 'V_', 'T_'])
 
+  def testStringSetOptionValueWithPercent(self):
+    cfg = textwrap.dedent("""\
+        [style]
+        based_on_style = pep8
+        NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS = "%"
+    """)
+    with utils.TempFileContents(self.test_tmpdir, cfg) as filepath:
+      cfg = style.CreateStyleFromConfig(filepath)
+      self.assertTrue(_LooksLikePEP8Style(cfg))
+      self.assertEqual(cfg['NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS'], {'%'})
+
   def testErrorNoStyleFile(self):
     with self.assertRaisesRegex(style.StyleConfigError,
                                 'is not a valid style or file path'):
@@ -312,6 +323,12 @@ class StyleFromCommandLine(yapf_test_helper.YAPFTest):
                            style.CreateStyleFromConfig, '{INDENT_WIDTH: FOUR}')
     self.assertRaisesRegex(style.StyleConfigError, 'Invalid style dict',
                            style.CreateStyleFromConfig, '{based_on_style: pep8')
+
+  def testOperatorSetOptionWithPercent(self):
+    cfg = style.CreateStyleFromConfig(
+        '{based_on_style: pep8,'
+        ' NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS: "%"}')
+    self.assertEqual(cfg['NO_SPACES_AROUND_SELECTED_BINARY_OPERATORS'], {'%'})
 
 
 class StyleHelp(yapf_test_helper.YAPFTest):
