@@ -30,6 +30,7 @@ from yapf_third_party._ylib2to3.pygram import python_symbols as syms
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
+from yapf.yapflib import format_token
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
@@ -443,8 +444,9 @@ def _InsertPseudoParentheses(node):
   first = pytree_utils.FirstLeafNode(node)
   last = pytree_utils.LastLeafNode(node)
 
-  if first == last and first.type == grammar_token.COMMENT:
-    # A comment was inserted before the value, which is a pytree.Leaf.
+  if first == last and first.type in (grammar_token.COMMENT,
+                                      format_token.CONTINUATION):
+    # A comment or continuation was inserted before the value, which is a pytree.Leaf.
     # Encompass the dictionary's value into an ATOM node.
     last = first.next_sibling
     last_clone = last.clone()

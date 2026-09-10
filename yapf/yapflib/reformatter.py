@@ -405,7 +405,8 @@ def _FormatFinalLines(final_lines):
         formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
       elif (not tok.next_token.whitespace_prefix.startswith('\n') and
-            not tok.next_token.whitespace_prefix.startswith(' ')):
+            not tok.next_token.whitespace_prefix.startswith(' ') and
+            not tok.next_token.value.startswith(' ')):
         if (tok.previous_token.value == ':' or
             tok.next_token.value not in ',}])'):
           formatted_line.append(' ')

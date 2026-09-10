@@ -2197,6 +2197,48 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
+  def testStableDictionaryValueContinuation(self):
+    code = textwrap.dedent("""\
+        plan_bundles = {
+            plan_bundle.bundle_name: {
+                'tier_change_options': \\
+                bundle_util.get_tier_change_options(plan_bundle, details_by_bundle)
+            } for plan_bundle in plan.plan_bundles
+        }
+    """)
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{based_on_style: google}'))
+      llines = yapf_test_helper.ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(llines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      llines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+      reformatted_code_pass2 = reformatter.Reformat(llines)
+      self.assertCodeEqual(reformatted_code, reformatted_code_pass2)
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testSingleLeafDictionaryValueContinuation(self):
+    code = textwrap.dedent("""\
+        d = {
+            'k': \\
+            v
+        }
+    """)
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig('{indent_dictionary_value: true}'))
+      llines = yapf_test_helper.ParseAndUnwrap(code)
+      reformatted_code = reformatter.Reformat(llines)
+      self.assertCodeEqual(code, reformatted_code)
+
+      llines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+      reformatted_code_pass2 = reformatter.Reformat(llines)
+      self.assertCodeEqual(reformatted_code, reformatted_code_pass2)
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
   def testDontSplitKeywordValueArguments(self):
     unformatted_code = textwrap.dedent("""\
         def mark_game_scored(gid):

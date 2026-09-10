@@ -46,7 +46,7 @@ def SpliceContinuations(tree):
     for index, child in enumerate(node.children[:]):
       continuation_node = RecSplicer(child)
       if continuation_node:
-        node.children.insert(index + num_inserted, continuation_node)
+        node.insert_child(index + num_inserted, continuation_node)
         num_inserted += 1
 
   RecSplicer(tree)

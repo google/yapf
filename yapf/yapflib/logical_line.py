@@ -277,6 +277,9 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   """Return True if a space is required between the left and right token."""
   lval = left.value
   rval = right.value
+  if left.is_continuation or right.is_continuation:
+    # The continuation node's value has all of the spaces it needs.
+    return False
   if (left.is_pseudo and _IsIdNumberStringToken(right) and
       left.previous_token and _IsIdNumberStringToken(left.previous_token)):
     # Space between keyword... tokens and pseudo parens.
@@ -286,9 +289,6 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     if left.OpensScope():
       return True
     # The closing pseudo-paren shouldn't affect spacing.
-    return False
-  if left.is_continuation or right.is_continuation:
-    # The continuation node's value has all of the spaces it needs.
     return False
   if right.name in pytree_utils.NONSEMANTIC_TOKENS:
     # No space before a non-semantic token.
