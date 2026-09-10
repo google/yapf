@@ -13,6 +13,7 @@
 # limitations under the License.
 """YAPF error objects."""
 
+from yapf_third_party._ylib2to3.pgen2 import parse
 from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 
@@ -29,12 +30,26 @@ def FormatErrorMsg(e):
   Returns:
     A properly formatted error message string.
   """
+  filename = getattr(e, 'filename', None)
   if isinstance(e, SyntaxError):
-    return '{}:{}:{}: {}'.format(e.filename, e.lineno, e.offset, e.msg)
+    return '{}:{}:{}: {}'.format(filename, e.lineno, e.offset, e.msg)
   if isinstance(e, tokenize.TokenError):
-    return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
-                                 e.args[0])
-  return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
+    lineno = e.args[1][0] if len(e.args) > 1 and len(e.args[1]) > 0 else 1
+    col = e.args[1][1] if len(e.args) > 1 and len(e.args[1]) > 1 else 0
+    msg = e.args[0] if e.args else str(e)
+    return '{}:{}:{}: {}'.format(filename, lineno, col, msg)
+  if isinstance(e, parse.ParseError):
+    lineno = e.context[1][0] if e.context and len(e.context) > 1 and len(
+        e.context[1]) > 0 else 1
+    col = e.context[1][1] if e.context and len(e.context) > 1 and len(
+        e.context[1]) > 1 else 0
+    msg = e.msg if hasattr(e, 'msg') else str(e)
+    return '{}:{}:{}: {}'.format(filename, lineno, col, msg)
+  try:
+    return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2],
+                                 e.msg)
+  except (AttributeError, IndexError, TypeError):
+    return '{}: {}'.format(filename, e) if filename else str(e)
 
 
 class YapfError(Exception):

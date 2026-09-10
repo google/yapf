@@ -25,6 +25,7 @@ import textwrap
 import unittest
 from io import StringIO
 
+from yapf_third_party._ylib2to3.pgen2 import parse
 from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 from yapf.yapflib import errors
@@ -1564,6 +1565,31 @@ class BadInputTest(yapf_test_helper.YAPFTest):
   def testBadCode(self):
     code = 'x = """hello\n'
     self.assertRaises(errors.YapfError, yapf_api.FormatCode, code)
+
+  def testParseError(self):
+    code = 'f"{tab["SOME_STRING"]}"\n'
+    with self.assertRaisesRegex(errors.YapfError, r'bad input'):
+      yapf_api.FormatCode(code, filename='test.py')
+
+  def testFormatErrorMsg(self):
+    s = SyntaxError('invalid syntax')
+    s.filename = 'foo.py'
+    s.lineno = 10
+    s.offset = 5
+    self.assertEqual(errors.FormatErrorMsg(s), 'foo.py:10:5: invalid syntax')
+
+    t = tokenize.TokenError('EOF in multi-line string', (2, 4))
+    t.filename = 'bar.py'
+    self.assertEqual(
+        errors.FormatErrorMsg(t), 'bar.py:2:4: EOF in multi-line string')
+
+    p = parse.ParseError('bad input', 1, 'SOME_STRING', ('', (1, 8)))
+    p.filename = 'test.py'
+    self.assertEqual(errors.FormatErrorMsg(p), 'test.py:1:8: bad input')
+
+    g = RuntimeError('unknown failure')
+    g.filename = 'baz.py'
+    self.assertEqual(errors.FormatErrorMsg(g), 'baz.py: unknown failure')
 
 
 class DiffIndentTest(yapf_test_helper.YAPFTest):
