@@ -189,6 +189,15 @@ YAPF will search for the formatting style in the following manner:
 
 If none of those files are found, the default style PEP8 is used.
 
+The `.style.yapf` file uses INI configuration syntax with a `[style]` section:
+
+```ini
+[style]
+based_on_style = pep8
+indent_width = 2
+column_limit = 100
+```
+
 
 Example
 =======
