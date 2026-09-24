@@ -2,10 +2,10 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
-## (0.41.0) UNRELEASED
+## [0.43.0] 2024-11-13
 ### Added
 - New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.
- `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
+  `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
   behavior of splitting a list when a comment is present inside the list.
 
   Before, we split a list containing a comment just like we split a list
@@ -66,15 +66,17 @@
   Note the behavioral change above; if you set
   `DISABLE_ENDING_COMMA_HEURISTIC=true` and want to keep the old behavior, you
   now also need to set `DISABLE_SPLIT_LIST_WITH_COMMENT=true`.
+- Add pre-commit hook for `yapf-diff`.
 ### Changes
 - Remove dependency on importlib-metadata
 - Remove dependency on tomli when using >= py311
-- Format '.pyi' type sub files.
+- Format '.pyi' type stub files.
 ### Fixed
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
 - Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
   being too agressive for lambdas and unpacking.
+- Fix `Grammar.dump` for parallel use with `Grammar.load`.
 
 ## [0.40.2] 2023-09-22
 ### Changes
