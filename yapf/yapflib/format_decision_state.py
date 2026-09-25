@@ -383,9 +383,13 @@ class FormatDecisionState(object):
     ###########################################################################
     # Argument List Splitting
 
-    if style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED'):
+    if (style.Get('SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED') and
+        not current.is_comment):
       # Split before arguments in a function call or definition if the
-      # arguments are terminated by a comma.
+      # arguments are terminated by a comma. Don't force a split directly
+      # before a trailing comment, though: that would push the comment onto
+      # its own line, away from the argument it documents, and can make the
+      # line unsolvable (yapf then falls back to leaving it unformatted).
       opening = _GetOpeningBracket(current)
       if opening and opening.previous_token and opening.previous_token.is_name:
         if previous.value in '(,':

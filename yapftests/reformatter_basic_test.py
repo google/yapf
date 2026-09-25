@@ -2403,6 +2403,52 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     finally:
       style.SetGlobalStyle(style.CreateYapfStyle())
 
+  def testSplittingArgumentsTerminatedByCommaWithTrailingComment(self):
+    # A trailing comment on one of the comma-terminated arguments used to
+    # make yapf give up on the line entirely and emit it unformatted (see
+    # https://github.com/google/yapf/issues/493 and
+    # https://github.com/google/yapf/issues/523): MustSplit() forced a split
+    # right before the comment token itself, which is a contradiction the
+    # solver could never satisfy, so no solution was found.
+    unformatted_code = textwrap.dedent("""\
+        foo(
+            bar   =   True     , # comment
+            baz   =   False    ,
+        )
+
+        dict(a=1, b=2,     # this can not be processed because of this comment
+        c=3,
+        )
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        foo(
+            bar=True,  # comment
+            baz=False,
+        )
+
+        dict(
+            a=1,
+            b=2,  # this can not be processed because of this comment
+            c=3,
+        )
+    """)
+
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: yapf, '
+              'split_arguments_when_comma_terminated: True}'))
+
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      reformatted_code = reformatter.Reformat(llines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+      llines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(llines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
   def testImportAsList(self):
     code = textwrap.dedent("""\
         from toto import titi, tata, tutu  # noqa
