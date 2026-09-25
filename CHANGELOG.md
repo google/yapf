@@ -71,6 +71,9 @@
 - Remove dependency on tomli when using >= py311
 - Format '.pyi' type sub files.
 ### Fixed
+- Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED forcing a split directly before a
+  trailing comment, which made the line unsolvable and caused yapf to leave
+  it completely unformatted (#493, #523).
 - Fix SPLIT_ARGUMENTS_WHEN_COMMA_TERMINATED for one-item named argument lists
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
 - Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
