@@ -317,11 +317,18 @@ class FormatDecisionState(object):
       if func_call_or_string_format:
         open_bracket = logical_line.IsSurroundedByBrackets(current)
         if open_bracket:
-          if open_bracket.value in '[{':
+          if open_bracket.value in '[{' and tok.value != '(':
             if not self._FitsOnLine(open_bracket,
                                     open_bracket.matching_bracket):
               return True
           elif tok.value == '(':
+            # Only force a split before this function-call element if the
+            # call itself doesn't fit on the line. Checking whether the
+            # *whole* surrounding list/dict fits (as above) forces a split
+            # before every function-call element whenever the container is
+            # too long overall, even for short calls like `f()`, producing
+            # inconsistent formatting between call and non-call elements.
+            # See https://github.com/google/yapf/issues/422.
             if not self._FitsOnLine(current, tok.matching_bracket):
               return True
 

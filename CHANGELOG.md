@@ -75,6 +75,9 @@
   by taking precedence over SPLIT_BEFORE_NAMED_ASSIGNS.
 - Fix SPLIT_ALL_COMMA_SEPARATED_VALUES and SPLIT_ALL_TOP_LEVEL_COMMA_SEPARATED_VALUES
   being too agressive for lambdas and unpacking.
+- Fix a short, no-argument function call in a list being forced onto its own
+  line just because the list as a whole didn't fit on one line, producing
+  inconsistent formatting between call and non-call elements.
 
 ## [0.40.2] 2023-09-22
 ### Changes

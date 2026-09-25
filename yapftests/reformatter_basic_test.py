@@ -2816,6 +2816,22 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_code, reformatter.Reformat(llines))
 
+  def testListWithShortFunctionCallsAmongPlainElements(self):
+    # A short, no-argument function call in a list shouldn't be forced onto
+    # its own line just because the list as a whole doesn't fit: only calls
+    # that don't themselves fit on the line should be split like that.
+    # See https://github.com/google/yapf/issues/422.
+    unformatted_code = textwrap.dedent("""\
+        array = [first, make_second(), third, fourth, fifth, make_sixth(), seventh, eighth]
+    """)
+    expected_code = textwrap.dedent("""\
+        array = [
+            first, make_second(), third, fourth, fifth, make_sixth(), seventh, eighth
+        ]
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_code, reformatter.Reformat(llines))
+
   def testEllipses(self):
     unformatted_code = textwrap.dedent("""\
         X=...
