@@ -4,6 +4,8 @@
 
 ## (0.41.0) UNRELEASED
 ### Added
+- Support Python 3.14 unparenthesized exception lists in `except` and `except*`
+  clauses (PEP 758).
 - New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.
  `DISABLE_SPLIT_LIST_WITH_COMMENT` is a new knob that changes the
   behavior of splitting a list when a comment is present inside the list.

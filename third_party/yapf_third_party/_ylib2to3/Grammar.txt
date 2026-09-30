@@ -119,7 +119,8 @@ try_stmt: ('try' ':' suite
 with_stmt: 'with' asexpr_test (',' asexpr_test)*  ':' suite
 
 # NB compile.c makes sure that the default except clause is last
-except_clause: 'except' ['*'] [test [(',' | 'as') test]]
+# PEP 758 allows an unparenthesized exception list without an 'as' target.
+except_clause: 'except' ['*'] [test ('as' test | (',' test)* [','])]
 suite: simple_stmt | NEWLINE INDENT stmt+ DEDENT
 
 # Backward compatibility cruft to support:

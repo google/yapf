@@ -297,8 +297,8 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
     # Spaces between keyword, string, number, and identifier tokens.
     return True
   if lval == ',' and rval == ':':
-    # We do want a space between a comma and colon.
-    return True
+    # Keep a space in slices, but not after a trailing exception-list comma.
+    return pytree_utils.NodeName(left.node.parent) != 'except_clause'
   if style.Get('SPACE_INSIDE_BRACKETS'):
     # Supersede the "no space before a colon or comma" check.
     if left.OpensScope() and rval == ':':
