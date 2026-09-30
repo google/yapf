@@ -72,6 +72,15 @@ class ParseCodeToTreeTest(yapf_test_helper.YAPFTest):
     with self.assertRaises(SyntaxError):
       pytree_utils.ParseCodeToTree('class nonlocal: pass\n')
 
+  def testUnparenthesizedExceptClausesWithAs(self):
+    for keyword in ('except', 'except*'):
+      for exceptions in ('ValueError, TypeError', 'ValueError,'):
+        with self.subTest(keyword=keyword, exceptions=exceptions):
+          code = 'try:\n  pass\n{} {} as error:\n  pass\n'.format(
+              keyword, exceptions)
+          with self.assertRaises(SyntaxError):
+            pytree_utils.ParseCodeToTree(code)
+
 
 class InsertNodesBeforeAfterTest(yapf_test_helper.YAPFTest):
 

@@ -19,6 +19,7 @@ import unittest
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 from yapftests import yapf_test_helper
 
@@ -29,6 +30,53 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
   @classmethod
   def setUpClass(cls):  # pylint: disable=g-missing-super-call
     style.SetGlobalStyle(style.CreatePEP8Style())
+
+  def testUnparenthesizedExceptClauses(self):
+    # https://github.com/google/yapf/issues/1319
+    for keyword in ('except', 'except*'):
+      for exceptions, formatted_exceptions in (
+          ('ZeroDivisionError,ValueError,IndexError',
+           'ZeroDivisionError, ValueError, IndexError'),
+          ('ValueError,TypeError,IndexError,KeyError',
+           'ValueError, TypeError, IndexError, KeyError'),
+          ('ValueError,', 'ValueError,'),
+          ('ValueError,TypeError,', 'ValueError, TypeError,'),
+      ):
+        with self.subTest(keyword=keyword, exceptions=exceptions):
+          unformatted_code = ('try:\n  x=1/0\n{} {}:\n  pass\n'.format(
+              keyword, exceptions))
+          expected_formatted_code = (
+              'try:\n    x = 1 / 0\n{} {}:\n    pass\n'.format(
+                  keyword.replace('*', ' *'), formatted_exceptions))
+          formatted_code, changed = yapf_api.FormatCode(
+              unformatted_code, style_config='pep8')
+          self.assertTrue(changed)
+          self.assertCodeEqual(expected_formatted_code, formatted_code)
+          self.assertEqual(
+              (formatted_code, False),
+              yapf_api.FormatCode(formatted_code, style_config='pep8'))
+
+  def testLongUnparenthesizedExceptClauses(self):
+    # Without parentheses, splitting the exception list would be invalid.
+    for keyword in ('except', 'except *'):
+      with self.subTest(keyword=keyword):
+        code = ('try:\n    pass\n'
+                '{} module.FirstException, module.SecondException, '
+                'module.ThirdException, module.FourthException:\n'
+                '    pass\n').format(keyword)
+        self.assertEqual((code, False),
+                         yapf_api.FormatCode(code, style_config='pep8'))
+
+  def testExistingExceptClauses(self):
+    for keyword in ('except', 'except *'):
+      for exceptions in ('ValueError', 'ValueError as error',
+                         '(ValueError, TypeError)',
+                         '(ValueError, TypeError) as error'):
+        with self.subTest(keyword=keyword, exceptions=exceptions):
+          code = 'try:\n    pass\n{} {}:\n    pass\n'.format(
+              keyword, exceptions)
+          self.assertEqual((code, False),
+                           yapf_api.FormatCode(code, style_config='pep8'))
 
   def testTypedNames(self):
     unformatted_code = textwrap.dedent("""\
