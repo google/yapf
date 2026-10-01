@@ -217,8 +217,8 @@ def ReadFile(filename, logger=None):
   """Read the contents of the file.
 
   An optional logger can be specified to emit messages to your favorite logging
-  stream. If specified, then no exception is raised. This is external so that it
-  can be used by third-party applications.
+  stream before re-raising an error. This is external so that it can be used by
+  third-party applications.
 
   Arguments:
     filename: (unicode) The name of the file.
@@ -240,17 +240,16 @@ def ReadFile(filename, logger=None):
     line_ending = file_resources.LineEnding(lines)
     source = '\n'.join(line.rstrip('\r\n') for line in lines) + '\n'
     return source, line_ending, encoding
-  except IOError as e:  # pragma: no cover
+  except IOError as e:
     if logger:
       logger(e)
-    e.args = (e.args[0], (filename, e.args[1][1], e.args[1][2], e.args[1][3]))
     raise
-  except UnicodeDecodeError as e:  # pragma: no cover
+  except UnicodeDecodeError as e:
     if logger:
-      logger('Could not parse %s! Consider excluding this file with --exclude.',
-             filename)
+      logger(
+          'Could not parse %s! Consider excluding this file with --exclude.' %
+          filename)
       logger(e)
-    e.args = (e.args[0], (filename, e.args[1][1], e.args[1][2], e.args[1][3]))
     raise
 
 

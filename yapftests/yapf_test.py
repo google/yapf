@@ -14,6 +14,7 @@
 # limitations under the License.
 """Tests for yapf.yapf."""
 
+import errno
 import io
 import logging
 import os
@@ -68,6 +69,27 @@ class FormatFileTest(yapf_test_helper.YAPFTest):
 
   def tearDown(self):  # pylint: disable=g-missing-super-call
     shutil.rmtree(self.test_tmpdir)
+
+  def testReadFilePreservesMissingFileError(self):
+    filename = os.path.join(self.test_tmpdir, 'missing.py')
+    messages = []
+    with self.assertRaises(FileNotFoundError) as caught:
+      yapf_api.ReadFile(filename, logger=messages.append)
+    self.assertEqual(caught.exception.errno, errno.ENOENT)
+    self.assertIsInstance(caught.exception.args[1], str)
+    self.assertEqual(caught.exception.filename, filename)
+    self.assertEqual(messages, [caught.exception])
+
+  def testReadFilePreservesDecodeError(self):
+    filename = os.path.join(self.test_tmpdir, 'invalid.py')
+    with open(filename, 'wb') as stream:
+      stream.write(b'# coding: utf-8\n# comment\n\xff\n')
+    for logger in (None, [].append):
+      with self.subTest(logger=logger):
+        with self.assertRaises(UnicodeDecodeError) as caught:
+          yapf_api.ReadFile(filename, logger=logger)
+        self.assertEqual(caught.exception.encoding, 'utf-8')
+        self.assertIsInstance(caught.exception.args[1], bytes)
 
   def testFormatFile(self):
     unformatted_code = textwrap.dedent("""\
