@@ -40,7 +40,7 @@ $ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist
     $ xargs -t -n1 pyenv install  < .python-version
     ```
 
-1. Run tests against Python 3.7 - 3.11 with
+1. Run tests against Python 3.9 - 3.14 with
     ```bash
     $ pipx run --spec='tox<4' tox
     ```
@@ -73,3 +73,17 @@ $ pipx run --spec='tox<4' tox -e bdist_wheel -e sdist
     $ git tag v$(VERSION_NUM)
     $ git push --tags
     ```
+
+## Parser and layout changes
+
+Read [LIBCST_MIGRATION.md](LIBCST_MIGRATION.md) before changing the front end.
+`libcst.parse_module` is the only Python parser. `yapf/layout/frontend.py`
+materializes formatting tokens from LibCST code generation and lowers typed
+nodes to formatting contexts; do not introduce a fallback grammar or lexer.
+
+The adapter uses one private code-generation hook, so LibCST upgrades must
+run the frontend contract tests, the full suite, exact-output comparisons,
+AST-preservation checks, and idempotence checks. Test source distributions and
+wheels as well as a checkout. The supported interpreter/OS matrix is defined
+in `tox.ini` and `.github/workflows/ci.yml`; local success does not imply that
+the remote matrix has passed.

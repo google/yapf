@@ -26,8 +26,8 @@ through the code to commit the whitespace formatting.
   FormatDecisionState: main class exported by this module.
 """
 
-from yapf.pytree import split_penalty
-from yapf.pytree.pytree_utils import NodeName
+from yapf.layout import split_penalty
+from yapf.layout.utils import NodeName
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
 from yapf.yapflib import style

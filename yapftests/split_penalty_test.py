@@ -17,11 +17,10 @@ import sys
 import textwrap
 import unittest
 
-from yapf_third_party._ylib2to3 import pytree
-
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
-from yapf.pytree import split_penalty
+from yapf.layout import split_penalty
+from yapf.layout import tree as layout_tree
+from yapf.layout import utils
+from yapf.layout import visitor
 from yapf.yapflib import style
 
 from yapftests import yapf_test_helper
@@ -43,34 +42,33 @@ class SplitPenaltyTest(yapf_test_helper.YAPFTest):
 
     Arguments:
       code: code to parse as a string
-      dumptree: if True, the parsed pytree (after penalty assignment) is dumped
+      dumptree: if True, the parsed layout tree (after penalty assignment) is dumped
         to stderr. Useful for debugging.
 
     Returns:
       Parse tree.
     """
-    tree = pytree_utils.ParseCodeToTree(code)
+    tree = utils.ParseCodeToTree(code)
     split_penalty.ComputeSplitPenalties(tree)
     if dumptree:
-      pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
+      visitor.DumpLayout(tree, target_stream=sys.stderr)
     return tree
 
   def _CheckPenalties(self, tree, list_of_expected):
     """Check that the tokens in the tree have the correct penalties.
 
     Args:
-      tree: the pytree.
+      tree: the tree.
       list_of_expected: list of (name, penalty) pairs. Non-semantic tokens are
         filtered out from the expected values.
     """
 
     def FlattenRec(tree):
-      if pytree_utils.NodeName(tree) in pytree_utils.NONSEMANTIC_TOKENS:
+      if utils.NodeName(tree) in utils.NONSEMANTIC_TOKENS:
         return []
-      if isinstance(tree, pytree.Leaf):
+      if isinstance(tree, layout_tree.Leaf):
         return [(tree.value,
-                 pytree_utils.GetNodeAnnotation(
-                     tree, pytree_utils.Annotation.SPLIT_PENALTY))]
+                 utils.GetNodeAnnotation(tree, utils.Annotation.SPLIT_PENALTY))]
       nodes = []
       for node in tree.children:
         nodes += FlattenRec(node)

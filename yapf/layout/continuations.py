@@ -11,33 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Insert "continuation" nodes into lib2to3 tree.
+"""Insert "continuation" nodes into layout groups.
 
-The "backslash-newline" continuation marker is shoved into the node's prefix.
+The "backslash-newline" continuation marker is preserved in the node's prefix.
 Pull them out and make it into nodes of their own.
 
-  SpliceContinuations(): the main function exported by this module.
+  AttachContinuations(): the main function exported by this module.
 """
 
-from yapf_third_party._ylib2to3 import pytree
+from yapf.layout import tree as layout_tree
 
 from yapf.yapflib import format_token
 
 
-def SpliceContinuations(tree):
-  """Given a pytree, splice the continuation marker into nodes.
+def AttachContinuations(tree):
+  """Given a layout tree, splice the continuation marker into nodes.
 
   Arguments:
-    tree: (pytree.Node) The tree to work on. The tree is modified by this
+    tree: (layout_tree.Node) The tree to work on. The tree is modified by this
       function.
   """
 
   def RecSplicer(node):
     """Inserts a continuation marker into the node."""
-    if isinstance(node, pytree.Leaf):
+    if isinstance(node, layout_tree.Leaf):
       if node.prefix.lstrip().startswith('\\\n'):
         new_lineno = node.lineno - node.prefix.count('\n')
-        return pytree.Leaf(
+        return layout_tree.Leaf(
             type=format_token.CONTINUATION,
             value=node.prefix,
             context=('', (new_lineno, 0)))

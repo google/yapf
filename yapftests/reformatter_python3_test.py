@@ -498,7 +498,7 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     # https://github.com/google/yapf/issues/1058
     code = textwrap.dedent("""\
         t: tuple = 1, 2
-        args = tuple(x for x in [2], )
+        args = tuple((x for x in [2]), )
     """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))

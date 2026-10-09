@@ -1,4 +1,4 @@
-# Copyright 2022 Google Inc. All Rights Reserved.
+# Copyright 2026 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,3 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Standard-library token categories plus layout-only markers (no lexer)."""
+
+from token import *  # noqa: F403
+import token as _token
+
+CONTINUATION = _token.N_TOKENS
+ASYNC = _token.N_TOKENS + 1
+AWAIT = _token.N_TOKENS + 2
+tok_name = dict(_token.tok_name)
+tok_name.update({CONTINUATION: 'CONTINUATION', ASYNC: 'ASYNC', AWAIT: 'AWAIT'})

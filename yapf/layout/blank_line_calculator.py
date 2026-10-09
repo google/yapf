@@ -22,10 +22,9 @@ Annotations:
   newlines: The number of newlines required before the node.
 """
 
-from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
-
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
+from yapf.layout import tokens as layout_token
+from yapf.layout import utils
+from yapf.layout import visitor
 from yapf.yapflib import style
 
 _NO_BLANK_LINES = 1
@@ -33,10 +32,8 @@ _ONE_BLANK_LINE = 2
 _TWO_BLANK_LINES = 3
 
 _PYTHON_STATEMENTS = frozenset({
-    'small_stmt', 'expr_stmt', 'print_stmt', 'del_stmt', 'pass_stmt',
-    'break_stmt', 'continue_stmt', 'return_stmt', 'raise_stmt', 'yield_stmt',
-    'import_stmt', 'global_stmt', 'exec_stmt', 'assert_stmt', 'if_stmt',
-    'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt', 'nonlocal_stmt',
+    'expr_stmt', 'del_stmt', 'return_stmt', 'raise_stmt', 'global_stmt',
+    'assert_stmt', 'if_stmt', 'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt',
     'async_stmt', 'simple_stmt'
 })
 
@@ -47,13 +44,13 @@ def CalculateBlankLines(tree):
   This modifies the tree in place.
 
   Arguments:
-    tree: the top-level pytree node to annotate with subtypes.
+    tree: the top-level layout tree node to annotate with subtypes.
   """
   blank_line_calculator = _BlankLineCalculator()
   blank_line_calculator.Visit(tree)
 
 
-class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
+class _BlankLineCalculator(visitor.LayoutVisitor):
   """_BlankLineCalculator - see file-level docstring for a description."""
 
   def __init__(self):
@@ -65,7 +62,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
   def Visit_simple_stmt(self, node):  # pylint: disable=invalid-name
     self.DefaultNodeVisit(node)
-    if node.children[0].type == grammar_token.COMMENT:
+    if node.children[0].type == layout_token.COMMENT:
       self.last_comment_lineno = node.children[0].lineno
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
@@ -111,11 +108,11 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     function.
 
     Arguments:
-      node: (pytree.Node) The node to visit.
+      node: (tree.Node) The node to visit.
     """
     if self.last_was_class_or_function:
-      if pytree_utils.NodeName(node) in _PYTHON_STATEMENTS:
-        leaf = pytree_utils.FirstLeafNode(node)
+      if utils.NodeName(node) in _PYTHON_STATEMENTS:
+        leaf = utils.FirstLeafNode(node)
         _SetNumNewlines(leaf, self._GetNumNewlines(leaf))
     self.last_was_class_or_function = False
     super(_BlankLineCalculator, self).DefaultNodeVisit(node)
@@ -127,13 +124,13 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     classdef and functdef nodes.
 
     Arguments:
-      node: (pytree.Node) The classdef or funcdef node.
+      node: (tree.Node) The classdef or funcdef node.
 
     Returns:
       The index of the first child past the comment nodes.
     """
     index = 0
-    while pytree_utils.IsCommentStatement(node.children[index]):
+    while utils.IsCommentStatement(node.children[index]):
       # Standalone comments are wrapped in a simple_stmt node with the comment
       # node as its only child.
       self.Visit(node.children[index].children[0])
@@ -164,14 +161,13 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
 
 
 def _SetNumNewlines(node, num_newlines):
-  pytree_utils.SetNodeAnnotation(node, pytree_utils.Annotation.NEWLINES,
-                                 num_newlines)
+  utils.SetNodeAnnotation(node, utils.Annotation.NEWLINES, num_newlines)
 
 
 def _StartsInZerothColumn(node):
-  return (pytree_utils.FirstLeafNode(node).column == 0 or
+  return (utils.FirstLeafNode(node).column == 0 or
           (_AsyncFunction(node) and node.prev_sibling.column == 0))
 
 
 def _AsyncFunction(node):
-  return (node.prev_sibling and node.prev_sibling.type == grammar_token.ASYNC)
+  return (node.prev_sibling and node.prev_sibling.type == layout_token.ASYNC)

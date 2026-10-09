@@ -11,27 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""pytree-related utilities.
+"""Layout-tree navigation, annotation, insertion, and debugging helpers."""
 
-This module collects various utilities related to the parse trees produced by
-the lib2to3 library.
-
-  NodeName(): produces a string name for pytree nodes.
-  ParseCodeToTree(): convenience wrapper around lib2to3 interfaces to parse
-                     a given string with code to a pytree.
-  InsertNodeBefore(): insert a node before another in a pytree.
-  InsertNodeAfter(): insert a node after another in a pytree.
-  {Get,Set}NodeAnnotation(): manage custom annotations on pytree nodes.
-"""
-
-import ast
-import os
-
-from yapf_third_party._ylib2to3 import pygram
-from yapf_third_party._ylib2to3 import pytree
-from yapf_third_party._ylib2to3.pgen2 import driver
-from yapf_third_party._ylib2to3.pgen2 import parse
-from yapf_third_party._ylib2to3.pgen2 import token
+from yapf.layout import tokens as token
+from yapf.layout import tree as layout_tree
+from yapf.layout.roles import Kind
 
 # TODO(eliben): We may want to get rid of this filtering at some point once we
 # have a better understanding of what information we need from the tree. Then,
@@ -41,7 +25,7 @@ NONSEMANTIC_TOKENS = frozenset(['DEDENT', 'INDENT', 'NEWLINE', 'ENDMARKER'])
 
 
 class Annotation(object):
-  """Annotation names associated with pytrees."""
+  """Annotation names associated with layout trees."""
   CHILD_INDENT = 'child_indent'
   NEWLINES = 'newlines'
   MUST_SPLIT = 'must_split'
@@ -60,78 +44,30 @@ def NodeName(node):
   Returns:
     Name as a string.
   """
-  # Nodes with values < 256 are tokens. Values >= 256 are grammar symbols.
+  # Nodes with values < 256 are tokens. Values >= 256 are layout categories.
   if node.type < 256:
-    return token.tok_name[node.type]
+    return 'CONTINUATION' if node.type == token.N_TOKENS else token.tok_name[
+        node.type]
   else:
-    return pygram.python_grammar.number2symbol[node.type]
+    return Kind(node.type).name
 
 
 def FirstLeafNode(node):
-  if isinstance(node, pytree.Leaf):
+  if isinstance(node, layout_tree.Leaf):
     return node
   return FirstLeafNode(node.children[0])
 
 
 def LastLeafNode(node):
-  if isinstance(node, pytree.Leaf):
+  if isinstance(node, layout_tree.Leaf):
     return node
   return LastLeafNode(node.children[-1])
 
 
-# lib2to3 thoughtfully provides pygram.python_grammar_no_print_statement for
-# parsing Python 3 code that wouldn't parse otherwise (when 'print' is used in a
-# context where a keyword is disallowed).
-# It forgets to do the same for 'exec' though. Luckily, Python is amenable to
-# monkey-patching.
-# Note that pygram.python_grammar_no_print_and_exec_statement with "_and_exec"
-# will require Python >=3.8.
-_PYTHON_GRAMMAR = pygram.python_grammar_no_print_statement.copy()
-del _PYTHON_GRAMMAR.keywords['exec']
-
-
 def ParseCodeToTree(code):
-  """Parse the given code to a lib2to3 pytree.
-
-  Arguments:
-    code: a string with the code to parse.
-
-  Raises:
-    SyntaxError if the code is invalid syntax.
-    parse.ParseError if some other parsing failure.
-
-  Returns:
-    The root node of the parsed tree.
-  """
-  # This function is tiny, but the incantation for invoking the parser correctly
-  # is sufficiently magical to be worth abstracting away.
-  if not code.endswith(os.linesep):
-    code += os.linesep
-
-  try:
-    parser_driver = driver.Driver(_PYTHON_GRAMMAR, convert=pytree.convert)
-    tree = parser_driver.parse_string(code, debug=False)
-  except parse.ParseError:
-    # Raise a syntax error if the code is invalid python syntax.
-    ast.parse(code)
-    raise
-  return _WrapEndMarker(tree)
-
-
-def _WrapEndMarker(tree):
-  """Wrap a single ENDMARKER token in a "file_input" node.
-
-  Arguments:
-    tree: (pytree.Node) The root node of the parsed tree.
-
-  Returns:
-    The root node of the parsed tree. If the tree is a single ENDMARKER node,
-    then that node is wrapped in a "file_input" node. That will ensure we don't
-    skip comments attached to that node.
-  """
-  if isinstance(tree, pytree.Leaf) and tree.type == token.ENDMARKER:
-    return pytree.Node(pygram.python_symbols.file_input, [tree])
-  return tree
+  """Parse with LibCST and lower to the mutable formatting representation."""
+  from yapf.layout.frontend import ParseCode
+  return ParseCode(code)
 
 
 def InsertNodesBefore(new_nodes, target):
@@ -185,7 +121,7 @@ def _InsertNodeAt(new_node, target, after=False):
     raise RuntimeError('inserting node which already has a parent',
                        (new_node, new_node.parent))
 
-  # The code here is based on pytree.Base.next_sibling
+  # The code here is based on tree.Base.next_sibling
   parent_of_target = target.parent
   if parent_of_target is None:
     raise RuntimeError('expected target node to have a parent', (target,))
@@ -201,7 +137,7 @@ def _InsertNodeAt(new_node, target, after=False):
 
 
 # The following constant and functions implement a simple custom annotation
-# mechanism for pytree nodes. We attach new attributes to nodes. Each attribute
+# mechanism for layout nodes. Each new attribute attached to a node
 # is prefixed with _NODE_ANNOTATION_PREFIX. These annotations should only be
 # managed through GetNodeAnnotation and SetNodeAnnotation.
 _NODE_ANNOTATION_PREFIX = '_yapf_annotation_'
@@ -302,7 +238,7 @@ def DumpNodeToString(node):
   Returns:
     The string representation.
   """
-  if isinstance(node, pytree.Leaf):
+  if isinstance(node, layout_tree.Leaf):
     fmt = ('{name}({value}) [lineno={lineno}, column={column}, '
            'prefix={prefix}, penalty={penalty}]')
     return fmt.format(
@@ -321,11 +257,11 @@ def DumpNodeToString(node):
 
 
 def _PytreeNodeRepr(node):
-  """Like pytree.Node.__repr__, but names instead of numbers for tokens."""
-  if isinstance(node, pytree.Node):
+  """Like layout_tree.Node.__repr__, but names instead of numbers for tokens."""
+  if isinstance(node, layout_tree.Node):
     return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node),
                            [_PytreeNodeRepr(c) for c in node.children])
-  if isinstance(node, pytree.Leaf):
+  if isinstance(node, layout_tree.Leaf):
     return '%s(%s, %r)' % (node.__class__.__name__, NodeName(node), node.value)
 
 

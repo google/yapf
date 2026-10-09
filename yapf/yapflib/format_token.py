@@ -17,10 +17,9 @@ import keyword
 import re
 from functools import lru_cache
 
-from yapf_third_party._ylib2to3.pgen2 import token
-from yapf_third_party._ylib2to3.pytree import type_repr
-
-from yapf.pytree import pytree_utils
+from yapf.layout import tokens as token
+from yapf.layout import utils
+from yapf.layout.tree import type_repr
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
@@ -88,7 +87,7 @@ class FormatToken(object):
     """Constructor.
 
     Arguments:
-      node: (pytree.Leaf) The node that's being wrapped.
+      node: (tree.Leaf) The node that's being wrapped.
       name: (string) The name of the node.
     """
     self.node = node
@@ -111,17 +110,15 @@ class FormatToken(object):
     self.total_length = 0
     self.split_penalty = 0
     self.can_break_before = False
-    self.must_break_before = pytree_utils.GetNodeAnnotation(
-        node, pytree_utils.Annotation.MUST_SPLIT, default=False)
-    self.newlines = pytree_utils.GetNodeAnnotation(
-        node, pytree_utils.Annotation.NEWLINES)
+    self.must_break_before = utils.GetNodeAnnotation(
+        node, utils.Annotation.MUST_SPLIT, default=False)
+    self.newlines = utils.GetNodeAnnotation(node, utils.Annotation.NEWLINES)
     self.spaces_required_before = 0
 
     if self.is_comment:
       self.spaces_required_before = style.Get('SPACES_BEFORE_COMMENT')
 
-    stypes = pytree_utils.GetNodeAnnotation(node,
-                                            pytree_utils.Annotation.SUBTYPE)
+    stypes = utils.GetNodeAnnotation(node, utils.Annotation.SUBTYPE)
     self.subtypes = {subtypes.NONE} if not stypes else stypes
     self.is_pseudo = hasattr(node, 'is_pseudo') and node.is_pseudo
 
@@ -230,9 +227,9 @@ class FormatToken(object):
 
   @property
   def node_split_penalty(self):
-    """Split penalty attached to the pytree node of this token."""
-    return pytree_utils.GetNodeAnnotation(
-        self.node, pytree_utils.Annotation.SPLIT_PENALTY, default=0)
+    """Split penalty attached to the layout tree node of this token."""
+    return utils.GetNodeAnnotation(
+        self.node, utils.Annotation.SPLIT_PENALTY, default=0)
 
   @property
   def is_binary_op(self):

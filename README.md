@@ -53,7 +53,14 @@ YAPF is supported by multiple editors via community extensions or plugins. See [
 
 ## Required Python versions
 
-YAPF supports Python 3.7+.
+This branch requires Python 3.9+ and LibCST 1.9.x. LibCST is installed with
+YAPF; running directly from a checkout still requires its dependencies.
+LibCST normally installs from a platform wheel. A source build requires Rust.
+
+Python syntax is parsed exclusively by LibCST. YAPF's existing style settings,
+line-breaking search, file API, and command-line interface remain in place.
+See [the migration notes](LIBCST_MIGRATION.md) for compatibility boundaries and
+the layout adapter's maintenance contract.
 
 
 ## Usage
@@ -352,8 +359,17 @@ optional arguments:
 ```
 
 ## Python features not yet supported
-* Python 3.12 – [PEP 695 – Type Parameter Syntax](https://peps.python.org/pep-0695/) – [YAPF #1170](https://github.com/google/yapf/issues/1170)
-* Python 3.12 – [PEP 701 – Syntactic formalization of f-strings](https://peps.python.org/pep-0701/) – [YAPF #1136](https://github.com/google/yapf/issues/1136)
+This migration ports the formatting behavior of the original `main`; it does
+not integrate the separate Python-syntax feature branches. In particular,
+type aliases and generic declarations are not yet lowered for formatting,
+even though LibCST recognizes their syntax. Unsupported CST constructs produce
+an explicit error rather than falling back to another parser. LibCST 1.9.0
+also rejects a valid starred class base placed after a keyword argument; see
+the [known compatibility restriction](LIBCST_MIGRATION.md#compatibility).
+
+String literals, including f-strings recognized by LibCST, remain opaque to the
+layout engine: their contents are preserved, not reformatted. Do not infer full
+formatting support for a new Python feature solely from LibCST parsing it.
 
 ## Knobs
 

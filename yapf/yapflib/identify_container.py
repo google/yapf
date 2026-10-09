@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Identify containers for lib2to3 trees.
+"""Identify containers for layout groups.
 
 This module identifies containers and the elements in them. Each element points
 to the opening bracket and vice-versa.
@@ -19,23 +19,22 @@ to the opening bracket and vice-versa.
   IdentifyContainers(): the main function exported by this module.
 """
 
-from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
-
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
+from yapf.layout import tokens as layout_token
+from yapf.layout import utils
+from yapf.layout import visitor
 
 
 def IdentifyContainers(tree):
   """Run the identify containers visitor over the tree, modifying it in place.
 
   Arguments:
-    tree: the top-level pytree node to annotate with subtypes.
+    tree: the top-level layout tree node to annotate with subtypes.
   """
   identify_containers = _IdentifyContainers()
   identify_containers.Visit(tree)
 
 
-class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
+class _IdentifyContainers(visitor.LayoutVisitor):
   """_IdentifyContainers - see file-level docstring for detailed description."""
 
   def Visit_trailer(self, node):  # pylint: disable=invalid-name
@@ -44,16 +43,15 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
 
     if len(node.children) != 3:
       return
-    if node.children[0].type != grammar_token.LPAR:
+    if node.children[0].type != layout_token.LPAR:
       return
 
-    if pytree_utils.NodeName(node.children[1]) == 'arglist':
+    if utils.NodeName(node.children[1]) == 'arglist':
       for child in node.children[1].children:
-        pytree_utils.SetOpeningBracket(
-            pytree_utils.FirstLeafNode(child), node.children[0])
+        utils.SetOpeningBracket(utils.FirstLeafNode(child), node.children[0])
     else:
-      pytree_utils.SetOpeningBracket(
-          pytree_utils.FirstLeafNode(node.children[1]), node.children[0])
+      utils.SetOpeningBracket(
+          utils.FirstLeafNode(node.children[1]), node.children[0])
 
   def Visit_atom(self, node):  # pylint: disable=invalid-name
     for child in node.children:
@@ -61,9 +59,8 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
 
     if len(node.children) != 3:
       return
-    if node.children[0].type != grammar_token.LPAR:
+    if node.children[0].type != layout_token.LPAR:
       return
 
     for child in node.children[1].children:
-      pytree_utils.SetOpeningBracket(
-          pytree_utils.FirstLeafNode(child), node.children[0])
+      utils.SetOpeningBracket(utils.FirstLeafNode(child), node.children[0])

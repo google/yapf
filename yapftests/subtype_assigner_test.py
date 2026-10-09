@@ -16,7 +16,7 @@
 import textwrap
 import unittest
 
-from yapf.pytree import pytree_utils
+from yapf.layout import utils
 from yapf.yapflib import format_token
 from yapf.yapflib import subtypes
 
@@ -37,7 +37,7 @@ class SubtypeAssignerTest(yapf_test_helper.YAPFTest):
     for lline in llines:
       filtered_values = [(ft.value, ft.subtypes)
                          for ft in lline.tokens
-                         if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
+                         if ft.name not in utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
 

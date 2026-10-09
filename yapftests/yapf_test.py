@@ -25,7 +25,7 @@ import textwrap
 import unittest
 from io import StringIO
 
-from yapf_third_party._ylib2to3.pgen2 import tokenize
+import tokenize
 
 from yapf.yapflib import errors
 from yapf.yapflib import style
@@ -1700,7 +1700,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func(2) # Line 2
         # Line 3
         func(3)                             # Line 4
-                                        # Line 5 - SpliceComments makes this part of the previous block
+                                        # Line 5 - AttachComments makes this part of the previous block
                                     # Line 6
 
                                             # Aligned with prev comment block
@@ -1710,7 +1710,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
         func(2)       # Line 2
                       # Line 3
         func(3)       # Line 4
-                      # Line 5 - SpliceComments makes this part of the previous block
+                      # Line 5 - AttachComments makes this part of the previous block
                       # Line 6
 
                       # Aligned with prev comment block
@@ -1724,7 +1724,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
             func(2) # Line 2
             # Line 3
             func(3)                             # Line 4
-                                                # Line 5 - SpliceComments makes this a new block
+                                                # Line 5 - AttachComments makes this a new block
                                                 # Line 6
 
                                                 # Aligned with Func
@@ -1739,7 +1739,7 @@ class HorizontallyAlignedTrailingCommentsTest(yapf_test_helper.YAPFTest):
                       # Line 3
             func(3)   # Line 4
 
-            # Line 5 - SpliceComments makes this a new block
+            # Line 5 - AttachComments makes this a new block
             # Line 6
 
             # Aligned with Func

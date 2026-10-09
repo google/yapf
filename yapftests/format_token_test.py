@@ -15,8 +15,8 @@
 
 import unittest
 
-from yapf_third_party._ylib2to3 import pytree
-from yapf_third_party._ylib2to3.pgen2 import token
+from yapf.layout import tokens as token
+from yapf.layout import tree as layout_tree
 
 from yapf.yapflib import format_token
 
@@ -69,14 +69,14 @@ class FormatTokenTest(yapf_test_helper.YAPFTest):
 
   def testSimple(self):
     tok = format_token.FormatToken(
-        pytree.Leaf(token.STRING, "'hello world'"), 'STRING')
+        layout_tree.Leaf(token.STRING, "'hello world'"), 'STRING')
     self.assertEqual(
         "FormatToken(name=DOCSTRING, value='hello world', column=0, "
         'lineno=0, splitpenalty=0)', str(tok))
     self.assertTrue(tok.is_string)
 
     tok = format_token.FormatToken(
-        pytree.Leaf(token.COMMENT, '# A comment'), 'COMMENT')
+        layout_tree.Leaf(token.COMMENT, '# A comment'), 'COMMENT')
     self.assertEqual(
         'FormatToken(name=COMMENT, value=# A comment, column=0, '
         'lineno=0, splitpenalty=0)', str(tok))
@@ -84,11 +84,11 @@ class FormatTokenTest(yapf_test_helper.YAPFTest):
 
   def testIsMultilineString(self):
     tok = format_token.FormatToken(
-        pytree.Leaf(token.STRING, '"""hello"""'), 'STRING')
+        layout_tree.Leaf(token.STRING, '"""hello"""'), 'STRING')
     self.assertTrue(tok.is_multiline_string)
 
     tok = format_token.FormatToken(
-        pytree.Leaf(token.STRING, 'r"""hello"""'), 'STRING')
+        layout_tree.Leaf(token.STRING, 'r"""hello"""'), 'STRING')
     self.assertTrue(tok.is_multiline_string)
 
 

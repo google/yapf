@@ -10,7 +10,7 @@ maintainers = [{ name = "Bill Wendling", email = "morbo@google.com" }]
 dynamic = ["version"]
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 classifiers = [
     'Development Status :: 4 - Beta',
     'Environment :: Console',
@@ -19,15 +19,16 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3 :: Only',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Software Development :: Quality Assurance',
 ]
-dependencies = ['platformdirs>=3.5.1', 'tomli>=2.0.1; python_version<"3.11"']
+dependencies = ['libcst>=1.9.0,<1.10', 'platformdirs>=3.5.1', 'tomli>=2.0.1; python_version<"3.11"']
 
 [project.scripts]
 yapf = "yapf:run_main"
@@ -57,7 +58,4 @@ include = ["yapf*", 'yapftests*']
 [tool.setuptools.package-data]
 yapf_third_party = [
     'yapf_diff/LICENSE',
-    '_ylib2to3/Grammar.txt',
-    '_ylib2to3/PatternGrammar.txt',
-    '_ylib2to3/LICENSE',
 ]

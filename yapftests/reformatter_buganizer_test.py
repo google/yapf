@@ -624,8 +624,8 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                   left_name='start', left_default=0, right_name='end', right_default=0)
               | m.Point(
                   m.Cond(m.VAL['end'] != 0, m.VAL['end'], k.TimestampMicros() /
-                         1000000L) - m.Cond(m.VAL['start'] != 0, m.VAL['start'],
-                                            m.TimestampMicros() / 1000000L)))
+                         1000000) - m.Cond(m.VAL['start'] != 0, m.VAL['start'],
+                                            m.TimestampMicros() / 1000000)))
     """)  # noqa
     expected_formatted_code = textwrap.dedent("""\
         def _():
@@ -642,9 +642,9 @@ class BuganizerFixes(yapf_test_helper.YAPFTest):
                   left_name='start', left_default=0, right_name='end', right_default=0)
               | m.Point(
                   m.Cond(m.VAL['end'] != 0, m.VAL['end'],
-                         k.TimestampMicros() / 1000000L) -
+                         k.TimestampMicros() / 1000000) -
                   m.Cond(m.VAL['start'] != 0, m.VAL['start'],
-                         m.TimestampMicros() / 1000000L)))
+                         m.TimestampMicros() / 1000000)))
     """)  # noqa
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))

@@ -126,7 +126,8 @@ class MainTest(yapf_test_helper.YAPFTest):
     bad_syntax = '  a = 1\n'
     with patched_input(bad_syntax):
       with captured_output() as (_, _):
-        with self.assertRaisesRegex(yapf.errors.YapfError, 'unexpected indent'):
+        with self.assertRaisesRegex(yapf.errors.YapfError,
+                                    r'<stdin>:1:[0-9]+:'):
           yapf.main([])
 
   def testHelp(self):
