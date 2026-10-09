@@ -299,6 +299,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
 
+  def Visit_typeparamslist(self, node):  # pylint: disable=invalid-name
+    _DetermineMustSplitAnnotation(node)
+    self.DefaultNodeVisit(node)
+
   def Visit_typedargslist(self, node):  # pylint: disable=invalid-name
     _DetermineMustSplitAnnotation(node)
     self.DefaultNodeVisit(node)
@@ -365,8 +369,11 @@ def _IdentifyParameterLists(line):
   for tok in line.tokens:
     # Identify parameter list objects.
     if subtypes.FUNC_DEF in tok.subtypes:
-      assert tok.next_token.value == '('
-      func_stack.append(tok.next_token)
+      opening = tok.next_token
+      if opening.value == '[':
+        opening = opening.matching_bracket.next_token
+      assert opening.value == '('
+      func_stack.append(opening)
       continue
 
     if func_stack and tok.value == ')':

@@ -351,9 +351,21 @@ optional arguments:
   --binary BINARY       location of binary to use for YAPF
 ```
 
-## Python features not yet supported
-* Python 3.12 – [PEP 695 – Type Parameter Syntax](https://peps.python.org/pep-0695/) – [YAPF #1170](https://github.com/google/yapf/issues/1170)
-* Python 3.12 – [PEP 701 – Syntactic formalization of f-strings](https://peps.python.org/pep-0701/) – [YAPF #1136](https://github.com/google/yapf/issues/1136)
+## Python syntax support
+
+* Python 3.12 - [PEP 695 - Type parameter syntax](https://peps.python.org/pep-0695/) - **Supported.** See [implementation notes](docs/pep-0695.md).
+* Python 3.13 - [PEP 696 - Type parameter defaults](https://peps.python.org/pep-0696/) - **Supported.** See [implementation notes](docs/pep-0696.md).
+* Python 3.12 - [PEP 701 - F-string syntax](https://peps.python.org/pep-0701/) - **Supported.** See [implementation notes](docs/pep-0701.md).
+* Python 3.14 - [PEP 750 - Template strings](https://peps.python.org/pep-0750/) - **Supported.** See [implementation notes](docs/pep-0750.md).
+* Python 3.14 - [PEP 758 - Unparenthesized exception lists](https://peps.python.org/pep-0758/) - **Supported.** See [implementation notes](docs/pep-0758.md).
+* Python 3.15 - [PEP 798 - Unpacking comprehensions](https://peps.python.org/pep-0798/) - **Supported.** See [implementation notes](docs/pep-0798.md).
+* Python 3.15 - [PEP 810 - Explicit lazy imports](https://peps.python.org/pep-0810/) - **Supported.** See [implementation notes](docs/pep-0810.md).
+
+Interpolated string literals, including replacement and debug expressions, are
+preserved verbatim; YAPF formats the surrounding code, not their contents.
+
+See [branch dependencies and validation](docs/pep-feature-branches.md) for the
+feature-branch layout and test limitations.
 
 ## Knobs
 

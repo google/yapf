@@ -296,9 +296,16 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
     # Spaces between keyword, string, number, and identifier tokens.
     return True
-  if lval == ',' and rval == ':':
-    # We do want a space between a comma and colon.
+  if lval == 'except' and rval == '*':
+    # The exception-group marker is attached to the except keyword.
+    return False
+  if lval == '*' and left.previous_token and left.previous_token.value == 'except':
     return True
+  if lval == ',' and rval == ':':
+    # A PEP 758 exception list may end in a comma. Unlike a multidimensional
+    # slice, the following colon terminates the clause, not another element.
+    return not (left.node.parent is not None and
+                left.node.parent.type == python_symbols.except_clause)
   if style.Get('SPACE_INSIDE_BRACKETS'):
     # Supersede the "no space before a colon or comma" check.
     if left.OpensScope() and rval == ':':

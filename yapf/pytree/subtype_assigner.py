@@ -107,6 +107,22 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
         elif last_was_colon:
           unpacking = False
 
+  def Visit_type_stmt(self, node):  # pylint: disable=invalid-name
+    # An alias assignment is not a default/named argument assignment.
+    self.Visit_expr_stmt(node)
+
+  def Visit_typeparam(self, node):  # pylint: disable=invalid-name
+    # Type defaults use assignment spacing, not value-parameter/keyword-arg
+    # spacing. Only direct children are annotated: a call in a default must
+    # retain its own keyword-argument spacing.
+    for child in node.children:
+      self.Visit(child)
+      if isinstance(child, pytree.Leaf):
+        subtype = (
+            subtypes.ASSIGN_OPERATOR if child.value == '=' else
+            _ARGLIST_TOKEN_TO_SUBTYPE.get(child.value, subtypes.NONE))
+        _AppendTokenSubtype(child, subtype)
+
   def Visit_expr_stmt(self, node):  # pylint: disable=invalid-name
     # expr_stmt ::= testlist_star_expr (augassign (yield_expr|testlist)
     #               | ('=' (yield_expr|testlist_star_expr))*)
@@ -147,6 +163,9 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       elif pytree_utils.NodeName(child) == 'comp_op':
         for grandchild in child.children:
           _AppendTokenSubtype(grandchild, subtypes.BINARY_OPERATOR)
+
+  def Visit_star_gexp(self, node):  # pylint: disable=invalid-name
+    self.Visit_star_expr(node)
 
   def Visit_star_expr(self, node):  # pylint: disable=invalid-name
     # star_expr ::= '*' expr
