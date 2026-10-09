@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for yapf.comment_splicer."""
+"""Tests for yapf.comments."""
 
 import textwrap
 import unittest
 
-from yapf.pytree import comment_splicer
-from yapf.pytree import pytree_utils
+from yapf.layout import comments
+from yapf.layout import utils
 
 from yapftests import yapf_test_helper
 
@@ -25,10 +25,10 @@ from yapftests import yapf_test_helper
 class CommentSplicerTest(yapf_test_helper.YAPFTest):
 
   def _AssertNodeType(self, expected_type, node):
-    self.assertEqual(expected_type, pytree_utils.NodeName(node))
+    self.assertEqual(expected_type, utils.NodeName(node))
 
   def _AssertNodeIsComment(self, node, text_in_comment=None):
-    if pytree_utils.NodeName(node) == 'simple_stmt':
+    if utils.NodeName(node) == 'simple_stmt':
       self._AssertNodeType('COMMENT', node.children[0])
       node_value = node.children[0].value
     else:
@@ -39,7 +39,7 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
 
   def _FindNthChildNamed(self, node, name, n=1):
     for i, child in enumerate(
-        [c for c in node.pre_order() if pytree_utils.NodeName(c) == name]):
+        [c for c in node.pre_order() if utils.NodeName(c) == name]):
       if i == n - 1:
         return child
     raise RuntimeError('No Nth child for n={0}'.format(n))
@@ -48,8 +48,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         foo = 1 # and a comment
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     expr = tree.children[0].children[0]
     # Check that the expected node is still expr_stmt, but now it has 4 children
@@ -65,8 +65,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         # first comment
         bar = 2
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # The comment should've been added to the root's children (now 4, including
     # the ENDMARKER in the end.
@@ -81,8 +81,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         # second comment
         bar = 2
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # This is similar to the single-line standalone comment.
     self.assertEqual(4, len(tree.children))
@@ -94,8 +94,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
           # a comment
           foo = 1
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # Look into the suite node under the 'if'. We don't care about the NEWLINE
     # leaf but the new COMMENT must be a child of the suite and before the
@@ -110,8 +110,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
           foo = 1
           # a comment
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # Look into the suite node under the 'if'. We don't care about the DEDENT
     # leaf but the new COMMENT must be a child of the suite and after the
@@ -126,8 +126,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         # line comment
         foo = 1 # inline comment
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # The separate line comment should become a child of the root, while
     # the inline comment remains within its simple_node.
@@ -144,8 +144,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         foo = 1 # inline comment
         # line comment
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # The separate line comment should become a child of the root, while
     # the inline comment remains within its simple_node.
@@ -163,8 +163,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         # a comment
         j = 2
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # The comment should go under the tree root, not under the 'if'.
     self._AssertNodeIsComment(tree.children[1])
@@ -179,8 +179,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
           # a comment
         y = 1
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     if_suite = tree.children[0].children[3]
     # The comment is in the first if_suite, not the nested if under it. It's
@@ -196,8 +196,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
            # comment 2
         y = 1
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # The comment here is indented by 3 spaces, which is unlike any of the
     # surrounding statement indentation levels. The splicer attaches it to the
@@ -218,8 +218,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         # comment 0
         j = 2
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     # comment 0 should go under the tree root
     self._AssertNodeIsComment(tree.children[1], '# comment 0')
@@ -244,8 +244,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
           # another comment
     """)
 
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     class_suite = tree.children[0].children[3]
     another_comment = class_suite.children[-2]
@@ -266,8 +266,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
           pass
     """)
 
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     funcdef = tree.children[0]
     block_comment_1 = funcdef.children[0]
@@ -289,8 +289,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
             pass
     """)
 
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     classdef = tree.children[0]
     class_suite = classdef.children[6]
@@ -305,8 +305,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
         foo( # Request fractions of an hour.
           948.0/3600, 20)
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     trailer = self._FindNthChildNamed(tree, 'trailer', 1)
     comment = trailer.children[1]
@@ -319,8 +319,8 @@ class CommentSplicerTest(yapf_test_helper.YAPFTest):
           20 + 12 # com 3
           )
     """)
-    tree = pytree_utils.ParseCodeToTree(code)
-    comment_splicer.SpliceComments(tree)
+    tree = utils.ParseCodeToTree(code)
+    comments.AttachComments(tree)
 
     trailer = self._FindNthChildNamed(tree, 'trailer', 1)
     self._AssertNodeIsComment(trailer.children[1], '# com 1')

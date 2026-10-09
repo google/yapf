@@ -11,17 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for yapf.pytree_unwrapper."""
+"""Tests for yapf.unwrapper."""
 
 import textwrap
 import unittest
 
-from yapf.pytree import pytree_utils
+from yapf.layout import utils
 
 from yapftests import yapf_test_helper
 
 
-class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
+class LayoutUnwrapperTest(yapf_test_helper.YAPFTest):
 
   def _CheckLogicalLines(self, llines, list_of_expected):
     """Check that the given LogicalLines match expectations.
@@ -36,7 +36,7 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
       filtered_values = [
           ft.value
           for ft in lline.tokens
-          if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
+          if ft.name not in utils.NONSEMANTIC_TOKENS
       ]
       actual.append((lline.depth, filtered_values))
 
@@ -178,7 +178,7 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
     code = textwrap.dedent("""\
         try:
           pass
-        except:
+        except ValueError:
           pass
         except:
           pass
@@ -191,7 +191,7 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
     self._CheckLogicalLines(llines, [
         (0, ['try', ':']),
         (1, ['pass']),
-        (0, ['except', ':']),
+        (0, ['except', 'ValueError', ':']),
         (1, ['pass']),
         (0, ['except', ':']),
         (1, ['pass']),
@@ -302,7 +302,7 @@ class MatchBracketsTest(yapf_test_helper.YAPFTest):
     for lline in llines:
       filtered_values = [(ft, ft.matching_bracket)
                          for ft in lline.tokens
-                         if ft.name not in pytree_utils.NONSEMANTIC_TOKENS]
+                         if ft.name not in utils.NONSEMANTIC_TOKENS]
       if filtered_values:
         actual.append(filtered_values)
 

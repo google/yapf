@@ -1154,7 +1154,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           def _ProcessArgLists(self, node):
             """Common method for processing argument lists."""
             for child in node.children:
-              if isinstance(child, pytree.Leaf):
+              if isinstance(child, tree.Leaf):
                 self._SetTokenSubtype(
                     child, subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(
                         child.value, format_token.Subtype.NONE))
@@ -1165,7 +1165,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
           def _ProcessArgLists(self, node):
             """Common method for processing argument lists."""
             for child in node.children:
-              if isinstance(child, pytree.Leaf):
+              if isinstance(child, tree.Leaf):
                 self._SetTokenSubtype(
                     child,
                     subtype=_ARGLIST_TOKEN_TO_SUBTYPE.get(child.value,
@@ -1270,7 +1270,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
           def x(self, node, name, n=1):
             for i, child in enumerate(
-                itertools.ifilter(lambda c: pytree_utils.NodeName(c) == name,
+                itertools.ifilter(lambda c: utils.NodeName(c) == name,
                                   node.pre_order())):
               pass
     """)
@@ -1535,7 +1535,7 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
 
           def bar():
             if True:
-              if (child.type == grammar_token.NAME and
+              if (child.type == layout_token.NAME and
                   child.value in substatement_names):
                 pass
     """)
@@ -1982,21 +1982,21 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     unformatted_code = textwrap.dedent("""\
         def f():
           if True:
-            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+            utils.InsertNodesBefore(_CreateCommentsFromPrefix(
                 comment_prefix, comment_lineno, comment_column,
                 standalone=True), ancestor_at_indent)
-            pytree_utils.InsertNodesBefore(_CreateCommentsFromPrefix(
+            utils.InsertNodesBefore(_CreateCommentsFromPrefix(
                 comment_prefix, comment_lineno, comment_column,
                 standalone=True))
     """)
     expected_formatted_code = textwrap.dedent("""\
         def f():
           if True:
-            pytree_utils.InsertNodesBefore(
+            utils.InsertNodesBefore(
                 _CreateCommentsFromPrefix(
                     comment_prefix, comment_lineno, comment_column, standalone=True),
                 ancestor_at_indent)
-            pytree_utils.InsertNodesBefore(
+            utils.InsertNodesBefore(
                 _CreateCommentsFromPrefix(
                     comment_prefix, comment_lineno, comment_column, standalone=True))
     """)  # noqa

@@ -17,14 +17,14 @@ import difflib
 import sys
 import unittest
 
-from yapf.pytree import blank_line_calculator
-from yapf.pytree import comment_splicer
-from yapf.pytree import continuation_splicer
-from yapf.pytree import pytree_unwrapper
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
-from yapf.pytree import split_penalty
-from yapf.pytree import subtype_assigner
+from yapf.layout import blank_line_calculator
+from yapf.layout import comments
+from yapf.layout import continuations
+from yapf.layout import split_penalty
+from yapf.layout import subtype_assigner
+from yapf.layout import unwrapper
+from yapf.layout import utils
+from yapf.layout import visitor
 from yapf.yapflib import identify_container
 from yapf.yapflib import style
 
@@ -68,24 +68,24 @@ def ParseAndUnwrap(code, dumptree=False):
 
   Arguments:
     code: code to parse as a string
-    dumptree: if True, the parsed pytree (after comment splicing) is dumped
+    dumptree: if True, the parsed layout tree (after comment splicing) is dumped
               to stderr. Useful for debugging.
 
   Returns:
     List of logical lines.
   """
-  tree = pytree_utils.ParseCodeToTree(code)
-  comment_splicer.SpliceComments(tree)
-  continuation_splicer.SpliceContinuations(tree)
+  tree = utils.ParseCodeToTree(code)
+  comments.AttachComments(tree)
+  continuations.AttachContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
   identify_container.IdentifyContainers(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)
 
   if dumptree:
-    pytree_visitor.DumpPyTree(tree, target_stream=sys.stderr)
+    visitor.DumpLayout(tree, target_stream=sys.stderr)
 
-  llines = pytree_unwrapper.UnwrapPyTree(tree)
+  llines = unwrapper.Unwrap(tree)
   for lline in llines:
     lline.CalculateFormattingInformation()
 

@@ -11,18 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for yapf.pytree_visitor."""
+"""Tests for yapf.layout.visitor."""
 
 import unittest
 from io import StringIO
 
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
+from yapf.layout import utils
+from yapf.layout import visitor
 
 from yapftests import yapf_test_helper
 
 
-class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
+class _NodeNameCollector(visitor.LayoutVisitor):
   """A tree visitor that collects the names of all tree nodes into a list.
 
   Attributes:
@@ -37,11 +37,11 @@ class _NodeNameCollector(pytree_visitor.PyTreeVisitor):
     self.name_node_values = []
 
   def DefaultNodeVisit(self, node):
-    self.all_node_names.append(pytree_utils.NodeName(node))
+    self.all_node_names.append(utils.NodeName(node))
     super(_NodeNameCollector, self).DefaultNodeVisit(node)
 
   def DefaultLeafVisit(self, leaf):
-    self.all_node_names.append(pytree_utils.NodeName(leaf))
+    self.all_node_names.append(utils.NodeName(leaf))
 
   def Visit_NAME(self, leaf):
     self.name_node_values.append(leaf.value)
@@ -60,10 +60,10 @@ if x:
 """
 
 
-class PytreeVisitorTest(yapf_test_helper.YAPFTest):
+class LayoutVisitorTest(yapf_test_helper.YAPFTest):
 
   def testCollectAllNodeNamesSimpleCode(self):
-    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
+    tree = utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
     collector = _NodeNameCollector()
     collector.Visit(tree)
     expected_names = [
@@ -78,7 +78,7 @@ class PytreeVisitorTest(yapf_test_helper.YAPFTest):
     self.assertEqual(expected_name_node_values, collector.name_node_values)
 
   def testCollectAllNodeNamesNestedCode(self):
-    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_NESTED_CODE)
+    tree = utils.ParseCodeToTree(_VISITOR_TEST_NESTED_CODE)
     collector = _NodeNameCollector()
     collector.Visit(tree)
     expected_names = [
@@ -95,22 +95,22 @@ class PytreeVisitorTest(yapf_test_helper.YAPFTest):
     self.assertEqual(expected_name_node_values, collector.name_node_values)
 
   def testDumper(self):
-    # PyTreeDumper is mainly a debugging utility, so only do basic sanity
+    # LayoutDumper is mainly a debugging utility, so only do basic sanity
     # checking.
-    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
+    tree = utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
     stream = StringIO()
-    pytree_visitor.PyTreeDumper(target_stream=stream).Visit(tree)
+    visitor.LayoutDumper(target_stream=stream).Visit(tree)
 
     dump_output = stream.getvalue()
     self.assertIn('file_input [3 children]', dump_output)
     self.assertIn("NAME(Leaf(NAME, 'foo'))", dump_output)
     self.assertIn("EQUAL(Leaf(EQUAL, '='))", dump_output)
 
-  def testDumpPyTree(self):
-    # Similar sanity checking for the convenience wrapper DumpPyTree
-    tree = pytree_utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
+  def testDumpLayout(self):
+    # Similar sanity checking for the convenience wrapper DumpLayout
+    tree = utils.ParseCodeToTree(_VISITOR_TEST_SIMPLE_CODE)
     stream = StringIO()
-    pytree_visitor.DumpPyTree(tree, target_stream=stream)
+    visitor.DumpLayout(tree, target_stream=stream)
 
     dump_output = stream.getvalue()
     self.assertIn('file_input [3 children]', dump_output)

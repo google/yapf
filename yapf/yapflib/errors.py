@@ -13,8 +13,6 @@
 # limitations under the License.
 """YAPF error objects."""
 
-from yapf_third_party._ylib2to3.pgen2 import tokenize
-
 
 def FormatErrorMsg(e):
   """Convert an exception into a standard format.
@@ -30,11 +28,9 @@ def FormatErrorMsg(e):
     A properly formatted error message string.
   """
   if isinstance(e, SyntaxError):
-    return '{}:{}:{}: {}'.format(e.filename, e.lineno, e.offset, e.msg)
-  if isinstance(e, tokenize.TokenError):
-    return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
-                                 e.args[0])
-  return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
+    return '{}:{}:{}: {}'.format(e.filename or '<unknown>', e.lineno or 1,
+                                 e.offset or 1, e.msg)
+  return str(e)
 
 
 class YapfError(Exception):

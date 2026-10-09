@@ -2,6 +2,26 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## LibCST migration (unreleased branch)
+### Changed
+- Use LibCST 1.9.x as the sole Python parser and lower its immutable CST into
+  a small mutable layout representation, retaining the existing formatting
+  policies and line-breaking algorithm.
+- Require Python 3.9 or newer. `FormatTree` now accepts `libcst.Module`.
+- Report LibCST syntax diagnostics with filename, line, and column. Inputs
+  formerly admitted only by the legacy grammar may now be rejected.
+
+### Removed
+- Vendored `_ylib2to3`, its tokenizer, grammars, parser generator, fixer and
+  pattern machinery, and grammar-cache handling.
+- The alternate AST/tokenize front end, `FormatAST`, and the old `yapf.pytree`
+  package. Active layout passes now live in `yapf.layout`.
+
+### Fixed
+- Detect non-lossless parser round trips. Recover indented EOF comments
+  omitted by LibCST 1.9.0 using a verified sentinel parse; fail rather than
+  silently discarding source when recovery is not exact.
+
 ## (0.41.0) UNRELEASED
 ### Added
 - New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.

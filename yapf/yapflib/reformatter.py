@@ -23,10 +23,9 @@ import collections
 import heapq
 import re
 
-from yapf_third_party._ylib2to3 import pytree
-from yapf_third_party._ylib2to3.pgen2 import token
-
-from yapf.pytree import pytree_utils
+from yapf.layout import tokens as token
+from yapf.layout import tree as layout_tree
+from yapf.layout import utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
@@ -736,10 +735,9 @@ def _SingleOrMergedLines(lines):
         if lines[index].lineno != line.lineno:
           break
         if line.last.value != ':':
-          leaf = pytree.Leaf(
+          leaf = layout_tree.Leaf(
               type=token.SEMI, value=';', context=('', (line.lineno, column)))
-          line.AppendToken(
-              format_token.FormatToken(leaf, pytree_utils.NodeName(leaf)))
+          line.AppendToken(format_token.FormatToken(leaf, utils.NodeName(leaf)))
         for tok in lines[index].tokens:
           line.AppendToken(tok)
         index += 1

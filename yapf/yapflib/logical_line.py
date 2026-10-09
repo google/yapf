@@ -15,14 +15,13 @@
 
 A logical line is the containing data structure produced by the parser. It
 collects all nodes (stored in FormatToken objects) that could appear on a single
-line if there were no line length restrictions. It's then used by the parser to
+line if there were no line length restrictions. It's then used by the layout search to
 perform the wrapping required to comply with the style guide.
 """
 
-from yapf_third_party._ylib2to3.fixer_util import syms as python_symbols
-
-from yapf.pytree import pytree_utils
-from yapf.pytree import split_penalty
+from yapf.layout import split_penalty
+from yapf.layout import utils
+from yapf.layout.roles import Kind as layout_kinds
 from yapf.yapflib import format_token
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
@@ -244,9 +243,9 @@ def _HasPrecedence(tok):
   ancestor = node.parent.parent
 
   while ancestor is not None:
-    # Search through the ancestor nodes in the parse tree for operators with
+    # Search through the ancestor nodes in the layout tree for operators with
     # lower precedence.
-    predecessor_type = pytree_utils.NodeName(ancestor)
+    predecessor_type = utils.NodeName(ancestor)
     if predecessor_type in ['arith_expr', 'term']:
       # An ancestor "arith_expr" or "term" means we have found an operator
       # with lower precedence than our tok.
@@ -256,7 +255,7 @@ def _HasPrecedence(tok):
       # arbitrary nesting of "arith_expr", "term", and "atom" nodes. If we
       # leave this context we have not found a lower precedence operator.
       return False
-    # Under normal usage we expect a complete parse tree to be available and
+    # Under normal usage we expect a complete layout tree to be available and
     # we will return before we get an AttributeError from the root.
     ancestor = ancestor.parent
 
@@ -290,7 +289,7 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   if left.is_continuation or right.is_continuation:
     # The continuation node's value has all of the spaces it needs.
     return False
-  if right.name in pytree_utils.NONSEMANTIC_TOKENS:
+  if right.name in utils.NONSEMANTIC_TOKENS:
     # No space before a non-semantic token.
     return False
   if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
@@ -592,9 +591,9 @@ def _IsDictListTupleDelimiterTok(tok, is_opening):
   assert open_tok.next_token.node.parent
 
   return open_tok.next_token.node.parent.type in [
-      python_symbols.dictsetmaker,
-      python_symbols.listmaker,
-      python_symbols.testlist_gexp,
+      layout_kinds.dictsetmaker,
+      layout_kinds.listmaker,
+      layout_kinds.testlist_gexp,
   ]
 
 

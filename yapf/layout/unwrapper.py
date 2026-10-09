@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""PyTreeUnwrapper - produces a list of logical lines from a pytree.
+"""LayoutUnwrapper - produces a list of logical lines from a tree.
 
 [for a description of what a logical line is, see logical_line.py]
 
-This is a pytree visitor that goes over a parse tree and produces a list of
+This is a layout tree visitor that goes over a parse tree and produces a list of
 LogicalLine containers from it, each with its own depth and containing all the
 tokens that could fit on the line if there were no maximal line-length
 limitations.
@@ -23,17 +23,15 @@ limitations.
 Note: a precondition to running this visitor and obtaining correct results is
 for the tree to have its comments spliced in as nodes. Prefixes are ignored.
 
-For most uses, the convenience function UnwrapPyTree should be sufficient.
+For most uses, the convenience function Unwrap should be sufficient.
 """
 
-# The word "token" is overloaded within this module, so for clarity rename
-# the imported pgen2.token module.
-from yapf_third_party._ylib2to3 import pytree
-from yapf_third_party._ylib2to3.pgen2 import token as grammar_token
-
-from yapf.pytree import pytree_utils
-from yapf.pytree import pytree_visitor
-from yapf.pytree import split_penalty
+# Distinguish token categories from the tokens being unwrapped.
+from yapf.layout import split_penalty
+from yapf.layout import tokens as layout_token
+from yapf.layout import tree as layout_tree
+from yapf.layout import utils
+from yapf.layout import visitor
 from yapf.yapflib import format_token
 from yapf.yapflib import logical_line
 from yapf.yapflib import object_state
@@ -44,16 +42,16 @@ _OPENING_BRACKETS = frozenset({'(', '[', '{'})
 _CLOSING_BRACKETS = frozenset({')', ']', '}'})
 
 
-def UnwrapPyTree(tree):
-  """Create and return a list of logical lines from the given pytree.
+def Unwrap(tree):
+  """Create and return a list of logical lines from the given tree.
 
   Arguments:
-    tree: the top-level pytree node to unwrap..
+    tree: the top-level layout tree node to unwrap..
 
   Returns:
     A list of LogicalLine objects.
   """
-  unwrapper = PyTreeUnwrapper()
+  unwrapper = LayoutUnwrapper()
   unwrapper.Visit(tree)
   llines = unwrapper.GetLogicalLines()
   llines.sort(key=lambda x: x.lineno)
@@ -62,31 +60,22 @@ def UnwrapPyTree(tree):
 
 # Grammar tokens considered as whitespace for the purpose of unwrapping.
 _WHITESPACE_TOKENS = frozenset([
-    grammar_token.NEWLINE, grammar_token.DEDENT, grammar_token.INDENT,
-    grammar_token.ENDMARKER
+    layout_token.NEWLINE, layout_token.DEDENT, layout_token.INDENT,
+    layout_token.ENDMARKER
 ])
 
 
-class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
-  """PyTreeUnwrapper - see file-level docstring for detailed description.
+class LayoutUnwrapper(visitor.LayoutVisitor):
+  """LayoutUnwrapper - see file-level docstring for detailed description.
 
-  Note: since this implements PyTreeVisitor and node names in lib2to3 are
-  underscore_separated, the visiting methods of this class are named as
-  Visit_node_name. invalid-name pragmas are added to each such method to silence
-  a style warning. This is forced on us by the usage of lib2to3, and re-munging
-  method names to make them different from actual node names sounded like a
-  confusing and brittle affair that wasn't worth it for this small & controlled
-  deviation from the style guide.
-
-  To understand the connection between visitor methods in this class, some
-  familiarity with the Python grammar is required.
+  Visiting a layout group emits its tokens into depth-tagged logical lines.
   """
 
   def __init__(self):
     # A list of all logical lines finished visiting so far.
     self._logical_lines = []
 
-    # Builds up a "current" logical line while visiting pytree nodes. Some nodes
+    # Builds up a current logical line while visiting layout nodes. Some nodes
     # will finish a line and start a new one.
     self._cur_logical_line = logical_line.LogicalLine(0)
 
@@ -144,9 +133,9 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     # funcdef, it is a "top" comment for the whole function.
     # TODO(eliben): add more relevant compound statements here.
     single_stmt_suite = (
-        node.parent and pytree_utils.NodeName(node.parent) in self._STMT_TYPES)
-    is_comment_stmt = pytree_utils.IsCommentStatement(node)
-    is_inside_match = node.parent and pytree_utils.NodeName(
+        node.parent and utils.NodeName(node.parent) in self._STMT_TYPES)
+    is_comment_stmt = utils.IsCommentStatement(node)
+    is_inside_match = node.parent and utils.NodeName(
         node.parent) == 'match_stmt'
     if (single_stmt_suite and not is_comment_stmt) or is_inside_match:
       self._cur_depth += 1
@@ -167,12 +156,12 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
         recognized as a NAME node with a name in this set.
     """
     for child in node.children:
-      # A pytree is structured in such a way that a single 'if_stmt' node will
-      # contain all the 'if', 'elif' and 'else' nodes as children (similar
+      # A single 'if_stmt' layout group contains the entire conditional,
+      # including 'if', 'elif' and 'else' nodes as children (similar
       # structure applies to 'while' statements, 'try' blocks, etc). Therefore,
       # we visit all children here and create a new line before the requested
       # set of nodes.
-      if (child.type == grammar_token.NAME and
+      if (child.type == layout_token.NAME and
           child.value in substatement_names):
         self._StartNewLine()
       self.Visit(child)
@@ -213,7 +202,7 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       index += 1
       self.Visit(child)
-      if child.type == grammar_token.ASYNC:
+      if child.type == layout_token.ASYNC:
         break
     for child in node.children[index].children:
       self.Visit(child)
@@ -229,17 +218,17 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     for child in node.children:
       index += 1
       self.Visit(child)
-      if child.type == grammar_token.ASYNC:
+      if child.type == layout_token.ASYNC:
         break
     for child in node.children[index].children:
-      if child.type == grammar_token.NAME and child.value == 'else':
+      if child.type == layout_token.NAME and child.value == 'else':
         self._StartNewLine()
       self.Visit(child)
 
   def Visit_decorator(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self.Visit(child)
-      if child.type == grammar_token.COMMENT and child == node.children[0]:
+      if child.type == layout_token.COMMENT and child == node.children[0]:
         self._StartNewLine()
 
   def Visit_decorators(self, node):  # pylint: disable=invalid-name
@@ -262,7 +251,6 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
   def Visit_match_stmt(self, node):  # pylint: disable=invalid-name
     self._VisitCompoundStatement(node, self._MATCH_STMT_ELEMS)
 
-  # case_block refers to the grammar element name in Grammar.txt
   _CASE_BLOCK_ELEMS = frozenset({'case'})
 
   def Visit_case_block(self, node):
@@ -317,10 +305,10 @@ class PyTreeUnwrapper(pytree_visitor.PyTreeVisitor):
     """
     if leaf.type in _WHITESPACE_TOKENS:
       self._StartNewLine()
-    elif leaf.type != grammar_token.COMMENT or leaf.value.strip():
+    elif leaf.type != layout_token.COMMENT or leaf.value.strip():
       # Add non-whitespace tokens and comments that aren't empty.
       self._cur_logical_line.AppendToken(
-          format_token.FormatToken(leaf, pytree_utils.NodeName(leaf)))
+          format_token.FormatToken(leaf, utils.NodeName(leaf)))
 
 
 _BRACKET_MATCH = {')': '(', '}': '{', ']': '['}
@@ -346,7 +334,7 @@ def _MatchBrackets(line):
       bracket_stack.pop()
 
     for bracket in bracket_stack:
-      if id(pytree_utils.GetOpeningBracket(token.node)) == id(bracket.node):
+      if id(utils.GetOpeningBracket(token.node)) == id(bracket.node):
         bracket.container_elements.append(token)
         token.container_opening = bracket
 
@@ -396,9 +384,8 @@ def _AdjustSplitPenalty(line):
   bracket_level = 0
   for index, token in enumerate(line.tokens):
     if index and not bracket_level:
-      pytree_utils.SetNodeAnnotation(token.node,
-                                     pytree_utils.Annotation.SPLIT_PENALTY,
-                                     split_penalty.UNBREAKABLE)
+      utils.SetNodeAnnotation(token.node, utils.Annotation.SPLIT_PENALTY,
+                              split_penalty.UNBREAKABLE)
     if token.value in _OPENING_BRACKETS:
       bracket_level += 1
     elif token.value in _CLOSING_BRACKETS:
@@ -413,9 +400,9 @@ def _DetermineMustSplitAnnotation(node):
       return False
     token = next(node.parent.leaves())
     if token.value == '(':
-      if sum(1 for ch in node.children if ch.type == grammar_token.COMMA) < 2:
+      if sum(1 for ch in node.children if ch.type == layout_token.COMMA) < 2:
         return False
-    if (not isinstance(node.children[-1], pytree.Leaf) or
+    if (not isinstance(node.children[-1], layout_tree.Leaf) or
         node.children[-1].value != ','):
       return False
     return True
@@ -433,9 +420,9 @@ def _DetermineMustSplitAnnotation(node):
   _SetMustSplitOnFirstLeaf(node.children[0])
   while index < num_children - 1:
     child = node.children[index]
-    if isinstance(child, pytree.Leaf) and child.value == ',':
+    if isinstance(child, layout_tree.Leaf) and child.value == ',':
       next_child = node.children[index + 1]
-      if next_child.type == grammar_token.COMMENT:
+      if next_child.type == layout_token.COMMENT:
         index += 1
         if index >= num_children - 1:
           break
@@ -445,8 +432,8 @@ def _DetermineMustSplitAnnotation(node):
 
 def _ContainsComments(node):
   """Return True if the list has a comment in it."""
-  if isinstance(node, pytree.Leaf):
-    return node.type == grammar_token.COMMENT
+  if isinstance(node, layout_tree.Leaf):
+    return node.type == layout_token.COMMENT
   for child in node.children:
     if _ContainsComments(child):
       return True
@@ -455,6 +442,5 @@ def _ContainsComments(node):
 
 def _SetMustSplitOnFirstLeaf(node):
   """Set the "must split" annotation on the first leaf node."""
-  pytree_utils.SetNodeAnnotation(
-      pytree_utils.FirstLeafNode(node), pytree_utils.Annotation.MUST_SPLIT,
-      True)
+  utils.SetNodeAnnotation(
+      utils.FirstLeafNode(node), utils.Annotation.MUST_SPLIT, True)

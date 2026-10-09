@@ -16,7 +16,7 @@
 import textwrap
 import unittest
 
-from yapf.pytree import pytree_utils
+from yapf.layout import utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import logical_line
 from yapf.yapflib import style
@@ -135,10 +135,7 @@ class FormatDecisionStateTest(yapf_test_helper.YAPFTest):
 
 def _FilterLine(lline):
   """Filter out nonsemantic tokens from the LogicalLines."""
-  return [
-      ft for ft in lline.tokens
-      if ft.name not in pytree_utils.NONSEMANTIC_TOKENS
-  ]
+  return [ft for ft in lline.tokens if ft.name not in utils.NONSEMANTIC_TOKENS]
 
 
 if __name__ == '__main__':

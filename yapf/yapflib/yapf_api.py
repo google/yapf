@@ -35,14 +35,14 @@ import codecs
 import difflib
 import re
 
-from yapf.pyparser import pyparser
-from yapf.pytree import blank_line_calculator
-from yapf.pytree import comment_splicer
-from yapf.pytree import continuation_splicer
-from yapf.pytree import pytree_unwrapper
-from yapf.pytree import pytree_utils
-from yapf.pytree import split_penalty
-from yapf.pytree import subtype_assigner
+from yapf.layout import blank_line_calculator
+from yapf.layout import comments
+from yapf.layout import continuations
+from yapf.layout import frontend
+from yapf.layout import split_penalty
+from yapf.layout import subtype_assigner
+from yapf.layout import unwrapper
+from yapf.layout import utils
 from yapf.yapflib import errors
 from yapf.yapflib import file_resources
 from yapf.yapflib import identify_container
@@ -103,12 +103,12 @@ def FormatFile(filename,
 
 
 def FormatTree(tree, style_config=None, lines=None):
-  """Format a parsed lib2to3 pytree.
+  """Format a parsed LibCST module without modifying it.
 
   This provides an alternative entry point to YAPF.
 
   Arguments:
-    tree: (pytree.Node) The root of the pytree to format.
+    tree: (libcst.Module) The parsed source module. The module is not mutated.
     style_config: (string) Either a style name or a path to a file that contains
       formatting style settings. If None is specified, use the default style
       as set in style.DEFAULT_STYLE_FACTORY
@@ -120,46 +120,26 @@ def FormatTree(tree, style_config=None, lines=None):
   Returns:
     The source formatted according to the given formatting style.
   """
-  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
+  try:
+    tree = frontend.LowerModule(tree)
+  except SyntaxError as exc:
+    raise errors.YapfError(errors.FormatErrorMsg(exc)) from exc
 
-  # Run passes on the tree, modifying it in place.
-  comment_splicer.SpliceComments(tree)
-  continuation_splicer.SpliceContinuations(tree)
+  return _FormatLayout(tree, style_config, lines)
+
+
+def _FormatLayout(tree, style_config, lines):
+  """Apply formatting policy to a fresh, parser-independent layout tree."""
+  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
+  # Annotate the layout representation, leaving the LibCST module unchanged.
+  comments.AttachComments(tree)
+  continuations.AttachContinuations(tree)
   subtype_assigner.AssignSubtypes(tree)
   identify_container.IdentifyContainers(tree)
   split_penalty.ComputeSplitPenalties(tree)
   blank_line_calculator.CalculateBlankLines(tree)
 
-  llines = pytree_unwrapper.UnwrapPyTree(tree)
-  for lline in llines:
-    lline.CalculateFormattingInformation()
-
-  lines = _LineRangesToSet(lines)
-  _MarkLinesToFormat(llines, lines)
-  return reformatter.Reformat(_SplitSemicolons(llines), lines)
-
-
-def FormatAST(ast, style_config=None, lines=None):
-  """Format a parsed lib2to3 pytree.
-
-  This provides an alternative entry point to YAPF.
-
-  Arguments:
-    unformatted_source: (unicode) The code to format.
-    style_config: (string) Either a style name or a path to a file that contains
-      formatting style settings. If None is specified, use the default style
-      as set in style.DEFAULT_STYLE_FACTORY
-    lines: (list of tuples of integers) A list of tuples of lines, [start, end],
-      that we want to format. The lines are 1-based indexed. It can be used by
-      third-party code (e.g., IDEs) when reformatting a snippet of code rather
-      than a whole file.
-
-  Returns:
-    The source formatted according to the given formatting style.
-  """
-  style.SetGlobalStyle(style.CreateStyleFromConfig(style_config))
-
-  llines = pyparser.ParseCode(ast)
+  llines = unwrapper.Unwrap(tree)
   for lline in llines:
     lline.CalculateFormattingInformation()
 
@@ -195,12 +175,12 @@ def FormatCode(unformatted_source,
     desired formatting style. changed is True if the source changed.
   """
   try:
-    tree = pytree_utils.ParseCodeToTree(unformatted_source)
-  except Exception as e:
+    tree = frontend.LowerModule(frontend.ParseModule(unformatted_source))
+  except SyntaxError as e:
     e.filename = filename
-    raise errors.YapfError(errors.FormatErrorMsg(e))
+    raise errors.YapfError(errors.FormatErrorMsg(e)) from e
 
-  reformatted_source = FormatTree(tree, style_config=style_config, lines=lines)
+  reformatted_source = _FormatLayout(tree, style_config, lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
