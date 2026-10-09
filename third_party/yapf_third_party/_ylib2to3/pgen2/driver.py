@@ -14,6 +14,7 @@ __author__ = 'Guido van Rossum <guido@python.org>'
 
 __all__ = ['Driver', 'load_grammar']
 
+import hashlib
 import io
 import logging
 import os
@@ -22,12 +23,11 @@ import sys
 # Python imports
 from contextlib import contextmanager
 from dataclasses import dataclass
-from dataclasses import field
 from pathlib import Path
 from typing import Any
+from typing import Dict
 from typing import Iterator
 from typing import List
-from typing import Optional
 
 from platformdirs import user_cache_dir
 
@@ -42,72 +42,72 @@ from . import tokenize
 
 
 @dataclass
-class ReleaseRange:
-  start: int
-  end: Optional[int] = None
-  tokens: List[Any] = field(default_factory=list)
+class _Lookahead:
+  """An independent cursor for one speculative parser invocation."""
 
-  def lock(self) -> None:
-    total_eaten = len(self.tokens)
-    self.end = self.start + total_eaten
+  start: int
+  next_position: int
 
 
 class TokenProxy:
+  """Buffer unread tokens once, independently of speculative parser cursors.
+
+  A release scope observes tokens without consuming the main iterator. Nested
+  scopes start after the token most recently observed by their parent, and
+  returning from a nested scope restores the parent's cursor. All scopes share
+  the same indexed buffer, so competing parser routes see identical tokens.
+  Committed tokens are discarded immediately rather than retaining and scanning
+  one release record for every soft keyword in the input.
+  """
 
   def __init__(self, generator: Any) -> None:
-    self._tokens = generator
-    self._counter = 0
-    self._release_ranges: List[ReleaseRange] = []
+    self._tokens = iter(generator)
+    self._position = 0
+    self._read_position = 0
+    self._buffer: Dict[int, Any] = {}
+    self._lookahead: List[_Lookahead] = []
+
+  def _get(self, position: int) -> Any:
+    while self._read_position <= position:
+      self._buffer[self._read_position] = next(self._tokens)
+      self._read_position += 1
+    return self._buffer[position]
 
   @contextmanager
   def release(self) -> Iterator['TokenProxy']:
-    release_range = ReleaseRange(self._counter)
-    self._release_ranges.append(release_range)
+    start = (
+        self._lookahead[-1].next_position
+        if self._lookahead else self._position)
+    self._lookahead.append(_Lookahead(start, start))
     try:
       yield self
     finally:
-      # Lock the last release range to the final position that
-      # has been eaten.
-      release_range.lock()
+      self._lookahead.pop()
 
   def eat(self, point: int) -> Any:
-    eaten_tokens = self._release_ranges[-1].tokens
-    if point < len(eaten_tokens):
-      return eaten_tokens[point]
-    else:
-      while point >= len(eaten_tokens):
-        token = next(self._tokens)
-        eaten_tokens.append(token)
-      return token
+    if point < 0:
+      raise IndexError('lookahead offset must be nonnegative')
+    scope = self._lookahead[-1]
+    position = scope.start + point
+    value = self._get(position)
+    scope.next_position = position + 1
+    return value
 
   def __iter__(self) -> 'TokenProxy':
     return self
 
   def __next__(self) -> Any:
-    # If the current position is already compromised (looked up)
-    # return the eaten token, if not just go further on the given
-    # token producer.
-    for release_range in self._release_ranges:
-      assert release_range.end is not None
-
-      start, end = release_range.start, release_range.end
-      if start <= self._counter < end:
-        token = release_range.tokens[self._counter - start]
-        break
-    else:
-      token = next(self._tokens)
-    self._counter += 1
-    return token
+    value = self._get(self._position)
+    del self._buffer[self._position]
+    self._position += 1
+    return value
 
   def can_advance(self, to: int) -> bool:
-    # Try to eat, fail if it can't. The eat operation is cached
-    # so there wont be any additional cost of eating here
     try:
       self.eat(to)
     except StopIteration:
       return False
-    else:
-      return True
+    return True
 
 
 class Driver(object):
@@ -187,8 +187,8 @@ class Driver(object):
     return self.parse_tokens(tokens, debug)
 
 
-def _generate_pickle_name(gt):
-  # type:(str) -> str
+def _generate_pickle_name(gt, source=None):
+  # type:(str, bytes | None) -> str
   """Get the filepath to write a pickle file to
   given the path of a grammar textfile.
 
@@ -196,6 +196,7 @@ def _generate_pickle_name(gt):
 
   Args:
       gt (str): path to grammar text file
+      source (bytes): optional source snapshot used to isolate cache entries
 
   Returns:
       str: path to pickle file
@@ -205,6 +206,8 @@ def _generate_pickle_name(gt):
   head, tail = os.path.splitext(grammar_textfile_name)
   if tail == '.txt':
     tail = ''
+  if source is not None:
+    head += '-' + hashlib.sha256(source).hexdigest()
   cache_dir = user_cache_dir(
       appname='YAPF', appauthor='Google', version=yapf_version)
   return cache_dir + os.sep + head + tail + '-py' + '.'.join(
@@ -220,20 +223,24 @@ def load_grammar(gt='Grammar.txt',
   """Load the grammar (maybe from a pickle)."""
   if logger is None:
     logger = logging.getLogger()
-  gp = _generate_pickle_name(gt) if gp is None else gp
-  grammar_text = gt
+  # Different checkouts can have the same package/interpreter version and
+  # file timestamps, but different grammars. Key the cache by the source,
+  # and parse the same snapshot so no checkout can reuse another's grammar.
+  try:
+    with open(gt, 'rb') as source_file:
+      source = source_file.read()
+  except FileNotFoundError:
+    gt_basename = os.path.basename(gt)
+    source = pkgutil.get_data('yapf_third_party._ylib2to3', gt_basename)
+    if source is None:
+      raise RuntimeError('Failed to load grammar %s from package' % gt_basename)
+  gp = _generate_pickle_name(gt, source) if gp is None else gp
+  grammar_text = io.StringIO(source.decode(encoding='utf-8'))
   try:
     newer = _newer(gp, gt)
   except OSError as err:
     logger.debug('OSError, could not check if newer: %s', err.args)
     newer = True
-  if not os.path.exists(gt):
-    # Assume package data
-    gt_basename = os.path.basename(gt)
-    pd = pkgutil.get_data('yapf_third_party._ylib2to3', gt_basename)
-    if pd is None:
-      raise RuntimeError('Failed to load grammer %s from package' % gt_basename)
-    grammar_text = io.StringIO(pd.decode(encoding='utf-8'))
   if force or not newer:
     g = pgen.generate_grammar(grammar_text)
     if save:

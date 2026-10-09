@@ -1183,6 +1183,8 @@ def _LastTokenInLine(current):
 
 def _IsFunctionDefinition(current):
   prev = current.previous_token
+  if prev and prev.value == ']' and prev.matching_bracket:
+    prev = prev.matching_bracket.previous_token
   return current.value == '(' and prev and subtypes.FUNC_DEF in prev.subtypes
 
 

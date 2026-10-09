@@ -33,6 +33,7 @@ import string
 from codecs import BOM_UTF8
 from codecs import lookup
 
+from . import fstring
 from . import token
 from .token import ASYNC
 from .token import AWAIT
@@ -127,9 +128,11 @@ Token = Ignore + PlainToken
 ContStr = group(
     _litprefix + r"'[^\n'\\]*(?:\\.[^\n'\\]*)*" + group("'", r'\\\r?\n'),
     _litprefix + r'"[^\n"\\]*(?:\\.[^\n"\\]*)*' + group('"', r'\\\r?\n'))
-PseudoExtras = group(r'\\\r?\n', Comment, Triple)
+PseudoExtras = group(r'\\\r?\n', Comment, fstring.INTERPOLATED_STRING_START,
+                     Triple)
 PseudoToken = Whitespace + group(PseudoExtras, Number, Funny, ContStr, Name)
 
+interpolated_string_prog = re.compile(fstring.INTERPOLATED_STRING_START)
 tokenprog, pseudoprog, single3prog, double3prog = map(
     re.compile, (Token, PseudoToken, Single3, Double3))
 
@@ -517,6 +520,18 @@ def generate_tokens(readline):
             yield stashed
             stashed = None
           yield (COMMENT, token, spos, epos, line)
+        elif interpolated_string_prog.match(token):
+          if stashed:
+            yield stashed
+            stashed = None
+          try:
+            value, epos, line, physical_lines = fstring.scan_interpolated_string(
+                readline, line, lnum, start)
+          except fstring.FStringError as error:
+            raise TokenError(*error.args) from error
+          lnum, pos = epos
+          max = len(line)
+          yield (STRING, value, spos, epos, physical_lines)
         elif token in triple_quoted:
           endprog = endprogs[token]
           endmatch = endprog.match(line, pos)

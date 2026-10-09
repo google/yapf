@@ -81,13 +81,13 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       prev_child = child
 
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
-    # classdef ::= 'class' NAME ['(' [arglist] ')'] ':' suite
+    # classdef ::= 'class' NAME [typeparams] ['(' [arglist] ')'] ':' suite
     #
     # NAME
     _SetUnbreakable(node.children[1])
-    if len(node.children) > 4:
-      # opening '('
-      _SetUnbreakable(node.children[2])
+    for child in node.children[2:-2]:
+      if child.type == grammar_token.LPAR:
+        _SetUnbreakable(child)
     # ':'
     _SetUnbreakable(node.children[-2])
     self.DefaultNodeVisit(node)
@@ -132,6 +132,19 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
       _SetExpressionPenalty(node, STRONGLY_CONNECTED)
     else:
       _SetExpressionPenalty(node, VERY_STRONGLY_CONNECTED)
+
+  def Visit_typeparams(self, node):  # pylint: disable=invalid-name
+    self.Visit_parameters(node)
+
+  def Visit_typeparam(self, node):  # pylint: disable=invalid-name
+    self.Visit_tname(node)
+    for index, child in enumerate(node.children[:-1]):
+      if child.type == grammar_token.EQUAL:
+        _SetSplitPenalty(child, NAMED_ASSIGN)
+        _SetSplitPenalty(
+            pytree_utils.FirstLeafNode(node.children[index + 1]), NAMED_ASSIGN)
+    if node.children[0].type in (grammar_token.STAR, grammar_token.DOUBLESTAR):
+      _SetUnbreakable(node.children[1])
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'
@@ -424,6 +437,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           pytree_utils.FirstLeafNode(node.children[2]), STRONGLY_CONNECTED)
     else:
       _IncreasePenalty(node, COMPARISON)
+
+  def Visit_star_gexp(self, node):  # pylint: disable=invalid-name
+    self.Visit_star_expr(node)
 
   def Visit_star_expr(self, node):  # pylint: disable=invalid-name
     # star_expr ::= '*' expr
