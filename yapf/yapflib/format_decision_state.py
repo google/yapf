@@ -200,10 +200,10 @@ class FormatDecisionState(object):
       # Avoid breaking in a container that fits in the current line if possible
       opening = _GetOpeningBracket(current)
 
-      # Can't find opening bracket, behave the same way as
-      # SPLIT_ALL_COMMA_SEPARATED_VALUES.
+      # The comma isn't inside any brackets (e.g. a tuple on the left side of an
+      # assignment), so there's no way to split after it without adding tokens.
       if not opening:
-        return True
+        return False
 
       if current.is_comment:
         # Don't require splitting before a comment, since it may be related to
