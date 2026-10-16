@@ -288,8 +288,21 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
             a_very_long_parameter, yet_another_one, and_another)
     """)
     expected_formatted_code = textwrap.dedent("""\
-        a, b = f(
-            a_very_long_parameter, yet_another_one, and_another)
+        a, b = f(a_very_long_parameter,
+                 yet_another_one,
+                 and_another)
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+
+    # A tuple target is formatted the same way as a single target.
+    unformatted_code = textwrap.dedent("""\
+        a, = f(a_very_long_parameter, yet_another_one, and_another)
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        a, = f(a_very_long_parameter,
+               yet_another_one,
+               and_another)
     """)
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
