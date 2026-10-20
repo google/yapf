@@ -19,6 +19,7 @@ import unittest
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 from yapftests import yapf_test_helper
 
@@ -28,6 +29,43 @@ class BasicReformatterTest(yapf_test_helper.YAPFTest):
   @classmethod
   def setUpClass(cls):
     style.SetGlobalStyle(style.CreateYapfStyle())
+
+  def testOverlongEmptyCalls(self):
+    self.addCleanup(style.SetGlobalStyle, style.CreateYapfStyle())
+    for call in ('self.server.is_running()', 'very_long_function_name()'):
+      for closing_style in ({}, {
+          'DEDENT_CLOSING_BRACKETS': True
+      }, {
+          'INDENT_CLOSING_BRACKETS': True
+      }, {
+          'SPLIT_BEFORE_FIRST_ARGUMENT': True
+      }):
+        with self.subTest(call=call, closing_style=closing_style):
+          code = 'def f():\n    return ' + call + '\n'
+          config = dict(COLUMN_LIMIT=20, INDENT_WIDTH=4, **closing_style)
+          formatted, changed = yapf_api.FormatCode(code, style_config=config)
+          self.assertCodeEqual(code, formatted)
+          self.assertFalse(changed)
+
+  def testEmptyCallsWithinSplitArguments(self):
+    self.addCleanup(style.SetGlobalStyle, style.CreateYapfStyle())
+    code = 'result = outer(very_long_function_name(), another_argument)\n'
+    expected = ('result = outer(\n'
+                '    very_long_function_name(),\n'
+                '    another_argument\n'
+                ')\n')
+    config = {'COLUMN_LIMIT': 20}
+    formatted, changed = yapf_api.FormatCode(code, style_config=config)
+    self.assertCodeEqual(expected, formatted)
+    self.assertTrue(changed)
+    self.assertEqual((formatted, False),
+                     yapf_api.FormatCode(formatted, style_config=config))
+
+  def testCommentInsideOtherwiseEmptyCall(self):
+    self.addCleanup(style.SetGlobalStyle, style.CreateYapfStyle())
+    code = 'very_long_function_name(  # keep this comment\n)\n'
+    formatted, _ = yapf_api.FormatCode(code, style_config={'COLUMN_LIMIT': 20})
+    self.assertCodeEqual(code, formatted)
 
   def testSplittingAllArgs(self):
     style.SetGlobalStyle(

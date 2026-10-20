@@ -147,6 +147,11 @@ class FormatDecisionState(object):
         not style.Get('ALLOW_SPLIT_BEFORE_DICT_VALUE')):
       return False
 
+    if (previous and previous.value == '(' and current.value == ')' and
+        (not current.next_token or current.next_token.value == ',')):
+      # Keep an empty call together when it ends an expression.
+      return False
+
     if previous and previous.value == '(' and current.value == ')':
       # Don't split an empty function call list if we aren't splitting before
       # dict values.
@@ -177,6 +182,10 @@ class FormatDecisionState(object):
       return True
 
     if not previous:
+      return False
+
+    if (previous.value == '(' and current.value == ')' and
+        (not current.next_token or current.next_token.value == ',')):
       return False
 
     if style.Get('SPLIT_ALL_COMMA_SEPARATED_VALUES') and previous.value == ',':
