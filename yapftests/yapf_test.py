@@ -61,6 +61,48 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
     self._Check(unformatted_code, expected_formatted_code)
 
 
+class FormatCodeDiffTest(yapf_test_helper.YAPFTest):
+
+  def testMissingEndingNewline(self):
+    diff, changed = yapf_api.FormatCode('x = 1', print_diff=True)
+    self.assertTrue(changed)
+    self.assertEqual(
+        '--- <unknown>\t(original)\n'
+        '+++ <unknown>\t(reformatted)\n'
+        '@@ -1 +1 @@\n'
+        '-x = 1\n'
+        '\\ No newline at end of file\n'
+        '+x = 1\n', diff)
+
+  def testFormattingAndMissingEndingNewline(self):
+    diff, changed = yapf_api.FormatCode('x=1', print_diff=True)
+    self.assertTrue(changed)
+    self.assertEqual(
+        '--- <unknown>\t(original)\n'
+        '+++ <unknown>\t(reformatted)\n'
+        '@@ -1 +1 @@\n'
+        '-x=1\n'
+        '\\ No newline at end of file\n'
+        '+x = 1\n', diff)
+
+  def testEndingNewlineUnchanged(self):
+    self.assertEqual(('', False),
+                     yapf_api.FormatCode('x = 1\n', print_diff=True))
+
+  def testUnicodeLineSeparators(self):
+    for separator in ('\x1c', '\x85', '\u2028', '\u2029'):
+      with self.subTest(separator=separator):
+        unformatted = 'x="a' + separator + 'b"\n'
+        diff, changed = yapf_api.FormatCode(unformatted, print_diff=True)
+        self.assertTrue(changed)
+        self.assertEqual(
+            '--- <unknown>\t(original)\n'
+            '+++ <unknown>\t(reformatted)\n'
+            '@@ -1 +1 @@\n'
+            '-x="a' + separator + 'b"\n'
+            '+x = "a' + separator + 'b"\n', diff)
+
+
 class FormatFileTest(yapf_test_helper.YAPFTest):
 
   def setUp(self):  # pylint: disable=g-missing-super-call
