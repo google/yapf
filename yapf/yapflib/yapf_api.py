@@ -33,6 +33,7 @@ These APIs have some common arguments:
 
 import codecs
 import difflib
+import io
 import re
 
 from yapf.pyparser import pyparser
@@ -331,14 +332,11 @@ def _GetUnifiedDiff(before, after, filename='code'):
   Returns:
     The unified diff text.
   """
-  before = before.splitlines()
-  after = after.splitlines()
-  return '\n'.join(
-      difflib.unified_diff(
-          before,
-          after,
-          filename,
-          filename,
-          '(original)',
-          '(reformatted)',
-          lineterm='')) + '\n'
+  # Preserve physical lines, including whether the last line has a newline.
+  before = io.StringIO(before).readlines()
+  after = io.StringIO(after).readlines()
+  diff = difflib.unified_diff(before, after, filename, filename, '(original)',
+                              '(reformatted)')
+  return ''.join(
+      line if line.endswith('\n') else line + '\n\\ No newline at end of file\n'
+      for line in diff)
