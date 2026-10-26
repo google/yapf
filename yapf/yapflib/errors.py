@@ -13,6 +13,7 @@
 # limitations under the License.
 """YAPF error objects."""
 
+from yapf_third_party._ylib2to3.pgen2 import parse
 from yapf_third_party._ylib2to3.pgen2 import tokenize
 
 
@@ -30,11 +31,55 @@ def FormatErrorMsg(e):
     A properly formatted error message string.
   """
   if isinstance(e, SyntaxError):
-    return '{}:{}:{}: {}'.format(e.filename, e.lineno, e.offset, e.msg)
+    return '{}:{}:{}: {}'.format(
+        getattr(e, 'filename', '<unknown>'),
+        getattr(e, 'lineno', 1),
+        getattr(e, 'offset', 0),
+        getattr(e, 'msg', str(e)),
+    )
   if isinstance(e, tokenize.TokenError):
-    return '{}:{}:{}: {}'.format(e.filename, e.args[1][0], e.args[1][1],
-                                 e.args[0])
-  return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], e.msg)
+    filename = getattr(e, 'filename', '<unknown>')
+    lineno = (
+        e.args[1][0]
+        if (len(e.args) > 1 and isinstance(e.args[1], (tuple, list)) and
+            len(e.args[1]) > 0)
+        else 1
+    )
+    col = (
+        e.args[1][1]
+        if (len(e.args) > 1 and isinstance(e.args[1], (tuple, list)) and
+            len(e.args[1]) > 1)
+        else 0
+    )
+    msg = e.args[0] if e.args else str(e)
+    return '{}:{}:{}: {}'.format(filename, lineno, col, msg)
+  if isinstance(e, parse.ParseError):
+    filename = getattr(e, 'filename', '<unknown>')
+    lineno = 1
+    col = 0
+    context = getattr(e, 'context', None)
+    if (context and len(context) > 1 and
+        isinstance(context[1], (tuple, list)) and len(context[1]) >= 2):
+      lineno, col = context[1][0], context[1][1]
+    msg = getattr(e, 'msg', None)
+    if msg and getattr(e, 'value', None):
+      msg = '{}: {!r}'.format(msg, e.value)
+    elif not msg:
+      msg = str(e)
+    return '{}:{}:{}: {}'.format(filename, lineno, col, msg)
+  if (len(getattr(e, 'args', ())) > 1 and
+      isinstance(e.args[1], (tuple, list)) and
+      len(e.args[1]) >= 3):
+    msg = getattr(e, 'msg', e.args[0] if e.args else str(e))
+    return '{}:{}:{}: {}'.format(e.args[1][0], e.args[1][1], e.args[1][2], msg)
+  filename = getattr(e, 'filename', None)
+  lineno = getattr(e, 'lineno', None)
+  msg = str(e)
+  if filename and lineno is not None:
+    return '{}:{}: {}'.format(filename, lineno, msg)
+  if filename:
+    return '{}: {}'.format(filename, msg)
+  return msg
 
 
 class YapfError(Exception):
