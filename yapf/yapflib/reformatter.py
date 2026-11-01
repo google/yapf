@@ -404,7 +404,8 @@ def _FormatFinalLines(final_lines):
       if not tok.is_pseudo:
         formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
-      elif (not tok.next_token.whitespace_prefix.startswith('\n') and
+      elif (not tok.next_token.is_continuation and
+            not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
         if (tok.previous_token.value == ':' or
             tok.next_token.value not in ',}])'):

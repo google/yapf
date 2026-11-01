@@ -19,6 +19,7 @@ import unittest
 
 from yapf.yapflib import reformatter
 from yapf.yapflib import style
+from yapf.yapflib import yapf_api
 
 from yapftests import yapf_test_helper
 
@@ -1567,6 +1568,28 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     """)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
+
+  def testContinuationAfterDictionaryColonIsIdempotent(self):
+    self.addCleanup(style.SetGlobalStyle, style._style.copy())
+    config = {
+        'based_on_style': 'google',
+        'each_dict_entry_on_separate_line': True,
+        'allow_split_before_dict_value': False,
+    }
+    for padding in ('', ' ', '   ', '\t'):
+      with self.subTest(padding=padding):
+        code = ("values = {\n"
+                "    key: {\n"
+                "        'value':" + padding + "\\\n"
+                "        get_value(key)\n"
+                "    } for key in keys\n"
+                "}\n")
+        formatted, changed = yapf_api.FormatCode(code, style_config=config)
+        self.assertCodeEqual(code, formatted)
+        self.assertFalse(changed)
+        repeated, changed = yapf_api.FormatCode(formatted, style_config=config)
+        self.assertCodeEqual(formatted, repeated)
+        self.assertFalse(changed)
 
   def testCommentsWithContinuationMarkers(self):
     code = textwrap.dedent("""\
