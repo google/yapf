@@ -14,6 +14,7 @@
 # limitations under the License.
 """Tests for yapf.__init__.main."""
 
+import subprocess
 import sys
 import unittest
 from contextlib import contextmanager
@@ -121,6 +122,33 @@ class MainTest(yapf_test_helper.YAPFTest):
         ret = yapf.main(['-', '--style=yapf'])
         self.assertEqual(ret, 0)
         self.assertEqual(out.getvalue(), yapf_code)
+
+  def testQuietInput(self):
+    for flag in ('-q', '--quiet'):
+      for code, expected_status in (('a=1\n', 1), ('a = 1\n', 0)):
+        with self.subTest(flag=flag, code=code):
+          with patched_input(code), captured_output() as (out, err):
+            ret = yapf.main(['yapf', '--no-local-style', flag])
+          self.assertEqual(ret, expected_status)
+          self.assertEqual(out.getvalue(), '')
+          self.assertEqual(err.getvalue(), '')
+
+  def testQuietInputSubprocess(self):
+    for flag in (None, '-q', '--quiet'):
+      for code, changed in ((b'a=1\n', True), (b'a = 1\n', False)):
+        with self.subTest(flag=flag, code=code):
+          args = [sys.executable, '-m', 'yapf', '--no-local-style']
+          if flag:
+            args.append(flag)
+          result = subprocess.run(
+              args,
+              input=code,
+              stdout=subprocess.PIPE,
+              stderr=subprocess.PIPE,
+              timeout=20)
+          self.assertEqual(result.returncode, int(bool(flag) and changed))
+          self.assertEqual(result.stdout, b'' if flag else b'a = 1\n')
+          self.assertEqual(result.stderr, b'')
 
   def testEchoBadInput(self):
     bad_syntax = '  a = 1\n'

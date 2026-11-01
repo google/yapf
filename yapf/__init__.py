@@ -110,7 +110,7 @@ def main(argv):
     source[0] = _removeBOM(source[0])
 
     try:
-      reformatted_source, _ = yapf_api.FormatCode(
+      reformatted_source, changed = yapf_api.FormatCode(
           str('\n'.join(source).replace('\r\n', '\n') + '\n'),
           filename='<stdin>',
           style_config=style_config,
@@ -120,8 +120,9 @@ def main(argv):
     except Exception as e:
       raise errors.YapfError(errors.FormatErrorMsg(e))
 
-    file_resources.WriteReformattedCode('<stdout>', reformatted_source)
-    return 0
+    if not args.quiet:
+      file_resources.WriteReformattedCode('<stdout>', reformatted_source)
+    return 1 if changed and args.quiet else 0
 
   # Get additional exclude patterns from ignorefile
   exclude_patterns_from_ignore_file = file_resources.GetExcludePatternsForDir(
