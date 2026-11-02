@@ -34,6 +34,9 @@ DFAS = Tuple[DFA, Dict[int, int]]
 # A placeholder node, used when parser is backtracking.
 DUMMY_NODE = (-1, None, None, None)
 
+_STATEMENT_START_TOKENS = frozenset(
+    {None, token.INDENT, token.DEDENT, token.NEWLINE, token.SEMI, token.COLON})
+
 
 def stack_copy(
     stack: List[Tuple[DFAS, int, RawNode]]) -> List[Tuple[DFAS, int, RawNode]]:
@@ -191,6 +194,7 @@ class Parser(object):
     self.grammar = grammar
     self.convert = convert or (lambda grammar, node: node)
     self.is_backtracking = False
+    self.last_token = None
 
   def setup(self, proxy, start=None):
     """Prepare for parsing.
@@ -216,6 +220,7 @@ class Parser(object):
     self.rootnode = None
     self.used_names = set()  # Aliased to self.rootnode.used_names in pop()
     self.proxy = proxy
+    self.last_token = None
 
   def addtoken(self, type, value, context):
     """Add a token; return True iff this is the end of the program."""
@@ -299,6 +304,7 @@ class Parser(object):
             dfa, state, node = self.stack[-1]
             states, first = dfa
           # Done with this token
+          self.last_token = type
           return False
 
       else:
@@ -325,6 +331,8 @@ class Parser(object):
         return [self.grammar.keywords[value]]
       elif value in self.grammar.soft_keywords:
         assert type in self.grammar.tokens
+        if self.last_token not in _STATEMENT_START_TOKENS:
+          return [self.grammar.tokens[type]]
         return [
             self.grammar.soft_keywords[value],
             self.grammar.tokens[type],

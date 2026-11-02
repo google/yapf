@@ -1597,6 +1597,101 @@ xxxxxxxxxxx, yyyyyyyyyyyy, vvvvvvvvv)
     llines = yapf_test_helper.ParseAndUnwrap(code)
     self.assertCodeEqual(code, reformatter.Reformat(llines))
 
+  def testContinuationMarkerAfterCompoundStatementColon(self):
+    unformatted_code = textwrap.dedent("""\
+        if True:
+          pass
+        else:\\
+          3
+
+
+        def bob(): \\
+                 # pylint: disable=W9016
+          pass
+
+
+        while x: \\
+          \\
+          y = 1
+
+        if y: \\
+
+          "doc"
+        else: \\
+          pass
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        if True:
+          pass
+        else:
+          3
+
+
+        def bob():  # pylint: disable=W9016
+
+          pass
+
+
+        while x:
+
+          y = 1
+
+        if y:
+          "doc"
+        else:
+          pass
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    reformatted_code = reformatter.Reformat(llines)
+    self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+    llines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+    reformatted_code = reformatter.Reformat(llines)
+    self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+  def testJoinedContinuationMarkerAfterCompoundStatementColon(self):
+    try:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+      unformatted_code = textwrap.dedent("""\
+          if x: \\
+              pass
+          if y: \\
+
+              "doc"
+          else: \\
+              pass
+          if (a and
+                  b): \\
+              pass
+          elif q:
+              \"\"\"doc\"\"\"
+          else: \\
+              pass
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+          if x: \\
+              pass
+          if y:
+              "doc"
+          else:
+              pass
+          if (a and b):
+              pass
+          elif q:
+              \"\"\"doc\"\"\"
+          else:
+              pass
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      reformatted_code = reformatter.Reformat(llines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+
+      llines = yapf_test_helper.ParseAndUnwrap(reformatted_code)
+      reformatted_code = reformatter.Reformat(llines)
+      self.assertCodeEqual(expected_formatted_code, reformatted_code)
+    finally:
+      style.SetGlobalStyle(style.CreateYapfStyle())
+
   def testEmptyContainers(self):
     code = textwrap.dedent("""\
         flags.DEFINE_list(

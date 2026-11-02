@@ -23,6 +23,7 @@ import collections
 import heapq
 import re
 
+from yapf_third_party._ylib2to3 import pygram
 from yapf_third_party._ylib2to3 import pytree
 from yapf_third_party._ylib2to3.pgen2 import token
 
@@ -30,6 +31,7 @@ from yapf.pytree import pytree_utils
 from yapf.yapflib import format_decision_state
 from yapf.yapflib import format_token
 from yapf.yapflib import line_joiner
+from yapf.yapflib import logical_line
 from yapf.yapflib import style
 
 
@@ -95,6 +97,13 @@ def Reformat(llines, lines=None):
       _RetainRequiredVerticalSpacing(lline, prev_line, None)
       _EmitLineUnformatted(state)
 
+    if (_ContinuesPreviousLine(lline, prev_line, final_lines) and
+        lline.first.whitespace_prefix.count('\n') < ONE_BLANK_LINE):
+      lline.first.AdjustNewlinesBefore(ONE_BLANK_LINE)
+
+    if _FollowsInlineBody(lline, prev_line, final_lines):
+      prev_line.first.AdjustNewlinesBefore(NO_BLANK_LINES)
+
     final_lines.append(lline)
     prev_line = lline
 
@@ -129,13 +138,19 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
   if prev_tok is None:
     return
 
+  if prev_tok.is_pseudo and prev_tok.previous_token.is_continuation:
+    prev_tok = prev_tok.previous_token
+
   if prev_tok.is_string:
     prev_lineno = prev_tok.lineno + prev_tok.value.count('\n')
   elif prev_tok.is_pseudo:
-    if not prev_tok.previous_token.is_multiline_string:
-      prev_lineno = prev_tok.previous_token.lineno
-    else:
+    previous = prev_tok.previous_token
+    if previous.is_multiline_string:
       prev_lineno = prev_tok.lineno
+    elif previous.is_string:
+      prev_lineno = previous.lineno + previous.value.count('\n')
+    else:
+      prev_lineno = previous.lineno
   else:
     prev_lineno = prev_tok.lineno
 
@@ -144,7 +159,8 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
   else:
     cur_lineno = cur_tok.lineno
 
-  if not prev_tok.is_comment and prev_tok.value.endswith('\\'):
+  if prev_tok.is_continuation or (not prev_tok.is_comment and
+                                  prev_tok.value.endswith('\\')):
     prev_lineno += prev_tok.value.count('\n')
 
   required_newlines = cur_lineno - prev_lineno
@@ -158,6 +174,10 @@ def _RetainRequiredVerticalSpacingBetweenTokens(cur_tok, prev_tok, lines):
     required_newlines = max(required_newlines - deletable_lines,
                             desired_newlines)
 
+  if (cur_tok.previous_token is None and not cur_tok.is_continuation and
+      prev_tok.value != ':'):
+    required_newlines = max(required_newlines, 1)
+
   cur_tok.AdjustNewlinesBefore(required_newlines)
 
 
@@ -166,7 +186,10 @@ def _RetainVerticalSpacingBeforeComments(line):
   prev_token = None
   for tok in line.tokens:
     if tok.is_comment and prev_token:
-      if tok.lineno - tok.value.count('\n') - prev_token.lineno > 1:
+      prev_lineno = prev_token.lineno
+      if prev_token.is_string:
+        prev_lineno += prev_token.value.count('\n')
+      if tok.lineno - tok.value.count('\n') - prev_lineno > 1:
         tok.AdjustNewlinesBefore(ONE_BLANK_LINE)
 
     prev_token = tok
@@ -234,6 +257,29 @@ def _LineContainsPylintDisableLineTooLong(line):
 def _LineHasContinuationMarkers(line):
   """Return true if the line has continuation markers in it."""
   return any(tok.is_continuation for tok in line.tokens)
+
+
+def _ContinuesPreviousLine(cur_line, prev_line, final_lines):
+  if (prev_line is None or not prev_line.last.is_continuation or
+      '#' in prev_line.last.value):
+    return False
+  before = prev_line.last.previous_token
+  if (before is None and len(final_lines) > 1 and
+      '\n' not in prev_line.first.whitespace_prefix):
+    before = final_lines[-2].last
+  first = cur_line.first
+  return (before is not None and before.value not in (':', ';') and
+          not (first.is_continuation or first.is_comment))
+
+
+def _FollowsInlineBody(cur_line, prev_line, final_lines):
+  if len(final_lines) < 2 or final_lines[-2].last.value != ':':
+    return False
+  first = cur_line.first
+  return (cur_line.depth >= prev_line.depth and
+          '\n' not in prev_line.first.whitespace_prefix and
+          not (prev_line.first.is_continuation or first.is_continuation or
+               first.is_comment))
 
 
 def _CanPlaceOnSingleLine(line):
@@ -404,7 +450,8 @@ def _FormatFinalLines(final_lines):
       if not tok.is_pseudo:
         formatted_line.append(tok.formatted_whitespace_prefix)
         formatted_line.append(tok.value)
-      elif (not tok.next_token.whitespace_prefix.startswith('\n') and
+      elif (not tok.next_token.is_continuation and
+            not tok.next_token.whitespace_prefix.startswith('\n') and
             not tok.next_token.whitespace_prefix.startswith(' ')):
         if (tok.previous_token.value == ':' or
             tok.next_token.value not in ',}])'):
@@ -465,6 +512,26 @@ def _AnalyzeSolutionSpace(initial_state):
   Returns:
     True if a formatting solution was found. False otherwise.
   """
+  solution = _FindLowestPenaltySolution(initial_state)
+  if not solution:
+    return False
+
+  if style.Get('SPLIT_BEFORE_BITWISE_OPERATOR'):
+    retained = _NewSplitsBeforeBitwiseOperators(solution)
+    while retained:
+      for tok in retained:
+        tok.split_before_retained = True
+      next_solution = _FindLowestPenaltySolution(initial_state)
+      if not next_solution:
+        break
+      solution = next_solution
+      retained = _NewSplitsBeforeBitwiseOperators(solution)
+
+  _ReconstructPath(initial_state, solution)
+  return True
+
+
+def _FindLowestPenaltySolution(initial_state):
   count = 0
   seen = set()
   p_queue = []
@@ -500,10 +567,21 @@ def _AnalyzeSolutionSpace(initial_state):
 
   if not p_queue:
     # We weren't able to find a solution. Do nothing.
-    return False
+    return None
 
-  _ReconstructPath(initial_state, heapq.heappop(p_queue).state_node)
-  return True
+  return heapq.heappop(p_queue).state_node
+
+
+def _NewSplitsBeforeBitwiseOperators(solution):
+  tokens = []
+  node = solution
+  while node.previous:
+    tok = node.previous.state.next_token
+    if (node.newline and tok.value in '&|' and not tok.split_before_retained and
+        tok.previous_token.lineno >= tok.lineno):
+      tokens.append(tok)
+    node = node.previous
+  return tokens
 
 
 def _AddNextStateToQueue(penalty, previous_node, newline, count, p_queue):
@@ -715,6 +793,51 @@ def _CalculateNumberOfNewlines(first_token, indent_depth, prev_line,
   return NO_BLANK_LINES
 
 
+def _StartsWithHeaderContinuation(lines, index):
+  if not index:
+    return False
+  header = lines[index - 1]
+  first = lines[index].first
+  return (not header.disable and header.last.value == ':' and
+          first.is_continuation and first.lineno == header.last.lineno)
+
+
+def _HasHeaderContinuationComment(lines, index):
+  return (index + 1 < len(lines) and
+          _StartsWithHeaderContinuation(lines, index + 1) and
+          len(lines[index + 1].tokens) == 1 and
+          '#' in lines[index + 1].first.value)
+
+
+def _TrailingCommentFromContinuation(header_last, continuation):
+  text = continuation.value
+  leaf = pytree.Leaf(
+      type=token.COMMENT,
+      value=text[text.index('#'):].rstrip(),
+      context=('', (header_last.lineno,
+                    header_last.column + len(header_last.value))))
+  pytree.Node(pygram.python_symbols.simple_stmt, [leaf])
+  comment = format_token.FormatToken(leaf, pytree_utils.NodeName(leaf))
+  spaces = comment.spaces_required_before
+  comment.total_length = (
+      header_last.total_length + len(comment.value) +
+      (0 if isinstance(spaces, list) else spaces))
+  return comment
+
+
+def _DropFirstToken(lline):
+  tokens = lline.tokens[1:]
+  first = tokens[0]
+  offset = first.total_length - len(first.value)
+  for tok in tokens:
+    tok.total_length -= offset
+  first.previous_token = None
+  first.spaces_required_before = 1
+  line = logical_line.LogicalLine(lline.depth, tokens)
+  line.disable = lline.disable
+  return line
+
+
 def _SingleOrMergedLines(lines):
   """Generate the lines we want to format.
 
@@ -728,6 +851,17 @@ def _SingleOrMergedLines(lines):
   index = 0
   last_was_merged = False
   while index < len(lines):
+    if _HasHeaderContinuationComment(lines, index):
+      lines[index].AppendToken(
+          _TrailingCommentFromContinuation(lines[index].last,
+                                           lines[index + 1].first))
+      del lines[index + 1]
+    if (_StartsWithHeaderContinuation(lines, index) and
+        '#' not in lines[index].first.value):
+      if len(lines[index].tokens) == 1:
+        index += 1
+        continue
+      lines[index] = _DropFirstToken(lines[index])
     if lines[index].disable:
       line = lines[index]
       index += 1

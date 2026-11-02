@@ -484,6 +484,31 @@ class TestsForPEP8Style(yapf_test_helper.YAPFTest):
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertEqual(expected_code, reformatter.Reformat(llines))
 
+  def testSplitBeforeBitwiseOperatorIsIdempotent(self):
+    try:
+      style.SetGlobalStyle(
+          style.CreateStyleFromConfig(
+              '{based_on_style: pep8, column_limit: 50}'))
+      unformatted_code = textwrap.dedent("""\
+          cache: Mapping[
+              dict[str, Integration | asyncio.Future[Integration | NotFound]]
+          ] = {}
+      """)
+      expected_formatted_code = textwrap.dedent("""\
+          cache: Mapping[dict[
+              str, Integration
+              | asyncio.Future[Integration
+                               | NotFound]]] = {}
+      """)
+      llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+      llines = yapf_test_helper.ParseAndUnwrap(expected_formatted_code)
+      self.assertCodeEqual(expected_formatted_code,
+                           reformatter.Reformat(llines))
+    finally:
+      style.SetGlobalStyle(style.CreatePEP8Style())
+
   def testNoBlankLinesOnlyForFirstNestedObject(self):
     unformatted_code = textwrap.dedent('''\
         class Demo:

@@ -1,0 +1,62 @@
+class Plotter:
+
+    pass
+
+
+if x:
+    a = 1
+
+    b = 2
+    c = 3
+
+else:
+    d = 4
+
+
+def f():
+    x = 1
+
+
+y = 2
+
+if True:
+    pass
+else:
+    3
+
+
+def bob():  # pylint: disable=W9016
+
+    pass
+
+
+while x:
+    y = 1
+
+result = await (1 + f(
+    1,
+    2,
+    3,
+))
+await []()
+await (yield foo)
+await ...
+await [x for x in y]
+
+f"aaaaaaaaaaaaaaaa \
+        bbbbbbbbbbb" "cccccccccccccc \
+               ddddddddddddddddddd"  # comment 1
+
+x = 1 \
+
+"a".join(b)
+
+while 1:
+    x = 1 \
+
+    y = 2
+
+DATA_INTEGRATIONS: HassKey[dict[
+    str, Integration
+    | asyncio.Future[Integration
+                     | IntegrationNotFound]]] = HassKey("integrations")

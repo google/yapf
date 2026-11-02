@@ -28,6 +28,7 @@ CONTINUATION = token.N_TOKENS
 
 _OPENING_BRACKETS = frozenset({'(', '[', '{'})
 _CLOSING_BRACKETS = frozenset({')', ']', '}'})
+_UNESCAPED_NEWLINE = re.compile(r'(?<!\\)(?:\\\\)*\n')
 
 
 def _TabbedContinuationAlignPadding(spaces, align_style, tab_width):
@@ -113,6 +114,7 @@ class FormatToken(object):
     self.can_break_before = False
     self.must_break_before = pytree_utils.GetNodeAnnotation(
         node, pytree_utils.Annotation.MUST_SPLIT, default=False)
+    self.split_before_retained = False
     self.newlines = pytree_utils.GetNodeAnnotation(
         node, pytree_utils.Annotation.NEWLINES)
     self.spaces_required_before = 0
@@ -156,7 +158,7 @@ class FormatToken(object):
                        ' ' * spaces)
 
     if self.is_comment:
-      comment_lines = [s.lstrip() for s in self.value.splitlines()]
+      comment_lines = [s.lstrip() for s in pytree_utils.SplitLines(self.value)]
       self.value = ('\n' + indent_before).join(comment_lines)
 
       # Update our own value since we are changing node value
@@ -186,7 +188,8 @@ class FormatToken(object):
 
     cur_lineno = self.lineno
     prev_lineno = previous.lineno
-    if previous.is_multiline_string:
+    spans_lines = previous.is_string and '\n' in previous.value
+    if spans_lines:
       prev_lineno += previous.value.count('\n')
 
     if (cur_lineno != prev_lineno or
@@ -204,7 +207,7 @@ class FormatToken(object):
       prev_column -= 1
       prev_len = 0
 
-    if previous.is_multiline_string:
+    if previous.is_multiline_string or spans_lines:
       prev_len = len(previous.value.split('\n')[-1])
       if '\n' in previous.value:
         prev_column = 0  # Last line starts in column 0.
@@ -307,7 +310,10 @@ class FormatToken(object):
       token, inspect the last 3 characters and return True if it is a triple
       double or triple single quote mark.
     """
-    return self.is_string and self.value.endswith(('"""', "'''"))
+    if not self.is_string:
+      return False
+    return (self.value.endswith(('"""', "'''")) or
+            _UNESCAPED_NEWLINE.search(self.value) is not None)
 
   @property
   def is_docstring(self):

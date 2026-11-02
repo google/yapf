@@ -31,9 +31,10 @@ These APIs have some common arguments:
     diff that turns the formatted source into reformatter source.
 """
 
-import codecs
+import contextlib
 import difflib
 import re
+import sys
 
 from yapf.pyparser import pyparser
 from yapf.pytree import blank_line_calculator
@@ -194,13 +195,15 @@ def FormatCode(unformatted_source,
     Tuple of (reformatted_source, changed). reformatted_source conforms to the
     desired formatting style. changed is True if the source changed.
   """
-  try:
-    tree = pytree_utils.ParseCodeToTree(unformatted_source)
-  except Exception as e:
-    e.filename = filename
-    raise errors.YapfError(errors.FormatErrorMsg(e))
+  with _DeepRecursionAllowed():
+    try:
+      tree = pytree_utils.ParseCodeToTree(unformatted_source)
+    except Exception as e:
+      e.filename = filename
+      raise errors.YapfError(errors.FormatErrorMsg(e))
 
-  reformatted_source = FormatTree(tree, style_config=style_config, lines=lines)
+    reformatted_source = FormatTree(
+        tree, style_config=style_config, lines=lines)
 
   if unformatted_source == reformatted_source:
     return '' if print_diff else reformatted_source, False
@@ -211,6 +214,17 @@ def FormatCode(unformatted_source,
     return code_diff, code_diff.strip() != ''  # pylint: disable=g-explicit-bool-comparison # noqa
 
   return reformatted_source, True
+
+
+@contextlib.contextmanager
+def _DeepRecursionAllowed():
+  old_limit = sys.getrecursionlimit()
+  if sys.version_info >= (3, 12):
+    sys.setrecursionlimit(max(old_limit, 100000))
+  try:
+    yield
+  finally:
+    sys.setrecursionlimit(old_limit)
 
 
 def ReadFile(filename, logger=None):
@@ -234,7 +248,7 @@ def ReadFile(filename, logger=None):
     encoding = file_resources.FileEncoding(filename)
 
     # Preserves line endings.
-    with codecs.open(filename, mode='r', encoding=encoding) as fd:
+    with open(filename, mode='r', encoding=encoding, newline='') as fd:
       lines = fd.readlines()
 
     line_ending = file_resources.LineEnding(lines)
@@ -257,7 +271,8 @@ def ReadFile(filename, logger=None):
 def _SplitSemicolons(lines):
   res = []
   for line in lines:
-    res.extend(line.Split())
+    merged = bool(res) and res[-1].disable and res[-1].lineno == line.lineno
+    res.extend(line.Split(keep_continuations=merged))
   return res
 
 
@@ -331,8 +346,8 @@ def _GetUnifiedDiff(before, after, filename='code'):
   Returns:
     The unified diff text.
   """
-  before = before.splitlines()
-  after = after.splitlines()
+  before = pytree_utils.SplitLines(before)
+  after = pytree_utils.SplitLines(after)
   return '\n'.join(
       difflib.unified_diff(
           before,

@@ -60,6 +60,18 @@ class FormatCodeTest(yapf_test_helper.YAPFTest):
     """)
     self._Check(unformatted_code, expected_formatted_code)
 
+  def testDisabledLineAfterCompoundStatementContinuation(self):
+    unformatted_code = textwrap.dedent("""\
+        while x: \\
+            x -= 1  # yapf: disable
+    """)
+    expected_formatted_code = textwrap.dedent("""\
+        while x:
+          x -= 1  # yapf: disable
+    """)
+    self._Check(unformatted_code, expected_formatted_code)
+    self._Check(expected_formatted_code, expected_formatted_code)
+
 
 class FormatFileTest(yapf_test_helper.YAPFTest):
 

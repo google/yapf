@@ -37,7 +37,7 @@ _PYTHON_STATEMENTS = frozenset({
     'break_stmt', 'continue_stmt', 'return_stmt', 'raise_stmt', 'yield_stmt',
     'import_stmt', 'global_stmt', 'exec_stmt', 'assert_stmt', 'if_stmt',
     'while_stmt', 'for_stmt', 'try_stmt', 'with_stmt', 'nonlocal_stmt',
-    'async_stmt', 'simple_stmt'
+    'async_stmt', 'simple_stmt', 'decorated'
 })
 
 
@@ -62,6 +62,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_comment_lineno = 0
     self.last_was_decorator = False
     self.last_was_class_or_function = False
+    self.follows_class_or_function = False
 
   def Visit_simple_stmt(self, node):  # pylint: disable=invalid-name
     self.DefaultNodeVisit(node)
@@ -79,6 +80,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_was_decorator = True
 
   def Visit_classdef(self, node):  # pylint: disable=invalid-name
+    self.follows_class_or_function = self.last_was_class_or_function
     self.last_was_class_or_function = False
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
     self.last_was_decorator = False
@@ -89,6 +91,7 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     self.last_was_class_or_function = True
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
+    self.follows_class_or_function = self.last_was_class_or_function
     self.last_was_class_or_function = False
     index = self._SetBlankLinesBetweenCommentAndClassFunc(node)
     if _AsyncFunction(node):
@@ -136,9 +139,13 @@ class _BlankLineCalculator(pytree_visitor.PyTreeVisitor):
     while pytree_utils.IsCommentStatement(node.children[index]):
       # Standalone comments are wrapped in a simple_stmt node with the comment
       # node as its only child.
-      self.Visit(node.children[index].children[0])
+      comment = node.children[index].children[0]
+      self.Visit(comment)
       if not self.last_was_decorator:
-        _SetNumNewlines(node.children[index].children[0], _ONE_BLANK_LINE)
+        if index == 0 and self.follows_class_or_function:
+          _SetNumNewlines(comment, self._GetNumNewlines(comment))
+        else:
+          _SetNumNewlines(comment, _ONE_BLANK_LINE)
       index += 1
     if (index and node.children[index].lineno - 1
         == node.children[index - 1].children[0].lineno):
@@ -169,8 +176,18 @@ def _SetNumNewlines(node, num_newlines):
 
 
 def _StartsInZerothColumn(node):
+  if node.type == grammar_token.COMMENT:
+    return _IsAtModuleLevel(node)
   return (pytree_utils.FirstLeafNode(node).column == 0 or
           (_AsyncFunction(node) and node.prev_sibling.column == 0))
+
+
+def _IsAtModuleLevel(node):
+  while node.parent:
+    node = node.parent
+    if pytree_utils.NodeName(node) in {'suite', 'match_stmt'}:
+      return False
+  return True
 
 
 def _AsyncFunction(node):

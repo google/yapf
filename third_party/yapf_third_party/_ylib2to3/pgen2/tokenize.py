@@ -28,6 +28,7 @@ __author__ = 'Ka-Ping Yee <ping@lfw.org>'
 __credits__ = \
     'GvR, ESR, Tim Peters, Thomas Wouters, Fred Drake, Skip Montanaro'
 
+import keyword
 import re
 import string
 from codecs import BOM_UTF8
@@ -158,7 +159,57 @@ triple_quoted = ({"'''", '"""'} | {f"{prefix}'''" for prefix in _strprefixes}
 single_quoted = ({"'", '"'} | {f"{prefix}'" for prefix in _strprefixes}
                  | {f'{prefix}"' for prefix in _strprefixes})
 
+ftstringprog = re.compile(r'[ \f\t]*((?:[fFtT][rR]?|[rR][fFtT])[\'"])')
+_identifier_char = re.compile(r'\w', re.UNICODE)
+_whitespace = re.compile(r'[ \f\t]*')
+_await_operand = re.compile(r'[ \f\t]*(?:[0-9\'"{(\[]|\.\.\.|\.[0-9]|(\w+))',
+                            re.UNICODE)
+_async_continuation = re.compile(r'[ \f\t]*(def|for|with)\b')
+_line_end = re.compile(r'[ \f\t]*(?:#[^\r\n]*)?\r?$')
+_await_operand_keywords = frozenset({'None', 'True', 'False', 'await'})
+
+
+def _identifier_end(line, start):
+  end = start + 1
+  while end < len(line) and line[start:end + 1].isidentifier():
+    end += 1
+  return end
+
+
+def _starts_await_operand(line, pos):
+  match = _await_operand.match(line, pos)
+  if not match:
+    return False
+  word = match.group(1)
+  return (word is None or not keyword.iskeyword(word) or
+          word in _await_operand_keywords)
+
+
 tabsize = 8
+
+
+def _indented_after_continuation(peek_line):
+  index = 0
+  while True:
+    line = peek_line(index)
+    if not line:
+      return False
+    column = 0
+    for char in line:
+      if char == ' ':
+        column += 1
+      elif char == '\t':
+        column = (column // tabsize + 1) * tabsize
+      elif char == '\f':
+        column = 0
+      else:
+        break
+    rest = line.lstrip(' \t\f')
+    if rest and rest[0] not in '#\\\r\n':
+      return column > 0
+    if rest[:1] == '\\' and column > 0:
+      return True
+    index += 1
 
 
 class TokenError(Exception):
@@ -167,6 +218,196 @@ class TokenError(Exception):
 
 class StopTokenizing(Exception):
   pass
+
+
+class _FTStringMode:
+
+  def __init__(self, quote, quote_size, raw):
+    self.quote = quote
+    self.quote_size = quote_size
+    self.raw = raw
+    self.in_expr = False
+    self.in_format_spec = False
+    self.depth = 0
+    self.expr_depth = -1
+
+
+class _FTStringScanner:
+
+  def __init__(self, line, start, lnum, readline):
+    self.text = line
+    self.lines = [line]
+    self.pos = start
+    self.start = start
+    self.strstart = (lnum, start)
+    self.readline = readline
+    self.eof = False
+
+  def _char(self, index):
+    while index >= len(self.text):
+      if self.eof or not self.text.endswith('\n'):
+        return ''
+      try:
+        line = self.readline()
+      except StopIteration:
+        line = ''
+      if not line:
+        self.eof = True
+        return ''
+      self.text += line
+      self.lines.append(line)
+    return self.text[index]
+
+  def _next(self):
+    char = self._char(self.pos)
+    if char:
+      self.pos += 1
+    return char
+
+  def _error(self):
+    raise TokenError('EOF in multi-line string', self.strstart)
+
+  def _push(self, modes, prefix):
+    quote = self._next()
+    quote_size = 1
+    if self._char(self.pos) == quote and self._char(self.pos + 1) == quote:
+      self.pos += 2
+      quote_size = 3
+    modes.append(_FTStringMode(quote, quote_size, 'r' in prefix.lower()))
+
+  def _skip_string(self):
+    quote = self._next()
+    quote_size = 1
+    if self._char(self.pos) == quote:
+      if self._char(self.pos + 1) == quote:
+        self.pos += 2
+        quote_size = 3
+      else:
+        self.pos += 1
+        return
+    end_quote_size = 0
+    while end_quote_size != quote_size:
+      char = self._next()
+      if not char or (quote_size == 1 and char == '\n'):
+        self._error()
+      if char == quote:
+        end_quote_size += 1
+        continue
+      end_quote_size = 0
+      if char == '\\' and self._next() == '\r':
+        self._next()
+
+  def _literal_step(self, modes):
+    mode = modes[-1]
+    if self._char(self.pos) == '{' and self._char(self.pos + 1) != '{':
+      mode.expr_depth += 1
+      mode.in_expr = True
+      return
+    if all(
+        self._char(self.pos + i) == mode.quote for i in range(mode.quote_size)):
+      self.pos += mode.quote_size
+      modes.pop()
+      return
+    end_quote_size = 0
+    unicode_escape = False
+    while end_quote_size != mode.quote_size:
+      char = self._next()
+      in_format_spec = mode.in_format_spec and mode.expr_depth >= 0
+      if not char or (mode.quote_size == 1 and char == '\n'):
+        self._error()
+      if char == mode.quote:
+        end_quote_size += 1
+        continue
+      end_quote_size = 0
+      if char == '{':
+        if self._char(self.pos) != '{' or in_format_spec:
+          self.pos -= 1
+          mode.expr_depth += 1
+          mode.in_expr = True
+          mode.in_format_spec = False
+        else:
+          self.pos += 1
+        return
+      if char == '}':
+        if unicode_escape:
+          return
+        if (self._char(self.pos) == '}' and not in_format_spec and
+            mode.depth == 0):
+          self.pos += 1
+        else:
+          self.pos -= 1
+          mode.in_expr = True
+          mode.in_format_spec = False
+        return
+      if char == '\\':
+        peek = self._next()
+        if peek == '\r':
+          peek = self._next()
+        if peek in ('{', '}'):
+          self.pos -= 1
+        elif peek == 'N' and not mode.raw:
+          if self._char(self.pos) == '{':
+            self.pos += 1
+            unicode_escape = True
+    modes.pop()
+
+  def _expr_step(self, modes):
+    mode = modes[-1]
+    while self._char(self.pos) in (' ', '\t', '\f'):
+      self.pos += 1
+    char = self._next()
+    if not char:
+      self._error()
+    if char == '#':
+      while self._char(self.pos) not in ('', '\n', '\r'):
+        self.pos += 1
+      return
+    if char == '\\':
+      if self._next() == '\r':
+        self._next()
+      return
+    if _identifier_char.match(char):
+      word_start = self.pos - 1
+      while _identifier_char.match(self._char(self.pos) or ' '):
+        self.pos += 1
+      word = self.text[word_start:self.pos].lower()
+      if (self._char(self.pos) in ('"', "'") and len(set(word)) == len(word) and
+          set(word) <= set('bruft')):
+        if 'f' in word or 't' in word:
+          self._push(modes, word)
+        else:
+          self._skip_string()
+      return
+    if char in ('"', "'"):
+      self.pos -= 1
+      self._skip_string()
+      return
+    if char == ':' and mode.depth - 1 == mode.expr_depth:
+      mode.in_expr = False
+      mode.in_format_spec = True
+      return
+    if char in '([{':
+      mode.depth += 1
+    elif char in ')]}':
+      mode.depth -= 1
+      if char == '}' and mode.depth == mode.expr_depth:
+        mode.expr_depth -= 1
+        mode.in_expr = False
+        mode.in_format_spec = False
+
+  def scan(self):
+    modes = []
+    while self._char(self.pos) not in ('"', "'"):
+      self.pos += 1
+    self._push(modes, self.text[self.start:self.pos])
+    while modes:
+      if modes[-1].in_expr:
+        self._expr_step(modes)
+      else:
+        self._literal_step(modes)
+    assert self.text.count('\n', 0, self.pos) == len(self.lines) - 1
+    column = self.pos - (self.text.rfind('\n', 0, self.pos) + 1)
+    return self.text[self.start:self.pos], self.lines, column
 
 
 def printtoken(type, token, xxx_todo_changeme, xxx_todo_changeme1,
@@ -391,6 +632,9 @@ def generate_tokens(readline):
   strstart = ''
   endprog = ''
   lnum = parenlev = continued = 0
+  cont_column = None
+  cont_indent = ''
+  after_comment = False
   contstr, needcont = '', 0
   contline = None
   indents = [0]
@@ -400,12 +644,28 @@ def generate_tokens(readline):
   async_def = False
   async_def_indent = 0
   async_def_nl = False
+  lookahead = []
+
+  def next_line():
+    if lookahead:
+      return lookahead.pop(0)
+    try:
+      return readline()
+    except StopIteration:
+      return ''
+
+  def peek_line(index):
+    while len(lookahead) <= index:
+      if lookahead and not lookahead[-1]:
+        return ''
+      try:
+        lookahead.append(readline())
+      except StopIteration:
+        lookahead.append('')
+    return lookahead[index]
 
   while 1:  # loop over lines in stream
-    try:
-      line = readline()
-    except StopIteration:
-      line = ''
+    line = next_line()
     lnum = lnum + 1
     pos, max = 0, len(line)
 
@@ -432,6 +692,8 @@ def generate_tokens(readline):
 
     elif parenlev == 0 and not continued:  # new statement
       if not line:
+        if cont_column is not None:
+          raise TokenError('EOF in multi-line statement', (lnum, 0))
         break
       column = 0
       while pos < max:  # measure leading whitespace
@@ -446,13 +708,27 @@ def generate_tokens(readline):
         pos = pos + 1
       if pos == max:
         break
+      form_feed_end = line.rfind('\f', 0, pos) + 1
+      if form_feed_end:
+        line = line[form_feed_end:]
+        pos, max = pos - form_feed_end, max - form_feed_end
 
       if stashed:
         yield stashed
         stashed = None
 
+      if (line[pos:] in ('\\\n', '\\\r\n') and
+          (column or cont_column is not None or after_comment or
+           indents[-1] > 0 or _indented_after_continuation(peek_line))):
+        if not cont_column:
+          cont_indent = line[:pos]
+        cont_column = cont_column or column
+        continue
+
       if line[pos] in '#\r\n':  # skip comments or blank lines
+        cont_column = None
         if line[pos] == '#':
+          after_comment = True
           comment_token = line[pos:].rstrip('\r\n')
           nl_pos = pos + len(comment_token)
           yield (COMMENT, comment_token, (lnum, pos),
@@ -463,9 +739,13 @@ def generate_tokens(readline):
                  (lnum, len(line)), line)
         continue
 
+      indent = cont_indent if cont_column else line[:pos]
+      column = cont_column or column
+      cont_column = None
+      after_comment = False
       if column > indents[-1]:  # count indents or dedents
         indents.append(column)
-        yield (INDENT, line[:pos], (lnum, 0), (lnum, pos), line)
+        yield (INDENT, indent, (lnum, 0), (lnum, pos), line)
       while column < indents[-1]:
         if column not in indents:
           raise IndentationError(
@@ -491,6 +771,21 @@ def generate_tokens(readline):
       continued = 0
 
     while pos < max:
+      ftstringmatch = ftstringprog.match(line, pos)
+      if ftstringmatch:
+        start = ftstringmatch.start(1)
+        spos = (lnum, start)
+        scanner = _FTStringScanner(line, start, lnum, next_line)
+        token, lines, pos = scanner.scan()
+        lnum += len(lines) - 1
+        line = lines[-1]
+        max = len(line)
+        if stashed:
+          yield stashed
+          stashed = None
+        yield (STRING, token, spos, (lnum, pos), ''.join(lines))
+        continue
+
       pseudomatch = pseudoprog.match(line, pos)
       if pseudomatch:  # scan for tokens
         start, end = pseudomatch.span(1)
@@ -548,18 +843,33 @@ def generate_tokens(readline):
               stashed = None
             yield (STRING, token, spos, epos, line)
         elif initial.isidentifier():  # ordinary name
+          if pos < max and line[pos] > '\x7f':
+            pos = _identifier_end(line, start)
+            token, epos = line[start:pos], (lnum, pos)
           if token in ('async', 'await'):
             if async_def:
               yield (ASYNC if token == 'async' else AWAIT, token, spos, epos,
                      line)
               continue
+            if token == 'await' and _starts_await_operand(line, pos):
+              if stashed:
+                yield stashed
+                stashed = None
+              yield (AWAIT, token, spos, epos, line)
+              continue
 
           tok = (NAME, token, spos, epos, line)
+          if token == 'async' and parenlev > 0 and _line_end.match(line, pos):
+            if stashed:
+              yield stashed
+              stashed = None
+            yield (ASYNC, token, spos, epos, line)
+            continue
           if token == 'async' and not stashed:
             stashed = tok
             continue
 
-          if token in ('def', 'for'):
+          if token in ('def', 'for', 'with'):
             if (stashed and stashed[0] == NAME and stashed[1] == 'async'):
 
               if token == 'def':
@@ -575,6 +885,13 @@ def generate_tokens(readline):
 
           yield tok
         elif initial == '\\':  # continued stmt
+          if stashed:
+            match = _async_continuation.match(peek_line(0))
+            if match:
+              if match.group(1) == 'def':
+                async_def = True
+                async_def_indent = indents[-1]
+              stashed = (ASYNC,) + stashed[1:]
           # This yield is new; needed for better idempotency:
           if stashed:
             yield stashed
@@ -591,6 +908,14 @@ def generate_tokens(readline):
             stashed = None
           yield (OP, token, spos, epos, line)
       else:
+        start = _whitespace.match(line, pos).end()
+        if line[start:start + 1].isidentifier():
+          pos = _identifier_end(line, start)
+          if stashed:
+            yield stashed
+            stashed = None
+          yield (NAME, line[start:pos], (lnum, start), (lnum, pos), line)
+          continue
         yield (ERRORTOKEN, line[pos], (lnum, pos), (lnum, pos + 1), line)
         pos = pos + 1
 

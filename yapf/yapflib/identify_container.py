@@ -55,6 +55,18 @@ class _IdentifyContainers(pytree_visitor.PyTreeVisitor):
       pytree_utils.SetOpeningBracket(
           pytree_utils.FirstLeafNode(node.children[1]), node.children[0])
 
+  def Visit_typeparams(self, node):
+    for child in node.children:
+      self.Visit(child)
+
+    if pytree_utils.NodeName(node.children[1]) == 'typeparamlist':
+      for child in node.children[1].children:
+        pytree_utils.SetOpeningBracket(
+            pytree_utils.FirstLeafNode(child), node.children[0])
+    else:
+      pytree_utils.SetOpeningBracket(
+          pytree_utils.FirstLeafNode(node.children[1]), node.children[0])
+
   def Visit_atom(self, node):  # pylint: disable=invalid-name
     for child in node.children:
       self.Visit(child)

@@ -1,0 +1,52 @@
+def identity[T](x: T) -> T:
+    return x
+
+
+def first[T](items: list[T]) -> T:
+    return items[0]
+
+
+async def fetch[T](source: Source[T], *, retries: int = 3) -> T:
+    return await source.get()
+
+
+def bounded[KeyType: Hashable, ValueType: (str, bytes)](
+        mapping: dict[KeyType, ValueType],
+        default: ValueType | None = None) -> ValueType:
+    pass
+
+
+def variadic[*Ts](*args: *Ts) -> tuple[*Ts]:
+    return args
+
+
+def decorator_factory[**P, R](func: Callable[P, R], *args: P.args,
+                              **kwargs: P.kwargs) -> Callable[P, Awaitable[R]]:
+    pass
+
+
+def all_kinds[T: int, *Ts, **P](
+        callback: Callable[Concatenate[T, P], tuple[*Ts]]) -> None:
+    pass
+
+
+def many_type_parameters[FirstTypeParameter, SecondTypeParameter,
+                         ThirdTypeParameter, FourthTypeParameter](a, b):
+    pass
+
+
+def exploded[
+    T,
+    U,
+](left: T, right: U) -> tuple[T, U]:
+    return left, right
+
+
+class Container:
+
+    @staticmethod
+    def make[T](value: T) -> "Container[T]":
+        pass
+
+    def method[U](self, other: U) -> U:
+        return other

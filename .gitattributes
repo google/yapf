@@ -1,1 +1,2 @@
 .python-version eol=lf
+yapftests/testdata/** text eol=lf

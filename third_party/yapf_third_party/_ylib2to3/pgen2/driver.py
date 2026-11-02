@@ -14,6 +14,7 @@ __author__ = 'Guido van Rossum <guido@python.org>'
 
 __all__ = ['Driver', 'load_grammar']
 
+import hashlib
 import io
 import logging
 import os
@@ -208,7 +209,16 @@ def _generate_pickle_name(gt):
   cache_dir = user_cache_dir(
       appname='YAPF', appauthor='Google', version=yapf_version)
   return cache_dir + os.sep + head + tail + '-py' + '.'.join(
-      map(str, sys.version_info)) + '.pickle'
+      map(str, sys.version_info)) + '-' + _grammar_digest(gt) + '.pickle'
+
+
+def _grammar_digest(gt):
+  if os.path.exists(gt):
+    with open(gt, 'rb') as grammar_file:
+      data = grammar_file.read()
+  else:
+    data = pkgutil.get_data('yapf_third_party._ylib2to3', os.path.basename(gt))
+  return hashlib.sha256(data or b'').hexdigest()[:16]
 
 
 def load_grammar(gt='Grammar.txt',

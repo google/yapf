@@ -216,7 +216,8 @@ class FormatDecisionState(object):
         return not self._ContainerFitsOnStartLine(opening)
 
     if (self.stack[-1].split_before_closing_bracket and
-        (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') or
+        (current.value in '}]' and style.Get('SPLIT_BEFORE_CLOSING_BRACKET') and
+         not _IsTypeParamsBracket(current) or
          current.value in '}])' and style.Get('INDENT_CLOSING_BRACKETS'))):
       # Split before the closing bracket if we can.
       if (subtypes.SUBSCRIPT_BRACKET not in current.subtypes or
@@ -226,6 +227,9 @@ class FormatDecisionState(object):
 
     if (current.value == ')' and previous.value == ',' and
         not _IsSingleElementTuple(current.matching_bracket)):
+      return True
+
+    if previous.value == ',' and _IsTypeParamsBracket(current):
       return True
 
     # Prevent splitting before the first argument in compound statements
@@ -527,7 +531,7 @@ class FormatDecisionState(object):
           if token.is_comment:
             return True
           token = token.next_token
-      if previous.value == '(':
+      if previous.value == '(' or _IsTypeParamsBracket(previous):
         pptoken = previous.previous_token
         if not pptoken or not pptoken.is_name:
           # Split after the opening of a tuple if it doesn't fit on the current
@@ -561,7 +565,7 @@ class FormatDecisionState(object):
     # attempt to keep hand-written code in the same condition as it was before.
     # However, this may cause the formatter to fail to be idempotent.
     if (style.Get('SPLIT_BEFORE_BITWISE_OPERATOR') and current.value in '&|' and
-        previous.lineno < current.lineno):
+        (previous.lineno < current.lineno or current.split_before_retained)):
       # Retain the split before a bitwise operator.
       return True
 
@@ -687,6 +691,10 @@ class FormatDecisionState(object):
       # Don't penalize for a must split.
       return penalty
 
+    if (current.ClosesScope() and _IsTypeParamsBracket(current) and
+        not self.stack[-1].split_before_closing_bracket):
+      penalty += split_penalty.UNBREAKABLE
+
     if previous.is_pseudo and previous.value == '(':
       # Small penalty for splitting after a pseudo paren.
       penalty += 50
@@ -738,7 +746,7 @@ class FormatDecisionState(object):
     if len(self.stack) > 1 and current.ClosesScope():
       if subtypes.DICTIONARY_KEY_PART in current.subtypes:
         self.stack[-2].last_space = self.stack[-2].indent
-      else:
+      elif NodeName(current.node.parent) != 'typeparams':
         self.stack[-2].last_space = self.stack[-1].last_space
       self.stack.pop()
       self.paren_level -= 1
@@ -984,7 +992,8 @@ class FormatDecisionState(object):
     if (not self.param_list_stack and _IsCompoundStatement(self.line.first) and
         (not (style.Get('DEDENT_CLOSING_BRACKETS') or
               style.Get('INDENT_CLOSING_BRACKETS')) or
-         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT'))):
+         style.Get('SPLIT_BEFORE_FIRST_ARGUMENT')) and
+        not _IsDedentedFunctionTypeParams(_GetOpeningBracket(current))):
       token_indent = (
           len(self.line.first.whitespace_prefix.split('\n')[-1]) +
           style.Get('INDENT_WIDTH'))
@@ -1138,6 +1147,19 @@ def _IsFunctionDef(token):
   if token.value == 'async':
     token = token.next_token
   return token.value == 'def'
+
+
+def _IsTypeParamsBracket(token):
+  return token is not None and NodeName(token.node.parent) == 'typeparams'
+
+
+def _IsDedentedFunctionTypeParams(opening):
+  if (not _IsTypeParamsBracket(opening) or
+      NodeName(opening.node.parent.parent) != 'funcdef'):
+    return False
+  return (style.Get('DEDENT_CLOSING_BRACKETS') or
+          style.Get('INDENT_CLOSING_BRACKETS') or
+          opening.matching_bracket.previous_token.value == ',')
 
 
 def _IsFunctionCallWithArguments(token):

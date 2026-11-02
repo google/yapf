@@ -85,12 +85,16 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     #
     # NAME
     _SetUnbreakable(node.children[1])
-    if len(node.children) > 4:
+    paren_idx = 2
+    if pytree_utils.NodeName(node.children[paren_idx]) == 'typeparams':
+      paren_idx += 1
+    if len(node.children) > paren_idx + 2:
       # opening '('
-      _SetUnbreakable(node.children[2])
+      _SetUnbreakable(node.children[paren_idx])
     # ':'
     _SetUnbreakable(node.children[-2])
     self.DefaultNodeVisit(node)
+    _KeepEmptyParensAfterTypeParams(node)
 
   def Visit_funcdef(self, node):  # pylint: disable=invalid-name
     # funcdef ::= 'def' NAME parameters ['->' test] ':' suite
@@ -116,6 +120,7 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
           pytree_utils.LastLeafNode(node.children[arrow_idx - 1]), 0)
       _SetUnbreakable(node.children[arrow_idx])
       _SetStronglyConnected(node.children[arrow_idx + 1])
+    _KeepEmptyParensAfterTypeParams(node)
 
   def Visit_lambdef(self, node):  # pylint: disable=invalid-name
     # lambdef ::= 'lambda' [varargslist] ':' test
@@ -275,6 +280,10 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # power ::= atom trailer* ['**' factor]
     self.DefaultNodeVisit(node)
 
+    if (node.children[0].type == grammar_token.AWAIT and
+        not _InAsyncFunction(node)):
+      _SetUnbreakable(pytree_utils.FirstLeafNode(node.children[1]))
+
     # When atom is followed by a trailer, we can not break between them.
     # E.g. arr[idx] - no break allowed between 'arr' and '['.
     if (len(node.children) > 1 and
@@ -356,6 +365,42 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     _SetStronglyConnected(*node.children)
     self.DefaultNodeVisit(node)
 
+  def Visit_typeparams(self, node):
+    self.DefaultNodeVisit(node)
+    _IncreasePenalty(node, SUBSCRIPT)
+    if pytree_utils.NodeName(node.children[1]) == 'typeparamlist':
+      for child in node.children[1].children:
+        if isinstance(child, pytree.Node):
+          _IncreasePenalty(child, NAMED_ASSIGN)
+    elif isinstance(node.children[1], pytree.Node):
+      _IncreasePenalty(node.children[1], NAMED_ASSIGN)
+    _SetUnbreakable(node.children[0])
+    trailing_comma = pytree_utils.LastLeafNode(node.children[1]).value == ','
+    if (style.Get('INDENT_CLOSING_BRACKETS') or
+        style.Get('DEDENT_CLOSING_BRACKETS')):
+      _SetStronglyConnected(node.children[-1])
+    elif not trailing_comma:
+      _SetUnbreakable(node.children[-1])
+
+  def Visit_typevar(self, node):
+    self._VisitTypeParam(node)
+
+  def Visit_paramspec(self, node):
+    self._VisitTypeParam(node)
+
+  def Visit_typevartuple(self, node):
+    self._VisitTypeParam(node)
+
+  def _VisitTypeParam(self, node):
+    self.DefaultNodeVisit(node)
+    if node.children[0].value in {'*', '**'}:
+      _SetUnbreakable(node.children[1])
+    for index in range(1, len(node.children) - 1):
+      child = node.children[index]
+      if isinstance(child, pytree.Leaf) and child.value in {':', '='}:
+        _SetSplitPenalty(child, NAMED_ASSIGN)
+        _SetUnbreakable(pytree_utils.FirstLeafNode(node.children[index + 1]))
+
   def Visit_comp_for(self, node):  # pylint: disable=invalid-name
     # comp_for ::= 'for' exprlist 'in' testlist_safe [comp_iter]
     _SetSplitPenalty(pytree_utils.FirstLeafNode(node), 0)
@@ -429,6 +474,9 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
     # star_expr ::= '*' expr
     self.DefaultNodeVisit(node)
     _IncreasePenalty(node, STAR_EXPR)
+
+  def Visit_star_subscript(self, node):
+    self.Visit_star_expr(node)
 
   def Visit_expr(self, node):  # pylint: disable=invalid-name
     # expr ::= xor_expr ('|' xor_expr)*
@@ -505,9 +553,32 @@ class _SplitPenaltyAssigner(pytree_visitor.PyTreeVisitor):
         prev_was_comma = False
 
 
+def _KeepEmptyParensAfterTypeParams(node):
+  for index, child in enumerate(node.children[:-1]):
+    if pytree_utils.NodeName(child) != 'typeparams':
+      continue
+    following = node.children[index + 1]
+    if (pytree_utils.NodeName(following) == 'parameters' and
+        len(following.children) == 2):
+      _SetUnbreakable(following.children[-1])
+    elif (following.type == grammar_token.LPAR and
+          node.children[index + 2].type == grammar_token.RPAR):
+      _SetUnbreakable(node.children[index + 2])
+    return
+
+
 def _SetUnbreakable(node):
   """Set an UNBREAKABLE penalty annotation for the given node."""
   _RecAnnotate(node, pytree_utils.Annotation.SPLIT_PENALTY, UNBREAKABLE)
+
+
+def _InAsyncFunction(node):
+  while node is not None:
+    if (pytree_utils.NodeName(node) == 'funcdef' and node.prev_sibling and
+        node.prev_sibling.type == grammar_token.ASYNC):
+      return True
+    node = node.parent
+  return False
 
 
 def _SetStronglyConnected(*nodes):

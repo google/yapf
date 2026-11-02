@@ -17,7 +17,6 @@ This module provides functions for interfacing with files: opening, writing, and
 querying.
 """
 
-import codecs
 import fnmatch
 import os
 import re
@@ -173,7 +172,7 @@ def WriteReformattedCode(filename,
     in_place: (bool) If True, then write the reformatted code to the file.
   """
   if in_place:
-    with codecs.open(filename, mode='w', encoding=encoding) as fd:
+    with open(filename, mode='w', encoding=encoding, newline='') as fd:
       fd.write(reformatted_code)
   else:
     sys.stdout.buffer.write(reformatted_code.encode('utf-8'))
@@ -260,7 +259,7 @@ def IsPythonFile(filename):
       encoding = detect_encoding(fd.readline)[0]
 
     # Check for correctness of encoding.
-    with codecs.open(filename, mode='r', encoding=encoding) as fd:
+    with open(filename, mode='r', encoding=encoding, newline='') as fd:
       fd.read()
   except UnicodeDecodeError:
     encoding = 'latin-1'
@@ -271,7 +270,7 @@ def IsPythonFile(filename):
     return False
 
   try:
-    with codecs.open(filename, mode='r', encoding=encoding) as fd:
+    with open(filename, mode='r', encoding=encoding, newline='') as fd:
       first_line = fd.readline(256)
   except IOError:
     return False

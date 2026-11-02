@@ -26,6 +26,7 @@ the lib2to3 library.
 
 import ast
 import os
+import re
 
 from yapf_third_party._ylib2to3 import pygram
 from yapf_third_party._ylib2to3 import pytree
@@ -65,6 +66,13 @@ def NodeName(node):
     return token.tok_name[node.type]
   else:
     return pygram.python_grammar.number2symbol[node.type]
+
+
+def SplitLines(text):
+  lines = re.split(r'\r\n|\r|\n', text)
+  if not lines[-1]:
+    lines.pop()
+  return lines
 
 
 def FirstLeafNode(node):
