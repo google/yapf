@@ -1,0 +1,23 @@
+type Point = tuple[float, float]
+type ListOrSet[T] = list[T] | set[T]
+type Recursive = int | list["Recursive"]
+type Callback[**P, R] = Callable[P, Awaitable[R]]
+type Shape[*Ts] = tuple[*Ts]
+type LongAliasName[KeyType: Hashable, ValueType] = dict[KeyType, list[tuple[ValueType, ValueType, ValueType]]]
+
+
+class Registry:
+    type Handler = Callable[[Event], None]
+
+    def method(self):
+        type Local[T] = list[T]
+        return Local
+
+
+if TYPE_CHECKING:
+    type Alias = int
+
+type = "the builtin name is still usable"
+print(type(type), type)
+x.type = type
+type[int]

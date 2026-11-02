@@ -1,0 +1,19 @@
+def f[T = int](x: T) -> T:
+    return x
+
+
+class Box[T: (int, str) = int, U: Hashable = str]:
+    pass
+
+
+class Spec[**P = [int, str], *Ts = *tuple[int, ...]]:
+    pass
+
+
+type Alias[T = int, *Ts = *tuple[str]] = tuple[T, *Ts]
+
+
+class LongDefaults[
+        FirstParameter = dict[str, list[int]],
+        SecondParameter = tuple[int, str, bytes]]:
+    pass

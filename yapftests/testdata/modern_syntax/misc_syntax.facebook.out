@@ -1,0 +1,23 @@
+a = 6 .__index__()
+b = 1_000 .bit_length()
+c = 1.0.real + 0x10.real + 1j.imag
+π = 3.14159
+a·b = 3
+℘ = 4
+नमस्ते = 1
+
+
+def gather(coroutines):
+    return (await coroutine for coroutine in coroutines)
+
+
+async \
+def continued():
+    pass
+
+
+def stream(source):
+    return (
+        item async  # comment between async and for
+        for item in source
+    )

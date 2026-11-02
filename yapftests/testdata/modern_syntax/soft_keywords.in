@@ -1,0 +1,23 @@
+match = re.match(r"x", "x")
+match[0], match[1]
+match(1) + len(match)
+match -1 if isinstance(match, int) else 0
+case = None
+case(match)
+type(match, case)
+
+
+def dispatch(match, case, type, _):
+    match match:
+        case case:
+            pass
+    match (match):
+        case 1:
+            pass
+    match type:
+        case _:
+            pass
+    match case, type:
+        case (case, _):
+            print(case)
+    return match, case, type, _

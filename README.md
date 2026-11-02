@@ -55,6 +55,11 @@ YAPF is supported by multiple editors via community extensions or plugins. See [
 
 YAPF supports Python 3.7+.
 
+YAPF formats source code that uses any syntax up to Python 3.14, including
+PEP 695 type parameters and `type` statements, PEP 696 type parameter
+defaults, PEP 701 f-strings, PEP 750 template strings and PEP 758 `except`
+clauses without parentheses, regardless of the Python version YAPF runs on.
+
 
 ## Usage
 
@@ -350,10 +355,6 @@ optional arguments:
                         directory is used).
   --binary BINARY       location of binary to use for YAPF
 ```
-
-## Python features not yet supported
-* Python 3.12 – [PEP 695 – Type Parameter Syntax](https://peps.python.org/pep-0695/) – [YAPF #1170](https://github.com/google/yapf/issues/1170)
-* Python 3.12 – [PEP 701 – Syntactic formalization of f-strings](https://peps.python.org/pep-0701/) – [YAPF #1136](https://github.com/google/yapf/issues/1136)
 
 ## Knobs
 

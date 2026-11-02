@@ -1,0 +1,19 @@
+value = f"{record["key"]}"
+nested = f"{f"{f"{depth}"}"}"
+triple = f"""{f'''{inner!r}'''} and {"""also nested"""}"""
+spec = f"{amount:{width}.{precision}f} {name!r:>{width}} {flag=}"
+escapes = f"{'\n'.join(lines)}\N{BULLET} {{literal}} {value}"
+raw = rf"\d+{pattern}\N{x}"
+debug = f"{total = :>10}"
+walrus = f"{(y := 10)} {a != b} {(lambda q: q)(3)} {mapping['k']:#x}"
+playlist = f"This is the playlist: {", ".join([
+    'Take me back to Eden',  # My, my, those eyes like fire
+    'Alkaline',  # Not acid nor alkaline
+    'Ascensionism',  # Take to the broken skies at last
+])}"
+result = some_function_name(f"{first_value["key"]} and {second_value["other_key"]}", keyword_argument=value)
+concatenated = ("first part with {braces} " f"second {part} " F'third {"part"}')
+
+
+def long_call():
+    logger.info(f"processed {count} records for {customer["name"]} in {elapsed:.2f}s", extra={"request_id": request_id})

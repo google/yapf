@@ -1,0 +1,23 @@
+from string.templatelib import Template, Interpolation
+
+
+greeting = t"hello {name}"
+upper = T'hello {name!r}'
+raw = tr"\d+{pattern}" + rt"\w{x}" + Rt"{y}" + tR"{z}"
+triple = t"""multi
+line {value:>10} template"""
+nested = t"{t"{inner}"} {f"{other["k"]}"}"
+debug = t"{value = }"
+html_template = render(
+    t"<p>{user["name"]}</p><span>{user["email"]}</span>",
+    escape = True,
+    strict = False
+)
+
+
+def build(items):
+    return [t"{item!s:^20}" for item in items if item]
+
+
+t = 1
+print(t, "t is still a name")

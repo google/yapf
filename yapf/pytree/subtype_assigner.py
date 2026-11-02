@@ -30,6 +30,7 @@ from yapf_third_party._ylib2to3.pygram import python_symbols as syms
 
 from yapf.pytree import pytree_utils
 from yapf.pytree import pytree_visitor
+from yapf.yapflib import format_token
 from yapf.yapflib import style
 from yapf.yapflib import subtypes
 
@@ -86,6 +87,8 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       for child in node.children:
         if pytree_utils.NodeName(child) == 'comp_for':
           break
+        if last_was_colon and child.type == format_token.CONTINUATION:
+          continue
         if child.type == grammar_token.DOUBLESTAR:
           _AppendFirstLeafTokenSubtype(child, subtypes.KWARGS_STAR_STAR)
         if last_was_colon:
@@ -155,6 +158,9 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
       if isinstance(child, pytree.Leaf) and child.value == '*':
         _AppendTokenSubtype(child, subtypes.UNARY_OPERATOR)
         _AppendTokenSubtype(child, subtypes.VARARGS_STAR)
+
+  def Visit_star_subscript(self, node):
+    self.Visit_star_expr(node)
 
   def Visit_expr(self, node):  # pylint: disable=invalid-name
     # expr ::= xor_expr ('|' xor_expr)*
@@ -278,11 +284,31 @@ class _SubtypeAssigner(pytree_visitor.PyTreeVisitor):
     # funcdef ::=
     #     'def' NAME parameters ['->' test] ':' suite
     for child in node.children:
-      if child.type == grammar_token.NAME and child.value != 'def':
-        _AppendTokenSubtype(child, subtypes.FUNC_DEF)
+      if pytree_utils.NodeName(child) == 'parameters':
+        _AppendLastLeafTokenSubtype(child.prev_sibling, subtypes.FUNC_DEF)
         break
     for child in node.children:
       self.Visit(child)
+
+  def Visit_typeparamlist(self, node):
+    self.DefaultNodeVisit(node)
+    _SetArgListSubtype(node, subtypes.DEFAULT_OR_NAMED_ASSIGN,
+                       subtypes.DEFAULT_OR_NAMED_ASSIGN_ARG_LIST)
+
+  def Visit_typevar(self, node):
+    self._ProcessTypeParam(node)
+
+  def Visit_paramspec(self, node):
+    self._ProcessTypeParam(node)
+
+  def Visit_typevartuple(self, node):
+    self._ProcessTypeParam(node)
+
+  def _ProcessTypeParam(self, node):
+    self._ProcessArgLists(node)
+    for child in node.children:
+      if isinstance(child, pytree.Leaf) and child.value == '=':
+        _AppendTokenSubtype(child, subtypes.TYPED_NAME)
 
   def Visit_parameters(self, node):  # pylint: disable=invalid-name
     # parameters ::= '(' [typedargslist] ')'

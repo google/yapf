@@ -1,0 +1,20 @@
+def args_to_tuple(*args: *Ts) -> tuple[*Ts]:
+    return args
+
+
+def callback(*args: *tuple[int, str]) -> None:
+    pass
+
+
+Array = Generic[DType, *Shape]
+pairs: tuple[int, *tuple[str, ...]] = (1, "a")
+first = values[*indices]
+mixed = values[1:2, *rest]
+conditional = values[*left if flag else right]
+combined = values[*left or right]
+total += *more, *items
+items[0] += 1, *rest
+
+
+def long_signature(*arguments_with_a_long_name: *tuple[FirstElementType, SecondElementType, ThirdType]) -> None:
+    pass

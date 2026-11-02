@@ -19,6 +19,8 @@ line if there were no line length restrictions. It's then used by the parser to
 perform the wrapping required to comply with the style guide.
 """
 
+import re
+
 from yapf_third_party._ylib2to3.fixer_util import syms as python_symbols
 
 from yapf.pytree import pytree_utils
@@ -100,7 +102,7 @@ class LogicalLine(object):
       prev_length = token.total_length
       prev_token = token
 
-  def Split(self):
+  def Split(self, keep_continuations=False):
     """Split the line at semicolons."""
     if not self.has_semicolon or self.disable:
       return [self]
@@ -111,7 +113,9 @@ class LogicalLine(object):
       if tok.value == ';':
         llines.append(lline)
         lline = LogicalLine(self.depth)
-      else:
+      elif keep_continuations or not (llines and not lline.tokens and
+                                      tok.is_continuation and
+                                      tok is not self.last):
         lline.AppendToken(tok)
 
     if lline.tokens:
@@ -120,6 +124,9 @@ class LogicalLine(object):
     for lline in llines:
       lline.first.previous_token = None
       lline.last.next_token = None
+      offset = lline.first.total_length - len(lline.first.value)
+      for tok in lline.tokens:
+        tok.total_length -= offset
 
     return llines
 
@@ -293,12 +300,17 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   if right.name in pytree_utils.NONSEMANTIC_TOKENS:
     # No space before a non-semantic token.
     return False
+  if lval == 'except' and rval == '*':
+    return False
+  if (lval == '*' and left.previous_token and
+      left.previous_token.value == 'except'):
+    return True
   if _IsIdNumberStringToken(left) and _IsIdNumberStringToken(right):
     # Spaces between keyword, string, number, and identifier tokens.
     return True
   if lval == ',' and rval == ':':
     # We do want a space between a comma and colon.
-    return True
+    return pytree_utils.NodeName(right.node.parent) != 'try_stmt'
   if style.Get('SPACE_INSIDE_BRACKETS'):
     # Supersede the "no space before a colon or comma" check.
     if left.OpensScope() and rval == ':':
@@ -415,6 +427,8 @@ def _SpaceRequiredBetween(left, right, is_line_disabled):
   if lval == '.' and right.is_keyword:
     # Add space between keywords and dots.
     return rval not in {'None', 'print'}
+  if left.is_number and rval == '.' and _DECIMAL_INTEGER.match(lval):
+    return True
   if lval == '.' or rval == '.':
     # Don't place spaces between dots.
     return False
@@ -598,6 +612,7 @@ def _IsDictListTupleDelimiterTok(tok, is_opening):
   ]
 
 
+_DECIMAL_INTEGER = re.compile(r'\d[\d_]*$')
 _LOGICAL_OPERATORS = frozenset({'and', 'or'})
 _BITWISE_OPERATORS = frozenset({'&', '|', '^'})
 _ARITHMETIC_OPERATORS = frozenset({'+', '-', '*', '/', '%', '//', '@'})

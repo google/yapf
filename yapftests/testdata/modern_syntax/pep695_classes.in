@@ -1,0 +1,26 @@
+class Box[T]:
+    pass
+
+
+class Empty[T]: pass
+
+
+class Node[T](Generic, metaclass=ABCMeta):
+    value: T
+    children: list["Node[T]"]
+
+
+class Mapping[KeyType: Hashable, ValueType = str, *Shape, **Params](BaseMapping[KeyType, ValueType], metaclass=ABCMeta):
+    pass
+
+
+class Pair[First, Second](NamedTuple):
+    first: First
+    second: Second
+
+
+class Exploded[
+    T,
+    U,
+]:
+    pass

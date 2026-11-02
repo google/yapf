@@ -1,0 +1,53 @@
+[style]
+based_on_style = pep8
+column_limit = 75
+indent_width = 4
+continuation_indent_width = 4
+use_tabs = false
+
+indent_closing_brackets = false
+dedent_closing_brackets = true
+indent_blank_lines = false
+align_closing_bracket_with_visual_indent = true
+
+spaces_before_comment = 2
+spaces_around_power_operator = false
+spaces_around_default_or_named_assign = true
+spaces_around_subscript_colon = true
+space_between_ending_comma_and_closing_bracket = false
+space_inside_brackets = false
+
+blank_line_before_nested_class_or_def = false
+blank_line_before_class_docstring = false
+blank_line_before_module_docstring = false
+blank_lines_around_top_level_definition = 2
+blank_lines_between_top_level_imports_and_variables = 2
+
+split_before_logical_operator = true
+split_before_first_argument = true
+split_before_named_assigns = true
+split_complex_comprehension = true
+split_before_expression_after_opening_paren = false
+split_before_closing_bracket = true
+split_before_dot = false
+split_all_comma_separated_values = true
+split_all_top_level_comma_separated_values = false
+split_arguments_when_comma_terminated = true
+
+coalesce_brackets = false
+each_dict_entry_on_separate_line = true
+allow_multiline_lambdas = false
+allow_multiline_dictionary_keys = false
+join_multiple_lines = false
+arithmetic_precedence_indication = false
+
+split_penalty_import_names = 0
+split_penalty_for_added_line_split = 275
+split_penalty_comprehension = 80
+split_penalty_after_opening_bracket = 280
+split_penalty_before_if_expr = 0
+split_penalty_bitwise_operator = 290
+split_penalty_logical_operator = 0
+
+i18n_function_call = ['_', 'N_', 'gettext', 'ngettext']
+i18n_comment = ['# Translators:', '# i18n:']

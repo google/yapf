@@ -1,0 +1,27 @@
+try:
+    run()
+except* ValueError:
+    pass
+except* TypeError as group:
+    handle(group)
+except* (KeyError, IndexError):
+    pass
+
+try:
+    run()
+except ValueError, TypeError:
+    pass
+except KeyError, IndexError, AttributeError,:
+    pass
+except (OSError, RuntimeError) as error:
+    raise WrappedError from error
+
+try:
+    run()
+except* ValueError, TypeError:
+    pass
+
+try:
+    run()
+except FirstVeryLongExceptionName, SecondVeryLongExceptionName, ThirdVeryLongExceptionName:
+    pass

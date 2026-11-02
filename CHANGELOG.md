@@ -2,6 +2,56 @@
 # All notable changes to this project will be documented in this file.
 # This project adheres to [Semantic Versioning](http://semver.org/).
 
+## (0.44.0) UNRELEASED
+### Added
+- Format all Python 3.11 through 3.14 syntax, regardless of the Python version
+  YAPF runs on:
+  - PEP 695 type parameter lists on functions and classes, and the `type`
+    statement. Type parameter lists are split like parameter lists.
+  - PEP 696 type parameter defaults.
+  - PEP 701 f-strings: nested quotes of the same kind, replacement fields that
+    span lines, and comments and backslashes inside replacement fields.
+  - PEP 750 template strings (t-strings).
+  - PEP 758 `except` and `except*` clauses without parentheses.
+  - Starred expressions in subscripts (`x[*a]`, `x[*a or b]`) and on the
+    right-hand side of augmented assignments.
+  - `await` and `async for` in generator expressions outside of `async def`.
+### Fixed
+- Parse errors are reported with their position instead of crashing with
+  `IndexError: tuple index out of range`.
+- `except*` is no longer reformatted as `except *`.
+- `match`, `case` and `type` used as ordinary names no longer crash the
+  parser, and `match match:` / `case case:` are no longer split in two.
+- Keep the space in `6 .real`; removing it produced invalid code.
+- Identifiers that contain combining marks or other non-`\w` characters
+  allowed by PEP 3131.
+- Deeply nested expressions that CPython accepts no longer raise
+  `RecursionError` on Python 3.12+.
+- The cached grammar file name includes a hash of the grammar, so different
+  YAPF builds with the same version never load each other's grammar.
+- Comments containing `\f`, `\v`, `\x1c`-`\x1e`, `\x85`, ` ` or ` `
+  no longer hang YAPF or break indentation.
+- Form feeds in leading whitespace no longer make formatting non-idempotent.
+- Backslash-only lines are handled like CPython does, and a backslash before a
+  dictionary value no longer crashes.
+- Statements on one line separated by `;` are no longer glued together when a
+  line is emitted unformatted, or when a backslash continuation comes before
+  the `;`.
+- Several cases of non-idempotent blank lines around comments.
+- A backslash right after a compound statement's colon (`else: \`) no longer
+  grows whitespace on every run. The backslash is dropped and the body goes on
+  its own line; a comment that followed it becomes a trailing comment of the
+  header.
+- A backslash-only line before an indented line, or anywhere inside an
+  indented block, no longer crashes or produces invalid code.
+- `await` followed by `(`, `[`, `...` or a float outside of `async def` is
+  parsed as an await expression; `await []()` and `await (yield x)` crashed.
+- Splits that YAPF adds before `|` and `&` are kept on the next run, so long
+  union annotations are formatted the same way every time.
+- Spacing after strings continued with a backslash is kept on lines that are
+  not reformatted (`yapf: disable`, `--lines`), and comments after such
+  strings stay where they are.
+
 ## (0.41.0) UNRELEASED
 ### Added
 - New `DISABLE_SPLIT_LIST_WITH_COMMENT` flag.

@@ -66,7 +66,11 @@ def SpliceComments(tree):
             prefix_indent = prefix_indent[prefix_indent.rfind('\n') + 1:]
           child.prefix = ''
 
-          if child.type == token.NEWLINE:
+          if child.type == token.NEWLINE and prev_leaf[0] is None:
+            pytree_utils.InsertNodesBefore(
+                _CreateCommentsFromPrefix(
+                    comment_prefix, comment_lineno, 0, standalone=True), child)
+          elif child.type == token.NEWLINE:
             # If the prefix was on a NEWLINE leaf, it's part of the line so it
             # will be inserted after the previously encountered leaf.
             # We can't just insert it before the NEWLINE node, because as a
@@ -117,18 +121,23 @@ def SpliceComments(tree):
               comment_groups[-1][-1].append(cmt)
 
             # Insert a node for each group
+            prev_ancestor = prev_comments = None
             for comment_column, comment_indent, comment_group in comment_groups:
               ancestor_at_indent = _FindAncestorAtIndent(child, comment_indent)
+              insert_target = ancestor_at_indent
               if ancestor_at_indent.type == token.DEDENT:
                 InsertNodes = pytree_utils.InsertNodesBefore  # pylint: disable=invalid-name # noqa
               else:
                 InsertNodes = pytree_utils.InsertNodesAfter  # pylint: disable=invalid-name # noqa
-              InsertNodes(
-                  _CreateCommentsFromPrefix(
-                      '\n'.join(comment_group) + '\n',
-                      comment_lineno,
-                      comment_column,
-                      standalone=True), ancestor_at_indent)
+                if ancestor_at_indent is prev_ancestor and prev_comments:
+                  insert_target = prev_comments[-1]
+              comments = _CreateCommentsFromPrefix(
+                  '\n'.join(comment_group) + '\n',
+                  comment_lineno,
+                  comment_column,
+                  standalone=True)
+              InsertNodes(comments, insert_target)
+              prev_ancestor, prev_comments = ancestor_at_indent, comments
               comment_lineno += len(comment_group)
           else:
             # Otherwise there are two cases.
@@ -169,12 +178,21 @@ def SpliceComments(tree):
                     node_with_line_parent)
                 break
               else:
-                if comment_lineno == prev_leaf[0].lineno:
-                  comment_lines = comment_prefix.splitlines()
+                prev_value = prev_leaf[0].value
+                continued_string = (
+                    prev_leaf[0].type == token.STRING and '\n' in prev_value and
+                    not prev_value.endswith(('"""', "'''")))
+                prev_lineno = prev_leaf[0].lineno
+                if continued_string:
+                  prev_lineno += prev_value.count('\n')
+                if comment_lineno == prev_lineno:
+                  comment_lines = pytree_utils.SplitLines(comment_prefix)
                   value = comment_lines[0].lstrip()
                   if value.rstrip('\n'):
                     comment_column = prev_leaf[0].column
                     comment_column += len(prev_leaf[0].value)
+                    if continued_string:
+                      comment_column = len(prev_value.rsplit('\n', 1)[-1])
                     comment_column += (
                         len(comment_lines[0]) - len(comment_lines[0].lstrip()))
                     comment_leaf = pytree.Leaf(
@@ -245,7 +263,7 @@ def _CreateCommentsFromPrefix(comment_prefix,
           pygram.python_symbols.simple_stmt, [comment_leaf])
       comments.append(comment_node)
 
-    while index < len(lines) and not lines[index].lstrip():
+    while index < len(lines) and not lines[index].lstrip().startswith('#'):
       index += 1
 
   return comments
