@@ -459,6 +459,30 @@ class TestsForPython3Code(yapf_test_helper.YAPFTest):
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
+  def testMatchWithSoftKeywordNames(self):
+    # https://github.com/google/yapf/issues/1189
+    for name in ('case', 'match'):
+      with self.subTest(name=name):
+        unformatted_code = textwrap.dedent(f"""\
+            {name}=42
+            match {name} :
+                case 0 :
+                    pass
+                case {name} if {name}>0 :
+                    print({name})
+        """)
+        expected_formatted_code = textwrap.dedent(f"""\
+            {name} = 42
+            match {name}:
+                case 0:
+                    pass
+                case {name} if {name} > 0:
+                    print({name})
+        """)
+        llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+        self.assertCodeEqual(expected_formatted_code,
+                             reformatter.Reformat(llines))
+
   def testParenthsizedContextManager(self):
     # https://github.com/google/yapf/issues/1064
     unformatted_code = textwrap.dedent("""\

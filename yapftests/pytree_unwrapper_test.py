@@ -55,6 +55,21 @@ class PytreeUnwrapperTest(yapf_test_helper.YAPFTest):
         (0, ['y', '=', '2']),
     ])
 
+  def testMatchWithSoftKeywordNames(self):
+    for name in ('case', 'match'):
+      with self.subTest(name=name):
+        code = textwrap.dedent(f"""\
+            match {name}:
+                case {name}:
+                    pass
+        """)
+        llines = yapf_test_helper.ParseAndUnwrap(code)
+        self._CheckLogicalLines(llines, [
+            (0, ['match', name, ':']),
+            (1, ['case', name, ':']),
+            (2, ['pass']),
+        ])
+
   def testSimpleMultilineStatement(self):
     code = textwrap.dedent("""\
         y = (1 +
