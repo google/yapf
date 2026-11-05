@@ -390,6 +390,46 @@ class GetCommandLineFilesTest(yapf_test_helper.YAPFTest):
     with self.assertRaises(errors.YapfError):
       file_resources.GetCommandLineFiles([], False, exclude=['./z'])
 
+  def test_excluded_dir_keeps_prefix_siblings(self):
+    directories = [
+        os.path.join('build', 'nested'),
+        os.path.join('build_tools', 'nested'), 'build2', 'other'
+    ]
+    files = []
+    for dirname in directories:
+      files.append(os.path.join(self._make_test_dir(dirname), 'example.py'))
+    _touch_files(files)
+
+    for relative in (False, True):
+      with self.subTest(relative=relative), _restore_working_dir():
+        os.chdir(self.test_tmpdir)
+        root = '.' if relative else self.test_tmpdir
+        excluded = 'build' if relative else os.path.join(root, 'build')
+        actual = file_resources.GetCommandLineFiles([root],
+                                                    recursive=True,
+                                                    exclude=[excluded])
+        expected = [
+            os.path.join(root, dirname, 'example.py')
+            for dirname in directories[1:]
+        ]
+        self.assertCountEqual(expected, actual)
+
+  def test_excluded_dir_glob_excludes_matching_siblings(self):
+    directories = [
+        os.path.join('build', 'nested'),
+        os.path.join('build_tools', 'nested'), 'other'
+    ]
+    files = []
+    for dirname in directories:
+      files.append(os.path.join(self._make_test_dir(dirname), 'example.py'))
+    _touch_files(files)
+
+    os.chdir(self.test_tmpdir)
+    actual = file_resources.GetCommandLineFiles(['.'],
+                                                recursive=True,
+                                                exclude=['build*'])
+    self.assertEqual([os.path.join('.', 'other', 'example.py')], actual)
+
 
 class IsPythonFileTest(yapf_test_helper.YAPFTest):
 

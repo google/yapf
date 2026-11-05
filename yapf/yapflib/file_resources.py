@@ -213,7 +213,7 @@ def _FindPythonFiles(filenames, recursive, exclude):
         if dirpath != '.' and exclude and IsIgnored(dirpath, exclude):
           excluded_dirs.append(dirpath)
           continue
-        elif any(dirpath.startswith(e) for e in excluded_dirs):
+        elif any(dirpath.startswith(e + os.path.sep) for e in excluded_dirs):
           continue
         for f in filelist:
           filepath = os.path.join(dirpath, f)
