@@ -502,6 +502,29 @@ class CommandLineTest(yapf_test_helper.YAPFTest):
         check = self.assertIn if has_change else self.assertNotIn
         check(f'Formatted {filepath}', output)
 
+  def testRepeatedFileInputsPreserveOrder(self):
+    with utils.TempFileContents(
+        self.test_tmpdir, 'first=1\n', suffix='.py') as first:
+      with utils.TempFileContents(
+          self.test_tmpdir, 'second=2\n', suffix='.py') as second:
+        output = subprocess.check_output(
+            YAPF_BINARY + ['--style=pep8', second, first, second, first],
+            text=True)
+        self.assertEqual('second = 2\nfirst = 1\n', output)
+
+  def testOverlappingRecursiveInputsAreFormattedOnce(self):
+    with tempfile.TemporaryDirectory(dir=self.test_tmpdir) as directory:
+      with utils.TempFileContents(
+          directory, 'value=1\n', suffix='.py') as filepath:
+        for parallel in (False, True):
+          with self.subTest(parallel=parallel):
+            options = ['--parallel'] if parallel else []
+            output = subprocess.check_output(
+                YAPF_BINARY + options +
+                ['--style=pep8', '--recursive', directory, filepath],
+                text=True)
+            self.assertEqual('value = 1\n', output)
+
   def testReadFromStdin(self):
     unformatted_code = textwrap.dedent("""\
         def foo():

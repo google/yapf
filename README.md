@@ -95,6 +95,10 @@ optional arguments:
 ```
 
 
+Repeated filename strings are formatted once, including files reached through
+overlapping recursive inputs such as `yapf -r src src/example.py`. Sequential
+formatting preserves the order of each filename's first occurrence.
+
 ### Return Codes
 
 Normally YAPF returns zero on successful program termination and non-zero
