@@ -177,7 +177,8 @@ def FormatFiles(filenames,
   """Format a list of files.
 
   Arguments:
-    filenames: (list of unicode) A list of files to reformat.
+    filenames: (list of unicode) A list of files to reformat. Repeated filename
+      strings are processed once, in order of first occurrence.
     lines: (list of tuples of integers) A list of tuples of lines, [start, end],
       that we want to format. The lines are 1-based indexed. This argument
       overrides the 'args.lines'. It can be used by third-party code (e.g.,
@@ -196,6 +197,7 @@ def FormatFiles(filenames,
   Returns:
     True if the source code changed in any of the files being formatted.
   """
+  filenames = list(dict.fromkeys(filenames))
   changed = False
   if parallel:
     import concurrent.futures  # pylint: disable=g-import-not-at-top
