@@ -93,6 +93,28 @@ class TestsForFacebookStyle(yapf_test_helper.YAPFTest):
     llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
     self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
 
+  def testDedentClosingBracketWithSubscriptedReturnAnnotation(self):
+    unformatted_code = textwrap.dedent("""\
+        def log_name_padding_out(item_one_oh_one_two: List[str], *, item_two: int = 15) -> List[str]:
+            pass
+
+
+        def short_name(item: List[str], *, item_two: int = 15) -> List[str]:
+            pass
+    """)  # noqa
+    expected_formatted_code = textwrap.dedent("""\
+        def log_name_padding_out(
+            item_one_oh_one_two: List[str], *, item_two: int = 15
+        ) -> List[str]:
+            pass
+
+
+        def short_name(item: List[str], *, item_two: int = 15) -> List[str]:
+            pass
+    """)
+    llines = yapf_test_helper.ParseAndUnwrap(unformatted_code)
+    self.assertCodeEqual(expected_formatted_code, reformatter.Reformat(llines))
+
   def testDedentImportAsNames(self):
     code = textwrap.dedent("""\
         from module import (
