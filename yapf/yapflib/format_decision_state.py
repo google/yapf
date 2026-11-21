@@ -248,8 +248,12 @@ class FormatDecisionState(object):
               # Prefer to keep all opening brackets together.
               return False
 
-          if (not _IsLastScopeInLine(bracket) or
-              logical_line.IsSurroundedByBrackets(bracket)):
+          if _IsFunctionDefinition(bracket):
+            # The return annotation is part of the signature, even if it
+            # opens another bracketed scope.
+            last_token = _LastTokenInLine(bracket.matching_bracket)
+          elif (not _IsLastScopeInLine(bracket) or
+                logical_line.IsSurroundedByBrackets(bracket)):
             last_token = bracket.matching_bracket
           else:
             last_token = _LastTokenInLine(bracket.matching_bracket)
